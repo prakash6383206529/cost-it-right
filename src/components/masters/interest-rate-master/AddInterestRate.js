@@ -8,7 +8,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import DayTime from '../../common/DayTimeWrapper';
 import { useTranslation } from 'react-i18next';
-import { CBCTypeId, EMPTY_DATA, ICCANDPAYMENTMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, EMPTY_DATA, ICCANDPAYMENTMASTER, ICCMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { fetchApplicabilityList, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { autoCompleteDropdown, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
@@ -114,7 +114,8 @@ const AddInterestRate = (props) => {
     const { applicabilityList } = useSelector((state) => state.comman);
     const vendorSelectList = useSelector((state) => state.comman.vendorSelectList);
 
-    const conditionTypeId = getCostingConditionTypes(ICCANDPAYMENTMASTER);
+    // const conditionTypeId = getCostingConditionTypes(ICCANDPAYMENTMASTER);
+    const conditionTypeId = getCostingConditionTypes(ICCMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
 
@@ -951,7 +952,7 @@ const AddInterestRate = (props) => {
                                                 </label>
                                             </Col>
 
-                                            {state.selectedICCMethod?.value === ICC_METHODS.CreditBased &&
+                                            {state.selectedICCMethod?.value == ICC_METHODS.CreditBased &&
                                                 <Col md="3">
                                                     <TextFieldHookForm
                                                         label={`Credit Based Annual ICC (%)`}
@@ -961,14 +962,14 @@ const AddInterestRate = (props) => {
                                                         control={control}
                                                         register={register}
                                                         rules={{
-                                                            required: state.selectedICCMethod?.value === ICC_METHODS.CreditBased,
+                                                            required: state.selectedICCMethod?.value == ICC_METHODS.CreditBased,
                                                             validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                             max: {
                                                                 value: 100,
                                                                 message: 'Percentage cannot be greater than 100'
                                                             },
                                                         }}
-                                                        mandatory={state.selectedICCMethod?.value === ICC_METHODS.CreditBased}
+                                                        mandatory={state.selectedICCMethod?.value == ICC_METHODS.CreditBased}
                                                         handleChange={handleChangeCreditBasePercentage}
                                                         defaultValue={''}
                                                         className=""
