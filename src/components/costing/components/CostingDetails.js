@@ -2093,7 +2093,7 @@ function CostingDetails(props) {
 
     return <Redirect
       to={{
-        pathname: "/nfr",
+        pathname: "/customer-rfq",
         state: {
           isNFR: true
         }
