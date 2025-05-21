@@ -474,6 +474,8 @@ function LabourListing(props) {
               <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
               <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
               {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+              <AgGridColumn field='LocalCurrency' headerName='Currency'></AgGridColumn>
+              <AgGridColumn field="LabourRatePerShift" headerName="Rate per Person/Shift" cellRenderer={'commonCostFormatter'}></AgGridColumn>
               <AgGridColumn width={205} field="LabourRatePerMonth" headerName="Rate per Person/Month" cellRenderer={'commonCostFormatter'}></AgGridColumn>
               <AgGridColumn width={205} field="LabourRate" headerName="Rate per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
               <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

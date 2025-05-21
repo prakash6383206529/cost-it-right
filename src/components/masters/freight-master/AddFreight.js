@@ -374,7 +374,6 @@ const AddFreight = (props) => {
         } else {
           setState(prev => ({ ...prev, hidePlantCurrency: true }))
         }
-        callExchangeRateAPI()
       }))
     } else {
       setState(prev => ({ ...prev, Plant: [] }));
@@ -704,9 +703,11 @@ const AddFreight = (props) => {
       effectiveDate: date,
       showEffectiveDateError: false
     }));
-    callExchangeRateAPI()
   };
 
+  useEffect(() => {
+      callExchangeRateAPI()
+  }, [state.currency, state.ExchangeSource, state.hidePlantCurrency]);
 
   const gridHandler = () => {
     const { FullTruckCapacity, RateCriteria, gridTable, Load, truckDimensions, isShowTruckDimensions } = state;
@@ -970,6 +971,11 @@ const AddFreight = (props) => {
       return false;
     }
 
+    if(state.showPlantWarning) {
+      Toaster.warning(`${getValuesMainForm('plantCurrency')} rate is not present in the Exchange Master`);
+      return false;
+    }    
+
     if (checkForNull(state?.gridTable?.length) === 0) {
       Toaster.warning("Please add at least one data in Load Section.");
       return false;
@@ -1139,11 +1145,9 @@ const AddFreight = (props) => {
   };
   const handleExchangeRate = (newValue) => {
     setState(prev => ({ ...prev, ExchangeSource: newValue }));
-    callExchangeRateAPI();
   };
   const handleCurrency = (newValue) => {
     setState(prev => ({ ...prev, currency: newValue }));
-    callExchangeRateAPI();
   };
 
   const freightRateTitle = () => {
