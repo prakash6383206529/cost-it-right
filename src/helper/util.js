@@ -773,6 +773,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.netTransportationCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.ChildPartTransportationDetails ?? [] : []
   obj.HangerCostDetails = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.ChildPartHangerDetails : dataFromAPI?.CostingPartDetails?.HangerDetails ?? []
   obj.PaintAndTapeDetails = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.ChildPartPaintAndTapeDetails : dataFromAPI?.CostingPartDetails?.PaintAndTapeDetails ?? []
+  obj.CostingLabourResponse = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.CostingLabourResponse : []
   obj.surfaceTreatmentDetails = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentDetails : []
   // //OverheadCost and Profit
   obj.netOverheadCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail : '-'
@@ -2159,6 +2160,7 @@ export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArr
   let objectToGetRMCCData = tempArrForCosting[indexForUpdate]
 
   if (isAssembly === "Assembly" || isAssembly === "Sub Assembly") {
+    console.log(isRequestForMultiTechnology, "isAssembly", isAssembly)
 
     if (isRequestForMultiTechnology) {//run for multi(Assembly) technology
       const assemblyCostingPartDetails = subAssemblyTechnologyArray[0]?.CostingPartDetails
@@ -2168,6 +2170,7 @@ export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArr
         conversionCost: checkForNull(assemblyCostingPartDetails?.NetOperationCost) + checkForNull(assemblyCostingPartDetails?.NetProcessCost)
       };
     } else {
+      console.log("objectToGetRMCCData?.CosingPartDetails?.TotalRawMaterialsCostWithQuantity", objectToGetRMCCData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity)
       return {
         rawMaterialsCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity),
         conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalConversionCostWithQuantity)

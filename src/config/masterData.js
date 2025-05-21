@@ -2702,7 +2702,8 @@ export const Labour = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineType', value: 'MachineType', }, //*
     { label: 'LabourType', value: 'LabourType', }, //*
-    { label: 'RatePerPersonPerMonth', value: 'RatePerPersonPerMonth', }, //*
+    { label: 'NoOfDays', value: 'NoOfDays', }, //*
+    { label: 'LabourRatePerMonth', value: 'LabourRatePerMonth', }, //*
     { label: 'RatePerPersonPerAnnum', value: 'RatePerPersonPerAnnum', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'ProductNumber', value: 'ProductNumber', },
@@ -2721,7 +2722,8 @@ export const LabourTempData = [
         'PlantCode': 'Plant01',
         'MachineType': 'Grinder',
         'LabourType': 'Skilled',
-        'RatePerPersonPerMonth': 100000,
+        'NoOfDays': '20',
+        'LabourRatePerMonth': 100000,
         'RatePerPersonPerAnnum': 1200000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "ProductNumber": 'Silencer',
@@ -2738,7 +2740,8 @@ export const LabourTempData = [
         'PlantCode': 'Plant02',
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',
-        'RatePerPersonPerMonth': 100000,
+        'NoOfDays': '20',
+        'LabourRatePerMonth': 100000,
         'RatePerPersonPerAnnum': 1200000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "ProductNumber": 'Silencer',
@@ -6810,6 +6813,8 @@ export const LABOUR_DOWNLOAD_EXCEl = [
     { label: "Machine Type", value: "MachineType", },
     { label: "Labour Type", value: "LabourType", },
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
+    { label: "Currency", value: "LocalCurrency", },
+    { label: "Rate per Person/Shift", value: "LabourRatePerShift", },
     { label: "Rate per Person/Month", value: "LabourRatePerMonth", },
     { label: "Rate per Person/Annum", value: "LabourRate", },
     { label: "Effective Date", value: "EffectiveDate", }
