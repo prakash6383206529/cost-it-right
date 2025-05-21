@@ -1,6 +1,6 @@
 import React, { useContext, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, IsNFRContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
 import { getCostingBopAndBopHandlingDetails, getCostingLabourDetails, getRMCCTabData, openCloseStatus, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setIsBreakupBoughtOutPartCostingFromAPI, setRMCCData, setBopRemark } from '../../../actions/Costing';
@@ -50,6 +50,7 @@ function AssemblyPart(props) {
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const isDisable = useContext(IsNFRContext)
   const costData = useContext(costingInfoContext);
   const isPartType = useContext(IsPartType);
 
@@ -404,7 +405,7 @@ function AssemblyPart(props) {
         confirmPopup={handleRemarkPopupConfirm}
         header={"Remark"}
         isInputField={true}
-        isDisabled={CostingViewMode}
+        isDisabled={CostingViewMode || isDisable}
         defaultValue={remark}
         maxLength={REMARKMAXLENGTH}
       />
@@ -563,7 +564,7 @@ function AssemblyPart(props) {
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={labourHandlingDrawer}>
-                <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button >
+                <div className={`${(CostingViewMode || IsLocked || isDisable) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button >
               </>}
               {
                 isBOPExists && item?.CostingPartDetails?.IsOpen && <><button
@@ -571,7 +572,7 @@ function AssemblyPart(props) {
                   id='Add_BOP_Handling_Charge'
                   className={'user-btn add-oprn-btn mr-1'}
                   onClick={bopHandlingDrawer}>
-                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
+                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked || isDisable) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
                 </>
               }
               {
@@ -588,7 +589,7 @@ function AssemblyPart(props) {
                     id="assembly_addOperation"
                     className={'user-btn add-oprn-btn mr-1'}
                     onClick={() => DrawerToggle(item)}>
-                    <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>
+                    <div className={`${(CostingViewMode || IsLocked || isDisable) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>
               }
               <button
                 type="button"
@@ -596,7 +597,7 @@ function AssemblyPart(props) {
                 onClick={() => ProcessDrawerToggle(item)}
                 title={'Add Process'}
               >
-                <div className={`${(CostingViewMode || checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) !== 0) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
+                <div className={`${(CostingViewMode || isDisable || checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) !== 0) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
               </button>
             </div >
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
@@ -620,7 +621,7 @@ function AssemblyPart(props) {
           ID={''}
           anchor={'right'}
           item={item}
-          CostingViewMode={CostingViewMode}
+          CostingViewMode={CostingViewMode || isDisable}
           setAssemblyOperationCost={props.setAssemblyOperationCost}
           itemInState={itemInState}
         />

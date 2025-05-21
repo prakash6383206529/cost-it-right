@@ -2160,7 +2160,6 @@ export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArr
   let objectToGetRMCCData = tempArrForCosting[indexForUpdate]
 
   if (isAssembly === "Assembly" || isAssembly === "Sub Assembly") {
-    console.log(isRequestForMultiTechnology, "isAssembly", isAssembly)
 
     if (isRequestForMultiTechnology) {//run for multi(Assembly) technology
       const assemblyCostingPartDetails = subAssemblyTechnologyArray[0]?.CostingPartDetails
@@ -2170,7 +2169,7 @@ export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArr
         conversionCost: checkForNull(assemblyCostingPartDetails?.NetOperationCost) + checkForNull(assemblyCostingPartDetails?.NetProcessCost)
       };
     } else {
-      console.log("objectToGetRMCCData?.CosingPartDetails?.TotalRawMaterialsCostWithQuantity", objectToGetRMCCData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity)
+
       return {
         rawMaterialsCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity),
         conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.TotalConversionCostWithQuantity)

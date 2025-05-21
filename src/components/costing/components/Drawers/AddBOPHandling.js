@@ -16,10 +16,12 @@ import Toaster from '../../../common/Toaster';
 import { WACTypeId } from '../../../../config/constants';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 import TooltipCustom from '../../../common/Tooltip';
+import { IsNFRContext } from '../CostingDetailStepTwo';
 
 function AddBOPHandling(props) {
   const { item, isAssemblyTechnology } = props
   const CostingViewMode = useContext(ViewCostingContext);
+  const isDisable = useContext(IsNFRContext)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const [handlingChargesChange, setHandlingChargesChange] = useState(null)
   const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
@@ -231,7 +233,7 @@ function AddBOPHandling(props) {
                         mandatory={false}
                         handleChange={handleBOPHandlingType}
                         errors={errors.BOPHandlingType}
-                        disabled={(CostingViewMode || IsLocked) ? true : false}
+                        disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
                         isClearable={true}
                       />
                     </Col>
@@ -259,7 +261,7 @@ function AddBOPHandling(props) {
                           defaultValue={""}
                           className=""
                           customClassName={"withBorder"}
-                          disabled={(CostingViewMode || IsLocked) ? true : false}
+                          disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
                         /> :
                         <TextFieldHookForm
                           id="BOPHandlingPercentage"
@@ -285,7 +287,7 @@ function AddBOPHandling(props) {
                           className=""
                           customClassName={"withBorder"}
                           errors={errors.BOPHandlingPercentage}
-                          disabled={(CostingViewMode || IsLocked) ? true : false}
+                          disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
                         />}
                     </Col>
                     <Col md="12">
@@ -323,7 +325,7 @@ function AddBOPHandling(props) {
                   <button
                     id="AddBopHandlingCharge_Save"
                     type={'button'}
-                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                    disabled={(CostingViewMode || IsLocked || isDisable) ? true : false}
                     className="submit-button mr5 save-btn"
                     onClick={saveHandleCharge} >
                     <div className={"save-icon"}></div>

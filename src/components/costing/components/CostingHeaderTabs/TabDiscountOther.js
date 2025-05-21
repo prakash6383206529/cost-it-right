@@ -1539,7 +1539,7 @@ function TabDiscountOther(props) {
 
     return <Redirect
       to={{
-        pathname: "/nfr",
+        pathname: "/customer-rfq",
         state: {
         }
 
@@ -2002,7 +2002,7 @@ function TabDiscountOther(props) {
 
     return <Redirect
       to={{
-        pathname: "/nfr",
+        pathname: "/customer-rfq",
         state: {
         }
 

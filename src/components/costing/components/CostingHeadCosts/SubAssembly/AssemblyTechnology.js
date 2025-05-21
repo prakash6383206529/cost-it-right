@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { NetPOPriceContext, costingInfoContext } from '../../CostingDetailStepTwo';
+import { IsNFRContext, NetPOPriceContext, costingInfoContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId, showBopLabel, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { IsPartType, ViewCostingContext } from '../../CostingDetails';
@@ -40,6 +40,7 @@ function AssemblyTechnology(props) {
     const netPOPrice = useContext(NetPOPriceContext);
 
     const CostingViewMode = useContext(ViewCostingContext);
+    const isDisable = useContext(IsNFRContext)
     const costData = useContext(costingInfoContext);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -67,7 +68,7 @@ function AssemblyTechnology(props) {
                 }
 
                 dispatch(getRMCCTabData(data, false, (res) => {
-                    if (res && res.data && res.data.Result && CostingViewMode === false) {
+                    if (res && res.data && res.data.Result && CostingViewMode === false && !isDisable) {
                         let Data = res.data.DataList;
                         let tempsubAssemblyTechnologyArray = Data
                         let costPerPieceTotal = 0
@@ -284,7 +285,7 @@ function AssemblyTechnology(props) {
                 confirmPopup={handleRemarkPopupConfirm}
                 header={"Remark"}
                 isInputField={true}
-                isDisabled={CostingViewMode}
+                isDisabled={CostingViewMode || isDisable}
                 defaultValue={remark}
                 maxLength={REMARKMAXLENGTH}
 
@@ -552,7 +553,7 @@ function AssemblyTechnology(props) {
                                 type="button"
                                 className={'user-btn add-oprn-btn mr-1'}
                                 onClick={labourHandlingDrawer}>
-                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button >
+                                <div className={`${(CostingViewMode || isDisable) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button >
                             </>}
 
                             {
@@ -564,7 +565,7 @@ function AssemblyTechnology(props) {
                                         title={`Add ${showBopLabel()} Handling`}
                                         onClick={() => { setIsOpenBOPDrawer(true) }}
                                     >
-                                        <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
+                                        <div className={`${(CostingViewMode || isDisable) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
                                 </>
                             }
                             <button
@@ -574,7 +575,7 @@ function AssemblyTechnology(props) {
                                 onClick={ProcessDrawerToggle}
                                 title={'Add Process'}
                             >
-                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
+                                <div className={`${(CostingViewMode || isDisable) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
                             </button>
 
                             <button
@@ -584,7 +585,7 @@ function AssemblyTechnology(props) {
                                 onClick={OperationDrawerToggle}
                                 title={"Add Operation"}
                             >
-                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`OPER`}
+                                <div className={`${(CostingViewMode || isDisable) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`OPER`}
                             </button>
                         </div >
                     </td > :
@@ -618,7 +619,7 @@ function AssemblyTechnology(props) {
                     ID={''}
                     anchor={'right'}
                     item={item}
-                    CostingViewMode={CostingViewMode}
+                    CostingViewMode={CostingViewMode || isDisable}
                     setOperationCostFunction={props.setOperationCostFunction}
                     isAssemblyTechnology={true}
                 />
