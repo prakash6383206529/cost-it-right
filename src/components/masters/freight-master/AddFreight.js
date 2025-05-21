@@ -375,6 +375,7 @@ const AddFreight = (props) => {
           setState(prev => ({ ...prev, hidePlantCurrency: true }))
         }
       }))
+      dispatch(getFreigtRateCriteriaSelectList(newValue?.value, (res) => { }))
     } else {
       setState(prev => ({ ...prev, Plant: [] }));
     }
