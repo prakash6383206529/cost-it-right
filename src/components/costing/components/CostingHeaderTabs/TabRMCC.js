@@ -102,6 +102,7 @@ function TabRMCC(props) {
           NetCCForOtherTechnologyCost: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostComponent) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostSubAssembly) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostPerAssembly): 0,
           NetCCForOtherTechnologyCostForOverhead: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostComponentForOverhead) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostSubAssemblyForOverhead) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead): 0,
           NetCCForOtherTechnologyCostForProfit: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostComponentForProfit) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostSubAssemblyForProfit) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostPerAssemblyForProfit): 0,
+          MinimumMachineTonnageRequired:TopHeaderValues?.MinimumMachineTonnageRequired ? TopHeaderValues.MinimumMachineTonnageRequired : null
         }
       } else {
 
@@ -126,6 +127,7 @@ function TabRMCC(props) {
           NetCCForOtherTechnologyCost: TopHeaderValues?.NetCCForOtherTechnologyCost ?? 0,
           NetCCForOtherTechnologyCostForOverhead: TopHeaderValues?.NetCCForOtherTechnologyCostForOverhead ?? 0,
           NetCCForOtherTechnologyCostForProfit: TopHeaderValues?.NetCCForOtherTechnologyCostForProfit ?? 0,
+          MinimumMachineTonnageRequired:TopHeaderValues?.MinimumMachineTonnageRequired ? TopHeaderValues.MinimumMachineTonnageRequired : null
         }
       }
       props.setHeaderCost(topHeaderData)
@@ -474,7 +476,7 @@ function TabRMCC(props) {
 
         GrandTotalCost = checkForNull(netRMCost(gridData)) + checkForNull(partObj?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(partObj?.CostingPartDetails?.NetConversionCost)
         partObj.CostingPartDetails.CostingRawMaterialsCost = gridData;
-        partObj.CostingPartDetails.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? gridData[0]?.WeightCalculatorRequest?.MaximumTonnage : null;
+        gridData[0]?.WeightCalculatorRequest?.MinimumMachineTonnageRequired && getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting && (partObj.CostingPartDetails.MinimumMachineTonnageRequired = gridData[0]?.WeightCalculatorRequest?.MinimumMachineTonnageRequired);
         partObj.CostingPartDetails.NetRawMaterialsCost = netRMCost(gridData);
         partObj.CostingPartDetails.RawMaterialCostWithCutOff = calculateRMCutOff(gridData)
         partObj.CostingPartDetails.IsRMCutOffApplicable = !isAllFalse
