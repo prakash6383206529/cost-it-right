@@ -493,9 +493,9 @@ function StandardRub(props) {
         obj.BaseCostingId = costData.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialRubberStandardWeightCalculator = tableData
-        obj.MaximumTonnage = tableData?.reduce((max, item) => {
+        obj.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? tableData?.reduce((max, item) => {
             return Math.max(max, item.Tonnage);
-        }, 0);
+        }, 0) : null;
         obj.usedRmData = usedRmData
 
         if (unUsedRmData.length > 0) {

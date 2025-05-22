@@ -474,7 +474,7 @@ function TabRMCC(props) {
 
         GrandTotalCost = checkForNull(netRMCost(gridData)) + checkForNull(partObj?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(partObj?.CostingPartDetails?.NetConversionCost)
         partObj.CostingPartDetails.CostingRawMaterialsCost = gridData;
-        partObj.CostingPartDetails.MaximumTonnage = gridData[0]?.WeightCalculatorRequest?.MaximumTonnage;
+        partObj.CostingPartDetails.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? gridData[0]?.WeightCalculatorRequest?.MaximumTonnage : null;
         partObj.CostingPartDetails.NetRawMaterialsCost = netRMCost(gridData);
         partObj.CostingPartDetails.RawMaterialCostWithCutOff = calculateRMCutOff(gridData)
         partObj.CostingPartDetails.IsRMCutOffApplicable = !isAllFalse

@@ -27,7 +27,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 const gridOptions = {};
 
 function AddProcess(props) {
-  const { groupMachineId } = props
+  const { groupMachineId,item } = props
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [isTabSwitch, setIsTabSwitch] = useState(false)
@@ -126,7 +126,9 @@ function AddProcess(props) {
         CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId || Number(costData.CostingTypeId) === PFS1TypeId
           || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : Number(costData.CostingTypeId === WACTypeId) ? ZBCTypeId : costData.CostingTypeId,
 
-        CustomerId: costData.CustomerId
+        CustomerId: costData.CustomerId,
+        MinimumMachineTonnageRequired: item?.CostingPartDetails?.MinimumMachineTonnageRequired      
+
       }
     }
     dispatch(getProcessDrawerDataList(data, (res) => {

@@ -693,7 +693,7 @@ export function getOperationDrawerDataList(data, callback) {
 export function getProcessDrawerDataList(data, callback) {
   return (dispatch) => {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}&MinimumMachineTonnageRequired=${data?.MinimumMachineTonnageRequired}`;
     const request = axios.get(`${API.getProcessDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
