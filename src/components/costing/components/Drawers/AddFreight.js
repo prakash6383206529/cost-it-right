@@ -84,8 +84,8 @@ function AddFreight(props) {
     }, 200)
   }, [rowObjData]);
 
-  useEffect(() => {
-    dispatch(getFreigtRateCriteriaSelectList())
+  useEffect(() => {   
+    dispatch(getFreigtRateCriteriaSelectList(costData?.PlantId))
     dispatch(getFreigtFullTruckCapacitySelectList())
     dispatch(getTruckDimensionsSelectList((res) => { }));
   }, []);

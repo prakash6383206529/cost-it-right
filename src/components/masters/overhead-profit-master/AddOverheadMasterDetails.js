@@ -32,6 +32,12 @@ const AddOverheadMasterDetails = (props) => {
     const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
+    useEffect(() => {
+        // let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
+        dispatch(fetchApplicabilityList(null, conditionTypeId, state.isAssemblyCheckbox, res => { }));
+        // setState(prev => ({ ...prev, isAssemblyCheckbox: !state.isAssemblyCheckbox, ApplicabilityDetails: [], OverheadApplicability: {}, OverheadPercentage: "" }));
+    }, [state.isAssemblyCheckbox])
+
     const renderListing = (label) => {
         const temp = [];
         if (label === 'material') {
@@ -212,8 +218,8 @@ const AddOverheadMasterDetails = (props) => {
     }
 
     const onPressAssemblyCheckbox = () => {
-        let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
-        dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, res => { }));
+        // let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
+        // dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, res => { }));
         setState(prev => ({ ...prev, isAssemblyCheckbox: !state.isAssemblyCheckbox, ApplicabilityDetails: [], OverheadApplicability: {}, OverheadPercentage: "" }));
         setValue("OverheadApplicability", {});
         setValue("OverheadPercentage", "");
@@ -464,7 +470,7 @@ const AddOverheadMasterDetails = (props) => {
                         </Col>
                     ) }
 
-                    {props?.isShowPartFamily && getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily &&
+                    {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily &&
                         <Col md="3">
                             <SearchableSelectHookForm
                                 label={`Part Family (Code)`}
@@ -491,7 +497,7 @@ const AddOverheadMasterDetails = (props) => {
                             className={`custom-checkbox ${state?.isEditFlag ? "disabled" : ""}`}
                             onChange={onPressAssemblyCheckbox}
                         >
-                        Apply for Part Type
+                        Manage Applicabilities For Multi Technology Assembly
                         <input
                             type="checkbox"
                             readOnly

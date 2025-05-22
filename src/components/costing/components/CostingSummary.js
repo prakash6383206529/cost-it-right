@@ -21,7 +21,7 @@ import { IdForMultiTechnology, MACHINING } from '../../../config/masterData'
 import { BOUGHTOUTPARTSPACING, COMPONENT_PART, PRODUCT_ID, searchCount } from '../../../config/constants'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
 import { MESSAGES } from '../../../config/message'
-import { getSelectListPartType } from '../../masters/actions/Part'
+import { getPartFamilySelectList, getSelectListPartType } from '../../masters/actions/Part'
 import { ASSEMBLY, DETAILED_BOP_ID } from '../../../config/masterData'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from './TourMessages'
@@ -66,6 +66,8 @@ function CostingSummary(props) {
   const [partFamily, setPartFamily] = useState([])
   const { t } = useTranslation("Costing")
   const { technologyLabel } = useLabels();
+  const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
+
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
     if (Object.keys(costingData).length > 0 && reactLocalStorage.get('location') === '/costing-summary') {
@@ -88,6 +90,8 @@ function CostingSummary(props) {
     if (reactLocalStorage.get('location') === '/costing-summary') {
       dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
       dispatch(getPartInfo('', () => { }))
+      dispatch(getPartFamilySelectList(() => { }));
+
       dispatch(getSelectListPartType((res) => {
         setPartTypeList(res?.data?.SelectList)
       }))
@@ -239,6 +243,14 @@ function CostingSummary(props) {
         if (item.Value === PRODUCT_ID) return false
         if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
         if (IdForMultiTechnology.includes(String(technology?.value)) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+    if (label === 'PartFamily') {
+      partFamilySelectList && partFamilySelectList.map((item) => {
+        if (item.Value === '--0--') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })

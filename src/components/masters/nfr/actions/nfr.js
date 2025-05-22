@@ -376,6 +376,49 @@ export function createCustomerRfq(requestData, callback) {
 }
 
 /**
+ * @method createCustomerRfq
+ * @description create Customer RFQ
+ */
+export function updateCustomerRfq(requestData, callback) {
+    const requestedData = {
+        loggedInUserId: loggedInUserId(),
+        ...requestData
+    }
+    return (dispatch) => {
+        axiosInstance.post(API.updateCustomerRfq, requestedData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getCustomerRfqListing
+ * @description get Customer RFQ Listing
+ */
+export function getCustomerRfqListing(requestObj, callback) {
+    return (dispatch) => {
+        const loggedInUser = { loggedInUserId: loggedInUserId() }
+        const request = axios.get(`${API.getCustomerRfqListing}?loggedInUserId=${loggedInUser?.loggedInUserId}&skip=${requestObj?.skip}&take=${requestObj?.take}&isPagination=${requestObj?.isPagination}&isReset=${requestObj?.isReset}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method deleteNFRDetailAPI
  * @description delete NFR Detail API 
  */
@@ -392,3 +435,42 @@ export function deleteNFRDetailAPI(nfrId, loggedInUserId, callback) {
             });
     };
 }
+
+
+/**
+ * @method deleteCustomerRfq
+ * @description delete Customer RFQ
+ */
+export function deleteCustomerRfq(customerRfqId, loggedInUserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `customerRfqId=${customerRfqId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteCustomerRfq}?${queryParams}`, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+/**
+ * @method getCustomerRfqDetails
+ * @description get Customer RFQ Details
+ */
+export function getCustomerRfqDetails(customerRfqId, loggedInUserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `customerRfqId=${customerRfqId}&loggedInUserId=${loggedInUserId}`
+        axios.get(`${API.getCustomerRfqDetails}?${queryParams}`, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
