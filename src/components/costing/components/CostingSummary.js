@@ -127,6 +127,7 @@ function CostingSummary(props) {
           setValue('DrawingNumber', Data.DrawingNumber)
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice))
+          setValue('PartFamily', Data?.PartFamily)
           setTechnologyId(Data?.TechnologyId)
           setPartType({ label: Data.PartType, value: Data.PartTypeId })
           setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
@@ -283,6 +284,7 @@ function CostingSummary(props) {
                   setValue('ECNNumber', Data.ECNNumber)
                   setValue('DrawingNumber', Data.DrawingNumber)
                   setValue('RevisionNumber', Data.RevisionNumber)
+                  setValue('PartFamily', Data?.PartFamily)
                   setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice))
                   setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName }))
                   setTechnologyId(Data?.TechnologyId)
@@ -335,6 +337,7 @@ function CostingSummary(props) {
               setValue('DrawingNumber', '')
               setValue('RevisionNumber', '')
               setValue('ShareOfBusiness', '')
+              setValue('PartFamily', '')
               setEffectiveDate('')
               dispatch(setCostingViewData([]))
             }
@@ -537,25 +540,7 @@ function CostingSummary(props) {
                           disabled={(technology.length === 0) ? true : false || disabled}
                         />
                       </Col>
-                      { getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily &&<Col className="col-md-15">
-                        <SearchableSelectHookForm
-                          label={`Part Family (Code)`}
-                          name={'PartFamily'}
-                          placeholder={'Select'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          rules={{ required: true }}
-                          mandatory={true}
-                          options={renderListing("PartFamily")}
-                          handleChange={handlePartFamily}
-                          // defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.PartFamily}
-                          disabled={(technology.length === 0) ? true : false || disabled}
-                        />
-                      </Col>}
+
                       <Col className="col-md-15">
 
                         <AsyncSearchableSelectHookForm
@@ -572,8 +557,8 @@ function CostingSummary(props) {
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(partType.length === 0 || (getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && partFamily.length === 0)) ? true : false || disabled}
-                          NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN }
+                          disabled={partType.length === 0 ? true : false || disabled}
+                          NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                         />
 
                         {/* <SearchableSelectHookForm
@@ -592,7 +577,26 @@ function CostingSummary(props) {
                           disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
                         /> */}
                       </Col>
+                      {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <Col className="col-md-15">
 
+                        <TextFieldHookForm
+                          label="Part Family"
+                          name={"PartFamily"}
+                          // title={titleObj.partFamilyTitle}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          rules={{ required: false }}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          errors={errors.PartFamily}
+                          disabled={true}
+                          placeholder="-"
+                        />
+                      </Col>}
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           title={titleObj.partNameTitle}

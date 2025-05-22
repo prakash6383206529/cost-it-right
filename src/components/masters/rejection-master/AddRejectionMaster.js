@@ -117,7 +117,7 @@ const AddRejectionMaster = (props) => {
               overheadId: state?.OverheadID ?? null,
               modelTypeId: state?.ModelType?.value,
               costingHeadId: state?.costingTypeId,
-              plantId: state?.selectedPlants[0]?.value ?? null,
+              plantId: state?.singlePlantSelected?.value ?? null,
               vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
               customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
               effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
