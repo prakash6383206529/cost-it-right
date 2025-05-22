@@ -73,7 +73,7 @@ function RawMaterialCost(props) {
   const [inputValue, setInputValue] = useState('');
   const [deleteIndex, setDeleteIndex] = useState('');
   // const [calculatorTypeStore, setCalculatorTypeStore] = useState(costData.TechnologyId === CORRUGATEDBOX ? item?.CostingPartDetails?.CalculatorType ?? item?.CalculatorType ?? '' : '')
-  const [calculatorTypeStore, setCalculatorTypeStore] = useState((costData.TechnologyId === CORRUGATEDBOX || costData.TechnologyId === RUBBER ) ? item?.CostingPartDetails?.CalculatorType ?? item?.CalculatorType ?? '' : '')
+  const [calculatorTypeStore, setCalculatorTypeStore] = useState((costData.TechnologyId === CORRUGATEDBOX || costData.TechnologyId === RUBBER) ? item?.CostingPartDetails?.CalculatorType ?? item?.CalculatorType ?? '' : '')
   const [isMultiCalculatorData, setIsMultiCalculatorData] = useState(false);
   const [headerPinned, setHeaderPinned] = useState(true)
   const [tourState, setTourState] = useState({
@@ -214,7 +214,7 @@ function RawMaterialCost(props) {
         }
 
         props.setRMCost(gridData, Params, item)
-        if (JSON.stringify(gridData) !== JSON.stringify(props.data)) {
+        if (gridData && props?.data && JSON.stringify(gridData) !== JSON.stringify(props?.data)) {
           dispatch(isDataChange(true))
         }
       }
@@ -254,7 +254,7 @@ function RawMaterialCost(props) {
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
 
-    if((gridData && gridData.length > 0) && (Number(costData?.TechnologyId) === Number(RUBBER)) && (calculatorTypeStore === "Standard" || calculatorTypeStore === "Compound")){
+    if ((gridData && gridData.length > 0) && (Number(costData?.TechnologyId) === Number(RUBBER)) && (calculatorTypeStore === "Standard" || calculatorTypeStore === "Compound")) {
       setShowPopup(true)
       setDrawerOpen(false)
     } else if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || (Number(costData?.TechnologyId) === Number(CORRUGATEDBOX) && (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore !== 'CorrugatedBox'))))) {
@@ -337,7 +337,7 @@ function RawMaterialCost(props) {
           ScrapRecoveryPercentage: 100,
           ConvertedExchangeRateId: rowData.ConvertedExchangeRateId === EMPTY_GUID ? null : rowData.ConvertedExchangeRateId,
           CurrencyExchangeRate: rowData.CurrencyExchangeRate,
-          EffectiveDate:rowData.EffectiveDate
+          EffectiveDate: rowData.EffectiveDate
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
@@ -447,16 +447,16 @@ function RawMaterialCost(props) {
         }))
         break;
       case RUBBER:
-          setCalculatorTypeStore(calculatorType)
-          if (calculatorType === 'Standard') {
-            dispatch(getRawMaterialCalculationForRubberStandard(item.CostingId, res => {
-              setCalculatorData(res, index, 'Standard')
-            }))
-          } else {
-            dispatch(getRawMaterialCalculationForRubber(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
-              setCalculatorData(res, index, 'Compound')
-            }))
-          }
+        setCalculatorTypeStore(calculatorType)
+        if (calculatorType === 'Standard') {
+          dispatch(getRawMaterialCalculationForRubberStandard(item.CostingId, res => {
+            setCalculatorData(res, index, 'Standard')
+          }))
+        } else {
+          dispatch(getRawMaterialCalculationForRubber(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index, 'Compound')
+          }))
+        }
         break;
       case MACHINING:
         let layoutType = tempData.LayoutType ? tempData.LayoutType : machiningCalculatorLayoutType ?? ''
@@ -569,7 +569,7 @@ function RawMaterialCost(props) {
       let recoveredScrapWeight;
       if (isScrapRecoveryPercentageApplied) {
         const ScrapRecoveryPercentage = checkForNull(tempData.ScrapRecoveryPercentage);
-        if(ScrapRecoveryPercentage){
+        if (ScrapRecoveryPercentage) {
           recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
           scrapWeight = recoveredScrapWeight
         }
@@ -927,7 +927,7 @@ function RawMaterialCost(props) {
       }
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
 
-      if (Number(costData?.TechnologyId) !== Number(RUBBER)){
+      if (Number(costData?.TechnologyId) !== Number(RUBBER)) {
         setTimeout(() => {
           setValue(`${rmGridFields}.${editIndex}.GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
           setValue(`${rmGridFields}.${editIndex}.FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -938,7 +938,7 @@ function RawMaterialCost(props) {
           counter = 0 //USED FOR ERROR HANDLING 
         }, 400)
       }
-      
+
       errors.rmGridFields = []
       if (tempArr) {
         tempArr[0].CalculatorType = weightData?.CalculatorType ?? calculatorTypeStore ? weightData?.CalculatorType : ''
@@ -988,7 +988,7 @@ function RawMaterialCost(props) {
 
       if (Number(costData?.TechnologyId) === Number(RUBBER)) {
         let updatedData
-        if(weightData?.CalculatorType === "Standard"){
+        if (weightData?.CalculatorType === "Standard") {
           updatedData = gridData.map((item, index) => {
             const weightItem = weightData?.RawMaterialRubberStandardWeightCalculator.find(wItem => wItem.RawMaterialId === item.RawMaterialId);
             if (weightItem) {
@@ -999,14 +999,15 @@ function RawMaterialCost(props) {
               item.NetLandedCost = weightItem?.NetRMCost;
               item.NetRMCost = weightItem?.NetRMCost;
               item.RawMaterialName = weightItem?.RmName;
-              item.WeightCalculatorRequest = weightData;
+
+              item.WeightCalculatorRequest = { ...weightData, usedRmData: undefined }; // Remove usedRmData to break the circular reference;
               item.WeightCalculationId = weightData?.WeightCalculationId;
               item.RawMaterialCalculatorId = weightData?.WeightCalculationId;
               item.IsCalculatedEntry = true;
               item.IsCalculaterAvailable = true;
               item.CutOffRMC = CutOffRMC;
               item.ScrapRecoveryPercentage = RecoveryPercentage;
-              item.CalculatorType= weightData?.CalculatorType ?? calculatorTypeStore ? weightData?.CalculatorType : ''
+              item.CalculatorType = weightData?.CalculatorType ?? calculatorTypeStore ? weightData?.CalculatorType : ''
               item.IsVolumeAutoCalculate = weightItem?.IsVolumeAutoCalculate ?? false
 
               setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightItem?.GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
@@ -1018,14 +1019,15 @@ function RawMaterialCost(props) {
             return item;
           });
           const usedRmData = weightData?.usedRmData || []
-          if (usedRmData.length > 0) {
+
+          if (usedRmData?.length > 0) {
             updatedData = updatedData.filter(rmData => usedRmData.find(usedRmData => usedRmData?.RawMaterialId === rmData?.RawMaterialId));
           }
           setTimeout(() => {
             setGridData(updatedData)
           }, 400)
           selectedIds(updatedData)
-        }else{
+        } else {
           gridData && gridData.map((item, index) => {
             item.FinishWeight = weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight ? weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight : 0
             item.GrossWeight = weightData?.CostingRubberCalculationRawMaterials[index].GrossWeight ? weightData?.CostingRubberCalculationRawMaterials[index].GrossWeight : 0
@@ -1115,10 +1117,10 @@ function RawMaterialCost(props) {
         selectedId.push(el.RawMaterialId)
         setIds(selectedId)
       }
-      if(IsApplyMasterBatch){
+      if (IsApplyMasterBatch) {
         selectedId.push(el.RawMaterialId)
         setIds(selectedId)
-      }else if(Ids.includes(el.RawMaterialId) === false) {
+      } else if (Ids.includes(el.RawMaterialId) === false) {
         let selectedIds = Ids;
         selectedIds.push(el.RawMaterialId)
         setIds(selectedIds)
@@ -1160,12 +1162,12 @@ function RawMaterialCost(props) {
   }
 
   const deleteMultiple = (index) => {
-    if((Number(costData?.TechnologyId) === Number(RUBBER)) && calculatorTypeStore === "Standard"){
+    if ((Number(costData?.TechnologyId) === Number(RUBBER)) && calculatorTypeStore === "Standard") {
       let data = gridData[index]
       setDeleteIndex(index)
-      if(data.hasOwnProperty("NetLandedCost") && (data?.NetLandedCost !== "")){
+      if (data.hasOwnProperty("NetLandedCost") && (data?.NetLandedCost !== "")) {
         setShowPopupDelete(true);
-      }else{
+      } else {
         deleteItem(index);
       }
     } else if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || Number(costData?.TechnologyId) === Number(CORRUGATEDBOX)))) {
@@ -1256,8 +1258,8 @@ function RawMaterialCost(props) {
   * @description ON PRESS APPLY MASTER BATCH
   */
   const onPressApplyMasterBatch = () => {
-    if(IsApplyMasterBatch){
-      if(Ids && Ids.length > 0){
+    if (IsApplyMasterBatch) {
+      if (Ids && Ids.length > 0) {
         let prevIds = JSON.parse(JSON.stringify(Ids));
         let mbId = getValues('MBId')
         const filteredprevIds = prevIds.filter((item) => item !== mbId);
@@ -1538,15 +1540,15 @@ function RawMaterialCost(props) {
                 className="secondary-btn"
                 type={'button'}
                 // onClick={() => toggleWeightCalculator(0, calculatorTypeStore === '' || calculatorTypeStore === 'CorrugatedBox' || calculatorTypeStore === null ? 'CorrugatedAndMonoCartonBox' : calculatorTypeStore)}
-                onClick={() => toggleWeightCalculator(0, 
-                  costData?.TechnologyId === RUBBER 
-                      ? (calculatorTypeStore === "Standard" ? "Standard" 
-                      : calculatorTypeStore === "Compound" ? "Compound" 
-                      : calculatorTypeStore) 
-                      : (!calculatorTypeStore || calculatorTypeStore === "CorrugatedBox") 
-                          ? "CorrugatedAndMonoCartonBox" 
-                          : calculatorTypeStore
-              )}
+                onClick={() => toggleWeightCalculator(0,
+                  costData?.TechnologyId === RUBBER
+                    ? (calculatorTypeStore === "Standard" ? "Standard"
+                      : calculatorTypeStore === "Compound" ? "Compound"
+                        : calculatorTypeStore)
+                    : (!calculatorTypeStore || calculatorTypeStore === "CorrugatedBox")
+                      ? "CorrugatedAndMonoCartonBox"
+                      : calculatorTypeStore
+                )}
                 disabled={(CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false) || (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedBox')}><div className={`CalculatorIcon cr-cl-icon ${((CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false) || (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedBox')) ? 'disabled' : ''}`}></div>Weight Calculator</button>}
 
 
