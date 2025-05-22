@@ -731,6 +731,7 @@ function OperationCost(props) {
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                                     disabled={(CostingViewMode || IsLocked) ? true : false}
                                     hidden={false}
+                                    validateWithRemarkValidation={true}
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>

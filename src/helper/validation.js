@@ -593,6 +593,20 @@ export const validateSpecialChars = (value) => {
     return undefined;
 };
 
+export const validateSpecialCharsForRemarks = (value) => {
+    if (!value) return undefined
+    const firstChar = value.charAt(0)
+    const lastChar = value.charAt(value.length - 1)
+    const specialChars = "!@#$%^&*()_+-=[]{};':\"\\|,<>/?`~"
+    if (firstChar === ".") {
+      return "Input cannot start with character fullstop (period)"
+    } else if (specialChars.includes(firstChar) || specialChars.includes(lastChar)) {
+      return "Input cannot start or end with special characters."
+    }
+    return undefined
+  }
+
+
 export const validateFileName = (fileName) => {
     // Check for spaces, special characters, and multiple extensions
     const hasSpacesOrSpecialChars = /[\s@!#$%^&*(),?":{}|<>]/.test(fileName);
