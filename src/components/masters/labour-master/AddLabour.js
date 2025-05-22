@@ -1550,7 +1550,7 @@ class AddLabour extends Component {
 
                         <Col md="3">
                           <div className="form-group">
-                            <TooltipCustom width="350px" id="LabourRatePerMonth" customClass={"mr-n4"} tooltipText={'Rate per Person/Month = Rate per Person/Annum /12'} />
+                            <TooltipCustom width="350px" id="LabourRatePerMonth" tooltipText={'Rate per Person/Month = Rate per Person/Annum /12'} />
                             <Field
                               label={this.DisplayLabourRatePlantCurrencyLabel("Month")}
                               name={"LabourRatePerMonth"}
@@ -1563,11 +1563,12 @@ class AddLabour extends Component {
                               required={true}
                               className=" "
                               customClassName="withBorder"
-                              id="LabourRatePerMonth"
+                              // id="LabourRatePerMonth"
                             />
                             {this.state.errorObj.labourRatePerMonth && !this.props.fieldsObj?.LabourRatePerMonth &&
                               <div className='text-help'>This field is required.</div>
-                            }                          </div>
+                            }
+                          </div>
                         </Col>
                         <Col md="3">
                           <div className="form-group">
@@ -1584,11 +1585,12 @@ class AddLabour extends Component {
                               required={true}
                               className=" "
                               customClassName="withBorder"
-                              id="LabourRate"
+                              // id="LabourRate"
                             />
                             {this.state.errorObj.labourRate && !this.props.fieldsObj?.LabourRate &&
                               <div className='text-help'>This field is required.</div>
-                            }                          </div>
+                            }
+                          </div>
                         </Col>
                         <Col md="3">
                           <div className="form-group">
