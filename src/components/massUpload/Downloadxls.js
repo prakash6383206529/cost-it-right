@@ -67,6 +67,13 @@ export const checkRM_Process_OperationConfigurable = (excelData) => {
                 }
             }
         }
+        if (getConfigurationKey().IsBasicRateAndCostingConditionVisible === false) {
+            if (el.value === 'CostingCondition') return false
+            if (el.value === 'TypeForCostingCondition') return false
+            if (el.value === 'QuantityForCostingCondition') return false
+            if (el.value === 'ApplicabilityForCostingCondition') return false
+            if (el.value === 'PercentageOrCostForCostingCondition') return false
+        }
         return true; // Include the element if none of the conditions above are met
     });
 }
@@ -180,7 +187,14 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
         if (getConfigurationKey().IsSAPCodeRequired === false) {
             if (el.value === 'SAPPartNumber') return false;
         }
-        return true;
+        if (getConfigurationKey().IsBasicRateAndCostingConditionVisible === false) {
+            if (el.value === 'CostingCondition') return false
+            if (el.value === 'TypeForCostingCondition') return false
+            if (el.value === 'QuantityForCostingCondition') return false
+            if (el.value === 'ApplicabilityForCostingCondition') return false
+            if (el.value === 'PercentageOrCostForCostingCondition') return false
+        }
+        return true
     })
 }
 export const addDynamicModelType = (list, modelText) => {
