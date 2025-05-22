@@ -921,7 +921,7 @@ export function getOverheadProfitDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}`
+    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}&partFamilyId=${data?.partFamilyId}`
     const request = axios.get(`${API.getOverheadProfitDataByModelType}?${queryParams}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
