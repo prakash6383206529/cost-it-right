@@ -221,7 +221,7 @@ function AddRM(props) {
   const effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-}
+  }
   const frameworkComponents = {
     netLandedFormat: netLandedFormat,
     currencyFormatter: currencyFormatter,
@@ -358,6 +358,7 @@ function AddRM(props) {
                         <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
                         <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
                         <AgGridColumn field="Category" ></AgGridColumn>
+                        <AgGridColumn field='Density' headerName='Density'></AgGridColumn>
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorName" headerName={vendorLabel} ></AgGridColumn>}
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorLocation" headerName={`${vendorLabel} Location`}></AgGridColumn>}
                         {initialConfiguration?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName={`Source ${vendorLabel} Name`} cellRenderer={'sourceVendorFormatter'}></AgGridColumn>}
