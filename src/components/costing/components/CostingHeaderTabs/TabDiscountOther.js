@@ -1365,7 +1365,7 @@ function TabDiscountOther(props) {
           // dispatch(setComponentDiscountOtherItemData({}, () => { }))
           dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
           dispatch(isDiscountDataChange(false))
-          if (gotoNextValue && !isNFR) {
+          if (gotoNextValue) {
             props.toggle('2')
             history.push('/costing-summary')
           }
@@ -1535,17 +1535,17 @@ function TabDiscountOther(props) {
   }
 
 
-  if (nfrListing === true) {
+  // if (nfrListing === true) {
 
-    return <Redirect
-      to={{
-        pathname: "/customer-rfq",
-        state: {
-        }
+  //   return <Redirect
+  //     to={{
+  //       pathname: "/customer-rfq",
+  //       state: {
+  //       }
 
-      }}
-    />
-  }
+  //     }}
+  //   />
+  // }
   function handleInputChanges(quantity, percentage, sumForNPV) {
     let totalFinal = 0
 
@@ -1998,17 +1998,17 @@ function TabDiscountOther(props) {
     }
   }
 
-  if (nfrListing === true) {
+  // if (nfrListing === true) {
 
-    return <Redirect
-      to={{
-        pathname: "/customer-rfq",
-        state: {
-        }
+  //   return <Redirect
+  //     to={{
+  //       pathname: "/customer-rfq",
+  //       state: {
+  //       }
 
-      }}
-    />
-  }
+  //     }}
+  //   />
+  // }
   /**
  * @method handlePaymentTerm
  * @description  handlePaymentTerm
