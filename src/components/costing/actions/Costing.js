@@ -3336,7 +3336,7 @@ export function getIccDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${null}&rawMaterialChildId=${null}&technologyId=${data.technologyId}&partFamilyId=${data.partFamilyId}`
+    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&methodTypeId=${data.MethodTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${null}&rawMaterialChildId=${null}&technologyId=${data.technologyId}&partFamilyId=${data.partFamilyId}`
     const request = axios.get(`${API.getIccDataByModelType}?${queryParams}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
@@ -3352,3 +3352,44 @@ export function getIccDataByModelType(data, callback) {
 }
 
 
+/**
+ * @method getIccCalculation
+ * @description Get ICC calculator data
+*/
+export function getIccCalculation(interestRateId,costingId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&interestRateId=${interestRateId}&costingId=${costingId}`
+    const request = axios.get(`${API.getIccCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method saveIccCalculation
+ * @description save ICC calculator data
+*/
+export function saveIccCalculation(data, callback) {
+  return (dispatch) => {
+    const request = axiosInstance.post(API.saveIccCalculation, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}

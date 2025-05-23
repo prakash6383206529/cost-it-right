@@ -438,36 +438,41 @@ function TabOverheadProfit(props) {
 
         if (i.IsAssemblyPart === true) {
 
-          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0;
+          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.ICCCostingApplicabilityDetails ? 
+            checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0)) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i?.CostingPartDetails?.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
-            IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
-            NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
+            IsInventoryCarringCost: ICCObj && ICCObj.ICCCostingApplicabilityDetails && 
+              ICCObj.ICCCostingApplicabilityDetails.some(item => item.TotalCost !== null && item.TotalCost !== undefined),
+            NetICC: ICCObj && ICCObj.ICCCostingApplicabilityDetails ? 
+            checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0)) : 0,
           };
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
             checkForNull(i?.CostingPartDetails?.RejectionCost) +
-            checkForNull(ICCObj.NetCost)
+            checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0))
 
           formatData(ICCObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
-          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0;
+          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.ICCCostingApplicabilityDetails ? 
+            checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0)) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i?.CostingPartDetails?.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
-            IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
-            NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
+            IsInventoryCarringCost: ICCObj && ICCObj.ICCCostingApplicabilityDetails ? 
+            ICCObj.ICCCostingApplicabilityDetails.some(item => item.TotalCost !== null && item.TotalCost !== undefined) : false,
+            NetICC: ICCObj && ICCObj.ICCCostingApplicabilityDetails ? 
+            checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0)) : 0
           };
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
             checkForNull(i?.CostingPartDetails?.RejectionCost) +
-            checkForNull(ICCObj.NetCost)
+            checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0))
 
         } else {
-          i.IsOpen = false;
+          i.IsOpen = false; 
           formatData(ICCObj, params, i.CostingChildPartDetails)
         }
         return i;

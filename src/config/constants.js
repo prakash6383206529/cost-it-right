@@ -18,12 +18,9 @@ export const config = () => {
 }
 
 // const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-const BASE_URL = `http://10.10.1.102:3002/api/v1`;
-
-
+const BASE_URL = `http://10.10.1.102:4002/api/v1`;
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
-
 
 /** Export API */
 export const API = {
@@ -600,7 +597,9 @@ export const API = {
   getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
   getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
   getRejectionDataByModelType: `${BASE_URL}/costing/get-costing-rejection-details`,
-  getIccDataByModelType: `${BASE_URL}/costing/get-costing-icc-details`,
+  getIccDataByModelType: `${BASE_URL}/costing/get-costing-interest-rate-icc-applicability`,
+  getIccCalculation: `${BASE_URL}/costing/get-costing-icc-calculation-details`,
+  saveIccCalculation: `${BASE_URL}/costing/save-costing-icc-calculation-details`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,

@@ -371,7 +371,7 @@ function OverheadProfit(props) {
           case 'RM':
             const rmCost = IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)
             const rmTotalCost = rmCost * calculatePercentage(Percentage)
-            setValue('OverheadRMPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue(`'OverheadRMPercentage'`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
             setValue('OverheadRMCost', checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('OverheadRMTotalCost', checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice))
             break;

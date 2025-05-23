@@ -1,8 +1,9 @@
 import React from "react";
 import { Row, Col, Label, Table, FormGroup, Input } from 'reactstrap';
 import NoContentFound from "./NoContentFound";
-import { nonZero, number, maxLength7, checkWhiteSpaces } from "../../helper/validation";
+import { nonZero, number, maxLength7, checkWhiteSpaces, checkForDecimalAndNull } from "../../helper/validation";
 import { TextFieldHookForm } from "../layout/HookFormInputs";
+import { getConfigurationKey } from "../../helper";
 
 const TableRenderer =  ({
   data = [],
@@ -13,10 +14,9 @@ const TableRenderer =  ({
   errors = {},
   isViewMode = false,
   handleDelete = () => {},
-  state = {}
+  state = {},
+  setValue
 }) => {
-
-
   const renderTextField = ({
     item,
     fieldKey,
@@ -24,12 +24,11 @@ const TableRenderer =  ({
     handleChangeFn,
     valueKey,
     index,
-    col
+    col,
   }) => {
     const fieldName = `${fieldKey}_${index}`;
 
     const defaultHandleChange = (e) => {
-      console.log("Default handler:", e.target.value);
     };
 
     const onChangeHandler = (e) => {
@@ -39,6 +38,13 @@ const TableRenderer =  ({
             defaultHandleChange(e);
         }
     };
+
+    setValue(fieldName, item?.[valueKey])
+
+    // Check if disabled is a function and evaluate it
+    const isDisabled = typeof col?.disabled === 'function' 
+        ? col.disabled(item)
+        : col?.disabled;
 
     return (
       <TextFieldHookForm
@@ -54,13 +60,10 @@ const TableRenderer =  ({
         }}
         value={item?.[valueKey]}
         defaultValue={item?.[valueKey]}
-        // handleChange={(e) =>
-        //   (handleChangeFn || defaultHandleChange)(e, item?.valueKey)
-        // }
         handleChange={onChangeHandler}
         customClassName={"withBorder mb-0 min-h-auto"}
         className="w-auto min-h-auto"
-        disabled={isViewMode}
+        disabled={isViewMode || isDisabled}
         errors={errors[fieldName]}
       />
     );
@@ -90,7 +93,7 @@ const TableRenderer =  ({
                         handleChangeFn: col?.handleChangeFn,
                         valueKey: col?.valueKey,
                         index: index,
-                        col: col
+                        col: col,
                       })}
                     </td>
                   );
@@ -107,7 +110,7 @@ const TableRenderer =  ({
                     </td>
                   );
                 } else {
-                  return <td key={colIdx}>{item?.[col.key] ?? "-"}</td>;
+                  return <td key={colIdx}>{col?.identifier === "inputOutput" ? checkForDecimalAndNull(item?.[col.key],getConfigurationKey()?.NoOfDecimalForInputOutput) :col?.identifier === "cost" ? checkForDecimalAndNull(item?.[col.key],getConfigurationKey()?.NoOfDecimalForPrice) : item?.[col.key]}</td>;
                 }
               })}
             </tr>

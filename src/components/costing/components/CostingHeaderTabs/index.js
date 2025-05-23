@@ -88,7 +88,7 @@ function CostingHeaderTabs(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
   const isRequestForMultiTechnology = IdForMultiTechnology?.includes(String(costData?.TechnologyId))
-const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
+  const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -268,7 +268,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
     }
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' && checkIsOverheadProfitChange) {
+    if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '5' && checkIsOverheadProfitChange) {
       const discountAndOtherTabData = DiscountCostData
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
@@ -298,7 +298,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
       }
       if (ComponentItemOverheadData.IsAssemblyPart) {
         dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
-          callAssemblyAPi(3)
+          callAssemblyAPi(5)
           dispatch(setComponentOverheadItemData({}, () => { }))
           InjectDiscountAPICall()
           dispatch(isOverheadProfitDataChange(false))
@@ -308,12 +308,12 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
         }))
       } else {
         dispatch(saveComponentOverheadProfitTab(reqData, res => {
-          callAssemblyAPi(3)
+          callAssemblyAPi(5)
           dispatch(setComponentOverheadItemData({}, () => { }))
           InjectDiscountAPICall()
           let arrTemp = [...OverheadProfitTabData]
           arrTemp[0].IsOpen = false
-          console.log(arrTemp,'arrTempfgfg')
+          console.log(arrTemp, 'arrTempfgfg')
           dispatch(setOverheadProfitData(arrTemp, () => { }))
         }))
       }
@@ -347,7 +347,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
 
     // USED FOR TOOL TAB WHEN CLICKED ON OTHER TABS WITHOUT SAVING
 
-    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true && ComponentItemToolData?.CostingPartDetails?.TotalToolCost > 0 && activeTab !== '5' && checkIsToolTabChange) {
+    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true && ComponentItemToolData?.CostingPartDetails?.TotalToolCost > 0 && activeTab !== '3' && checkIsToolTabChange) {
 
       const data = {
         "IsToolCostProcessWise": ComponentItemToolData?.CostingPartDetails?.IsToolCostProcessWise,
@@ -362,7 +362,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
         "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       dispatch(saveToolTab(data, res => {
-        callAssemblyAPi(5)
+        callAssemblyAPi(3)
         dispatch(setComponentToolItemData({}, () => { }))
         dispatch(isToolDataChange(false))
         InjectDiscountAPICall()
@@ -434,7 +434,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
 
   useEffect(() => {
     const operationConditionTypeId = getCostingConditionTypes(COSTINGOVERHEADANDPROFTOPERATION)
-    dispatch(getCostingCondition(null, operationConditionTypeId,isRequestForMultiTechnology, (res) => {
+    dispatch(getCostingCondition(null, operationConditionTypeId, isRequestForMultiTechnology, (res) => {
       if (res?.data?.DataList) {
         const operationData = res?.data?.DataList.map(item => ({
           label: item?.CostingConditionNumber,
@@ -445,7 +445,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
     }))
 
     const processConditionTypeId = getCostingConditionTypes(COSTINGOVERHEADANDPROFTFORPROCESS)
-    dispatch(getCostingCondition(null, processConditionTypeId,isRequestForMultiTechnology, (res) => {
+    dispatch(getCostingCondition(null, processConditionTypeId, isRequestForMultiTechnology, (res) => {
       if (res?.data?.DataList) {
         const processData = res?.data?.DataList.map(item => ({
           label: item?.CostingConditionNumber,
@@ -526,7 +526,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
           messageShow: false
         })
         break
-      case "3":
+      case "5":
         setWarningMessageObj({
           tabName: 'Overheads & Profits',
           messageShow: true
@@ -538,7 +538,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
           messageShow: true
         })
         break;
-      case "5":
+      case "3":
         setWarningMessageObj({
           tabName: 'Tool Cost',
           messageShow: true
@@ -671,7 +671,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
           hints: []
         }))
         break;
-      case 3:
+      case 5:
         if (costingOpenCloseStatus.overheadProfit) {
           setTabsTour(prevState => ({
             ...prevState,
@@ -694,7 +694,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
           hints: []
         }))
         break;
-      case 5:
+      case 3:
         setTabsTour(prevState => ({
           ...prevState,
           steps: Steps(t).TAB_TOOL,
@@ -863,9 +863,9 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
               </NavItem>
             }
             {
-              costingData.TechnologyId !== LOGISTICS && <NavItem>
-                <NavLink id='Overheads_Profits_tabs' className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
-                  Overheads & Profits
+              (costingData.TechnologyId !== LOGISTICS && costingData?.TechnologyId !== TOOLING_ID) && <NavItem>
+                <NavLink id='Tool_tabs' className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
+                  Tool Cost
                 </NavLink>
               </NavItem>
             }
@@ -874,10 +874,11 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
                 {costingData?.TechnologyId !== LOGISTICS && 'Packaging &'} Freight
               </NavLink>
             </NavItem>
+
             {
-              (costingData.TechnologyId !== LOGISTICS && costingData?.TechnologyId !== TOOLING_ID) && <NavItem>
-                <NavLink id='Tool_tabs' className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
-                  Tool Cost
+              costingData.TechnologyId !== LOGISTICS && <NavItem>
+                <NavLink id='Overheads_Profits_tabs' className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
+                  Overheads & Profits 
                 </NavLink>
               </NavItem>
             }
@@ -912,7 +913,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
                   previousTab={previousTab}
                 />
               </TabPane>
-              <TabPane tabId="3">
+              <TabPane tabId="5">
                 <TabOverheadProfit
                   activeTab={activeTab}
                   setHeaderCost={props.setHeaderOverheadProfitCostTab}
@@ -928,7 +929,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
                   previousTab={previousTab}
                 />
               </TabPane>
-              <TabPane tabId="5">
+              <TabPane tabId="3">
                 <TabToolCost
                   activeTab={activeTab}
                   setHeaderCost={props.setHeaderCostToolTab}

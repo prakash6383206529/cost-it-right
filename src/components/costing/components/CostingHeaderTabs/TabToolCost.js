@@ -104,7 +104,7 @@ function TabToolCost(props) {
         ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
         IsApplicableProcessWise: IsApplicableProcessWise,
       }
-      if (props.activeTab === '5') {
+      if (props.activeTab === '3') {
         props.setHeaderCost(topHeaderData)
       }
       setState(prevState => ({
@@ -257,7 +257,7 @@ function TabToolCost(props) {
   }
 
   useEffect(() => {
-    if (IsApplicableProcessWise && props.activeTab === '5') {
+    if (IsApplicableProcessWise && props.activeTab === '3') {
       setLoader(true)
     }
     if (ToolTabData && ToolTabData.length > 0) {

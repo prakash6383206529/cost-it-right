@@ -121,6 +121,7 @@ const AddInterestRate = (props) => {
     const costingHead = useSelector((state) => state.comman.costingHead);
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
     const { iccApplicabilitySelectList, interestRateData, iccMethodSelectList, inventoryDayTypeSelectList, wipCompositionMethodSelectList } = useSelector((state) => state.interestRate);
+    console.log(inventoryDayTypeSelectList,'inventoryDayTypeSelectList')
     const { applicabilityList } = useSelector((state) => state.comman);
     const vendorSelectList = useSelector((state) => state.comman.vendorSelectList);
 
@@ -812,9 +813,9 @@ const AddInterestRate = (props) => {
                 // If inventory days already applying, set default InventoryDayType
                 const obj = inventoryDayTypeSelectList?.find(item => item.Value === "5");
                 if (obj) {
-                    updatedState.ApplicabilityBasedInventoryDayType = { label: obj.Text, value: obj.Value };
+                    updatedState.ApplicabilityBasedInventoryDayType = { label: obj.Text, value: obj.Text };
                     updatedState.isApplyInventoryDays = true;
-                    setValue("ApplicabilityBasedInventoryDayType", { label: obj.Text, value: obj.Value })
+                    setValue("ApplicabilityBasedInventoryDayType", { label: obj.Text, value: obj.Text })
                 }
             } else {
                 updatedState.isApplyInventoryDays = false;
@@ -831,9 +832,9 @@ const AddInterestRate = (props) => {
     };
 
     const applicabilityInventoryDayTypeChange = (newValue) => {
+        console.log(newValue,'newValue')
         setState(prev => ({ ...prev, ApplicabilityBasedInventoryDayType: newValue }));
     };
-
     const handleChangeCreditBasePercentage = (e) => {
         const val = Number(e.target.value);
         setState(prev => ({ ...prev, CreditBasedAnnualICCPercent: val }));
@@ -896,8 +897,8 @@ const AddInterestRate = (props) => {
             if(isInventoryChecked){
                 const obj = inventoryDayTypeSelectList?.find(item => item.Value === "5");
                 if (obj) {
-                    newInventoryDayType = { label: obj.Text, value: obj.Value };
-                    setValue("ApplicabilityBasedInventoryDayType", { label: obj.Text, value: obj.Value })
+                    newInventoryDayType = { label: obj.Text, value: obj.Text };
+                    setValue("ApplicabilityBasedInventoryDayType", { label: obj.Text, value: obj.Text })
                 }
             }else{
                 newInventoryDayType = [];
@@ -1200,6 +1201,7 @@ const AddInterestRate = (props) => {
                                                         errors={errors}
                                                         isViewMode={state.isViewMode}
                                                         handleDelete={deleteInventory}
+                                                        setValue={setValue}
                                                       />
 
                                                         {/* <Table className="table border" size="sm">
@@ -1302,6 +1304,7 @@ const AddInterestRate = (props) => {
                                                         errors={errors}
                                                         isViewMode={state.isViewMode}
                                                         handleDelete={deleteWIPMethod}
+                                                        setValue={setValue}
                                                       />
 
 
