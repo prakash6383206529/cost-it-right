@@ -1520,6 +1520,7 @@ class AddLabour extends Component {
                                 disabled={isViewMode}
                                 valueDescription={this.state.effectiveDate}
                                 minDate={getEffectiveDateMinDate()}
+                                maxDate={getEffectiveDateMaxDate()}
 
                               />
                               {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}

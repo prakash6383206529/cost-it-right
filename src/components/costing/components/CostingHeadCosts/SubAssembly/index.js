@@ -62,7 +62,7 @@ function AssemblyPart(props) {
   const toggle = (BOMLevel, PartNumber, AssemblyPartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     dispatch(openCloseStatus({ bopHandling: isBOPExists && !IsOpen, }))
-    if (isNFR && !openAllTabs) {
+    if (isNFR && !openAllTabs && false) {
       Toaster.warning("All Raw Material's price has not added in the Raw Material master against this vendor and plant.")
       return false;
     }

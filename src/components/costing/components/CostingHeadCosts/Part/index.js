@@ -74,7 +74,7 @@ function PartCompoment(props) {
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     dispatch(openCloseStatus({ RMC: !IsOpen }))
 
-    if (isNFR && !openAllTabs) {
+    if (isNFR && !openAllTabs && false) {
       Toaster.warning(`All Raw Material's price has not added in the Raw Material master against this ${vendorLabel} and plant.`)
       return false;
     }
