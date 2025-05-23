@@ -40,6 +40,8 @@ export const API = {
   getModelTypes: `${BASE_URL}/configuration/select-list-get-costing-model-type`,
   getTechnologySelectList: `${BASE_URL}/configuration/select-list-get-technology`,
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
+  getSegmentSelectList: `${BASE_URL}/nfr/get-selected-segment-list`,
+  getGroupCodeSelectList: `${BASE_URL}/nfr/get-selected-groupcode-list`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
   getPartSelectLists: `${BASE_URL}/masters-part/select-list-component-part-for-convert-to-assembly`,
 
@@ -202,6 +204,21 @@ export const API = {
   getChildDrawerBOPData: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-by-id`,
   BOMUploadPart: `${BASE_URL}/masters-part/upload-bom-json`,
   convertPartToAssembly: `${BASE_URL}/masters-part/convert-part-to-assembly`,
+  getModelList: `${BASE_URL}/masters-part/select-list-part-model-master`,
+  addModel: `${BASE_URL}/masters-part/create-part-model-master`,
+  editModel: `${BASE_URL}/masters-part/update-part-model-master`,
+  deleteModel: `${BASE_URL}/masters-part/delete-part-model-master`,
+  getModelById: `${BASE_URL}/masters-part/get-part-model-by-id`,
+  //PART FAMILY
+
+  getPartFamilyById: `${BASE_URL}/part-family/get-by-id`,
+  getPartFamilyList: `${BASE_URL}/part-family/get-all-part-family-by-filter`,
+  addPartFamily: `${BASE_URL}/part-family/create-part-family`,
+  updatePartFamily: `${BASE_URL}/part-family/update-part-family`,
+  deletePartFamily: `${BASE_URL}/part-family/delete-part-family`,
+  activePartFamily: `${BASE_URL}/part-family/active`,
+  bulkUploadPartFamily: `${BASE_URL}/part-family/bulk-upload-for-partfamily-json`,
+  getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
 
   //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
@@ -485,6 +502,8 @@ export const API = {
   createOverhead: `${BASE_URL}/masters-overhead-and-profit/create-overhead`,
   updateOverhead: `${BASE_URL}/masters-overhead-and-profit/update-overhead`,
   getOverheadData: `${BASE_URL}/masters-overhead-and-profit/get`,
+  getOverheadDataCheck: `${BASE_URL}/masters-overhead-and-profit/get-overhead-data`,
+  getProfitDataCheck: `${BASE_URL}/masters-overhead-and-profit/get-profit-data`,
   getOverheadDataList: `${BASE_URL}/masters-overhead-and-profit/get-all-overhead-by-filter`,
   deleteOverhead: `${BASE_URL}/masters-overhead-and-profit/delete-overhead`,
   activeInactiveOverhead: `${BASE_URL}/masters-overhead-and-profit/active-inactive-overhead`,
@@ -492,6 +511,7 @@ export const API = {
   overheadBulkUpload: `${BASE_URL}/masters-overhead-and-profit/bulk-upload-for-overhead-json`,
   getVendorFilterByModelTypeSelectList: `${BASE_URL}/masters-overhead-and-profit/overhead-vendor-with-code-by-model-type-select-list`,
   getModelTypeFilterByVendorSelectList: `${BASE_URL}/masters-overhead-and-profit/overhead-model-type-by-vendor-select-list`,
+  rejectionBulkUpload: `${BASE_URL}/masters-overhead-and-profit/bulk-upload-for-rejection-json`,
 
   createProfit: `${BASE_URL}/masters-overhead-and-profit/create-profit`,
   updateProfit: `${BASE_URL}/masters-overhead-and-profit/update-profit`,
@@ -575,6 +595,7 @@ export const API = {
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
   getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
   getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
+  getRejectionDataByModelType: `${BASE_URL}/costing/get-costing-rejection-details`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
@@ -623,6 +644,7 @@ export const API = {
   saveCostingBasicDetails: `${BASE_URL}/costing/save-costing-basic-details`,
   getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
   getCostingBopAndBopHandlingDetails: `${BASE_URL}/costing/get-costing-bop-and-bop-handling-details`,
+  getApplicabilityList: `${BASE_URL}/costing/select-list-get-applicability-data`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1035,6 +1057,8 @@ export const API = {
   checkAndGetCustomerCode: `${BASE_URL}/client/generate-customer-company-code`,
   getPoamStatusSelectList: `${BASE_URL}/configuration/select-list-get-poam-status`,
 
+  //PART FAMILY
+
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
   getExchangeRateDataList: `${BASE_URL}/masters-exchange-rate/get-all-exchange-rate`,
@@ -1169,6 +1193,7 @@ export const API = {
   getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
   rfqGetBestCostingDetails: `${BASE_URL}/rfq-costing/rfq-get-best-costing-details`,
   getAllNfrList: `${BASE_URL}/nfr/get-all-nfr-list`,
+  getCustomerRfqListing: `${BASE_URL}/nfr/get-customer-rfq-list`,
   getNfrPartDetails: `${BASE_URL}/nfr/get-nfr-part-details`,
   getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
   getBOPCostMovement: `${BASE_URL}/reports/get-bought-out-part-cost-movement`,
@@ -1181,6 +1206,8 @@ export const API = {
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
+  createCustomerRfq: `${BASE_URL}/nfr/create-customer-rfq`,
+  updateCustomerRfq: `${BASE_URL}/nfr/update-customer-rfq`,
   getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-detail`,
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
@@ -1222,7 +1249,8 @@ export const API = {
   getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
   // pushNfrRmBopOnSap: `${BASE_URL}/nfr/push-nfr-rm-bop-on-sap`,
   deleteNFRDetailAPI: `${BASE_URL}/nfr/delete-nfr`,
-
+  deleteCustomerRfq: `${BASE_URL}/nfr/delete-customer-rfq`,
+  getCustomerRfqDetails: `${BASE_URL}/nfr/get-customer-rfq-details`,
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
   getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
   getCostingGotAndGivenDetails: `${BASE_URL}/reports/get-head-wise-costing-got-and-given-details`,
@@ -1339,6 +1367,8 @@ export const GET_SUPPLIER_SELECTLIST_SUCCESS = 'GET_SUPPLIER_SELECTLIST_SUCCESS'
 export const GET_TECHNOLOGY_SELECTLIST_SUCCESS = 'GET_TECHNOLOGY_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECTLIST_SUCCESS = 'GET_PLANT_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECTLIST_BY_TYPE = 'GET_PLANT_SELECTLIST_BY_TYPE'
+export const GET_SEGMENT_SELECTLIST = 'GET_SEGMENT_SELECTLIST'
+export const GET_GROUP_CODE_SELECTLIST = 'GET_GROUP_CODE_SELECTLIST'
 export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST'
 export const GET_USERS_MASTER_LEVEL_API = 'GET_USERS_MASTER_LEVEL_API'
 
@@ -1424,6 +1454,12 @@ export const STORE_HIERARCHY_DATA = 'STORE_HIERARCHY_DATA'
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'
 export const GET_COMPONENT_PART_SELECTLIST = 'GET_COMPONENT_PART_SELECTLIST'
 export const GET_BOUGHTOUT_PART_SELECTLIST = 'GET_BOUGHTOUT_PART_SELECTLIST'
+
+//PART FAMILY
+export const GET_PART_FAMILY_LIST_SUCCESS = 'GET_PART_FAMILY_LIST_SUCCESS'
+export const GET_ALL_PART_FAMILY_LIST_SUCCESS = 'GET_ALL_PART_FAMILY_LIST_SUCCESS'
+export const GET_PART_FAMILY_DETAILS_SUCCESS = 'GET_PART_FAMILY_DETAILS_SUCCESS'
+export const GET_PART_FAMILY_SELECTLIST = 'GET_PART_FAMILY_SELECTLIST'
 
 //SUB ASSEMBLY
 export const SUB_ASSEMBLY_TECHNOLOGY_ARRAY = 'SUB_ASSEMBLY_TECHNOLOGY_ARRAY'
@@ -1644,6 +1680,7 @@ export const GET_STATE_WHILE_DOWNLOADING = 'GET_STATE_WHILE_DOWNLOADING';
 export const GET_DATA_WHILE_LOADING = 'GET_DATA_WHILE_LOADING';
 export const CORRUGATED_DATA = 'CORRUGATED_DATA';
 export const TOUR_START_DATA = 'TOUR_START_DATA';
+export const GET_APPLICABILITY_LIST_SUCCESS = 'GET_APPLICABILITY_LIST_SUCCESS';
 export const GUIDE_BUTTON_SHOW = true;
 
 //PAGINATION CONTROLS
@@ -1697,7 +1734,7 @@ export const GET_LABOUR_DATA_LIST = 'GET_LABOUR_DATA_LIST'
 export const GET_LABOUR_TYPE_FOR_MACHINE_TYPE = 'GET_LABOUR_TYPE_FOR_MACHINE_TYPE'
 export const UPDATE_LABOUR_FOR_MACHINE_TYPE = 'UPDATE_LABOUR_FOR_MACHINE_TYPE'
 
-//OVERHEAD AND PROFIT
+//OVERHEAD AND PROFIT AND REJECTION
 export const GET_OVERHEAD_PROFIT_SUCCESS = 'GET_OVERHEAD_PROFIT_SUCCESS'
 export const GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS'
 export const GET_OVERHEAD_PROFIT_DATA_SUCCESS = 'GET_OVERHEAD_PROFIT_DATA_SUCCESS'
@@ -2286,6 +2323,9 @@ export const MODULE_SIMULATION = 'Simulation'
 export const MODULE_MASTER = 'Master'
 export const MODULE_ONBOARDING = 'Onboarding&Management'
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
+
+export const REJECTION = 'Rejection'
+
 export const LABOUR = 'Labour'
 export const REASON = 'Reason'
 export const OPERATION = 'Operation'
@@ -2450,6 +2490,7 @@ export const lOGIN_AUDITS = '/login-audit'
 export const SUPPLIER_APPROVAL_SUMMARY = '/supplier-approval-summary'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
 export const IMPACTED_DATA_LIST = '/impacted-data-list'
+export const CUSTOMER_RFQ_LISTING = '/customer-rfq'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -2500,35 +2541,10 @@ export const VIEW_COSTING_DATA = {
   sTreatment: 'Surface Treatment',
   tCost: 'Extra Surface Treatment Cost',
   netSurfaceTreatmentCost: 'Net Surface Treatment Cost',
-  //tCost: 'Transportation Cost',
-  //nConvCost: 'Net Conversion Cost',
-  modelType: 'Model Type For Overhead/Profit',
-  // aValue: '',
-  // overheadOn: 'Overhead On',
-  // profitOn: 'Profit On',
-  // rejectionOn: 'Rejection On',
-  // iccOn: 'ICC On',
-  // paymentTerms: 'Payment Terms',
-  overHeadApplicablity: 'Overhead Applicability',
-  overHeadPercent: 'Overhead %',
-  overHeadApplicablityValue: 'Overhead Value',
-  // OverheadRemark: 'Overhead Remark',
-  ProfitApplicablity: 'Profit Applicability',
-  profitPercent: 'Profit %',
-  ProfitApplicablityValue: 'Profit Value',
-  // ProfitRemark: 'Profit Remark',
-  rejectionApplicablity: 'Rejection Applicability',
-  rejectionPercent: 'Rejection %',
-  rejectionApplicablityValue: 'Rejection Value',
-  // RejectionRemark: 'Rejection Remark',
-  rejectionRecoveryApplicablity: 'Rejection Recovery Applicability',
-  rejectionRecoveryPercent: 'Rejection Recovery %',
-  rejectionRecoveryApplicablityValue: 'Rejection Recovery Value',
-  // rejectionRecoveryRemark: 'Rejection Recovery Remark',
-  iccApplicablity: 'ICC Applicability',
-  iccPercent: 'ICC %',
-  iccApplicablityValue: 'ICC Value',
-  // ICCRemark: 'Icc Remark',
+  netOverheadCost: 'Net Overhead Cost',
+  netProfitCost: 'Net Profit Cost',
+  netRejectionCost: 'Net Rejection Cost',
+  netICCCost: 'Net ICC Cost',
   nOverheadProfit: 'Net Overhead & Profits',
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
@@ -2704,76 +2720,23 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'netSurfaceTreatmentCost'
   },
   {
-    label: 'Model Type For Overhead/Profit',
-    value: 'modelType'
+    label: 'Net Overhead Cost',
+    value: 'netOverheadCost'
   },
   {
-    label: 'Overhead Applicability',
-    value: 'overHeadApplicablity'
+    label: 'Net Profit Cost',
+    value: 'netProfitCost'
   },
   {
-    label: 'Overhead %',
-    value: 'overHeadPercent'
+    label: 'Net Rejection Cost',
+    value: 'netRejectionCost'
   },
   {
-    label: 'Overhead Value',
-    value: 'overHeadApplicablityValue'
+    label: 'Net ICC Cost',
+    value: 'netICCCost'
   },
   {
-    label: 'Overhead Remark',
-    value: 'OverHeadRemark'
-  },
-  {
-    label: 'Profit Applicability',
-    value: 'ProfitApplicablity'
-  },
-  {
-    label: 'Profit %',
-    value: 'profitPercent'
-  },
-  {
-    label: 'Profit Value',
-    value: 'ProfitApplicablityValue'
-  },
-  {
-    label: 'Profit Remark',
-    value: 'ProfitRemark'
-  },
-  {
-    label: 'Rejection Applicability',
-    value: 'rejectionApplicablity'
-  },
-  {
-    label: 'Rejection %',
-    value: 'rejectionPercent'
-  },
-  {
-    label: 'Rejection Value',
-    value: 'rejectionApplicablityValue'
-  },
-  {
-    label: 'Rejection Remark',
-    value: 'RejectionRemark'
-  },
-  {
-    label: 'ICC Applicability',
-    value: 'iccApplicablity'
-  },
-  {
-    label: 'ICC %',
-    value: 'iccPercent'
-  },
-  {
-    label: 'ICC Value',
-    value: 'iccApplicablityValue'
-  },
-  {
-    label: 'ICC Remark',
-    value: 'ICCRemark'
-  },
-
-  {
-    label: 'Net Overhead Profits',
+    label: 'Net Overhead & Profits',
     value: 'nOverheadProfit'
   },
   {
@@ -3118,6 +3081,7 @@ export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " I
 export const INSERTIMPORTBULKUPLOAD = 'Insert Import';
 export const BOMBULKUPLOAD = 'BOM';
 export const PARTCOMPONENTBULKUPLOAD = 'Part Component';
+export const PARTFAMILYBULKUPLOAD = 'Part Family';
 export const PRODUCTCOMPONENTBULKUPLOAD = 'Product Component';
 export const MACHINEBULKUPLOAD = 'Machine';
 export const VENDORBULKUPLOAD = 'Vendor';
@@ -3132,6 +3096,7 @@ export const VOLUMEBULKUPLOAD = 'Volume'
 export const BUDGETBULKUPLOAD = 'Budget'
 //added for OverheadProfit
 export const OVERHEADBULKUPLOAD = 'Overhead'
+export const REJECTIONBULKUPLOAD = 'Rejection'
 export const PROFITBULKUPLOAD = 'Profit'
 export const ASSEMBLYORCOMPONENTSRFQ = "AssemblyOrComponentsRFQ"
 export const BOUGHTOUTPARTSRFQ = "BoughtOutPartsRFQ"
@@ -3402,6 +3367,9 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const COSTINGOVERHEADANDPROFTFORPROCESS = "Costing Overhead Profit For Process"
 export const COSTINGOVERHEADANDPROFTOPERATION = "Costing Overhead Profit For Operation"
 export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra Cost"
+export const OVERHEADMASTER = "Overhead Master"
+export const PROFITMASTER = "Profit Master"
+export const REJECTIONMASTER = "Rejection Master"
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"
@@ -3412,12 +3380,14 @@ export const RM = "RM"
 export const CC = "CC"
 export const RMCC = "RM + CC"
 
+export const DEFAULTRMPRESSURE = 500
+
 export const PAINTTECHNOLOGY = 31
 export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.46";
+export const VERSION = "V4.2.48";
 
 
 

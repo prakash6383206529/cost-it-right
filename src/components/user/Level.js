@@ -100,7 +100,6 @@ const Level = (props) => {
 
   const getLevelMappingDetails = () => {
     const handleResponse = (res, isEditlevelType, dataKey) => {
-      console.log("res", res);
       if (res && res.data && res.data.Data) {
         let Data = dataKey ? res.data.Data[0] : res.data.Data;
         setValue('LevelId', { label: Data?.Level, value: Data?.LevelId });

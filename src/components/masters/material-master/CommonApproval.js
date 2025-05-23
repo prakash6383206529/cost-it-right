@@ -790,7 +790,7 @@ function CommonApproval(props) {
             if (!checkCostingHeadSame && props?.OnboardingApprovalId !== ONBOARDINGID) {
                 Toaster.warning('Please select token with same costing head.')
                 return;
-            } else if (!(initialConfiguration?.IsMultipleUserAllowForApproval ? checkPlantIdSame : true)) {
+            } else if (!(initialConfiguration?.IsApprovalLevelFilterByPlant ? checkPlantIdSame : true)) {
                 Toaster.warning('Please select token with same plant.')
                 return;
             } else if (!checkApprovalTypeOfSupplier && props?.OnboardingApprovalId === ONBOARDINGID) {

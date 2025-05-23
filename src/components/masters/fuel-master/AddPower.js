@@ -122,8 +122,7 @@ class AddPower extends Component {
       city: [],
       isDisabled: false,
       showPlantWarning: false,
-      showWarning: false,
-      dataToChange: {}
+      showWarning: false
 
     }
     this.state = { ...this.initialState };
@@ -218,7 +217,7 @@ class AddPower extends Component {
           callAPI(fromCurrency, fieldsObj?.plantCurrency, costingHeadTypeId, vendorId, clientId)
             .then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1 }) => {
               this.setState({
-                plantCurrency: rate1,
+                plantCurrency: rate1 !== 0 ? rate1 : 1,
                 plantExchangeRateId: exchangeRateId1,
                 settlementCurrency: 1,
                 settlementExchangeRateId: null,
@@ -236,7 +235,7 @@ class AddPower extends Component {
             const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
             callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
               this.setState({
-                plantCurrency: rate1,
+                plantCurrency: rate1 !== 0 ? rate1 : 1,
                 settlementCurrency: rate2,
                 plantExchangeRateId: exchangeRateId1,
                 settlementExchangeRateId: exchangeRateId2,
@@ -1422,7 +1421,7 @@ class AddPower extends Component {
       IsVendor: false,
     })
     // this.getDetails();
-    this.props.hideForm(type)
+    this.props.hideForm(type, this.state.isImport)
   }
   cancelHandler = () => {
     if (this.state.isViewMode) {

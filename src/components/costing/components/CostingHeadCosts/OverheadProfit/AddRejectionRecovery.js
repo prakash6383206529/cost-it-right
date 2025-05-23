@@ -17,7 +17,7 @@ import { useLabels } from '../../../../../helper/core';
 
 function AddRejectionRecovery(props) {
 
-    const { rejectionPercentage, isOpen, closeDrawer, rejectionTotalCost } = props;
+    const { rejectionPercentage, isOpen, closeDrawer, rejectionTotalCost, isViewRejectionRecovery } = props;
 
     const defaultValues = {
 
@@ -47,15 +47,8 @@ function AddRejectionRecovery(props) {
     const dispatch = useDispatch()
     const costingHead = useSelector(state => state.comman.costingHead)
     useEffect(() => {
-        dispatch(fetchCostingHeadsAPI('rejection recovery', false, false, (res) => { }))
+        dispatch(fetchCostingHeadsAPI('rejectionrecovery', false, false, (res) => { }))
     }, [])
-    const toggleDrawer = (event, formData = {}) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
-        }
-        closeDrawer('', formData)
-    };
-
     /**
     * @method renderListing
     * @description RENDER LISTING IN DROPDOWN
@@ -65,7 +58,7 @@ function AddRejectionRecovery(props) {
 
         if (label === 'recoveryApplicability') {
             costingHead && costingHead?.map(item => {
-                if (!REJECTION_RECOVERY_APPLICABILITY?.includes(item.Text)) return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
@@ -150,22 +143,25 @@ function AddRejectionRecovery(props) {
             Toaster.warning('Net Rejection Recovery Cost should be less than Rejection Total Cost')
             return
         }
-        closeDrawer('submit', state.netRejectionRecovery)
-        dispatch(setRejectionRecoveryData({
+        let rejectionRecoveryObj = {
             ApplicabilityIdRef: state.rejectionApplicabilityTypeValue,
             ApplicabilityType: state.rejectionApplicabilityType,
             Value: Number(state.rejectionRecoveryPercentage),
             EffectiveRecoveryPercentage: state.effectiveRecoveryPercentage,
             ApplicabilityCost: state.recoveryCostApplicability,
             RejectionRecoveryNetCost: state.netRejectionRecovery
-        }))
+        }
+        dispatch(setRejectionRecoveryData(rejectionRecoveryObj))
+        setTimeout(() => {
+            closeDrawer('submit', state.netRejectionRecovery,rejectionRecoveryObj)
+        }, 500);
     }
 
     const cancel = () => {
         closeDrawer('cancel')
     }
     const ResetAndSave = () => {
-        closeDrawer('submit', 0)
+        closeDrawer('submit', 0,{})
         dispatch(setRejectionRecoveryData({
             ApplicabilityIdRef: 0,
             ApplicabilityType: '',
@@ -220,7 +216,7 @@ function AddRejectionRecovery(props) {
                                             mandatory={true}
                                             handleChange={HandleRejectionRecovery}
                                             errors={errors.RejectionRecoveryApplicability}
-                                            disabled={CostingViewMode ? true : false}
+                                            disabled={(CostingViewMode || isViewRejectionRecovery) ? true : false}
                                         />
                                     </Col>
                                     <Col md="12">
@@ -244,7 +240,7 @@ function AddRejectionRecovery(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.RejectionRecoveryPercentage}
-                                            disabled={(state.rejectionApplicabilityType === 'Fixed' || CostingViewMode) ? true : false}
+                                            disabled={(state.rejectionApplicabilityType === 'Fixed' || CostingViewMode || isViewRejectionRecovery) ? true : false}
                                         />
                                     </Col>
 
@@ -309,7 +305,7 @@ function AddRejectionRecovery(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.NetRejectionRecovery}
-                                            disabled={(state.rejectionApplicabilityType !== 'Fixed' || CostingViewMode) ? true : false}
+                                            disabled={(state.rejectionApplicabilityType !== 'Fixed' || CostingViewMode || isViewRejectionRecovery) ? true : false}
                                         />
                                     </Col>
 
@@ -322,7 +318,7 @@ function AddRejectionRecovery(props) {
                                             type={'button'}
                                             className="undo cancel-btn"
                                             onClick={ResetAndSave}
-                                            disabled={CostingViewMode || !isReset} >
+                                            disabled={CostingViewMode || !isReset || isViewRejectionRecovery} >
                                             <div className={"undo-icon"}></div> {'Reset & Save'}
                                         </button>
 
@@ -340,7 +336,7 @@ function AddRejectionRecovery(props) {
                                                 id="AddRejectionRecovery_Save"
                                                 type={'submit'}
                                                 className="submit-button save-btn"
-                                                disabled={CostingViewMode} >
+                                                disabled={CostingViewMode || isViewRejectionRecovery} >
                                                 <div className={"save-icon"}></div>
                                                 {'Save'}
                                             </button>

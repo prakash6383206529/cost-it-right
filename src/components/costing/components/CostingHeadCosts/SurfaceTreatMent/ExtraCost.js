@@ -12,7 +12,7 @@ import { CC, COSTINGSURFACETREATMENTEXTRACOST, EMPTY_DATA, HANGER, HANGEROVERHEA
 import { generateCombinations, getCostingConditionTypes } from '../../../../common/CommonFunctions'
 import { getCostingCondition } from '../../../../../actions/Common'
 // import { setSurfaceData } from '../../../actions/Costing'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { costingInfoContext, IsNFRContext } from '../../CostingDetailStepTwo'
 import { ViewCostingContext } from '../../CostingDetails'
 import TooltipCustom from '../../../../common/Tooltip'
 import { IdForMultiTechnology } from '../../../../../config/masterData'
@@ -24,6 +24,7 @@ function ExtraCost(props) {
     const conditionTypeId = getCostingConditionTypes(COSTINGSURFACETREATMENTEXTRACOST)
     const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
+    const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext)
     const dispatch = useDispatch();
 
 
@@ -59,7 +60,6 @@ function ExtraCost(props) {
         let tempData = [...tableData]
         const costValues = getCostValues(item, costData, subAssemblyTechnologyArray);
         const { rawMaterialsCost, conversionCost, netpartCost } = costValues;
-        console.log("costValues", costValues)
         tempData.map(item => {
             if (item?.CostingConditionMasterId) {
                 // Get cost values once for all cases that need them
@@ -90,7 +90,6 @@ function ExtraCost(props) {
                         item.TransportationCost = calculatePercentageValue((checkForNull(rawMaterialsCost) + checkForNull(conversionCost)), item?.Rate);
                         break;
                     case RM:
-                        console.log("rawMaterialsCost", rawMaterialsCost)
                         item.ApplicabiltyCost = checkForNull(rawMaterialsCost);
                         item.TransportationCost = calculatePercentageValue(checkForNull(rawMaterialsCost), item?.Rate);
                         break;
@@ -121,7 +120,7 @@ function ExtraCost(props) {
     }, [surfaceCostingPartDetails]);
 
     useEffect(() => {
-        if (!CostingViewMode) {
+        if (!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) {
             // Check if the technology ID is included in IdForMultiTechnology
             const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))
             dispatch(getCostingCondition('', conditionTypeId, isRequestForMultiTechnology, (res) => {
@@ -221,7 +220,6 @@ function ExtraCost(props) {
         // Get cost values once for all cases that need them
         const costValues = getCostValues(item, costData, subAssemblyTechnologyArray);
         const { rawMaterialsCost, conversionCost, netpartCost } = costValues;
-        console.log("costValuesAPPLICABILITY", costValues)
 
         // Handle Basic Rate separately
         switch (e?.label) {
@@ -246,7 +244,6 @@ function ExtraCost(props) {
                 setState(prevState => ({ ...prevState, ApplicabilityCost: hangerCostDetails?.HangerCostPerPart }));
                 break;
             case RM:
-                console.log("rawMaterialsCostAPPLICABILITY22", rawMaterialsCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(rawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice));
                 setState(prevState => ({ ...prevState, ApplicabilityCost: rawMaterialsCost }));
                 break;
@@ -489,7 +486,7 @@ function ExtraCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors?.Type}
-                                                disabled={CostingViewMode || isEditMode}
+                                                disabled={CostingViewMode || isEditMode || IsLockTabInCBCCostingForCustomerRFQ}
                                             />
                                         </Col>
                                         <Col md="3" className='px-2'>
@@ -509,7 +506,7 @@ function ExtraCost(props) {
                                                 className=""
                                                 customClassName={"withBorder"}
                                                 errors={errors?.CostDescription}
-                                                disabled={CostingViewMode}
+                                                disabled={CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ}
                                             />
                                         </Col>
 
@@ -553,7 +550,7 @@ function ExtraCost(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors?.ApplicabilityCost}
-                                                        disabled={CostingViewMode || disableTotalCost || disableCurrency}
+                                                        disabled={IsLockTabInCBCCostingForCustomerRFQ|| CostingViewMode || disableTotalCost || disableCurrency}
                                                     />
                                                 </Col>
                                                 <Col md={3} className='px-2'>
@@ -577,7 +574,7 @@ function ExtraCost(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors?.Percentage}
-                                                        disabled={CostingViewMode}
+                                                        disabled={CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ}
                                                     />
                                                 </Col>
                                             </>
@@ -623,7 +620,7 @@ function ExtraCost(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors?.Rate}
-                                                    disabled={CostingViewMode}
+                                                    disabled={CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ}
                                                 />
                                             </Col>
                                         </>
@@ -657,7 +654,7 @@ function ExtraCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors?.NetCost}
-                                                disabled={(type?.label === 'Percentage' || type?.label === HANGEROVERHEAD) ? true : false || state?.disableCostBaseCurrency || CostingViewMode}
+                                                disabled={(type?.label === 'Percentage' || type?.label === HANGEROVERHEAD) ? true : false || state?.disableCostBaseCurrency || CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ}
                                             />
                                         </Col>
                                         <Col md="3" className='px-2'>
@@ -677,14 +674,14 @@ function ExtraCost(props) {
                                                 className=""
                                                 customClassName={"withBorder"}
                                                 errors={errors?.Remark}
-                                                disabled={CostingViewMode}
+                                                disabled={CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ}
                                             />
                                         </Col>
                                         <Col md="3" className={toggleCondition()}>
                                             <button
                                                 type="submit"
                                                 className={"user-btn  pull-left mt-1"}
-                                                disabled={CostingViewMode || props?.disabled}
+                                                disabled={CostingViewMode || props?.disabled ||IsLockTabInCBCCostingForCustomerRFQ}
                                             >
                                                 {isEditMode ? "" : <div className={"plus"}></div>} {isEditMode ? "UPDATE" : 'ADD'}
                                             </button>
@@ -692,7 +689,7 @@ function ExtraCost(props) {
                                                 type="button"
                                                 className={"reset-btn pull-left mt-1 ml5"}
                                                 onClick={() => resetData("reset")}
-                                                disabled={CostingViewMode || props?.disabled}
+                                                disabled={CostingViewMode || props?.disabled ||IsLockTabInCBCCostingForCustomerRFQ}
                                             >
                                                 {isEditMode ? "CANCEL" : 'RESET'}
                                             </button>
@@ -730,8 +727,8 @@ function ExtraCost(props) {
                                                                 !props?.hideAction && !IsLocked && (
                                                                     <td>
                                                                         <div className='text-right'>
-                                                                            <button title='Edit' className="Edit mr-1" type='button' onClick={() => editDeleteData(index, 'edit')} disabled={CostingViewMode} />
-                                                                            <button title='Delete' className="Delete mr-1" type='button' onClick={() => editDeleteData(index, 'delete')} disabled={CostingViewMode} />
+                                                                            <button title='Edit' className="Edit mr-1" type='button' onClick={() => editDeleteData(index, 'edit')} disabled={CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ} />
+                                                                            <button title='Delete' className="Delete mr-1" type='button' onClick={() => editDeleteData(index, 'delete')} disabled={CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ} />
                                                                         </div>
                                                                     </td>
                                                                 )
@@ -770,7 +767,7 @@ function ExtraCost(props) {
                                             type={'button'}
                                             className="submit-button save-btn"
                                             onClick={() => saveExtraCost()}
-                                            disabled={CostingViewMode || props?.disabled}
+                                            disabled={CostingViewMode || props?.disabled || IsLockTabInCBCCostingForCustomerRFQ}
                                         >
                                             <div className={"save-icon"}></div>
                                             {'Save'}

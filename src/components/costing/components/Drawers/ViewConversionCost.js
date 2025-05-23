@@ -501,7 +501,7 @@ function ViewConversionCost(props) {
                 <th>{`Working Time`}</th>
                 <th>{`Efficiency`}</th>
                 <th>{`Cycle Time`}</th>
-                <th>{`Labour Cost Rs/Pcs`}</th>
+                <th>{`Labour Cost ${viewCostingData[index]?.CostingCurrency}/Pcs`}</th>
               </tr>
             </thead>
             <tbody>
