@@ -127,7 +127,7 @@ function AddProcess(props) {
           || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : Number(costData.CostingTypeId === WACTypeId) ? ZBCTypeId : costData.CostingTypeId,
 
         CustomerId: costData.CustomerId,
-        MinimumMachineTonnageRequired: item?.CostingPartDetails?.MinimumMachineTonnageRequired      
+        MinimumMachineTonnageRequired: getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? item?.CostingPartDetails?.MinimumMachineTonnageRequired : null      
 
       }
     }
