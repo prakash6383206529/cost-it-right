@@ -47,6 +47,12 @@ export const ProcessGroup = (props) => {
         }
     }, [processGroupList, isEditFlag, isViewFlag])
 
+    useEffect(() => {
+        setRowData([])
+        dispatch(setGroupProcessList([]))
+    }, [props?.costingTypeId])
+
+
     const handleProcess = () => {
         const processName = getValues('process')
         const groupName = getValues('groupName')
