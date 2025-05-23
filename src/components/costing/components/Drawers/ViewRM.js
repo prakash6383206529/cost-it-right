@@ -283,6 +283,12 @@ function ViewRM(props) {
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`${finishWeightLabel} Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
+              {viewCostingData[0]?.technologyId === SHEETMETAL &&
+                <>
+                  <th>{`RM Base (Effective Date)`}</th>
+                  <th>{`Yield %`}</th>
+                </>
+              }
               {!isPDFShow && viewCostingData[props.index]?.technologyId !== Ferrous_Casting && viewCostingData[props.index]?.technologyId !== RUBBER && (getTechnology.includes(viewCostingData[props.index]?.technologyId)) && < th > {`Calculator`}</th>}
               {IsShowFreightAndShearingCostFields() && <th>{`Freight Cost`}</th>}
               {IsShowFreightAndShearingCostFields() && <th>{`Shearing Cost`}</th>}
@@ -311,6 +317,12 @@ function ViewRM(props) {
                   <td>{checkForDecimalAndNull(item?.GrossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item?.FinishWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item?.ScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                  {viewCostingData[0]?.technologyId === SHEETMETAL &&
+                    <>
+                      <td>{DayTime(item?.EffectiveDate).isValid() ? DayTime(item?.EffectiveDate).format('YYYY-MM-DD') : '-'}</td>
+                      <td>{checkForDecimalAndNull(item?.YieldPercentage, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                    </>
+                  }
                   {!isPDFShow && viewCostingData[props.index]?.technologyId !== Ferrous_Casting && viewCostingData[props.index]?.technologyId !== RUBBER && (getTechnology.includes(viewCostingData[props.index]?.technologyId)) &&
                     <td>{!(viewCostingData[props.index]?.technologyId === MACHINING && item?.UOM !== "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) ?
                       <button

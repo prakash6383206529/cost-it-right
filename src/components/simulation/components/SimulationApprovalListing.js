@@ -641,7 +641,7 @@ function SimulationApprovalListing(props) {
                 setShowFinalLevelButton(false)
                 const validationChecks = [
                     {
-                        condition: !allEqual(selectedDataObj.PlantId) && initialConfiguration.IsMultipleUserAllowForApproval,
+                        condition: !allEqual(selectedDataObj.PlantId) && initialConfiguration.IsApprovalLevelFilterByPlant,
                         field: 'Plant'
                     },
                     {

@@ -855,6 +855,9 @@ const BOPImportListing = (props) => {
     } else {
       tempData = data;
     }
+    if (!getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily) {
+      tempData = hideColumnFromExcel(tempData, "PartFamily");
+    }
     if (!getConfigurationKey().IsSAPCodeRequired) {
       tempData = hideColumnFromExcel(tempData, 'SAPPartNumber')
     }
@@ -1182,6 +1185,7 @@ const BOPImportListing = (props) => {
                         <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} No.`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Name`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
+                        {initialConfiguration?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                         <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                         <AgGridColumn field="Specification" headerName="Specification" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                         {getConfigurationKey().IsSAPCodeRequired && <AgGridColumn field="SAPPartNumber" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}

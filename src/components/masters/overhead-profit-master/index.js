@@ -12,6 +12,8 @@ import ScrollToTop from '../../common/ScrollToTop';
 import { MESSAGES } from '../../../config/message';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import { Loader } from '../../common/Loader';
+import AddOverheadMaster from './AddOverheadMaster';
+import AddProfitMaster from './AddProfitMaster';
 export const ApplyPermission = React.createContext();
 
 const OverheadProfit = () => {
@@ -140,16 +142,30 @@ const OverheadProfit = () => {
   */
   const { isOverheadForm, isProfitForm, data } = state;
 
+  // if (isOverheadForm === true) {
+  //   return <AddOverhead
+  //     data={data}
+  //     hideForm={hideForm}
+  //   />
+  // }
+
   if (isOverheadForm === true) {
-    return <AddOverhead
+    return <AddOverheadMaster
       data={data}
       hideForm={hideForm}
       IsOverheadAssociated = {state.IsOverheadAssociated}
     />
   }
 
+  // if (isProfitForm === true) {
+  //   return <AddProfit
+  //     data={data}
+  //     hideForm={hideForm}
+  //   />
+  // }
+
   if (isProfitForm === true) {
-    return <AddProfit
+    return <AddProfitMaster
       data={data}
       hideForm={hideForm}
       IsProfitAssociated = {state.IsProfitAssociated}

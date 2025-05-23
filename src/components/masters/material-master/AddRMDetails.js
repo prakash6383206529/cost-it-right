@@ -93,7 +93,7 @@ function AddRMDetails(props) {
     const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList)
     const { t } = useTranslation('MasterLabels');
     const rawMaterailDetailsRef = useRef(rawMaterailDetails)
-    const { IsMultipleUserAllowForApproval } = useSelector((state) => state.auth.initialConfiguration)
+    const { IsApprovalLevelFilterByPlant } = useSelector((state) => state.auth.initialConfiguration)
 
     useEffect(() => {
         rawMaterailDetailsRef.current = rawMaterailDetails;
@@ -295,7 +295,7 @@ function AddRMDetails(props) {
             setState(prevState => ({ ...prevState, plants: [] }));
         }
         dispatch(setRawMaterialDetails({ Plants: newValue }, () => { }))
-        handleCommonFunction(IsMultipleUserAllowForApproval ? newValue?.value : EMPTY_GUID, state?.rmSpec?.value)
+        handleCommonFunction(IsApprovalLevelFilterByPlant ? newValue?.value : EMPTY_GUID, state?.rmSpec?.value)
     }
     const handleCommonFunction = (plantId, partId) => {
         if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && plantId && partId) {
@@ -405,7 +405,7 @@ function AddRMDetails(props) {
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, rmSpec: newValue, rmCode: { label: newValue?.RawMaterialCode, value: newValue?.value }, rmCategory: [], isCodeDisabled: true }));
             setValue('RawMaterialCode', { label: newValue?.RawMaterialCode, value: newValue?.value })
-            handleCommonFunction(IsMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, newValue?.value)
+            handleCommonFunction(IsApprovalLevelFilterByPlant ? state.plants?.value : EMPTY_GUID, newValue?.value)
         } else {
             setState(prevState => ({ ...prevState, rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: false }));
         }
@@ -442,7 +442,7 @@ function AddRMDetails(props) {
                     return false
                 }
                 let Data = res?.data?.Data
-                handleCommonFunction(IsMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, Data.SpecificationId)
+                handleCommonFunction(IsApprovalLevelFilterByPlant ? state.plants?.value : EMPTY_GUID, Data.SpecificationId)
                 setState(prevState => ({
                     ...prevState,
                     rmName: { label: Data.RawMaterialName, value: Data.RawMaterialId, },
@@ -778,7 +778,7 @@ function AddRMDetails(props) {
                                     options={renderListing("plant")}
                                     defaultValue={state.plants}
                                     handleChange={handlePlants}
-                                    isMulti={(states.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval && !IsSelectSinglePlant) ? true : false}
+                                    isMulti={(states.costingTypeId === ZBCTypeId && !getConfigurationKey().IsApprovalLevelFilterByPlant && !IsSelectSinglePlant) ? true : false}
                                     disabled={isEditFlag || isViewFlag}
                                     errors={errors.Plants}
                                 />

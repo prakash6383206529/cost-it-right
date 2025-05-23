@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, DOMESTIC, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, RAWMATERIAL, INR, ENTRY_TYPE_IMPORT, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants"
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, INR, RAWMATERIAL, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import { IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, getExchangeRateParams, labelWithUOMAndCurrency, labelWithUOMAndUOM, loggedInUserId, showRMScrapKeys, calculatePercentage } from "../../../helper"
@@ -547,8 +547,11 @@ function AddRMFinancialDetails(props) {
         }
 
         const basicPriceCurrencyTemp = checkForNull(getValues('BasicRate')) + checkForNull(state?.totalOtherCost)
-        let basicPriceBaseCurrency = costingTypeId === ZBCTypeId ? basicPriceCurrencyTemp : 0;
-        let conditionList = recalculateConditions('', basicPriceBaseCurrency);
+        let basicPriceBaseCurrency
+        if (costingTypeId === ZBCTypeId) {
+            basicPriceBaseCurrency = basicPriceCurrencyTemp
+        }
+        let conditionList = recalculateConditions(basicPriceBaseCurrency, state)
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let NetLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
@@ -1764,6 +1767,33 @@ function AddRMFinancialDetails(props) {
                             {showScrapKeys?.showScrap &&
                                 <>
                                     <Col className="col-md-15">
+                                        {(state.IsApplyHasDifferentUOM === true && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="scrap-rate-per-scrap-uom-base-currency" width={'350px'} tooltipText={<>{labelForScrapRate()?.labelBaseCurrency} = (Basic Rate * Scrap %) / 100</>} />}
+                                        <TextFieldHookForm
+                                            label={labelForScrapRate()?.labelBaseCurrency}
+                                            name={'ScrapRatePerScrapUOM'}
+                                            id="scrap-rate-per-scrap-uom-base-currency"
+                                            placeholder={isViewFlag ? '-' : "Enter"}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={!state.IsApplyHasDifferentUOM ? {
+                                                required:  !state.IsCalculateScrapRate,
+                                                validate: { positiveAndDecimalNumber, decimalLengthsix, number },
+                                            } : {}}
+                                            mandatory={ !state.IsCalculateScrapRate}
+                                            className=""
+                                            customClassName=" withBorder"
+                                            handleChange={(e) => { handleScrapRateDomestic(e.target.value) }}
+                                            disabled={isViewFlag || state.IsApplyHasDifferentUOM ||state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
+                                            errors={!state.IsApplyHasDifferentUOM ? errors.ScrapRate : ""}
+                                        />
+                                    </Col>
+                                    </>
+                                }
+
+                                {showScrapKeys?.showScrap &&
+                                    <>
+                                        <Col className="col-md-15">
                                         {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" tooltipText={allFieldsInfoIcon('Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />}
                                         {(!state.IsApplyHasDifferentUOM && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" width={'350px'}
                                             tooltipText={allFieldsInfoIcon('Scrap Rate')?.toolTipTextScrapCostPerOldUOMWithAutoCalculate}
@@ -1808,10 +1838,10 @@ function AddRMFinancialDetails(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            rules={{
-                                                required: !state.IsCalculateScrapRate ?? true,
+                                            rules={!state.IsApplyHasDifferentUOM ? {
+                                                required:  !state.IsCalculateScrapRate ?? true,
                                                 validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                            }}
+                                            } : {}}
                                             mandatory={!state.IsCalculateScrapRate ?? true}
                                             className=""
                                             customClassName=" withBorder"
@@ -1923,16 +1953,15 @@ function AddRMFinancialDetails(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            rules={{
+                                            rules={!state.IsApplyHasDifferentUOM ? {
                                                 required: !state.IsCalculateScrapRate,
                                                 validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                            }}
-                                            // disabled={isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                            } : {}}
                                             disabled={isViewFlag || state.IsApplyHasDifferentUOM || state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
                                             className=" "
                                             handleChange={() => { }}
                                             customClassName=" withBorder"
-                                            errors={errors.JaliScrapCost}
+                                            errors={!state.IsApplyHasDifferentUOM ? errors.JaliScrapCost :""}
                                             mandatory={!state.IsCalculateScrapRate}
                                         />
                                     </Col>
@@ -1977,19 +2006,13 @@ function AddRMFinancialDetails(props) {
                                         />
                                     </div>
                                     <div className="d-flex align-items-center mt-1">
-                                        {!isViewFlag && <TooltipCustom disabledIcon={true} width="350px" id="other-cost-refresh" tooltipText="Refresh to update other cost" />}
-                                        {!isViewFlag && <Button
-                                            id="other-cost-refresh"
-                                            type="button"
-                                            variant={'refresh-icon'}
-                                            onClick={() => updateTableCost(false)}
-                                            className={"right mt-1 ml-1"}
-                                            disabled={isViewFlag}
-                                        />}
+                                        <button type="button" id="other-cost-refresh" className={'refresh-icon mt-1 ml-2'} onClick={() => updateTableCost(false)} disabled={isViewFlag}>
+                                            <TooltipCustom disabledIcon={true} width="350px" id="other-cost-refresh" tooltipText="Refresh to update other cost" />
+                                        </button>
                                         {<Button
                                             id="addRMDomestic_otherToggle"
                                             onClick={otherCostToggle}
-                                            className={"right mt-1 ml-1"}
+                                            className={"right mt-1 ml-3"}
                                             variant={isViewFlag ? "view-icon-primary" : `${!getValues('BasicRate') ? 'blurPlus-icon-square' : 'plus-icon-square'}`}
                                             title={isViewFlag ? "View" : "Add"}
                                             disabled={!getValues('BasicRate')}
@@ -2035,19 +2058,13 @@ function AddRMFinancialDetails(props) {
                                             />
                                         </div>
                                         <div className="d-flex align-items-center mt-1">
-                                            {!isViewFlag && <TooltipCustom disabledIcon={true} width="350px" id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />}
-                                            {!isViewFlag && <Button
-                                                id="condition-cost-refresh"
-                                                type="button"
-                                                variant={'refresh-icon'}
-                                                onClick={() => updateTableCost(true)}
-                                                className={"right mt-1 ml-1"}
-                                                disabled={isViewFlag}
-                                            />}
+                                            <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-2'} onClick={() => updateTableCost(true)} disabled={isViewFlag}>
+                                                <TooltipCustom disabledIcon={true} width="350px" id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
+                                            </button>
                                             <Button
                                                 id="addRMDomestic_conditionToggl"
                                                 onClick={conditionToggle}
-                                                className={"right  mt-3 mb-2"}
+                                                className={"right mt-1 ml-2"}
                                                 variant={isViewFlag ? "view-icon-primary" : `${!getValues('BasicRate') ? 'blurPlus-icon-square' : 'plus-icon-square'}`}
                                                 title={isViewFlag ? "View" : "Add"}
                                                 disabled={!getValues('BasicRate')}

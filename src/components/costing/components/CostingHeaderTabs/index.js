@@ -267,11 +267,9 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
       }))
     }
 
-
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' && checkIsOverheadProfitChange) {
       const discountAndOtherTabData = DiscountCostData
-
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": IsIncludedSurfaceInOverheadProfit,
@@ -491,7 +489,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
     if (hasNegativeValue) {
       return false;
     }
-    if (isNFR && !CostingViewMode && (CostingDataList[0].NetRMCost === 0 || CostingDataList[0].NetRMCost === null || CostingDataList[0].NetRMCost === undefined) && (tab === '2' || tab === '3' || tab === '4' || tab === '5' || tab === '6')) {
+    if (false && isNFR && !CostingViewMode && (CostingDataList[0].NetRMCost === 0 || CostingDataList[0].NetRMCost === null || CostingDataList[0].NetRMCost === undefined) && (tab === '2' || tab === '3' || tab === '4' || tab === '5' || tab === '6')) {
       Toaster.warning("Please add RM detail before adding the data in this tab.")
       return false
     }
@@ -570,7 +568,8 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
    * @description date Function
    */
   const dateFunction = () => {
-    let arr = [costData.LastApproveEffectiveDate, costData.PartEffectiveDate, new Date(getEffectiveDateMinDate()).toISOString().split('.')[0]  // Converted format
+
+    let arr = [costData?.LastApproveEffectiveDate, costData?.PartEffectiveDate, new Date(getEffectiveDateMinDate())?.toISOString()?.split('.')[0]  // Converted format
     ]
 
     const largestDate = new Date(Math.max(...arr.filter(Boolean).map(date => Date.parse(date))));
@@ -578,7 +577,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
   }
 
   useEffect(() => {
-    if (isNFR && effectiveDate) {
+    if (isNFR && effectiveDate && false) {
       let obj = {
         nfrId: nfrDetailsForDiscount?.objectFordisc?.NfrMasterId,
         partId: costData?.PartId,
@@ -589,6 +588,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
         technologyId: costData?.TechnologyId
       }
       dispatch(getRMFromNFR(obj, (res) => {
+
         if (res?.data?.Result && res?.status === 200) {
           if (res?.data?.Identity === res?.data?.DataList?.length) {
             dispatch(setOpenAllTabs(true))
