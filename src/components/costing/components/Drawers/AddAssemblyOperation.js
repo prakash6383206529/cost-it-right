@@ -49,7 +49,7 @@ function AddAssemblyOperation(props) {
 
   useEffect(() => {
 
-    if (isAssemblyTechnology) {
+    if (!CostingViewMode) {
       let arr = JSON.parse(sessionStorage.getItem('costingArray'))?.filter(element =>
         element?.PartNumber === itemInState?.PartNumber &&
         element?.AssemblyPartNumber === itemInState?.AssemblyPartNumber &&
