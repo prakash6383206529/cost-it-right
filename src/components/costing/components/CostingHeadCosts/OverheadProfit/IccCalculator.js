@@ -78,25 +78,10 @@ function IccCalculator(props) {
     }, [])
 
     useEffect(() => {
-        let totalWipCost = state.wipCompositionMethodDetails?.reduce((acc, item) => acc + item.ApplicabilityCost, 0)
         setState(prev => ({
             ...prev,
-            totalWipCost: totalWipCost
+            totalWipCost: state.wipCompositionMethodDetails?.reduce((acc, item) => acc + item.ApplicabilityCost, 0)
         }))
-        const updatedInventoryTypeDetails = state.inventoryTypeDetails.map(item => {
-            if (item.InventoryType === 'WIP') {
-                return {
-                    ...item,
-                    ApplicabilityCost: totalWipCost
-                };
-            }
-            return item;
-        });
-
-        setState(prev => ({
-            ...prev,
-            inventoryTypeDetails: updatedInventoryTypeDetails
-        }));
     }, [state.wipCompositionMethodDetails])
     console.log(state?.totalWipCost,'state?.totalWipCost');
     /**
@@ -112,6 +97,7 @@ function IccCalculator(props) {
             ? (JSON.parse(sessionStorage.getItem('costingArray'))?.[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate || 0) * 
               (JSON.parse(sessionStorage.getItem('costingArray'))?.[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight || 0)
             : headerCosts.NetRawMaterialsCost;
+
 
 
         const updatedData = data.map(item => {

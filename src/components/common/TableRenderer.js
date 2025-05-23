@@ -110,6 +110,8 @@ const TableRenderer =  ({
                     </td>
                   );
                 } else {
+                  console.log(col,'col');
+                  
                   return <td key={colIdx}>{col?.identifier === "inputOutput" ? checkForDecimalAndNull(item?.[col.key],getConfigurationKey()?.NoOfDecimalForInputOutput) :col?.identifier === "cost" ? checkForDecimalAndNull(item?.[col.key],getConfigurationKey()?.NoOfDecimalForPrice) : item?.[col.key]}</td>;
                 }
               })}
