@@ -25,7 +25,7 @@ import { CheckApprovalApplicableMaster, getExchangeRateParams, onFocus, showData
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -1623,6 +1623,7 @@ class AddOperation extends Component {
                             type="text"
                             validate={[required]}
                             minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                            maxDate={getEffectiveDateMaxDate()}
                             autoComplete={'off'}
                             required={true}
                             changeHandler={(e) => {

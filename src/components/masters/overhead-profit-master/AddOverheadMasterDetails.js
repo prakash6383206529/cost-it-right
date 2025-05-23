@@ -537,7 +537,7 @@ const AddOverheadMasterDetails = (props) => {
                                 autoComplete={"off"}
                                 disabledKeyboardNavigation
                                 minDate={state?.isEditFlag ? new Date(state.minEffectiveDate) : getEffectiveDateMinDate()}
-                                // maxDate={getEffectiveDateMinDate()}
+                                maxDate={getEffectiveDateMaxDate()}
                                 errors={errors && errors.EffectiveDate}
                                 disabled={state?.isViewMode}
                             />
