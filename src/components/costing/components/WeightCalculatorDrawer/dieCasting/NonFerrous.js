@@ -80,6 +80,10 @@ function NonFerrous(props) {
                     label: 'Rejection Allowance',
                     value: 12,
                 },
+                {
+                    label: 'Burning Loss on Casting Weight',
+                    value: 16,
+                }
             ]
 
         }
@@ -97,6 +101,10 @@ function NonFerrous(props) {
                     label: 'Rejection Allowance',
                     value: 12,
                 },
+                {
+                    label: 'Burning Loss on Casting Weight',
+                    value: 16,
+                }
             ]
 
         }
@@ -281,7 +289,7 @@ function NonFerrous(props) {
                                         </Col>
                                         <Col md="3" >
                                             <TextFieldHookForm
-                                                label={`Burning (%)`}
+                                                label={`Burning (%) on shot weight`}
                                                 name={'burningPercent'}
                                                 Controller={Controller}
                                                 control={control}
