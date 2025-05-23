@@ -36,7 +36,7 @@ import { checkEffectiveDate } from "../masterUtil";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE,isRMAssociated } = props
-    
+
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, clearErrors } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -73,11 +73,12 @@ function AddRMMaster(props) {
         isSourceVendor: false,
         masterLevels: [],
         IsWarning: false,
-        
+
     }
     const [state, setState] = useState(initialState);
     const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state?.material?.rawMaterailDetails)
+    
     const exchangeRateDetails = useSelector((state) => state?.material?.exchangeRateDetails)
     const queryClient = useQueryClient();
 
@@ -366,7 +367,7 @@ function AddRMMaster(props) {
         if (showScrapKeys?.showCircleJali) {
             scrapRate = values?.JaliScrapCost
             scrapRateLocalConversion = state?.isImport ? convertIntoCurrency(values?.JaliScrapCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.JaliScrapCost
-            scrapRateInr = state?.isImport ? convertIntoCurrency(values?.JaliScrapCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.JaliScrapCost, exchangeRateDetails?.LocalCurrencyExchangeRate)
+            scrapRateInr = state?.isImport ? convertIntoCurrency(scrapRateLocalConversion, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(scrapRateLocalConversion, exchangeRateDetails?.LocalCurrencyExchangeRate)
             jaliRateBaseCurrency = checkForNull(values?.CircleScrapCost)
             if (checkForNull(values?.BasicRate) < checkForNull(jaliRateBaseCurrency) || checkForNull(values?.BasicRate) < checkForNull(scrapRate)) {
                 setState(prevState => ({ ...prevState, setDisable: false }))
@@ -377,7 +378,7 @@ function AddRMMaster(props) {
         } else if (showScrapKeys?.showForging) {
             scrapRate = values?.ForgingScrap
             scrapRateLocalConversion = state?.isImport ? convertIntoCurrency(values?.ForgingScrap, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.ForgingScrap
-            scrapRateInr = state?.isImport ? convertIntoCurrency(values?.ForgingScrap, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.ForgingScrap, exchangeRateDetails?.LocalCurrencyExchangeRate)
+            scrapRateInr = state?.isImport ? convertIntoCurrency(scrapRateLocalConversion, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(scrapRateLocalConversion, exchangeRateDetails?.LocalCurrencyExchangeRate)
             machiningRateBaseCurrency = checkForNull(values?.MachiningScrap)
             if (checkForNull(values?.BasicRate) < checkForNull(scrapRate) || checkForNull(values?.BasicRate) < checkForNull(machiningRateBaseCurrency)) {
                 setState(prevState => ({ ...prevState, setDisable: false }))
@@ -388,14 +389,14 @@ function AddRMMaster(props) {
         } else if (showScrapKeys?.showScrap) {
             scrapRate = checkForNull(values?.ScrapRate)
             scrapRateLocalConversion = state?.isImport ? convertIntoCurrency(values?.ScrapRate, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.ScrapRate
-            scrapRateInr = state?.isImport ? convertIntoCurrency(values?.ScrapRate, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.ScrapRate, exchangeRateDetails?.LocalCurrencyExchangeRate)
+            scrapRateInr = state?.isImport ? convertIntoCurrency(scrapRateLocalConversion, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(scrapRateLocalConversion, exchangeRateDetails?.LocalCurrencyExchangeRate)
             if (checkForNull(values?.BasicRate) < checkForNull(scrapRate)) {
                 setState(prevState => ({ ...prevState, setDisable: false }))
                 Toaster.warning("Scrap rate/cost should not be greater than the basic rate.")
                 return false
             }
         }
-
+        
         let plantArray = []
         if ((state?.costingTypeId === ZBCTypeId && !getConfigurationKey().IsApprovalLevelFilterByPlant && !IsSelectSinglePlant) || state?.isEditFlag) {
             Plants && Plants.map((item) => {
@@ -413,7 +414,7 @@ function AddRMMaster(props) {
         const basicRatePerUOMLocalConversion = convertIntoCurrency(values?.BasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate)
         const commodityNetCostLocalConversion = convertIntoCurrency(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate)
         const cutOffPriceLocalConversion = convertIntoCurrency(values?.cutOffPrice, exchangeRateDetails?.LocalCurrencyExchangeRate)
-        
+
         let formData =
         {
             "Attachements": rawMaterailDetails?.Files,
@@ -489,11 +490,11 @@ function AddRMMaster(props) {
             "RawMaterialOtherCostDetails": otherCostDetailsArray,
             "RawMaterialSpecificationName": values?.RawMaterialSpecification?.label,
             "Remark": values?.Remarks,
-            "ScrapRate": scrapRate,
+            "ScrapRate": rawMaterailDetails?.states?.applyScrapRate ? values?.ScrapRatePerScrapUOM : scrapRate,
             "ScrapRateLocalConversion": scrapRateLocalConversion,
             "ScrapRateInINR": scrapRateInr,
-            "ScrapRatePerScrapUOM": values?.ScrapRatePerScrapUOM,
-            "ScrapRatePerScrapUOMConversion": state?.isImport ? convertIntoCurrency(values?.ScrapRatePerScrapUOM, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.ScrapRatePerScrapUOM, exchangeRateDetails?.CurrencyExchangeRate),
+            "ScrapRatePerScrapUOM": rawMaterailDetails?.states?.applyScrapRate ? scrapRate : values?.ScrapRatePerScrapUOM,
+            "ScrapRatePerScrapUOMConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.applyScrapRate ? scrapRate : values?.ScrapRatePerScrapUOM, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(rawMaterailDetails?.states?.applyScrapRate ? scrapRate : values?.ScrapRatePerScrapUOM, exchangeRateDetails?.CurrencyExchangeRate),
             "ScrapUnitOfMeasurement": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.ScrapRateUOM?.label : '',
             "ScrapUnitOfMeasurementId": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.ScrapRateUOM?.value : '',
             "Source": values?.source,
@@ -529,14 +530,14 @@ function AddRMMaster(props) {
                         Toaster.warning('Please change data to update RM otherwise cancel the form')
                         return false
                     }
-                } 
+                }
                 formData.IsFinancialDataChanged = false
             }else if (!state?.isSourceVendor && (!financialDataNotChanged) && checkEffectiveDate(values?.effectiveDate,DataToChange?.EffectiveDate)) {
                 Toaster.warning('Please update the effective date')
                 setState(prevState => ({ ...prevState, isDateChanged: true }))
                 return false
             }
-             else {
+            else {
                 formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
             }
 
