@@ -23,6 +23,7 @@ import { generateUnusedRMsMessage } from '../../../../common/CommonFunctions'
 
 const gridOptions = {};
 function StandardRub(props) {
+    const { item } = props
     const { finishedWeightLabel, finishWeightLabel } = useLabels()
 
     const dispatch = useDispatch();
@@ -64,7 +65,7 @@ function StandardRub(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'FinishWeight', ...(!isVolumeAutoCalculate ? ['Volume'] : [])],
+        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'ScrapPercentage', 'NumberOfBends', 'BendTolerance', ...(!isVolumeAutoCalculate ? ['Volume'] : []), ...(!getConfigurationKey()?.IsCalculateVolumeForPartInRubber && isVolumeAutoCalculate ? ['FinishWeight'] : [])],
     })
 
     useEffect(() => {
@@ -89,7 +90,7 @@ function StandardRub(props) {
 
             setRmDropDownData(arr);
         } catch (error) {
-            console.error('Error populating RM dropdown:', error);
+
             setRmDropDownData([]);
         }
     }, [rmData])
@@ -120,8 +121,12 @@ function StandardRub(props) {
 
         const Length = Number(getValues('Length'))
         const CuttingAllowance = Number(getValues('CuttingAllowance'))
-        let TotalLength = checkForNull(Length) + checkForNull(CuttingAllowance)
-        setDataToSend(prevState => ({ ...prevState, TotalLength: TotalLength }))
+        const BendTolerance = Number(getValues('BendTolerance'))
+        const NumberOfBends = Number(getValues('NumberOfBends'))
+        let TotalAllowance = checkForNull(CuttingAllowance) + (checkForNull(BendTolerance) * checkForNull(NumberOfBends))
+        let TotalLength = checkForNull(Length) + checkForNull(TotalAllowance)
+        setDataToSend(prevState => ({ ...prevState, TotalLength: TotalLength, TotalAllowance: TotalAllowance }))
+        setValue('TotalAllowance', checkForDecimalAndNull(TotalAllowance, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue('TotalLength', checkForDecimalAndNull(TotalLength, getConfigurationKey().NoOfDecimalForInputOutput))
 
     }
@@ -130,28 +135,44 @@ function StandardRub(props) {
     const calculateVolume = debounce(() => {
         const InnerDiameter = Number(getValues('InnerDiameter'))
         const OuterDiameter = Number(getValues('OuterDiameter'))
+        const TotalLength = dataToSend?.TotalLength
+        const ScrapPercentage = checkForNull(getValues('ScrapPercentage'))
+
         if ((InnerDiameter && OuterDiameter) || !isVolumeAutoCalculate) {
-            const Length = Number(getValues('Length'))
-            const CuttingAllowance = Number(getValues('CuttingAllowance'))
+
             let Volume = Number(getValues('Volume'));
             if (isVolumeAutoCalculate) {
-                Volume = (Math.PI / 4) * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
+                Volume = (Math.PI / 4) * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(TotalLength)
                 setValue('Volume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
             }
-            let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
-            calculateScrapWeight(checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-            setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) }))
+            let FinishWeight = (getConfigurationKey()?.IsCalculateVolumeForPartInRubber && !isVolumeAutoCalculate) ? Volume * (checkForNull(rmRowDataState.Density) / 1000000) : getValues('FinishWeight')
+
+            let GrossWeight = (getConfigurationKey()?.IsCalculateVolumeForPartInRubber && !isVolumeAutoCalculate) ? checkForNull(checkForNull(FinishWeight) + checkForNull(checkForNull(FinishWeight) * checkForNull(ScrapPercentage) / 100)) : checkForNull(Volume) * (checkForNull(rmRowDataState.Density) / 1000000)
+            let ScrapWeight = checkForNull(GrossWeight) - checkForNull(FinishWeight)
+
+            let NetRmCost = checkForNull(GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
+
+            // calculateScrapWeight(checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+            setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: GrossWeight, FinishWeight: FinishWeight, NetRMCost: NetRmCost, ScrapWeight: ScrapWeight }))
             setValue('GrossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue('NetRMCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
+            setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+            if ((getConfigurationKey()?.IsCalculateVolumeForPartInRubber && !isVolumeAutoCalculate)) {
+                setValue('FinishWeight', checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+            }
         }
     }, 500)
 
 
     const calculateScrapWeight = (scrapWeight) => {
-        const FinishWeight = Number(getValues('FinishWeight'))
-        const GrossWeight = Number(getValues('GrossWeight'))
+        const FinishWeight = getConfigurationKey()?.IsCalculateVolumeForPartInRubber ? dataToSend?.FinishWeight : Number(getValues('GrossWeight'))
+
+        const GrossWeight = checkForNull(dataToSend?.GrossWeight)
         if (Number(getValues('GrossWeight')) || checkForNull(scrapWeight)) {
             const updatedScrapRate = checkForNull(scrapWeight) ? checkForNull(scrapWeight) : checkForNull(dataToSend.GrossWeight)
+
             let ScrapWeight = checkForNull(updatedScrapRate) - checkForNull(FinishWeight)
+
             setDataToSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
             setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
@@ -187,7 +208,7 @@ function StandardRub(props) {
             const selectedMaterial = rmData.find(item => item.RawMaterialId === selectedRMId);
 
             if (!selectedMaterial) {
-                console.warn('Selected material not found');
+
                 return;
             }
 
@@ -207,6 +228,8 @@ function StandardRub(props) {
                     setValue('InnerDiameter', lastRow.OuterDiameter || '');
                     setValue('Length', lastRow.Length || '');
                     setValue('CuttingAllowance', lastRow.CuttingAllowance || '');
+                    setValue('NumberOfBends', lastRow.NumberOfBends || '');
+                    setValue('BendTolerance', lastRow.BendTolerance || '');
                 }
             }
         } catch (error) {
@@ -239,7 +262,7 @@ function StandardRub(props) {
             setAgGridTable(false);
 
             if (!Array.isArray(gridData)) {
-                console.error('Invalid grid data');
+
                 return;
             }
 
@@ -271,7 +294,7 @@ function StandardRub(props) {
                 setAgGridTable(true);
             }, 300);
         } catch (error) {
-            console.error('Error in deleteItem:', error);
+
             setAgGridTable(true);
         }
     }
@@ -286,18 +309,22 @@ function StandardRub(props) {
         })
 
         let obj = e
-        setValue('InnerDiameter', checkForDecimalAndNull(obj.InnerDiameter, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('OuterDiameter', checkForDecimalAndNull(obj.OuterDiameter, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('Length', checkForDecimalAndNull(obj.Length, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('CuttingAllowance', checkForDecimalAndNull(obj.CuttingAllowance, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('Volume', checkForDecimalAndNull(obj.Volume, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('GrossWeight', checkForDecimalAndNull(obj.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('FinishWeight', checkForDecimalAndNull(obj.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('InnerDiameter', checkForDecimalAndNull(obj?.InnerDiameter, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('OuterDiameter', checkForDecimalAndNull(obj?.OuterDiameter, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('Length', checkForDecimalAndNull(obj?.Length, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('CuttingAllowance', checkForDecimalAndNull(obj?.CuttingAllowance, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('Volume', checkForDecimalAndNull(obj?.Volume, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('GrossWeight', checkForDecimalAndNull(obj?.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('FinishWeight', checkForDecimalAndNull(obj?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('ScrapPercentage', checkForDecimalAndNull(obj?.ScrapPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('TotalAllowance', checkForDecimalAndNull(obj?.TotalAllowance, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('NumberOfBends', checkForDecimalAndNull(obj?.NumberOfBends, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('BendTolerance', checkForDecimalAndNull(obj?.BendTolerance, getConfigurationKey().NoOfDecimalForInputOutput))
         setTimeout(() => {
-            setValue('ScrapWeight', checkForDecimalAndNull(obj.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue('ScrapWeight', checkForDecimalAndNull(obj?.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }, 200);
         setIsVolumeAutoCalculate(obj?.IsVolumeAutoCalculate ?? false)
-        setDataToSend(prevState => ({ ...prevState, GrossWeight: obj.GrossWeight }))
+        setDataToSend(prevState => ({ ...prevState, GrossWeight: obj?.GrossWeight, FinishWeight: obj?.FinishWeight, Volume: obj?.Volume, ScrapWeight: obj?.ScrapWeight, TotalAllowance: obj?.TotalAllowance, NumberOfBends: obj?.NumberOfBends, BendTolerance: obj?.BendTolerance, RMCost: obj?.RMCost }))
     }
 
 
@@ -347,14 +374,18 @@ function StandardRub(props) {
 
         let obj = {
             RawMaterialName: rmRowDataState.RMName,
-            InnerDiameter: Number(getValues('InnerDiameter')),
-            OuterDiameter: Number(getValues('OuterDiameter')),
-            Length: Number(getValues('Length')),
-            CuttingAllowance: Number(getValues('CuttingAllowance')),
+            InnerDiameter: checkForNull(getValues('InnerDiameter')),
+            OuterDiameter: checkForNull(getValues('OuterDiameter')),
+            Length: checkForNull(getValues('Length')),
+            CuttingAllowance: checkForNull(getValues('CuttingAllowance')),
+            NumberOfBends: checkForNull(getValues('NumberOfBends')),
+            BendTolerance: checkForNull(getValues('BendTolerance')),
+            TotalAllowance: checkForNull(dataToSend?.TotalAllowance),
             TotalLength: dataToSend.TotalLength,
-            Volume: isVolumeAutoCalculate ? dataToSend.Volume : Number(getValues('Volume')),
+            Volume: isVolumeAutoCalculate ? dataToSend.Volume : checkForNull(getValues('Volume')),
             GrossWeight: dataToSend.GrossWeight,
-            FinishWeight: Number(getValues('FinishWeight')),
+            FinishWeight: (getConfigurationKey()?.IsCalculateVolumeForPartInRubber && !isVolumeAutoCalculate) ? checkForNull(dataToSend?.FinishWeight) : checkForNull(getValues('FinishWeight')),
+            ScrapPercentage: checkForNull(getValues('ScrapPercentage')),
             ScrapWeight: dataToSend.ScrapWeight,
             NetRMCost: dataToSend.NetRMCost,
             RawMaterialId: rmRowDataState.RawMaterialId,
@@ -362,15 +393,19 @@ function StandardRub(props) {
             Area: calculateArea(),
             Tonnage: calculateTonnage()
         }
+        console.log(obj, "obj")
 
         const lastRow = tableData[tableData.length - 1]
+        console.log(lastRow, "lastRow")
         const validationFields = [
             ...(isVolumeAutoCalculate ? ["OuterDiameter"] : ["Volume"]),
             "FinishWeight",
             ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.InnerDiameter === 0) ? ["InnerDiameter"] : []),
             ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.CuttingAllowance === 0) ? ["CuttingAllowance"] : []),
             ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.Length === 0) ? ["Length"] : []),
+            // ...((getConfigurationKey()?.IsCalculateVolumeForPartInRubber && !isVolumeAutoCalculate) && (!(tableData.length > 0) || (!isVolumeAutoCalculate && lastRow?.ScrapPercentage === 0) ? ['ScrapPercentage'] : []))
         ];
+        console.log(validationFields, "validationFields")
         const isValid = await trigger(validationFields);
         if (!isValid) {
             return false;
@@ -398,7 +433,11 @@ function StandardRub(props) {
             FinishWeight: "",
             ScrapWeight: "",
             NetRMCost: "",
-            RawMaterial: []
+            RawMaterial: [],
+            ScrapPercentage: "",
+            TotalAllowance: "",
+            NumberOfBends: "",
+            BendTolerance: ""
 
         })
         setIsVolumeAutoCalculate(false);
@@ -432,7 +471,7 @@ function StandardRub(props) {
                 setRmDropDownData(updatedDropdown);
             }
         } catch (error) {
-            console.error('Error updating dropdown after row addition:', error);
+
         }
 
     }
@@ -451,7 +490,11 @@ function StandardRub(props) {
             FinishWeight: "",
             ScrapWeight: "",
             NetRMCost: "",
-            RawMaterial: []
+            RawMaterial: [],
+            ScrapPercentage: "",
+            TotalAllowance: "",
+            NumberOfBends: "",
+            BendTolerance: ""
 
         })
         setRmRowDataState({})
@@ -467,30 +510,25 @@ function StandardRub(props) {
     const onSubmit = debounce(handleSubmit(() => {
         setIsDisable(true)
         let obj = {}
-        let clonedRmData = _.cloneDeep(rmData);
-        let usedRmData = []
-        let unUsedRmData = []
-        if (clonedRmData && clonedRmData.length > 0) {
-            usedRmData = clonedRmData.filter(rmData => tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
-            unUsedRmData = clonedRmData.filter(rmData => !tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
-        }
+        const usedRmData = rmData.filter(rmData => tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
+        const unUsedRmData = rmData.filter(rmData => !tableData.find(tableData => tableData?.RawMaterialId === rmData?.RawMaterialId));
 
         // obj.LayoutType = 'Default'
         // obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
         // obj.IsChangeApplied = true //NEED TO MAKE IT DYNAMIC how to do
         obj.PartId = costData.PartId
         obj.RawMaterialId = rmRowData.RawMaterialId
-        obj.CostingId = costData.CostingId
+        obj.CostingId = item?.CostingId
         obj.TechnologyId = costData.TechnologyId
         // obj.CostingRawMaterialDetailId = rmRowData.RawMaterialDetailId
         // obj.NetLandedCost = grossWeights * rmRowData.RMRate - (grossWeights - getValues('finishWeight')) * rmRowData.ScrapRate
         // obj.PartNumber = costData.PartNumber
         // obj.TechnologyName = costData.TechnologyName
         obj.UOMForDimension = KG
-        obj.RmDropDownData = rmDropDownData
+
         // obj.CalculatedRmTableData = tableData
 
-        obj.BaseCostingId = costData.CostingId
+        obj.BaseCostingId = item?.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialRubberStandardWeightCalculator = tableData
         obj.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? tableData?.reduce((max, item) => {
@@ -696,10 +734,72 @@ function StandardRub(props) {
                                                 disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition && (tableData[tableData.length - 1]?.CuttingAllowance !== 0)) ? true : false)}
                                             />
                                         </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                label={`No. Of Bends`}
+                                                name={'NumberOfBends'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.CuttingAllowance === 0))}
+                                                rules={{
+                                                    required: isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.CuttingAllowance === 0)),
+                                                    validate: { number, decimalAndNumberValidation },
+                                                }}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.NumberOfBends}
+                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition && (tableData[tableData.length - 1]?.CuttingAllowance !== 0)) ? true : false)}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                label={`Bends Tolerance(mm)`}
+                                                name={'BendTolerance'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.CuttingAllowance === 0))}
+                                                rules={{
+                                                    required: isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.CuttingAllowance === 0)),
+                                                    validate: { number, decimalAndNumberValidation },
+                                                }}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.BendTolerance}
+                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition && (tableData[tableData.length - 1]?.CuttingAllowance !== 0)) ? true : false)}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TooltipCustom disabledIcon={true} id={'rubber-total-allowance'} tooltipText={"Total Allowance = Cutting Allowance(mm) + (Bends Tolerance(mm) * No. Of Bends)"} />
+                                            <TextFieldHookForm
+                                                label={`Total Allowance`}
+                                                name={'TotalAllowance'}
+                                                id={'rubber-total-allowance'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.CuttingAllowance === 0))}
+                                                rules={{
+                                                    required: isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.CuttingAllowance === 0)),
+                                                    validate: { number, decimalAndNumberValidation },
+                                                }}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.TotalAllowance}
+                                                disabled={true}
+                                            />
+                                        </Col>
 
 
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'rubber-total-length'} tooltipText={"Total Length = Length + Cutting allowance "} />
+                                            <TooltipCustom disabledIcon={true} id={'rubber-total-length'} tooltipText={"Total Length = Length + Total allowance "} />
                                             <TextFieldHookForm
                                                 label={`Total Length(mm)`}
                                                 id={'rubber-total-length'}
@@ -765,49 +865,132 @@ function StandardRub(props) {
                                             />
                                         </Col>
 
-                                        <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'rubber-gross-weight'} tooltipText={"Gross Weight = Volume * Density / 1000000"} />
-                                            <TextFieldHookForm
-                                                label={`Gross Weight(Kg)`}
-                                                name={'GrossWeight'}
-                                                id={'rubber-gross-weight'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.grossWeight}
-                                                disabled={true}
-                                            />
-                                        </Col>
+                                        {
+                                            (!getConfigurationKey()?.IsCalculateVolumeForPartInRubber || isVolumeAutoCalculate) ? (
+                                                <>
 
-                                        <Col md="3">
-                                            <TextFieldHookForm
-                                                label={`${finishWeightLabel} Weight(Kg)`}
-                                                name={'FinishWeight'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={(Object.keys(rmRowDataState).length > 0)}
-                                                rules={{
-                                                    required: (Object.keys(rmRowDataState).length > 0),
-                                                    validate: { number, decimalAndNumberValidation, positiveAndDecimalNumber },
-                                                    max: {
-                                                        value: getValues('GrossWeight'),
-                                                        message: `${finishWeightLabel} weight should not be greater than gross weight.`
-                                                    },
-                                                }}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.FinishWeight}
-                                                disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
-                                            />
-                                        </Col>
+                                                    <Col md="3">
+                                                        <TooltipCustom disabledIcon={true} id={'rubber-gross-weight'} tooltipText={"Gross Weight = Volume * Density / 1000000"} />
+                                                        <TextFieldHookForm
+                                                            label={`Gross Weight(Kg)`}
+                                                            name={'GrossWeight'}
+                                                            id={'rubber-gross-weight'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder'}
+                                                            errors={errors.grossWeight}
+                                                            disabled={true}
+                                                        />
+                                                    </Col>
+
+                                                    <Col md="3">
+                                                        <TextFieldHookForm
+                                                            label={`${finishWeightLabel} Weight(Kg)`}
+                                                            name={'FinishWeight'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={(Object.keys(rmRowDataState).length > 0)}
+                                                            rules={{
+                                                                required: (Object.keys(rmRowDataState).length > 0),
+                                                                validate: { number, decimalAndNumberValidation, positiveAndDecimalNumber },
+                                                                max: {
+                                                                    value: getValues('GrossWeight'),
+                                                                    message: `${finishWeightLabel} weight should not be greater than gross weight.`
+                                                                },
+                                                            }}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder'}
+                                                            errors={errors.FinishWeight}
+                                                            disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
+                                                        />
+                                                    </Col>
+                                                </>
+                                            )
+                                                : (
+                                                    <>
+
+
+                                                        <Col md="3">
+                                                            <TooltipCustom disabledIcon={true} id={`rubber-${finishWeightLabel}-weight`} tooltipText={`${finishWeightLabel} Weight = Volume * Density / 1000000`} />
+                                                            <TextFieldHookForm
+                                                                label={`${finishWeightLabel} Weight(Kg)`}
+                                                                name={'FinishWeight'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                id={`rubber-${finishWeightLabel}-weight`}
+                                                                mandatory={(Object.keys(rmRowDataState).length > 0)}
+                                                                rules={{
+                                                                    required: (Object.keys(rmRowDataState).length > 0),
+                                                                    validate: { number, decimalAndNumberValidation, positiveAndDecimalNumber },
+                                                                    // max: {
+                                                                    //     value: getValues('GrossWeight'),
+                                                                    //     message: `${finishWeightLabel} weight should not be greater than gross weight.`
+                                                                    // },
+                                                                }}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.FinishWeight}
+                                                                disabled={true}
+                                                            />
+                                                        </Col>
+                                                        <Col md="3">
+                                                            <TextFieldHookForm
+                                                                label={`Scrap Percentage`}
+                                                                name={'ScrapPercentage'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                mandatory={(Object.keys(rmRowDataState).length > 0)}
+                                                                rules={{
+                                                                    required: (Object.keys(rmRowDataState).length > 0),
+                                                                    validate: { number, decimalAndNumberValidation, positiveAndDecimalNumber, },
+                                                                    max: {
+                                                                        value: 100,
+                                                                        message: 'Percentage value should be equal to 100'
+                                                                    },
+                                                                }}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.ScrapPercentage}
+                                                                disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
+                                                            />
+                                                        </Col>
+
+                                                        <Col md="3">
+                                                            <TooltipCustom disabledIcon={true} id={'rubber-gross-weight-for-part'} tooltipText={`Gross Weight = ${finishWeightLabel} Weight + ${finishWeightLabel} Weight * Scrap Percentage / 100`} />
+                                                            <TextFieldHookForm
+                                                                label={`Gross Weight(Kg)`}
+                                                                name={'GrossWeight'}
+                                                                id={'rubber-gross-weight-for-part'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.grossWeight}
+                                                                disabled={true}
+                                                            />
+                                                        </Col>
+                                                    </>
+                                                )
+
+                                        }
 
                                         <Col md="3">
                                             <TooltipCustom disabledIcon={true} id={'rubber-scrap-weight'} tooltipText={`Scrap Weight = Gross Weight - ${finishedWeightLabel} Weight`} />
@@ -898,11 +1081,25 @@ function StandardRub(props) {
                                                 <AgGridColumn minWidth="150" field="OuterDiameter" headerName="Outer Dia " cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="Length" headerName="Length(mm)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="CuttingAllowance" headerName="Cutting Allowance" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth="150" field="BendTolerance" headerName="Bends Tolerance" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth="150" field="NumberOfBends" headerName="Number of Bends" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth="150" field="TotalAllowance" headerName="Total Allowance" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="TotalLength" headerName="Total Length" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="Volume" headerName="Volume" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn minWidth="150" field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn minWidth="150" field="FinishWeight" headerName={`${finishWeightLabel} Weight`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn minWidth="150" field="ScrapWeight" headerName="Scrap Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                {getConfigurationKey()?.IsCalculateVolumeForPartInRubber ?
+                                                    <>
+
+                                                        <AgGridColumn minWidth="150" field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                        <AgGridColumn minWidth="150" field="FinishWeight" headerName={`${finishWeightLabel} Weight`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                        <AgGridColumn minWidth="150" field="ScrapWeight" headerName="Scrap Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <AgGridColumn minWidth="150" field="ScrapWeight" headerName="Scrap Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                        <AgGridColumn minWidth="150" field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+
+                                                    </>
+                                                }
                                                 {/* <AgGridColumn minWidth="150" field="NetRMCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                                                 <AgGridColumn minWidth="150" field="NetRMCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatterForPrice'}></AgGridColumn>
                                                 <AgGridColumn minWidth="120" field="ProcessId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
