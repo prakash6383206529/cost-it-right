@@ -392,7 +392,7 @@ function LabourListing(props) {
 
   return (
     <>
-      <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+      <div className={`ag-grid-react grid-parent-wrapper container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
         {state.isLoader && <LoaderCustom customClass="loader-center" />}
         <ScrollToTop pointProp="go-to-top" />
         <form noValidate>
