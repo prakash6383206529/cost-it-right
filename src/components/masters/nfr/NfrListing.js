@@ -119,6 +119,9 @@ function NfrListing(props) {
         getDataList()
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
+        setShowAddNFRDrawer(false)
+        setAddRfq(false)
+        
         // Clear selectedRow from localStorage when component renders
         reactLocalStorage.remove('selectedRow');
     }, [])

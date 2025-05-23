@@ -568,7 +568,6 @@ function NfrPartsListing(props) {
                     NfrPartWiseDetailId={nfrIdsList?.NfrPartWiseDetailId}
                 />
             }
-            {editPart && <CreateManualNFR nfrIdsList={nfrIdsList} closeDrawer={closeDrawer} isViewFlag={true}/>}
             
 
         </>

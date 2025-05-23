@@ -29,7 +29,7 @@ function AddLabourCost(props) {
     const [labourDetailsId, setLabourDetailsId] = useState(0)
     const [labourDetailsFromMaster, setLabourDetailsFromMaster] = useState({ LabourRatePerShift: '', LabourRatePerMonth: '', LabourRate: '', Efficiency: '', WorkingTime: '', NoOfDays: '' })
     const dispatch = useDispatch()
-    const { costingData } = useSelector(state => state.costing)
+    const { costingData, currencySource } = useSelector(state => state.costing)
     const { labourTypeSelectList } = useSelector(state => state.comman)
 
 
@@ -762,7 +762,7 @@ function AddLabourCost(props) {
                                     <Col md="3">
                                         <TooltipCustom disabledIcon={true} id={`labour-cost`} tooltipClass='weight-of-sheet' width={'300px'} tooltipText={"Labour Cost = (Rate per Person/Shift * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time))+(Labour Rate * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time)*Absenteeism %)"} />
                                         <NumberFieldHookForm
-                                            label={`Labour Cost Rs/Pcs`}
+                                            label={`Labour Cost ${currencySource?.label}/Pcs`}
                                             name={'labourCost'}
                                             id={`labour-cost`}
                                             Controller={Controller}

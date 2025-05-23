@@ -1003,7 +1003,7 @@ function RawMaterialCost(props) {
               item.NetLandedCost = weightItem?.NetRMCost;
               item.NetRMCost = weightItem?.NetRMCost;
               item.RawMaterialName = weightItem?.RmName;
-              item.WeightCalculatorRequest = weightData;
+              item.WeightCalculatorRequest = { ...weightData, usedRmData: undefined }; // Remove usedRmData to break the circular reference;
               item.WeightCalculationId = weightData?.WeightCalculationId;
               item.RawMaterialCalculatorId = weightData?.WeightCalculationId;
               item.IsCalculatedEntry = true;

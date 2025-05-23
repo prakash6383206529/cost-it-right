@@ -1993,6 +1993,7 @@ function ProcessCost(props) {
             Ids={Ids}
             MachineIds={MachineIds}
             groupMachineId={groupNameMachine}
+            item={item}
           />
         )
       }

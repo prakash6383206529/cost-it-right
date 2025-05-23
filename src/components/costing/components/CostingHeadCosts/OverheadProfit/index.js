@@ -668,7 +668,7 @@ function OverheadProfit(props) {
         ...prev,
         CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail =>
           detail.ApplicabilityDetailsId === item?.ApplicabilityDetailsId
-            ? { ...detail, Cost: checkForNull(value), TotalCost: checkForNull(value) }
+            ? { ...detail, Cost: checkForNull(value), TotalCost: checkForNull(value)}
             : detail
         )
       }));
@@ -677,7 +677,7 @@ function OverheadProfit(props) {
         ...prev,
         CostingApplicabilityDetails: prev?.CostingApplicabilityDetails.map(detail =>
           detail.ApplicabilityDetailsId === item?.ApplicabilityDetailsId
-            ? { ...detail, Cost: checkForNull(value), TotalCost: checkForNull(value) }
+            ? { ...detail, Cost: checkForNull(value) , TotalCost: checkForNull(value)}
             : detail
         )
       }));

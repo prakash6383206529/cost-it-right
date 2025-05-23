@@ -8,7 +8,7 @@ import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCal
 import { createToprowObjAndSave, findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
 import { getCostingCostDetails, gridDataAdded, saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
 import { useContext } from 'react';
-import { NetPOPriceContext, costingInfoContext } from '../CostingDetailStepTwo';
+import { IsNFRContext, NetPOPriceContext, costingInfoContext } from '../CostingDetailStepTwo';
 import { useEffect } from 'react';
 import { IsPartType, ViewCostingContext } from '../CostingDetails';
 import { useRef } from 'react';
@@ -26,6 +26,7 @@ function AddAssemblyProcess(props) {
   const costData = useContext(costingInfoContext)
   const { ToolTabData, ToolsDataList, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const drawerRef = useRef();
   const isPartType = useContext(IsPartType);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -226,7 +227,7 @@ function AddAssemblyProcess(props) {
           }))
         } else {
           dispatch(saveAssemblyCostingRMCCTab(requestObj, res => {
-            if (!CostingViewMode) {
+            if (!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) {
               let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
 
               dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
@@ -305,7 +306,7 @@ function AddAssemblyProcess(props) {
                   </button>
                   <button
                     id="AddAssemblyProcess_Save"
-                    disabled={CostingViewMode ? true : false}
+                    disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ? true : false}
                     type={'button'}
                     className="submit-button mr15 save-btn"
                     onClick={saveData} >
