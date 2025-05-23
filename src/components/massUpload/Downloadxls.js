@@ -32,7 +32,15 @@ import {
     AddAssemblyOrComponentAdditionalInfoTempData,
     AddAssemblyOrComponentAdditionalInfoHeaderData,
     SAP_PUSH_HEADER_DATA,
-    SAP_PUSH_TEMP_DATA
+    SAP_PUSH_TEMP_DATA,
+    RejectionTempData,
+    RejectionVBC_TempData,
+    RejectionCBC,
+    RejectionCBC_TempData,
+    Rejection,
+    RejectionVBC,
+    PartFamily,
+    PartFamilyTempData
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey, RFQ_KEYS, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
@@ -180,6 +188,9 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
         if (getConfigurationKey().IsSAPCodeRequired === false) {
             if (el.value === 'SAPPartNumber') return false;
         }
+        if (!(getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily)) {
+            if (el.value === 'PartFamilyCode') return false;
+        }
         return true;
     })
 }
@@ -218,7 +229,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', false, true), VendorTempData);
             case 'Overhead':
                 const localizedOverheadHeaders = this.localizeHeaders(Overhead);
-                return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadTempData, this.props?.modelText));
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedOverheadHeaders), addDynamicModelType(OverheadTempData, this.props?.modelText));
             case 'Index Data':
                 const localizedIndexDataHeaders = this.localizeHeaders(IndexDataListing);
                 return this.returnExcelColumn(localizedIndexDataHeaders, IndexDataListingTempData);
@@ -237,15 +248,21 @@ class Downloadxls extends React.Component {
             case 'Fuel':
                 const localizedFuelHeaders = this.localizeHeaders(Fuel);
                 return this.returnExcelColumn(localizedFuelHeaders, FuelTempData);
+            case `Rejection`:
+                const localizedRejectionHeaders = this.localizeHeaders(Rejection);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedRejectionHeaders), addDynamicModelType(RejectionTempData, this.props?.modelText));
             case 'Profit':
                 const localizedProfitHeaders = this.localizeHeaders(Profit);
-                return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempData, this.props?.modelText));
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedProfitHeaders), addDynamicModelType(ProfitTempData, this.props?.modelText));
             case 'Labour':
                 const localizedLabourHeaders = this.localizeHeaders(Labour);
                 return this.returnExcelColumn(checkLabourRateConfigure(localizedLabourHeaders), LabourTempData);
             case 'Part Component':
                 const localizedPartComponentHeaders = this.localizeHeaders(PartComponent);
                 return this.returnExcelColumn(checkSAPCodeinExcel(localizedPartComponentHeaders), checkSAPCodeinExcel(PartComponentTempData));
+            case 'Part Family':
+                const localizedPartFamilyHeaders = this.localizeHeaders(PartFamily);
+                return this.returnExcelColumn(checkSAPCodeinExcel(localizedPartFamilyHeaders), checkSAPCodeinExcel(PartFamilyTempData));
             case SAP_PUSH:
                 const localizedSAPPushHeaders = this.localizeHeaders(SAP_PUSH_HEADER_DATA);
                 return this.returnExcelColumn(localizedSAPPushHeaders, SAP_PUSH_TEMP_DATA);
@@ -362,10 +379,13 @@ class Downloadxls extends React.Component {
 
             case `Overhead`:
                 const localizedOverheadHeaders = this.localizeHeaders(Overhead);
-                return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadTempData, this.props?.modelText));
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedOverheadHeaders), addDynamicModelType(OverheadTempData, this.props?.modelText));
+            case `Rejection`:
+                const localizedRejectionHeaders = this.localizeHeaders(Rejection);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedRejectionHeaders), addDynamicModelType(RejectionTempData, this.props?.modelText));
             case `Profit`:
                 const localizedProfitHeaders = this.localizeHeaders(Profit);
-                return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempData, this.props?.modelText));
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedProfitHeaders), addDynamicModelType(ProfitTempData, this.props?.modelText));
             case 'Actual Volume':
                 const localizedVolumeHeaders = this.localizeHeaders(VOLUME_ACTUAL_ZBC);
                 return this.returnExcelColumn(localizedVolumeHeaders, VOLUME_ACTUAL_ZBC_TEMPDATA);
@@ -436,10 +456,13 @@ class Downloadxls extends React.Component {
                 }
             case `Overhead`:
                 const localizedOverheadHeaders = this.localizeHeaders(OverheadVBC);
-                return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadVBC_TempData, this.props?.modelText));
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedOverheadHeaders), addDynamicModelType(OverheadVBC_TempData, this.props?.modelText));
+            case `Rejection`:
+                const localizedRejectionHeaders = this.localizeHeaders(RejectionVBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedRejectionHeaders), addDynamicModelType(RejectionVBC_TempData, this.props?.modelText));
             case `Profit`:
                 const localizedProfitHeaders = this.localizeHeaders(ProfitVBC);
-                return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempDataVBC, this.props?.modelText));
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedProfitHeaders), addDynamicModelType(ProfitTempDataVBC, this.props?.modelText));
             case 'Actual Volume':
                 const localizedVolumeHeaders = this.localizeHeaders(VOLUME_ACTUAL_VBC);
                 return this.returnExcelColumn(checkVendorPlantConfig(localizedVolumeHeaders), VOLUME_ACTUAL_VBC_TEMPDATA);
@@ -495,10 +518,13 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), BOP_CBC_IMPORT_TempData);
             case `Overhead`:
                 const localizedOverheadHeaders = this.localizeHeaders(OverheadCBC);
-                return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadCBC_TempData, this.props?.modelText));
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedOverheadHeaders), addDynamicModelType(OverheadCBC_TempData, this.props?.modelText));
+            case `Rejection`:
+                const localizedRejectionHeaders = this.localizeHeaders(RejectionCBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedRejectionHeaders), addDynamicModelType(RejectionCBC_TempData, this.props?.modelText));
             case `Profit`:
                 const localizedProfitHeaders = this.localizeHeaders(ProfitCBC);
-                return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempDataCBC, this.props?.modelText));
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedProfitHeaders), addDynamicModelType(ProfitTempDataCBC, this.props?.modelText));
             case 'Actual Volume':
                 const localizedVolumeHeaders = this.localizeHeaders(VOLUME_ACTUAL_CBC);
                 return this.returnExcelColumn(checkVendorPlantConfig(localizedVolumeHeaders), VOLUME_ACTUAL_CBC_TEMPDATA);
@@ -527,6 +553,7 @@ class Downloadxls extends React.Component {
     * @description Used to get excel column names
     */
     returnExcelColumn = (data = [], TempData, isNoteColExist = false) => {
+        
         const { fileName, failedData, isFailedFlag } = this.props;
 
         let dataList = [...data]
@@ -566,7 +593,7 @@ class Downloadxls extends React.Component {
             : fileName;
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
-        if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit')) {
             return (
                 <ExcelFile hideElement={true} filename={`${downloadFileName} ZBC`} fileExtension={'.xls'} >
                     {isMachineMoreTemplate || costingTypeId === ZBCADDMOREOPERATION ? this.renderZBCSwitch(costingTypeId) : this.renderZBCSwitch(fileName)}
@@ -583,7 +610,7 @@ class Downloadxls extends React.Component {
         }
 
         // DOWNLOAD FILE:- CALLED WHEN VBC FILE FAILED
-        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION || bopType === DETAILED_BOP) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION || bopType === DETAILED_BOP) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Rejection' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit')) {
 
             return (
                 <ExcelFile hideElement={true} filename={`${downloadFileName}VBC`} fileExtension={'.xls'} >
@@ -592,7 +619,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN CBC FILE FAILED
-        if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Rejection' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit')) {
 
             return (
                 <ExcelFile hideElement={true} filename={`${downloadFileName} CBC`} fileExtension={'.xls'} >
@@ -601,7 +628,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Profit' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === ASSEMBLYORCOMPONENTSRFQ || fileName === BOUGHTOUTPARTSRFQ || fileName === RAWMATERIALSRFQ || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization' || fileName === SAP_PUSH)) {
+        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Rejection' || fileName === 'Profit' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === ASSEMBLYORCOMPONENTSRFQ || fileName === BOUGHTOUTPARTSRFQ || fileName === RAWMATERIALSRFQ || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization' || fileName === SAP_PUSH)) {
 
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >

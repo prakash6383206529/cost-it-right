@@ -6,7 +6,7 @@ import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
   setComponentToolItemData, saveDiscountOtherCostTab, saveAssemblyPartRowCostingCalculation, isToolDataChange, saveCostingPaymentTermDetail
 } from '../../actions/Costing';
-import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, IsNFRContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
@@ -31,7 +31,6 @@ import { PreviousTabData } from '../CostingHeaderTabs';
 import _ from 'lodash'
 import { useLabels } from '../../../../helper/core';
 function TabToolCost(props) {
-
   const { handleSubmit } = useForm();
   const dispatch = useDispatch()
   const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, PaymentTermDataDiscountTab, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
@@ -48,6 +47,7 @@ function TabToolCost(props) {
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const [gridData, setGridData] = useState([])
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -98,7 +98,7 @@ function TabToolCost(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
-    if (CostingViewMode === false && ToolTabData?.length > 0) {
+    if ((CostingViewMode === false || IsLockTabInCBCCostingForCustomerRFQ===false) && ToolTabData?.length > 0) {
       let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0]?.CostingPartDetails !== undefined ? ToolTabData[0]?.CostingPartDetails : null;
       //setTimeout(() => {
 
@@ -334,7 +334,7 @@ function TabToolCost(props) {
             }),
         })
       if (costData.IsAssemblyPart === true && !partType) {
-        if (!CostingViewMode) {
+        if (!CostingViewMode || !IsLockTabInCBCCostingForCustomerRFQ) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 5, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
           apiCalls.push({
             label: 'saveAssemblyPartRowCostingCalculation',
@@ -422,7 +422,7 @@ function TabToolCost(props) {
     return (
       <>
         {!shouldShowButtons && row?.PartType !== 'Component' && <div className={`${'lock_icon tooltip-n'}`} title='This part is already present at multiple level in this BOM. Please go to the lowest level to edit the data.'></div>}
-        {(!CostingViewMode && shouldShowButtons) && (
+        {((!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) && shouldShowButtons) && (
           <>
             <button
               title='Edit'
@@ -536,7 +536,7 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={CostingViewMode || state.disableToggle || IsApplicableOverall}
+                            disabled={CostingViewMode || state.disableToggle || IsApplicableOverall || IsLockTabInCBCCostingForCustomerRFQ}
                             //disabled={true}
                             background="#4DC771"
                             onColor="#4DC771"
@@ -577,7 +577,7 @@ function TabToolCost(props) {
                   </div>
                   {IsApplicableProcessWise &&
                     <>
-                      {!CostingViewMode && <button
+                      {(!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) && <button
                         type="button"
                         className={'user-btn tool-btn'}
                         onClick={DrawerToggle}
@@ -696,7 +696,7 @@ function TabToolCost(props) {
       </div >
 
 
-      {!CostingViewMode && IsApplicableProcessWise &&
+      {(!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) && IsApplicableProcessWise &&
         <div className="col-sm-12 text-right bluefooter-butn btn-sticky-container">
           <button
             type={'button'}
@@ -714,7 +714,8 @@ function TabToolCost(props) {
           isOpen={isDrawerOpen}
           closeDrawer={closeDrawer}
           isEditFlag={isEditFlag}
-          CostingViewMode={CostingViewMode}
+          CostingViewMode={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
+          IsLockTabInCBCCostingForCustomerRFQ={IsLockTabInCBCCostingForCustomerRFQ} 
           ID={''}
           setToolCost={setToolCost}
           editIndex={editIndex}

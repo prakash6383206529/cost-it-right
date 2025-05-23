@@ -73,7 +73,8 @@ import {
   SET_COSTING_HEAD_FILTER,
   SET_LOCALIZED_COSTING_HEAD_OPTIONS,
   IS_RESET_COSTING_HEAD,
-  SET_LIST_TOGGLE
+  SET_LIST_TOGGLE,
+  GET_APPLICABILITY_LIST_SUCCESS
 } from '../config/constants';
 
 const initialState = {
@@ -298,6 +299,13 @@ export default function commanReducer(state = initialState, action) {
         loading: false,
         error: true,
         costingHead: action.payload
+      };
+    case GET_APPLICABILITY_LIST_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        applicabilityList: action.payload
       };
     case GET_MODEL_TYPE_SUCCESS:
       return {

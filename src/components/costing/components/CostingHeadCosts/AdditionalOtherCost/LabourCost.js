@@ -15,6 +15,7 @@ function LabourCost(props) {
     }
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const { currencySource } = useSelector(state => state.costing)
 
     useEffect(() => {
         const sum = props?.tableData?.reduce((acc, obj) => Number(acc) + Number(obj.LabourCost), 0);
@@ -39,7 +40,7 @@ function LabourCost(props) {
                                 {<th>{`Working Time`}</th>}
                                 {<th>{`Efficiency`}</th>}
                                 {<th>{`Cycle Time`}</th>}
-                                {<th>{`Labour Cost Rs/Pcs`}</th>}
+                                {<th>{`Labour Cost ${currencySource?.label}/Pcs`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
                             </tr>

@@ -3,6 +3,7 @@ import { I18nContext, useTranslation } from 'react-i18next';
 import { showLogoFromDataBase } from '../config/constants';
 import { getConfigurationKey } from './auth';
 import PrimaryLogo from '../assests/images/logo/company-logo.svg';
+// import PrimaryLogo from '../assests/images/logo/fstLogo.svg';
 import SecondaryLogo from '../assests/images/logo/CIRlogo.svg';
 import i18next from 'i18next';
 import { DefaultLocalizationLabel } from './DefualtLocalizationLabel';

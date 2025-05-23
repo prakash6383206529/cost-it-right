@@ -290,7 +290,6 @@ export function checkExistCosting(data, callback) {
         "PlantId": data.PlantId,
         "VendorId": data.VendorId
     }
-    console.log("requestData", requestData);
     return (dispatch) => {
         const request = axiosInstance.post(API.checkExistCosting, requestData, config());
         request.then((response) => {

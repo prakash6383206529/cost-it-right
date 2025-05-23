@@ -26,6 +26,7 @@ const FuelMaster = (props) => {
     BulkUploadAccessibility: false,
     DownloadAccessibility: false,
     stopApiCallOnCancel: false,
+    isImport: false,
     permissionData: {},
   });
   // const [permissionData, setPermissionData] = useState({});
@@ -74,8 +75,8 @@ const FuelMaster = (props) => {
     setState((prevState) => ({ ...prevState, isPowerForm: true, isFuelForm: false, data: {}, }));
   };
 
-  const hideForm = (type) => {
-    setState((prevState) => ({ ...prevState, isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false, }));
+  const hideForm = (type, isImport) => {
+    setState((prevState) => ({ ...prevState, isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false, isImport: isImport }));
     if (type === "cancel") {
       setState((prevState) => ({ ...prevState, stopApiCallOnCancel: true }));
     }
@@ -147,6 +148,7 @@ const FuelMaster = (props) => {
                           DownloadAccessibility={state.DownloadAccessibility}
                           ViewAccessibility={state.ViewAccessibility}
                           stopApiCallOnCancel={state.stopApiCallOnCancel}
+                          isImport={state.isImport}
                         />
                       </TabPane>
                     )}
@@ -163,6 +165,7 @@ const FuelMaster = (props) => {
                           DownloadAccessibility={state.DownloadAccessibility}
                           ViewAccessibility={state.ViewAccessibility}
                           stopApiCallOnCancel={state.stopApiCallOnCancel}
+                          isImport={state.isImport}
                         />
                       </TabPane>
                     )}

@@ -26,7 +26,7 @@ import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchModelTypeAPI, setResetCostingHead } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideColumnFromExcel, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import { updatePageNumber, updateCurrentRowIndex, resetStatePagination } from '../../common/Pagination/paginationAction';
@@ -72,7 +72,7 @@ function ProfitListing(props) {
     const [dataCount, setDataCount] = useState(0)
     const [state, setState] = useState({ isBulkUpload: false })
     // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "", PartFamily: "", Applicability: "" })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
@@ -339,7 +339,7 @@ function ProfitListing(props) {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
         }
-        props.getDetails(data, rowData?.IsAssociated);
+        props.getDetails(data, rowData?.IsProfitAssociated);
     }
 
     /**
@@ -416,7 +416,7 @@ function ProfitListing(props) {
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {EditAccessibility && rowData?.IsEditable && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && !rowData?.IsAssociated && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {DeleteAccessibility && !rowData?.IsProfitAssociated && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
@@ -519,6 +519,7 @@ function ProfitListing(props) {
 
 
     const onGridReady = (params) => {
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
@@ -603,6 +604,9 @@ function ProfitListing(props) {
             }
             return item;
         });
+        if (!getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily) {
+            excelData = hideColumnFromExcel(data, "PartFamily");
+        }
         const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
         const excelColumns = excelData && excelData.map((ele, index) => {
             if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
@@ -771,7 +775,7 @@ function ProfitListing(props) {
                                             suppressRowClickSelection={true}
                                         //onFilterModified={(e) => { setNoData(searchNocontentFilter(e)) }}
                                         >
-                                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer}
+                                            <AgGridColumn field="CostingHead" minWidth={200} headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer}
                                                 floatingFilterComponentParams={floatingFilterStatus}
                                                 floatingFilterComponent="statusFilter"></AgGridColumn>
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
@@ -779,12 +783,9 @@ function ProfitListing(props) {
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                                             <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                            {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
-                                            <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit}></AgGridColumn>
-                                            <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
-                                            <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM/ Part Cost (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="ProfitBOPPercentage" headerName={`Profit on ${showBopLabel()} (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="Applicability" headerName="Profit Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                             <AgGridColumn field="ProfitId" width={180} cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                         </AgGridReact>

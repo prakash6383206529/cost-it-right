@@ -51,7 +51,7 @@ const SendForApproval = (props) => {
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { IsApprovalLevelFilterByPlant } = initialConfiguration
+  const { IsMultipleUserAllowForApproval,IsApprovalLevelFilterByPlant } = initialConfiguration
 
   const [selectedDepartment, setSelectedDepartment] = useState([])
   const [selectedApprover, setSelectedApprover] = useState('')

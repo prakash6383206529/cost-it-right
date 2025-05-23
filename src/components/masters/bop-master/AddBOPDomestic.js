@@ -46,6 +46,7 @@ import { LabelsClass } from '../../../helper/core';
 import { subDays } from 'date-fns';
 import { getPlantUnitAPI } from '../actions/Plant';
 import AddOtherCostDrawer from '../material-master/AddOtherCostDrawer';
+import { getPartFamilySelectList } from '../actions/Part';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -109,7 +110,7 @@ class AddBOPDomestic extends Component {
       disableSendForApproval: false,
       isOpenConditionDrawer: false,
       conditionTableData: [],
-
+      PartFamilySelected: [],
       FinalBasicRateBaseCurrency: '',
       NetCostWithoutConditionCost: '',
       NetConditionCost: '',
@@ -179,6 +180,7 @@ class AddBOPDomestic extends Component {
    */
   componentDidMount() {
     this.props.getExchangeRateSource((res) => { })
+    this.getPartFamilySelectList();
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() });
     // if (!this.state.isViewMode) {
     //   this.props.getAllCity(cityId => {
@@ -194,6 +196,21 @@ class AddBOPDomestic extends Component {
       this.props.getClientSelectList(() => { })
     }, 300);
   }
+
+  getPartFamilySelectList = () => {
+    this?.props?.getPartFamilySelectList((res) => {
+      if (res && res?.data && res?.data?.Result) {
+        // Transform the part family data into the format needed for the dropdown
+        const partFamilyOptions = res?.data?.SelectList
+          .map(item => ({
+            label: item?.PartFamily,
+            value: item?.PartFamilyId
+          }));
+        this.setState({ partFamilyOptions });
+      }
+    })
+  }
+
   callExchangeRateAPI = () => {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource } = this.state;
@@ -414,6 +431,7 @@ class AddBOPDomestic extends Component {
               ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName },
               totalOtherCost: Data?.OtherNetCost,
               otherCostTableData: Data?.BoughtOutPartOtherCostDetailsSchema,
+              PartFamilySelected: Data?.PartFamilyId ? { label: Data?.PartFamily ?? "", value: Data?.PartFamilyId } : [],
             }, () => {
               this.toolTipNetCost()
               this.setState({ isLoader: false })
@@ -482,8 +500,17 @@ class AddBOPDomestic extends Component {
   */
   renderListing = (label) => {
     const { bopCategorySelectList, plantSelectList, cityList,
-      UOMSelectList, exchangeRateSourceList, partSelectList, clientSelectList, costingSpecifiTechnology } = this.props;
+      UOMSelectList, exchangeRateSourceList, partSelectList, clientSelectList, costingSpecifiTechnology, partFamilySelectList } = this.props;
     const temp = [];
+
+    if(label === 'PartFamily') {
+      partFamilySelectList && partFamilySelectList.map((item) => {
+        if (item.Value === '--0--') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
     if (label === 'BOPCategory') {
       bopCategorySelectList && bopCategorySelectList.map(item => {
         if (item.Value === '0') return false;
@@ -1106,7 +1133,9 @@ class AddBOPDomestic extends Component {
       OtherNetCost: totalOtherCost,
       BoughtOutPartOtherCostDetailsSchema: otherCostTableData,
       LocalCurrencyExchangeRate: null,
-      LocalExchangeRateId: null
+      LocalExchangeRateId: null,
+      PartFamilyId: this?.state?.PartFamilySelected?.value || "",
+      PartFamily: this?.state?.PartFamilySelected?.label || "",
     };
 
     // formData.BasicRate = FinalBasicRateBaseCurrency
@@ -1268,6 +1297,14 @@ class AddBOPDomestic extends Component {
     this.setState({ totalOtherCost: total }, () => {
       this.handleCalculation()
     })
+  }
+
+  handlePartFamilyChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ PartFamilySelected: newValue });
+    } else {
+      this.setState({ PartFamilySelected: null });
+    }
   }
 
   updateTableCost = (isConditionCost = false) => {
@@ -1495,6 +1532,24 @@ class AddBOPDomestic extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
+
+                          {initialConfiguration?.PartAdditionalMasterFields?.IsShowPartFamily && 
+                            (<Col md="3">
+                              <Field
+                                name="partFamily"
+                                type="text"
+                                label="Part Family"
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("PartFamily")}
+                                validate={this?.state?.PartFamilySelected == null || this?.state?.PartFamilySelected.length === 0 ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handlePartFamilyChange}
+                                valueDescription={this?.state?.PartFamilySelected}
+                                disabled={false}
+                              />
+                            </Col>)
+                          }
 
                           <Col md="3">
                             <Field
@@ -1773,6 +1828,7 @@ class AddBOPDomestic extends Component {
                             {!this.state.hidePlantCurrency && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency ?? ''} = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
+                              defaultValue={''}
                               type="text"
                               label="Plant Currency"
                               placeholder={"-"}
@@ -2251,7 +2307,7 @@ function mapStateToProps(state) {
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead, exchangeRateSourceList } = comman;
-  const { partSelectList } = part;
+  const { partSelectList, partFamilySelectList } = part;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration, userMasterLevelAPI } = auth;
   const { clientSelectList } = client;
@@ -2269,14 +2325,17 @@ function mapStateToProps(state) {
       BasicRate: bopData.BasicRate,
       Remark: bopData.Remark,
       NumberOfPieces: bopData?.NumberOfPieces,
-      SAPPartNumber: bopData?.SAPPartNumber
-
+      SAPPartNumber: bopData?.SAPPartNumber,
+      PartFamily: {
+        label: bopData?.PartFamily || "",
+        value: bopData?.PartFamilyId || ""
+      }
     }
   }
 
   return {
     vendorWithVendorCodeSelectList, plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList,
-    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI, costingSpecifiTechnology, exchangeRateSourceList, formValues
+    plantSelectList, bopCategorySelectList, bopData, partSelectList, partFamilySelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI, costingSpecifiTechnology, exchangeRateSourceList, formValues
   }
 
 }
@@ -2304,6 +2363,7 @@ export default connect(mapStateToProps, {
   getUsersMasterLevelAPI,
   getVendorNameByVendorSelectList,
   getCostingSpecificTechnology,
+  getPartFamilySelectList,
   checkAndGetBopPartNo,
   getExchangeRateSource,
   getPlantUnitAPI,

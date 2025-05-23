@@ -75,7 +75,10 @@ import {
   GET_TAX_CODE_SELECTLIST,
   SET_COSTING_HEAD_FILTER,
   IS_RESET_COSTING_HEAD,
-  SET_LIST_TOGGLE
+  SET_LIST_TOGGLE,
+  GET_APPLICABILITY_LIST_SUCCESS,
+  GET_SEGMENT_SELECTLIST,
+  GET_GROUP_CODE_SELECTLIST
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -764,7 +767,7 @@ export function fetchSupplierCityDataAPI(callback) {
  * @method fetchCostingHeadsAPI
  * @description Used to fetch costing heads
  */
-export function fetchCostingHeadsAPI(costingHeads, isAddOtherCostApplicability = false,isRequestForMultiTechnology=false, callback) {
+export function fetchCostingHeadsAPI(costingHeads, isAddOtherCostApplicability = false, isRequestForMultiTechnology = false, callback) {
   return (dispatch, getState) => {
     dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getCostingHeads}?applicabilityFor=${costingHeads}&isAddOtherCostApplicability=${isAddOtherCostApplicability}&isRequestForMultiTechnology=${isRequestForMultiTechnology}`, config());
@@ -772,6 +775,30 @@ export function fetchCostingHeadsAPI(costingHeads, isAddOtherCostApplicability =
       if (response.data.Result) {
         dispatch({
           type: GET_COSTING_HEAD_SUCCESS,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method fetchApplicabilityList
+ * @description Used to fetch applicability list
+ */
+export function fetchApplicabilityList(costingConditionEntryTypeId=null, costingConditionTypeId, isRequestForMultiTechnology = false, callback) {
+  return (dispatch, getState) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getApplicabilityList}?costingConditionEntryTypeId=${costingConditionEntryTypeId}&costingConditionTypeId=${costingConditionTypeId}&isRequestForMultiTechnology=${isRequestForMultiTechnology}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_APPLICABILITY_LIST_SUCCESS,
           payload: response.data.SelectList,
         });
         callback(response);
@@ -1385,6 +1412,55 @@ export function getPlantSelectListByType(TYPE, MODULE, nfrId, callback) {
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
       apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getSegmentSelectList
+ * @description GET SEGMENT SELECT LIST
+ */
+export function getSegmentSelectList(callback) {
+
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getSegmentSelectList}?loggedInUserId=${loggedInUserId()}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_SEGMENT_SELECTLIST,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getGroupCodeSelectList
+ * @description GET GROUP CODE SELECT LIST
+ */
+export function getGroupCodeSelectList(partId,callback) {
+
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getGroupCodeSelectList}?loggedInUserId=${loggedInUserId()}&partId=${partId}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_GROUP_CODE_SELECTLIST,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      // apiErrors(error);
+      
     });
   };
 }

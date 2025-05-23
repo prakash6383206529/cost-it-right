@@ -103,7 +103,7 @@ function AddBudget(props) {
     const [disableCurrency, setDisableCurrency] = useState(true);
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const isViewMode = props.data.isViewMode
-    const [budgetedEntryType, setBudgetedEntryType] = useState(false)
+    const [budgetedEntryType, setBudgetedEntryType] = useState(props?.isImport ? props?.isImport : false)
     const [showWarning, setShowWarning] = useState(false)
     const [plantCurrencyID, setPlantCurrencyID] = useState('')
     const [hidePlantCurrency, setHidePlantCurrency] = useState(false)

@@ -106,7 +106,7 @@ class AddOperation extends Component {
       CostingTypePermission: false,
       disableSendForApproval: false,
       isWelding: false,
-      isImport: false,
+      isImport: props?.isImport ? true : false,
       hidePlantCurrency: false,
       settlementCurrency: 1,
       plantCurrency: 1,
@@ -140,7 +140,7 @@ class AddOperation extends Component {
   componentDidMount() {
     const { initialConfiguration } = this.props
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
@@ -221,7 +221,7 @@ class AddOperation extends Component {
             const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: this.state.vendorName?.value, clientValue: client?.value, plantCurrency: this?.props?.fieldsObj?.plantCurrency });
             callAPI(fieldsObj?.plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
               this.setState({
-                plantCurrency: rate1,
+                plantCurrency: rate1 !== 0 ? rate1 : 1,
                 settlementCurrency: rate2,
                 plantExchangeRateId: exchangeRateId1,
                 settlementExchangeRateId: exchangeRateId2
@@ -247,7 +247,7 @@ class AddOperation extends Component {
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID,null, (res) => {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, null, (res) => {
         setTimeout(() => {
           this.commonFunction(plantId, isDivision)
         }, 100);
@@ -660,7 +660,7 @@ class AddOperation extends Component {
           if (Data && Data?.Plant?.length > 0) {
             plantArray = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
           }
-          // this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0].Value)
+          this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0]?.Value)
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
           }
@@ -980,7 +980,8 @@ class AddOperation extends Component {
     if (type === 'submit') {
       this.props.getOperationDataAPI('', () => { })
     }
-    this.props.hideForm(type)
+    // Pass the current isImport state back to parent
+    this.props.hideForm(type, this.state.isImport);
   }
   cancelHandler = () => {
     if (this.state.isViewMode) {
@@ -1149,7 +1150,6 @@ class AddOperation extends Component {
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
     else {
-      console.log("formData", formData)
       formData.IsSendForApproval = false;
       this.handleOperationAPI(formData, isEditFlag);
     }
@@ -1399,7 +1399,7 @@ class AddOperation extends Component {
                     </Row>
                     <Row>
 
-                      {getConfigurationKey().IsShowDetailedOperationBreakup && <Col md="3">
+                      { <Col md="3">
                         <Field
                           name="operationType"
                           type="text"
@@ -1485,7 +1485,7 @@ class AddOperation extends Component {
 
                     <Row>
                       {/* might use later */}
-                      {(costingTypeId === ZBCTypeId && (!initialConfiguration?.IsMultipleUserAllowForApproval && !IsSelectSinglePlant)) && (
+                      {(costingTypeId === ZBCTypeId && (!initialConfiguration?.IsApprovalLevelFilterByPlant && !IsSelectSinglePlant)) && (
                         <Col md="3">
                           <Field
                             label="Plant (Code)"
@@ -1539,7 +1539,7 @@ class AddOperation extends Component {
 
                       )}
                       {
-                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === ZBCTypeId && IsSelectSinglePlant) || initialConfiguration?.IsMultipleUserAllowForApproval) &&
+                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === ZBCTypeId && IsSelectSinglePlant) || initialConfiguration?.IsApprovalLevelFilterByPlant) &&
                         <Col md="3">
                           <Field
                             label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
@@ -1680,11 +1680,12 @@ class AddOperation extends Component {
                               label={`Welding Material Rate/Kg`}
                               name={"WeldingRate"}
                               type="text"
-                              placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
+                              validate={[this.state.isWelding ? required : "", positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
-                              required={false}
-                              disabled={isViewMode || isDetailEntry}
+                              required={this.state.isWelding ? true : false}
+                              mendatory={this.state.isWelding ? true : false}
+                              disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'WeldingRate') }}
                               className=" "
                               customClassName=" withBorder"
@@ -1695,11 +1696,11 @@ class AddOperation extends Component {
                               label={`Consumption`}
                               name={"Consumption"}
                               type="text"
-                              placeholder={isViewMode ? '-' : "Enter"}
+                              placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
-                              disabled={isViewMode || isDetailEntry}
+                              disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'Consumption') }}
                               className=" "
                               customClassName=" withBorder"
@@ -1716,8 +1717,9 @@ class AddOperation extends Component {
                           placeholder={isViewMode || this.state.isWelding ? '-' : "Enter"}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
-                          required={true}
-                          disabled={isViewMode || this.state.isWelding || isDetailEntry}
+                          required={this.state.isWelding ? false : true}
+                          mendatory={this.state.isWelding ? false : true}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
@@ -1734,8 +1736,9 @@ class AddOperation extends Component {
                           placeholder={this.state.isImport ? '' : 'Enter'}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
-                          required={true}
-                          disabled={this.state.isImport ? true : false || isViewMode || this.state.isWelding || isDetailEntry}
+                          required={this.state.isWelding ? false : true}
+                          mendatory={this.state.isWelding ? false : true}
+                          disabled={this.state.isImport ? true : false || isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
