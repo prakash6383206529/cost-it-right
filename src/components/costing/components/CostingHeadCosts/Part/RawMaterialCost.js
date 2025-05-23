@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useCallback, } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Col, Row, Table } from 'reactstrap'
 import AddRM from '../../Drawers/AddRM'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { costingInfoContext, IsNFRContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
 import { CRMHeads, EMPTY_DATA, EMPTY_GUID } from '../../../../../config/constants'
@@ -109,6 +109,7 @@ function RawMaterialCost(props) {
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
   const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
   const isNFR = useContext(IsNFR);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const { nfrDetailsForDiscount, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const { finishWeightLabel } = useLabels()
 
@@ -124,7 +125,7 @@ function RawMaterialCost(props) {
       return null
     })
     setForgingInfoIcon(temp)
-    if (isNFR) {
+    if (isNFR && false) {
       let obj = {
         nfrId: nfrDetailsForDiscount?.objectFordisc?.NfrMasterId,
         partId: costData?.PartId,
@@ -164,8 +165,11 @@ function RawMaterialCost(props) {
         return setGridLength(0)
       case Ferrous_Casting:
       case RUBBER:
-        let arr = [...gridData]
-        setGridData(arr)
+        case RUBBER:
+          if(gridData && gridData.length > 0){
+            let arr = [...gridData]
+            setGridData(arr)
+          }
       case CORRUGATEDBOX:
         if (props.data && props.data[0]?.RawMaterialCalculatorId) {
           setIsMultiCalculatorData(true)
@@ -999,7 +1003,6 @@ function RawMaterialCost(props) {
               item.NetLandedCost = weightItem?.NetRMCost;
               item.NetRMCost = weightItem?.NetRMCost;
               item.RawMaterialName = weightItem?.RmName;
-
               item.WeightCalculatorRequest = { ...weightData, usedRmData: undefined }; // Remove usedRmData to break the circular reference;
               item.WeightCalculationId = weightData?.WeightCalculationId;
               item.RawMaterialCalculatorId = weightData?.WeightCalculationId;
@@ -1526,7 +1529,7 @@ function RawMaterialCost(props) {
               </div>
             </Col >
             <Col md={'6'} className="btn-container">
-              {!CostingViewMode && !IsLocked && gridData && isShowAddBtn() &&
+              {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && gridData && isShowAddBtn() &&
 
                 <Button
                   id="Costing_addRM"
@@ -1671,7 +1674,7 @@ function RawMaterialCost(props) {
                                       }}
                                       errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
                                       disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING &&
-                                        item?.UOM === "Meter") || item?.dataFromNFRAPI || disabledForMonoCartonCorrugated || (item?.RawMaterialCalculatorId && costData?.TechnologyId === INSULATION)) ? true : false}
+                                        item?.UOM === "Meter") || item?.dataFromNFRAPI || disabledForMonoCartonCorrugated || (item?.RawMaterialCalculatorId && costData?.TechnologyId === INSULATION)) ? true : false || IsLockTabInCBCCostingForCustomerRFQ}
                                     />
                                   </div>
                                 </td>
@@ -1700,7 +1703,7 @@ function RawMaterialCost(props) {
                                         handleFinishWeightChange(e?.target?.value, index)
                                       }}
                                       errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                      disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || item?.dataFromNFRAPI || disabledForMonoCartonCorrugated || (item?.RawMaterialCalculatorId && costData?.TechnologyId === INSULATION)) ? true : false}
+                                      disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || item?.dataFromNFRAPI || disabledForMonoCartonCorrugated || (item?.RawMaterialCalculatorId && costData?.TechnologyId === INSULATION)) ? true : false || IsLockTabInCBCCostingForCustomerRFQ}
                                     />
                                   </div>
                                 </td>
@@ -1737,7 +1740,7 @@ function RawMaterialCost(props) {
                                       handleScrapRecoveryChange(e, index)
                                     }}
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
-                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) || gridData[index].IsCalculatedEntry || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || disabledForMonoCartonCorrugated || costData?.TechnologyId === INSULATION ? true : false}
+                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) || gridData[index].IsCalculatedEntry || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || disabledForMonoCartonCorrugated || costData?.TechnologyId === INSULATION ? true : false || IsLockTabInCBCCostingForCustomerRFQ}
                                   />
                                 </div>
                               </td>
@@ -1774,12 +1777,12 @@ function RawMaterialCost(props) {
                                   customClassName="costing-selectable-dropdown"
                                   required={false}
                                   handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                  disabled={CostingViewMode}
+                                  disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                 /></td>
                             }
                             <td>
                               <div className='action-btn-wrapper'>
-                                {!CostingViewMode && !IsLocked && (item.IsRMCopied ? (initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && < button
+                                {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && (item.IsRMCopied ? (initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && < button
                                   className="Delete "
                                   id={`RM_delete${index}`}
                                   title='Delete'
@@ -1804,13 +1807,13 @@ function RawMaterialCost(props) {
                                     customClassName={"withBorder"}
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].remarkPopUp : ''}
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                                    disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     hidden={false}
                                     validateWithRemarkValidation={true}
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
-                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                       <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
@@ -1848,7 +1851,7 @@ function RawMaterialCost(props) {
                     <input
                       type="checkbox"
                       checked={IsApplyMasterBatch}
-                      disabled={(CostingViewMode || IsLocked || gridData?.length !== 1 || masterBatch) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ || gridData?.length !== 1 || masterBatch) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -1865,7 +1868,7 @@ function RawMaterialCost(props) {
                 IsApplyMasterBatch && costData?.TechnologyId === PLASTIC &&
                 <>
                   <Col md="2">
-                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked || masterBatch)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
+                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ || masterBatch)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
                   </Col>
                   {/* <Col md="2" > */}
                   <TextFieldHookForm
@@ -1950,7 +1953,7 @@ function RawMaterialCost(props) {
                         handleMBPercentage(e.target.value)
                       }}
                       errors={errors.MBPercentage}
-                      disabled={(CostingViewMode || IsLocked || checkForNull(getValues('MBPrice')) === 0 || masterBatch) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ || checkForNull(getValues('MBPrice')) === 0 || masterBatch) ? true : false}
                     />
                   </Col>
                   <Col md="2">
@@ -1984,7 +1987,7 @@ function RawMaterialCost(props) {
         </div >
       </div >
       {
-        isDrawerOpen && (
+        isDrawerOpen && !IsLockTabInCBCCostingForCustomerRFQ && (
           <AddRM
             isOpen={isDrawerOpen}
             closeDrawer={closeDrawer}
@@ -2003,7 +2006,7 @@ function RawMaterialCost(props) {
         isWeightDrawerOpen && (
           <OpenWeightCalculator
             isOpen={isWeightDrawerOpen}
-            CostingViewMode={CostingViewMode || IsLocked}
+            CostingViewMode={CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ}
             closeDrawer={closeWeightDrawer}
             isEditFlag={(CostingViewMode || IsLocked) ? false : true}
             inputDiameter={inputDiameter}

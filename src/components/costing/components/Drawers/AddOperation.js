@@ -247,6 +247,7 @@ function AddOperation(props) {
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="Entry Type"></AgGridColumn>
+                        <AgGridColumn  field="ForType" headerName="Operation Type"></AgGridColumn>
                         <AgGridColumn  field="OperationName" headerName="Operation Name"></AgGridColumn>
                         <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
                         <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
@@ -256,8 +257,6 @@ function AddOperation(props) {
                         <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                         <AgGridColumn field="Rate" cellRenderer={'rateFormat'}></AgGridColumn>
                         {initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure && <AgGridColumn field="LabourRate" headerName='Labour Rate' ></AgGridColumn>}
-
-
                       </AgGridReact>}
                       {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>

@@ -18,6 +18,7 @@ import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 
 import { swappingLogicCommon } from '../../../CostingUtil';
 import Button from '../../../../layout/Button';
 import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
+import { IsNFRContext } from '../../CostingDetailStepTwo';
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
@@ -39,6 +40,7 @@ function OperationCostExcludedOverhead(props) {
   const [otherOperationRemark, setOtherOperationRemark] = useState(true)
   const [headerPinned, setHeaderPinned] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, ErrorObjRMCC, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const [openOperationForm, setOpenOperationForm] = useState(false)
@@ -49,7 +51,7 @@ function OperationCostExcludedOverhead(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    if (!CostingViewMode && !IsLocked) {
+    if (!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) {
       if (props.IsAssemblyCalculation) {
         props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)
       } else {
@@ -342,7 +344,7 @@ function OperationCostExcludedOverhead(props) {
               </div>
             </Col>
             <Col md={'4'}>
-              {(!CostingViewMode && !IsLocked) &&
+              {(!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) &&
                 <div>
 
                   <Button
@@ -386,7 +388,7 @@ function OperationCostExcludedOverhead(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OtherOperationName + index} draggable={CostingViewMode ? false : true}>{item.OtherOperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OtherOperationName + index} draggable={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -411,7 +413,7 @@ function OperationCostExcludedOverhead(props) {
                                     handleQuantityChange(e, index)
                                   }}
                                   errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].Quantity : ''}
-                                  disabled={(CostingViewMode || IsLocked) ? true : false}
+                                  disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 />
                               }
                             </td>
@@ -441,7 +443,7 @@ function OperationCostExcludedOverhead(props) {
                                         handleLabourQuantityChange(e, index)
                                       }}
                                       errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                      disabled={(CostingViewMode || IsLocked) ? true : false}
+                                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     />
                                     :
                                     '-'
@@ -467,7 +469,7 @@ function OperationCostExcludedOverhead(props) {
                                 options={CRMHeads}
                                 required={false}
                                 handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                disabled={CostingViewMode}
+                                disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                               />
                             </td>}
                             <td>
@@ -479,7 +481,7 @@ function OperationCostExcludedOverhead(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OtherOperationName + index} draggable={CostingViewMode ? false : true} onClick={() => setOpenOperationForm({ isOpen: true, id: item.OtherOperationId })} className='link'>{item.OtherOperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OtherOperationName + index} draggable={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ) ? false : true} onClick={() => setOpenOperationForm({ isOpen: true, id: item.OtherOperationId })} className='link'>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -510,13 +512,13 @@ function OperationCostExcludedOverhead(props) {
                                 options={CRMHeads}
                                 required={false}
                                 handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                disabled={CostingViewMode}
+                                disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                               />
                             </td>}
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && !IsLocked) && <button title='Edit' className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                                {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
+                                {(!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Edit' className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                                {(!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
                                 <Popup trigger={<button id={`popUppTriggerss${index}`} title="Remark" className="Comment-box align-middle" type={'button'} />}
                                   position="top right">
                                   <TextAreaHookForm
@@ -535,13 +537,13 @@ function OperationCostExcludedOverhead(props) {
                                     customClassName={"withBorder"}
                                     errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].remarkPopUp : ''}
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                                    disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     hidden={false}
                                     validateWithRemarkValidation={true}
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
-                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                       <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>

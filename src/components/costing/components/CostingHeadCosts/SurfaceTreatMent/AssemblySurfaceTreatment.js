@@ -1,6 +1,6 @@
 import React, { useContext, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, IsNFRContext } from '../../CostingDetailStepTwo';
 import { getSurfaceTreatmentTabData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import PartSurfaceTreatment from './PartSurfaceTreatment';
@@ -19,6 +19,7 @@ function AssemblySurfaceTreatment(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext)
   const selectedCostingDetail = useContext(SelectedCostingDetail);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
@@ -180,7 +181,7 @@ function AssemblySurfaceTreatment(props) {
         </div>
         <td>
           <div className='d-flex align-items-center justify-content-end'>
-            {!CostingViewMode && (item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly !== 0 || item?.CostingPartDetails?.TotalTransportationCostPerAssembly !== 0) ?
+            {!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ && (item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly !== 0 || item?.CostingPartDetails?.TotalTransportationCostPerAssembly !== 0) ?
               <button
                 id="costing_surface_treatment_btn"
                 type="button"
@@ -204,7 +205,7 @@ function AssemblySurfaceTreatment(props) {
                   DrawerToggle()
                 }}
               >
-                <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
+                <div className={`${(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
             }
             <div /* id="lock_icon"  */ className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing" : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div>
           </div>

@@ -10,9 +10,20 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 export const checkSAPCodeinExcel = (excelData) => {
+  const partMasterConfigurable = getConfigurationKey()?.PartAdditionalMasterFields;
+  
   return excelData.filter((el) => {
     if (getConfigurationKey().IsSAPCodeRequired === false) {
       if (el.value === 'SAPPartNumber') return false;
+    }
+    if(!partMasterConfigurable?.IsShowPartModel){
+      if(el.value === 'PartsModelMaster') return false;
+    }
+    if(!partMasterConfigurable?.IsShowPartFamily){
+      if(el.value === 'PartFamilyCode') return false;
+    }
+    if(!partMasterConfigurable?.IsShowNepNumber){
+      if(el.value === 'NEPNumber') return false;
     }
     return true;
   })

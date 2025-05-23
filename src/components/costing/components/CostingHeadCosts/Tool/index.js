@@ -12,7 +12,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, removeBOPfro
 import AddTool from '../../Drawers/AddTool';
 import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
-import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, IsNFRContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import _, { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
@@ -69,6 +69,7 @@ function Tool(props) {
 
   const [toolObj, setToolObj] = useState(data?.CostingPartDetails?.CostingToolCostResponse[0])
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext)
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
   const [state, setState] = useState({
@@ -614,7 +615,7 @@ function Tool(props) {
                       handleChange={(e) => {
                         e.preventDefault()}}
                       errors={errors && errors.ToolCost}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -637,7 +638,7 @@ function Tool(props) {
                         handleToolLifeChange(e)
                       }}
                       errors={errors && errors.Life}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={CostingViewMode  || IsLockTabInCBCCostingForCustomerRFQ ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -673,7 +674,7 @@ function Tool(props) {
                       mandatory={false}
                       handleChange={handleToolApplicabilityChange}
                       errors={errors.toolCostType}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -704,7 +705,7 @@ function Tool(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.maintanencePercentage}
-                          disabled={CostingViewMode ? true : false}
+                          disabled={CostingViewMode  || IsLockTabInCBCCostingForCustomerRFQ? true : false}
                         />
                       </div>
                       :
@@ -731,7 +732,7 @@ function Tool(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.maintanenceToolCost}
-                          disabled={CostingViewMode ? true : false}
+                          disabled={CostingViewMode||IsLockTabInCBCCostingForCustomerRFQ ? true : false}
 
                         />
 
@@ -827,7 +828,7 @@ function Tool(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ToolInterestRatePercent}
-                          disabled={!getValues('ToolCost')|| CostingViewMode ? true : false}
+                          disabled={!getValues('ToolCost')|| CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ ? true : false}
                         />
                   </Col>
                   <Col md="3">
@@ -908,7 +909,7 @@ function Tool(props) {
                         options={CRMHeads}
                         required={false}
                         handleChange={onCRMHeadChange}
-                        disabled={CostingViewMode}
+                        disabled={CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ}
                       />
                     </Col>
                   }
@@ -920,7 +921,7 @@ function Tool(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between mt25 sticky-btn-footer tab-tool-cost-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
 
-                {!CostingViewMode && <button
+                {!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ && <button
                   type={'button'}
                   onClick={onSubmit}
                   className="submit-button mr5 save-btn">

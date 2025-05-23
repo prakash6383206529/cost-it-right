@@ -122,7 +122,7 @@ const CostVariance = ({ formData, viewCostVariance }) => {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
             setInputLoader(true)
-            const res = await getPartSelectListByTechnology(selectedTechnology.value, resultInput, partType?.value);
+            const res = await getPartSelectListByTechnology(selectedTechnology.value, resultInput, partType?.value,null);
             setInputLoader(false)
             setpartName(resultInput)
             let partDataAPI = res?.data?.SelectList

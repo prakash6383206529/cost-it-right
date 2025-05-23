@@ -12,7 +12,7 @@ import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, NFRTypeId, PAINTTECHNOLOG
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
 import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator } from '../../../actions/Costing'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { costingInfoContext, IsNFRContext } from '../../CostingDetailStepTwo'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
 import DayTime from '../../../../common/DayTimeWrapper'
@@ -42,6 +42,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
     const dispatch = useDispatch()
     const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
+    const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
     const { CostingEffectiveDate, paintCoatList, SurfaceTabData } = useSelector(state => state.costing)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const [calculateState, setCalculateState] = useState(INITIAL_STATE)
@@ -422,7 +423,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                     defaultValue={''}
                     customClassName={'withBorder mb-0 paint-and-masking'}
                     errors={errorsTableForm[`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`]}
-                    disabled={ViewMode || CostingViewMode || disabled || IsLocked}
+                    disabled={ViewMode || CostingViewMode || disabled || IsLocked || IsLockTabInCBCCostingForCustomerRFQ}
                     {...(name === 'SurfaceArea' ? {
                         onBlur: (e) => {
                             handleSurfaceAreaForAll(
@@ -538,7 +539,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                 id={`PaintAndMasking_delete${parentIndex}-${childIndex}`}
                                 className="mr-1 Tour_List_Delete"
                                 variant="Delete"
-                                disabled={ViewMode || CostingViewMode}
+                                disabled={ViewMode || CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                 onClick={() => deleteItem(item, parentIndex)}
                                 title="Delete"
                             />
@@ -589,7 +590,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                         defaultValue=""
                                         customClassName="withBorder"
                                         errors={errorsInitialForm.PaintCoat}
-                                        disabled={ViewMode || CostingViewMode}
+                                        disabled={ViewMode || CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                     />
                                 </Col>
                                 <Col md="4">
@@ -608,7 +609,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                         defaultValue=""
                                         customClassName="withBorder"
                                         errors={errorsInitialForm.RawMaterial}
-                                        disabled={ViewMode || CostingViewMode}
+                                        disabled={ViewMode || CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                     />
                                 </Col>
                                 <Col md="4">
@@ -619,7 +620,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                             className="mr5 mb-2"
                                             icon="plus"
                                             buttonName="Add"
-                                            disabled={CostingViewMode || IsLocked}
+                                            disabled={CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </div>
                                 </Col>
@@ -684,7 +685,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                     defaultValue=""
                                     customClassName="withBorder mb-0"
                                     errors={errorsTableForm.TapeCost}
-                                    disabled={ViewMode || CostingViewMode || IsLocked}
+                                    disabled={ViewMode || CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ}
                                 />
                             </Col>
                             <Col md="4">
@@ -725,7 +726,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                     <Button
                                         id="PaintAndMasking_submit"
                                         type="submit"
-                                        disabled={ViewMode || CostingViewMode}
+                                        disabled={ViewMode || CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                         icon="save-icon"
                                         buttonName="Save"
                                     />

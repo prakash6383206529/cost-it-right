@@ -225,7 +225,7 @@ function FreightCalculator(props) {
                 }
             }
         }, 100);
-    }, [state.noOfBins, state.totalNoOfBins, state.noOfTrolleys, state.binAlignment, state.trolleyAlignment]);
+    }, [state.noOfBins,calclulationFieldValues, state.totalNoOfBins, state.noOfTrolleys, state.binAlignment, state.trolleyAlignment]);
 
     const setFormValues = (data) => {
         setValue('CarrierType', data?.CarrierType ? { label: data?.CarrierType, value: data?.CarrierTypeId } : [])

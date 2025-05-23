@@ -6,11 +6,11 @@ import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, decimalNumberLimit8And7, positiveAndDecimalNumber, loggedInUserId, innerVsOuterValidation } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
-import { KG, EMPTY_DATA } from '../../../../../config/constants'
+import { KG, EMPTY_DATA, DEFAULTRMPRESSURE } from '../../../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash'
 import LoaderCustom from '../../../../common/LoaderCustom';
 import TooltipCustom from '../../../../common/Tooltip'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -181,6 +181,21 @@ function StandardRub(props) {
         } else if (GrossWeight === 0 && FinishWeight === 0) {
             setDataToSend(prevState => ({ ...prevState, ScrapWeight: 0 }))
             setValue('ScrapWeight', checkForDecimalAndNull(0, getConfigurationKey().NoOfDecimalForInputOutput))
+        }
+    }
+
+    const calculateArea = () => {
+        const InnerDiameter = Number(getValues('InnerDiameter'))
+        const OuterDiameter = Number(getValues('OuterDiameter'))
+        const Area = (Math.PI / 4) * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) / 100;
+        return Area;
+    }
+
+    const calculateTonnage = () => {
+        const Area = calculateArea();
+        const Tonnage = (Area * DEFAULTRMPRESSURE) / 1000;
+        if (Tonnage) {
+            return Tonnage;
         }
     }
 
@@ -374,7 +389,9 @@ function StandardRub(props) {
             ScrapWeight: dataToSend.ScrapWeight,
             NetRMCost: dataToSend.NetRMCost,
             RawMaterialId: rmRowDataState.RawMaterialId,
-            IsVolumeAutoCalculate: isVolumeAutoCalculate
+            IsVolumeAutoCalculate: isVolumeAutoCalculate,
+            Area: calculateArea(),
+            Tonnage: calculateTonnage()
         }
         console.log(obj, "obj")
 
@@ -514,10 +531,12 @@ function StandardRub(props) {
         obj.BaseCostingId = item?.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialRubberStandardWeightCalculator = tableData
+        obj.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? tableData?.reduce((max, item) => {
+            return Math.max(max, item.Tonnage);
+        }, 0) : null;
         obj.usedRmData = usedRmData
 
         if (unUsedRmData.length > 0) {
-
             const message = generateUnusedRMsMessage(unUsedRmData)
             setUnusedRMsMessage(message)
             setShowUnusedRMsPopup(true)

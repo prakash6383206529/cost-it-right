@@ -50,6 +50,7 @@ import { subDays } from 'date-fns';
 import { labels, LabelsClass } from '../../../helper/core';
 import { getPlantUnitAPI } from '../actions/Plant';
 import AddOtherCostDrawer from '../material-master/AddOtherCostDrawer';
+import { getPartFamilySelectList } from '../actions/Part';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -124,7 +125,7 @@ class AddBOPImport extends Component {
       conditionTableData: [],
       NetLandedCostINR: '',
       NetLandedCost: '',
-
+      PartFamilySelected: [],
       FinalBasicRateBaseCurrency: '',
       BasicPrice: '',
       FinalNetCostBaseCurrency: '',
@@ -217,6 +218,7 @@ class AddBOPImport extends Component {
     const { initialConfiguration } = this.props
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     const { currency } = this.state
+    this.getPartFamilySelectList();
     this.props.getExchangeRateSource((res) => { })
     this.props.getIncoTermSelectList(() => { })
     this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
@@ -228,6 +230,21 @@ class AddBOPImport extends Component {
     this.props.getCurrencySelectList(() => { })
     this.props.getClientSelectList(() => { })
   }
+
+  getPartFamilySelectList = () => {
+    this?.props?.getPartFamilySelectList((res) => {
+      if (res && res?.data && res?.data?.Result) {
+        // Transform the part family data into the format needed for the dropdown
+        const partFamilyOptions = res?.data?.SelectList
+          .map(item => ({
+            label: item?.PartFamily,
+            value: item?.PartFamilyId
+          }));
+        this.setState({ partFamilyOptions });
+      }
+    })
+  }
+
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
@@ -583,7 +600,7 @@ class AddBOPImport extends Component {
             currency: { label: Data?.Currency, value: Data?.CurrencyId },
             LocalExchangeRateId: Data?.LocalExchangeRateId,
             totalBasicRate: Data?.BasicRate,
-            ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName }
+            ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName },
           })
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
@@ -628,7 +645,8 @@ class AddBOPImport extends Component {
               currencyValue: Data.CurrencyExchangeRate,
               IsBreakupBoughtOutPart: Data.IsBreakupBoughtOutPart,
               IsSAPCodeUpdated: Data.IsSAPCodeUpdated,
-              SAPPartNumber: Data.SAPPartNumber !== undefined ? { label: Data.SAPPartNumber, value: Data.SAPPartNumber } : []
+              SAPPartNumber: Data.SAPPartNumber !== undefined ? { label: Data.SAPPartNumber, value: Data.SAPPartNumber } : [],
+              PartFamilySelected: Data?.PartFamilyId ? { label: Data?.PartFamily ?? "", value: Data?.PartFamilyId } : [],
             }, () => {
               setTimeout(() => {
                 this.finalUserCheckAndMasterLevelCheckFunction(plantObj.value)
@@ -671,9 +689,17 @@ class AddBOPImport extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { bopCategorySelectList, partSelectList, plantSelectList, exchangeRateSourceList,
+    const { bopCategorySelectList, partSelectList, plantSelectList, exchangeRateSourceList, partFamilySelectList,
       UOMSelectList, currencySelectList, clientSelectList, IncoTermsSelectList, PaymentTermsSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
+    if(label === 'PartFamily') {
+      partFamilySelectList && partFamilySelectList.map((item) => {
+        if (item.Value === '--0--') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
     if (label === 'BOPCategory') {
       bopCategorySelectList && bopCategorySelectList.map(item => {
         if (item.Value === '0') return false;
@@ -1455,7 +1481,9 @@ class AddBOPImport extends Component {
       UnitOfMeasurementId: UOM.value,
       Vendor: vendorName.value,
       VendorPlant: [],
-      BoughtOutPartOtherCostDetailsSchema: otherCostTableData
+      BoughtOutPartOtherCostDetailsSchema: otherCostTableData,
+      PartFamilyId: this?.state?.PartFamilySelected?.value || "",
+      PartFamily: this?.state?.PartFamilySelected?.label || ""
     }
 
     formData.BoughtOutPartConditionsDetails = conditionTableData
@@ -1540,6 +1568,13 @@ class AddBOPImport extends Component {
     this.setState({ isOpenConditionDrawer: true })
   }
 
+  handlePartFamilyChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ PartFamilySelected: newValue });
+    } else {
+      this.setState({ PartFamilySelected: null });
+    }
+  }
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
     const { initialConfiguration } = this.props
@@ -1845,6 +1880,24 @@ class AddBOPImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
+
+                          {initialConfiguration?.PartAdditionalMasterFields?.IsShowPartFamily && 
+                            (<Col md="3">
+                              <Field
+                                name="partFamily"
+                                type="text"
+                                label="Part Family"
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("PartFamily")}
+                                validate={this?.state?.PartFamilySelected == null || this?.state?.PartFamilySelected.length === 0 ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handlePartFamilyChange}
+                                valueDescription={this?.state?.PartFamilySelected}
+                                disabled={false}
+                              />
+                            </Col>)
+                          }
 
                           <Col md="3">
                             <Field
@@ -2648,7 +2701,7 @@ function mapStateToProps(state) {
   const { plantList, filterPlantList, filterCityListBySupplier, cityList,
     UOMSelectList, currencySelectList, plantSelectList, exchangeRateSourceList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
-  const { partSelectList } = part;
+  const { partSelectList, partFamilySelectList } = part;
   const { initialConfiguration, userMasterLevelAPI } = auth;
   const { clientSelectList } = client;
   const { costingSpecifiTechnology } = costing
@@ -2663,13 +2716,17 @@ function mapStateToProps(state) {
       NumberOfPieces: bopData?.NumberOfPieces,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
-      SAPPartNumber: bopData?.SAPPartNumber
+      SAPPartNumber: bopData?.SAPPartNumber,
+      PartFamily: {
+        label: bopData?.PartFamily || "",
+        value: bopData?.PartFamilyId || ""
+      }
     }
   }
 
   return {
     vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
-    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList, userMasterLevelAPI, costingSpecifiTechnology, exchangeRateSourceList
+    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, partFamilySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList, userMasterLevelAPI, costingSpecifiTechnology, exchangeRateSourceList
   }
 
 }
@@ -2700,6 +2757,7 @@ export default connect(mapStateToProps, {
   getPaymentTermSelectList,
   getUsersMasterLevelAPI,
   getCostingSpecificTechnology,
+  getPartFamilySelectList,
   checkAndGetBopPartNo,
   getExchangeRateSource,
   getPlantUnitAPI

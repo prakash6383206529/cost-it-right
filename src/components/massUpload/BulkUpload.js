@@ -12,9 +12,9 @@ import { bulkUploadMachine, bulkUploadMachineMoreZBC } from '../masters/actions/
 import { fuelBulkUpload } from '../masters/actions/Fuel';
 import { labourBulkUpload } from '../masters/actions/Labour';
 import { vendorBulkUpload } from '../masters/actions/Supplier';
-import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/OverheadProfit';
+import { overheadBulkUpload, profitBulkUpload, rejectionBulkUpload } from '../masters/actions/OverheadProfit';
 import { operationBulkUpload } from '../masters/actions/OtherOperation';
-import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
+import { partComponentBulkUpload, partFamilyBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
 import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
 import { volumeBulkUpload } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
@@ -36,7 +36,9 @@ import {
     RAWMATERIALSRFQ,
     BOUGHTOUTPARTSRFQ,
     FILE_URL,
-    SAP_PUSH
+    SAP_PUSH,
+    REJECTIONBULKUPLOAD,
+    PARTFAMILYBULKUPLOAD
 } from '../../config/constants';
 //MINDA
 // import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
@@ -54,7 +56,11 @@ import {
     AddRawMaterialHeaderData,
     AddBoughtOutPartsHeaderData,
     AddAssemblyOrComponentHeaderData,
-    SAP_PUSH_HEADER_DATA
+    SAP_PUSH_HEADER_DATA,
+    RejectionVBC,
+    Rejection,
+    RejectionCBC,
+    PartFamily
 } from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, RFQ_KEYS, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -313,7 +319,7 @@ class BulkUpload extends Component {
      * @method fileChangedHandler
      * @description called for profile pic change
      */
-    fileHandler = event => {
+    fileHandler = event => {    
         this.setState({ bulkUploadLoader: true })
         let fileObj = event.target.files[0];
         let masterDataArray = []
@@ -451,6 +457,11 @@ class BulkUpload extends Component {
                             const localizedPartComponent = this.localizeHeaders(PartComponent);
                             masterDataArray = localizedPartComponent
                             checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(localizedPartComponent), fileHeads)
+                            break;
+                        case String(PARTFAMILYBULKUPLOAD):
+                            const localizedPartFamily = this.localizeHeaders(PartFamily);
+                            masterDataArray = localizedPartFamily
+                            checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(localizedPartFamily), fileHeads)
                             break;
                         case String(PRODUCTCOMPONENTBULKUPLOAD):
                             const localizedProductComponent = this.localizeHeaders(ProductComponent);
@@ -612,34 +623,51 @@ class BulkUpload extends Component {
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedOverheadVBC = this.localizeHeaders(OverheadVBC);
                                 masterDataArray = localizedOverheadVBC
-                                checkForFileHead = checkForSameFileUpload(localizedOverheadVBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadVBC), fileHeads);
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedOverheadZBC = this.localizeHeaders(Overhead);
                                 masterDataArray = localizedOverheadZBC
-                                checkForFileHead = checkForSameFileUpload(localizedOverheadZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadZBC), fileHeads);
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedOverheadCBC = this.localizeHeaders(OverheadCBC);
                                 masterDataArray = localizedOverheadCBC
-                                checkForFileHead = checkForSameFileUpload(localizedOverheadCBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadCBC), fileHeads);
                             }
                             break;
                         case String(PROFITBULKUPLOAD):
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedProfitVBC = this.localizeHeaders(ProfitVBC);
                                 masterDataArray = localizedProfitVBC
-                                checkForFileHead = checkForSameFileUpload(localizedProfitVBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedProfitVBC), fileHeads);
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedProfitZBC = this.localizeHeaders(Profit);
                                 masterDataArray = localizedProfitZBC
-                                checkForFileHead = checkForSameFileUpload(localizedProfitZBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedProfitZBC), fileHeads);
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedProfitCBC = this.localizeHeaders(ProfitCBC);
                                 masterDataArray = localizedProfitCBC
-                                checkForFileHead = checkForSameFileUpload(localizedProfitCBC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedProfitCBC), fileHeads);
+                            }
+                            break;
+                        case String(REJECTIONBULKUPLOAD):
+                            if (this.state.costingTypeId === VBCTypeId) {
+                                const localizedOverheadVBC = this.localizeHeaders(RejectionVBC);
+                                masterDataArray = localizedOverheadVBC
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadVBC), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === ZBCTypeId) {
+                                const localizedOverheadZBC = this.localizeHeaders(Rejection);
+                                masterDataArray = localizedOverheadZBC
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadZBC), fileHeads);
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                const localizedOverheadCBC = this.localizeHeaders(RejectionCBC);
+                                masterDataArray = localizedOverheadCBC
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedOverheadCBC), fileHeads);
                             }
                             break;
                         case String(RMMATERIALBULKUPLOAD):
@@ -1055,6 +1083,12 @@ class BulkUpload extends Component {
                     this.responseHandler(res)
                 });
 
+            } else if (fileName === 'Rejection') {
+                this.props.rejectionBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
+
             } else if (fileName === 'Profit') {
                 this.props.profitBulkUpload(uploadData, (res) => {
                     this.setState({ setDisable: false })
@@ -1082,7 +1116,14 @@ class BulkUpload extends Component {
                     this.setState({ setDisable: false })
                     this.responseHandler(res)
                 });
-            } else if (fileName === SAP_PUSH) {
+                
+            } else if (fileName === 'Part Family') {
+                this.props.partFamilyBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
+            }
+            else if (fileName === SAP_PUSH) {
                 this.props.sapPushBulkUpload(uploadData, (res) => {
                     this.setState({ setDisable: false })
                     this.responseHandler(res)
@@ -1605,12 +1646,14 @@ export default connect(mapStateToProps, {
     vendorBulkUpload,
     bulkUploadRM,
     overheadBulkUpload,
+    rejectionBulkUpload,
     profitBulkUpload,
     operationBulkUpload,
     labourBulkUpload,
     bulkUploadMachine,
     bulkUploadMachineMoreZBC,
     partComponentBulkUpload,
+    partFamilyBulkUpload,
     productComponentBulkUpload,
     bulkUploadBOP,
     volumeBulkUpload,
