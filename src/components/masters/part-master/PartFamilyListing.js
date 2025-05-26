@@ -240,7 +240,7 @@ const PartFamilyListing = (props) => {
 
   const onSearch = () => {
     setState((prevState) => ({
-      ...prevState, warningMessage: false,
+      ...prevState, warningMessage: false, noData: false, isFilterButtonClicked: true
     }));
     dispatch(updatePageNumber(1));
     dispatch(updateCurrentRowIndex(0));
@@ -724,7 +724,7 @@ const PartFamilyListing = (props) => {
 
 
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
-              {(state.noData && partFamilyList && partFamilyList.length !== 0) ? (
+              {state.noData ? (
                 <NoContentFound
                   title={EMPTY_DATA}
                   customClassName="no-content-found"
