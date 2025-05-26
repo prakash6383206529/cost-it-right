@@ -1369,7 +1369,7 @@ function TabDiscountOther(props) {
             props.toggle('2')
             history.push('/costing-summary')
           }
-          if (isNFR && gotoNextValue) {
+          if (isNFR && gotoNextValue && false) {
             reactLocalStorage.setObject('isFromDiscountObj', true)
             setNfrListing(true)
           }

@@ -498,7 +498,9 @@ function OverheadProfit(props) {
         const baseCost = Applicability === 'RM' || Applicability === 'Part Cost' ?
           (IsCutOffApplicable ? CutOffCost : headerCosts?.NetRawMaterialsCost) :
           Applicability === 'BOP' ? headerCosts?.NetBoughtOutPartCost :
-            Applicability === 'CC' ? getCCCost('profit') : 0;
+            Applicability === 'CC' ? getCCCost('profit') :
+              Applicability === 'Welding' ? checkForNull(headerCosts?.NetWeldingCostForProfit) : 0;
+
 
         const totalCost = baseCost * calculatePercentage(Percentage);
 

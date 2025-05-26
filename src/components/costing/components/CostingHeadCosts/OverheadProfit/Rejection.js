@@ -74,7 +74,7 @@ function Rejection(props) {
     useEffect(() => {
         if (applicability && applicability?.value !== undefined && !CostingViewMode) {
             setApplicability(applicability)
-// checkRejectionModelType(applicability.label)
+            // checkRejectionModelType(applicability.label)
         }
 
     }, [headerCosts && headerCosts.NetTotalRMBOPCC, applicability])
@@ -179,8 +179,8 @@ function Rejection(props) {
         const BOP = checkForNull(headerCosts.NetBoughtOutPartCost);
         const CCForMachining = checkForNull(headerCosts.NetCCForOtherTechnologyCost)
         const CC = partType
-            ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost)
-            : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly);
+            ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost)-checkForNull(headerCosts.NetCCForOtherTechnologyCost)
+            : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)-checkForNull(headerCosts.NetCCForOtherTechnologyCost);
 
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
@@ -239,9 +239,7 @@ function Rejection(props) {
         const RM = checkForNull(headerCosts.NetRawMaterialsCost);
         const BOP = checkForNull(headerCosts.NetBoughtOutPartCost);
         const CCForMachining = checkForNull(headerCosts.NetCCForOtherTechnologyCost)
-        const CC = partType
-            ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost)
-            : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly);
+        const CC = partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly);
 
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
@@ -250,7 +248,7 @@ function Rejection(props) {
         switch (applicability) {
             case 'RM':
             case 'Part Cost':
-setValue('RejectionCost', checkForDecimalAndNull(RM, initialConfiguration?.NoOfDecimalForPrice))
+                setValue('RejectionCost', checkForDecimalAndNull(RM, initialConfiguration?.NoOfDecimalForPrice))
                 setValue('RejectionTotalCost', checkForDecimalAndNull(RM * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
                 setValue('NetRejectionCost', checkForDecimalAndNull(RM * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
                 setState(prev => ({
@@ -326,7 +324,7 @@ setValue('RejectionCost', checkForDecimalAndNull(RM, initialConfiguration?.NoOfD
             CostApplicability += checkForNull(item.ScrapRate) * checkForNull(item.FinishWeight)
         })
         const rejectionRecoveryCost = checkForNull(CostApplicability) * EffectiveRecovery / 100
-setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecoveryCost, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecoveryCost, initialConfiguration?.NoOfDecimalForPrice))
         dispatch(setRejectionRecoveryData({
             ...rejectionRecovery,
             EffectiveRecoveryPercentage: EffectiveRecovery,
@@ -424,15 +422,15 @@ setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecoveryCost, init
         //     Toaster.warning('Applicability should be RM')isOpenRecoveryDrawer
         //     return false
         // } else
-        if(isFromMaster && !fetchRejectionDataFromMaster()){
+        if (isFromMaster && !fetchRejectionDataFromMaster()) {
             setState(prev => ({
                 ...prev,
-               isViewRejectionRecovery:true
+                isViewRejectionRecovery: true
             }));
-        }else{
+        } else {
             setState(prev => ({
                 ...prev,
-               isViewRejectionRecovery:false
+                isViewRejectionRecovery: false
             }));
         }
         if (!isFromMaster && PartType !== 'Assembly' && !getValues('RejectionPercentage')) {
