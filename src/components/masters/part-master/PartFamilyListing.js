@@ -70,6 +70,7 @@ const PartFamilyListing = (props) => {
     showPopupToggle2: false,
     isOpen: false,
     isEditFlag: false,
+    isViewFlag: false
   });
   const [searchText, setSearchText] = useState('');
   const { partFamilyList, allPartFamilyList } = useSelector((state) => state.part);
@@ -793,6 +794,7 @@ const PartFamilyListing = (props) => {
             anchor="right"
             onClose={() => setState((prev) => ({ ...prev, isOpen: false }))}
             isEditFlag={state.isEditFlag}
+            isViewFlag={state.isViewFlag}
             ID={state.ID}
             refreshFamilyList={() => getTableListData(skipRecord, globalTakes, state.floatingFilterData, true)}
             partFamilyList={partFamilyList}
