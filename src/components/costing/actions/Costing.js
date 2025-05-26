@@ -81,6 +81,7 @@ import {
   GET_PAINT_COAT_LIST,
   GET_TOOL_TAB_DATA,
   SET_BOP_REMARK,
+  SET_OVERALL_APPLICABILITY_TOOL_DATA
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -3223,6 +3224,7 @@ export function setOperationApplicabilitySelect(data) {
     });
   }
 };
+
 export function setProcessApplicabilitySelect(data) {
   return (dispatch) => {
     dispatch({
@@ -3325,6 +3327,15 @@ export function getRejectionDataByModelType(data, callback) {
         callback(error)
         apiErrors(error)
       })
+  }
+}
+
+export function setOverallApplicabilityToolData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OVERALL_APPLICABILITY_TOOL_DATA,
+      payload: data,
+    });
   }
 }
 

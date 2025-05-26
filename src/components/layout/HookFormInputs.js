@@ -6,7 +6,7 @@ import LoaderCustom from "../common/LoaderCustom";
 import { SPACEBAR } from "../../config/constants";
 import DatePicker, { ReactDatePicker } from 'react-datepicker'
 import Popup from "reactjs-popup";
-import { validateSpecialChars } from "../../helper";
+import { validateSpecialChars, validateSpecialCharsForRemarks } from "../../helper";
 import { MESSAGES } from "../../config/message";
 import {  Col } from "reactstrap";
 import Button from "../layout/Button";
@@ -451,18 +451,17 @@ const errorAreaFunc = (errors, field) => {
 */
 export const TextAreaHookForm = (field) => {
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, rowHeight } = field
-
-  //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control text-area ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+  const validateWithRemarkValidation = field?.validateWithRemarkValidation ? true : false
   let minHeight = rowHeight ? rowHeight : 4
   let containerId = `${name}_container`;
   const combinedRules = {
     ...rules,
     validate: {
       ...rules?.validate,
-      specialCharCheck: (value) => isDisabled ? () => { } : validateSpecialChars(value),
+      specialCharCheck: (value) => isDisabled ? () => { } : validateWithRemarkValidation ? validateSpecialCharsForRemarks(value) : validateSpecialChars(value)
     },
   };
   return (

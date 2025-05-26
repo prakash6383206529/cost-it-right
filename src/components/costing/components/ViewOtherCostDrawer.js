@@ -248,7 +248,7 @@ function ViewOtherCostDrawer(props) {
                                         <tr key={index}>
                                             <td>{item.NpvType} </td>
                                             {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                            {<td>{checkForDecimalAndNull(item?.NpvQuantity)}</td>}
+                                            {<td>{checkForDecimalAndNull(item?.NpvQuantity, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                             {<td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
 
                                         </tr>
