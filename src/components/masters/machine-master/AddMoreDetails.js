@@ -4824,7 +4824,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                                     {getConfigurationKey().IsShowCRMHead && <th>{`CRM Head`}</th>}
                                     <th>{`Labour Type`}</th>
                                     <th>{`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
-                                    <th>{`No. of People`}</th>
+                                    <th>{`No of People (All Shifts)`}</th>
                                     <th>{`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Action`}</th>
                                   </tr>
