@@ -8,7 +8,7 @@ import { EMPTY_DATA, EMPTY_GUID, GOT_GIVEN_REPORT } from '../../../../config/con
 import LoaderCustom from '../../../common/LoaderCustom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getGotAndGivenDetails } from '../../actions/ReportListing';
-import { checkForDecimalAndNull, formViewData } from '../../../../helper';
+import { checkForDecimalAndNull, formViewData, getConfigurationKey } from '../../../../helper';
 import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer';
 import { getSingleCostingDetails, setCostingViewData } from '../../../costing/actions/Costing';
 import ReactExport from 'react-export-excel';
@@ -257,7 +257,7 @@ function GotGivenListing(props) {
                                 rowSelection={'multiple'}
                             >
                                 <AgGridColumn field="VendorName" headerName={vendorLabel + " Name"} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                {getConfigurationKey().IsSAPCodeRequired && <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={hyphenFormatter}></AgGridColumn>}
 
                                 <AgGridColumn field="PartDescription" headerName="Material Description" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="PartType" width={130} headerName="Type" cellRenderer={hyphenFormatter}></AgGridColumn>

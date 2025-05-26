@@ -783,6 +783,7 @@ function OverheadProfit(props) {
                         errors={errors.overHeadRemark}
                         disabled={CostingViewMode}
                         hidden={false}
+                        validateWithRemarkValidation={true}
                       />
                       <Row>
                         <Col md="12" className='remark-btn-container'>
@@ -878,6 +879,7 @@ function OverheadProfit(props) {
                         errors={errors.profitRemark}
                         disabled={CostingViewMode}
                         hidden={false}
+                        validateWithRemarkValidation={true}
                       />
                       <Row>
                         <Col md="12" className='remark-btn-container'>

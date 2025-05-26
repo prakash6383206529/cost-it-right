@@ -41,7 +41,7 @@ function TabOverheadProfit(props) {
   }, [costData]);
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
-  const { ToolTabData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
+  const { ToolTabData, isBreakupBoughtOutPartCostingFromAPI, overallApplicabilityToolData } = useSelector(state => state.costing)
 
   useEffect(() => {
 
@@ -569,7 +569,7 @@ function TabOverheadProfit(props) {
   }
 
   const onPressIncludeToolCost = () => {
-    if (ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed') {
+    if ((ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed') || (overallApplicabilityToolData && overallApplicabilityToolData?.label !== 'Fixed')) {
       Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in overhead & profit.')
       return false
     } else {
@@ -588,7 +588,7 @@ function TabOverheadProfit(props) {
     dispatch(isOverheadProfitDataChange(true))
   }
   const onPressIsIncludeToolCostInCCForICC = () => {
-    if (ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed') {
+    if (ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed' || (overallApplicabilityToolData && overallApplicabilityToolData?.label !== 'Fixed')) {
       Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in ICC.')
       return false
     } else {

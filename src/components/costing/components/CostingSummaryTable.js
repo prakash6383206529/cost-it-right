@@ -3301,7 +3301,6 @@ const CostingSummaryTable = (props) => {
                                       <span className={highlighter("sTreatment")}>Net Tool Maintenance Cost (per pcs)</span>
                                       <span className={highlighter("tCost")}> Net Tool Interest Cost (per pcs) </span>
                                       <span className={highlighter("HangerCostPerPart")}> Net Tool Amortization Cost </span>
-                                      <span className={highlighter("TotalPaintCost")}> Net Tool Cost </span>
                                     </td>
                                     {viewCostingData &&
                                       viewCostingData?.map((data) => {
@@ -3318,11 +3317,6 @@ const CostingSummaryTable = (props) => {
                                             <span className={highlighter("HangerCostPerPart")}>
                                               {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
                                                 (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
-                                                : '')}
-                                            </span>
-                                            <span className={highlighter("TotalPaintCost")}>
-                                              {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
-                                                (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
                                                 : '')}
                                             </span>
                                           </td>

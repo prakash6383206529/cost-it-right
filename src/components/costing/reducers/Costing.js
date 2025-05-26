@@ -32,7 +32,8 @@ import {
   SET_PROCESS_APPLICABILITY_SELECT,
   GET_PAINT_COAT_LIST,
   GET_TOOL_TAB_DATA,
-  SET_BOP_REMARK
+  SET_BOP_REMARK,
+  SET_OVERALL_APPLICABILITY_TOOL_DATA
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -940,6 +941,11 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         remark: action?.payload?.remark,
         bopCostingId: action?.payload?.bopCostingId
+      }
+    case SET_OVERALL_APPLICABILITY_TOOL_DATA:
+      return {
+        ...state,
+        overallApplicabilityToolData: action.payload,
       }
     default:
       return state
