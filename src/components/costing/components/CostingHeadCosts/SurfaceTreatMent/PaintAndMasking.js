@@ -218,12 +218,17 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         }
         let paintCoatSequence = calculateState?.Coats?.length + 1
         let rawMaterialSequence = data?.RawMaterial?.length + 1
+        const surfaceArea = calculateState?.Coats?.[0]?.RawMaterials?.[0]?.SurfaceArea ?? '';
         data?.RawMaterial?.map((item, index) => {
-            setValueTableForm(`SurfaceArea${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            const safeConsumption = 1;
+            const safeSurfaceArea = checkForNull(surfaceArea);
+            const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
+            let netCost = checkForNull(surfaceAreaAndConsumption)*checkForNull(item?.BasicRatePerUOM)
+            setValueTableForm(`SurfaceArea${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, surfaceArea)
             setValueTableForm(`Consumption${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
             setValueTableForm(`RejectionAllowancePercentage${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
             setValueTableForm(`RejectionAllowance${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
-            setValueTableForm(`NetCost${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            setValueTableForm(`NetCost${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
             return null
         })
         setCalculateState(prev => ({
@@ -384,7 +389,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                             delete errorsTableForm[`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`]
                             const safeConsumption = consumption ? checkForNull(consumption) : 1;
                             const safeSurfaceArea = checkForNull(surfaceArea);
-                            const surfaceAreaAndConsumption = safeSurfaceArea * safeConsumption;
+                            const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
                             const rejectionAllowance = surfaceAreaAndConsumption * checkForNull(rm?.RejectionAllowancePercentage / 100)
                             const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
                             setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
