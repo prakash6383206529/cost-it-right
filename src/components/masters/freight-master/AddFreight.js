@@ -1418,7 +1418,7 @@ const AddFreight = (props) => {
                           </div>
                         </Col>
                       </Row>
-                      <Row className={'mt-3'}>
+                      <Row className={`${state.isImport ? 'mt-5' : ''}`}>
                         <form>
                           <Row>
                             <Col md="12">
