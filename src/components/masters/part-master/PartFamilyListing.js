@@ -362,7 +362,7 @@ const PartFamilyListing = (props) => {
             onClick={() => viewOrEditItemDetails(cellValue, true)}
           />
         )}
-        {isAssociated && (
+        {!isAssociated && (
           <>
             {permissions.Edit && (
               <button
