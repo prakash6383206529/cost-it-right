@@ -9,7 +9,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import DayTime from '../../common/DayTimeWrapper';
 import { useTranslation } from 'react-i18next';
 import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull } from "../../../helper";
-import { CBCTypeId, EMPTY_DATA, OVERHEADMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, EMPTY_DATA, OVERHEADMASTER, PROFITMASTER, REJECTIONMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { fetchApplicabilityList, getVendorNameByVendorSelectList, fetchSpecificationDataAPI } from '../../../actions/Common';
 import { autoCompleteDropdown, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
@@ -20,7 +20,7 @@ import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../a
 const AddOverheadMasterDetails = (props) => {
     const dispatch = useDispatch();
     const { t } = useTranslation("MasterLabels");
-    const { costingTypeId, state, setState, inputLoader, register, control, setValue, getValues, errors, trigger, clearErrors} = props
+    const { costingTypeId, state, setState, inputLoader, register, control, setValue, getValues, errors, trigger, clearErrors } = props
     const [isEditIndex, setIsEditIndex] = useState(false)
     const [editItemId, setEditItemId] = useState("")
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
@@ -29,7 +29,9 @@ const AddOverheadMasterDetails = (props) => {
     const modelTypes = useSelector((state) => state.comman.modelTypes)
     const costingHead = useSelector((state) => state.comman.applicabilityList)
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
-    const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
+    const masterName = props?.applicabilityLabel && props?.applicabilityLabel === "Rejection" ? REJECTIONMASTER : (props?.applicabilityLabel === "Overhead" ? OVERHEADMASTER : PROFITMASTER);
+    const conditionTypeId = getCostingConditionTypes(masterName);
+
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     useEffect(() => {
@@ -48,7 +50,7 @@ const AddOverheadMasterDetails = (props) => {
             })
             return temp
         }
-    
+
         if (label === 'grade') {
             gradeSelectList && gradeSelectList.map((item) => {
                 if (item.Value === '0') return false
@@ -96,36 +98,36 @@ const AddOverheadMasterDetails = (props) => {
 
         if (label === 'Plant') {
             plantSelectList && plantSelectList.map((item) => {
-              if (item.PlantId === '0') return false
-              temp.push({ label: item.PlantNameCode, value: item.PlantId })
-              return null
+                if (item.PlantId === '0') return false
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
+                return null
             })
             return temp
         }
 
         if (label === 'PartFamily') {
             partFamilySelectList && partFamilySelectList.map((item) => {
-              if (item.Value === '--0--') return false
-              temp.push({ label: item.Text, value: item.Value })
-              return null
+                if (item.Value === '--0--') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
             })
             return temp
         }
 
         if (label === 'singlePlant') {
             plantSelectList && plantSelectList.map((item) => {
-              if (item.PlantId === '0') return false
-              temp.push({ label: item.PlantNameCode, value: item.PlantId })
-              return null
+                if (item.PlantId === '0') return false
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
+                return null
             })
             return temp
         }
 
         if (label === 'ClientList') {
             clientSelectList && clientSelectList.map(item => {
-              if (item.Value === '0') return false;
-              temp.push({ label: item.Text, value: item.Value })
-              return null;
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -136,16 +138,16 @@ const AddOverheadMasterDetails = (props) => {
         setValue("OverheadApplicability", e)
     }
 
-    const handleModelTypeChange = (newValue, actionMeta=null) => {
+    const handleModelTypeChange = (newValue, actionMeta = null) => {
         if (newValue && newValue !== '') {
-          setState(prev => ({ ...prev, ModelType: newValue }));
+            setState(prev => ({ ...prev, ModelType: newValue }));
         } else {
-          setState(prev => ({ ...prev, ModelType: [] }));
+            setState(prev => ({ ...prev, ModelType: [] }));
         }
         if (state.ModelType.value === Number(newValue.value)) {
-          setState(prev => ({ ...prev, DropdownNotChanged: true, IsFinancialDataChanged: false }));
+            setState(prev => ({ ...prev, DropdownNotChanged: true, IsFinancialDataChanged: false }));
         } else {
-          setState(prev => ({ ...prev, DropdownNotChanged: false, IsFinancialDataChanged: true }));
+            setState(prev => ({ ...prev, DropdownNotChanged: false, IsFinancialDataChanged: true }));
         }
     };
 
@@ -155,7 +157,7 @@ const AddOverheadMasterDetails = (props) => {
             ...prev,
             OverheadPercentage: val,
             IsFinancialDataChanged: true
-          }));
+        }));
     }
 
     const handleAddApplicability = async () => {
@@ -163,30 +165,30 @@ const AddOverheadMasterDetails = (props) => {
         const isApplicabilityValid = await trigger("OverheadApplicability");
         if (!applicability?.label || !isApplicabilityValid) return;
         const percentage = getValues("OverheadPercentage");
-        
+
         if (applicability?.label !== "Fixed") {
             const isPercentageValid = await trigger("OverheadPercentage");
             if (!isPercentageValid) return;
         }
-        if(!checkForNull(percentage) && state?.OverheadApplicability?.label != "Fixed"){ 
+        if (!checkForNull(percentage) && state?.OverheadApplicability?.label != "Fixed") {
             setValue("OverheadPercentage", "")
             return false
-        }      
-        if((state?.OverheadApplicability?.label === "Fixed" || percentage) && applicability){
+        }
+        if ((state?.OverheadApplicability?.label === "Fixed" || percentage) && applicability) {
             let prevApplicability = [...state.ApplicabilityDetails]
             let obj = {
                 "ApplicabilityId": applicability.value,
-                "Applicability" : applicability.label,
+                "Applicability": applicability.label,
                 "Percentage": percentage
             }
-            if(editItemId){
+            if (editItemId) {
                 prevApplicability = [...state.ApplicabilityDetails]
                 const ind = prevApplicability.findIndex((item) => item.ApplicabilityId === editItemId)
                 prevApplicability[ind] = obj
                 setEditItemId("");
-            }else{
+            } else {
                 prevApplicability = [...state.ApplicabilityDetails, obj]
-            }           
+            }
             setState(prev => ({ ...prev, ApplicabilityDetails: prevApplicability, OverheadApplicability: {}, OverheadPercentage: "" }));
             setValue("OverheadPercentage", "");
             setValue("OverheadApplicability", "");
@@ -262,9 +264,9 @@ const AddOverheadMasterDetails = (props) => {
             else {
                 let VendorData = reactLocalStorage?.getObject('Data')
                 if (inputValue) {
-                return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+                    return autoCompleteDropdown(inputValue, VendorData, false, [], false)
                 } else {
-                return VendorData
+                    return VendorData
                 }
             }
         }
@@ -272,42 +274,42 @@ const AddOverheadMasterDetails = (props) => {
 
     const handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-          setState(prev => ({ ...prev, vendorName: newValue, isVendorNameNotSelected: false }));
+            setState(prev => ({ ...prev, vendorName: newValue, isVendorNameNotSelected: false }));
         } else {
-          setState(prev => ({ ...prev, vendorName: [] }));
+            setState(prev => ({ ...prev, vendorName: [] }));
         }
         setState(prev => ({ ...prev, DropdownNotChanged: false }));
     };
 
     const handleClient = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-          setState(prev => ({ ...prev, client: newValue }));
+            setState(prev => ({ ...prev, client: newValue }));
         } else {
-          setState(prev => ({ ...prev, client: [] }));
+            setState(prev => ({ ...prev, client: [] }));
         }
     };
 
     const handleRMChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-          setState(prev => ({...prev, RawMaterial: newValue, RMGrade: [] }));
-          fetch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => {}));
+            setState(prev => ({ ...prev, RawMaterial: newValue, RMGrade: [] }));
+            fetch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }));
         } else {
-          setState(prev => ({...prev, RMGrade: [], RMSpec: [], RawMaterial: [], }));
-          fetch(getRMGradeSelectListByRawMaterial('', false, (res) => {}));
-          fetch(fetchSpecificationDataAPI(0, () => {}));
+            setState(prev => ({ ...prev, RMGrade: [], RMSpec: [], RawMaterial: [], }));
+            fetch(getRMGradeSelectListByRawMaterial('', false, (res) => { }));
+            fetch(fetchSpecificationDataAPI(0, () => { }));
         }
     };
 
     const handleGradeChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-          setState(prev => ({...prev, RMGrade: newValue}));
+            setState(prev => ({ ...prev, RMGrade: newValue }));
         } else {
-          setState(prev => ({...prev, RMGrade: []}));
+            setState(prev => ({ ...prev, RMGrade: [] }));
         }
     }
 
     const handleEffectiveDate = (value) => {
-        setState(prev => ({...prev, EffectiveDate: value, IsFinancialDataChanged: true}));
+        setState(prev => ({ ...prev, EffectiveDate: value, IsFinancialDataChanged: true }));
         setValue("EffectiveDate", value);
     }
 
@@ -435,8 +437,8 @@ const AddOverheadMasterDetails = (props) => {
                                 Controller={Controller}
                                 control={control}
                                 register={register}
-                                rules={{ required: true }} 
-                                mandatory={true} 
+                                rules={{ required: true }}
+                                mandatory={true}
                                 options={renderListing("singlePlant")}
                                 handleChange={handleSinglePlant}
                                 defaultValue={''}
@@ -468,7 +470,7 @@ const AddOverheadMasterDetails = (props) => {
                                 disabled={state?.isEditFlag || state?.isViewMode}
                             />
                         </Col>
-                    ) }
+                    )}
 
                     {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily &&
                         <Col md="3">
@@ -497,23 +499,23 @@ const AddOverheadMasterDetails = (props) => {
                             className={`custom-checkbox ${state?.isEditFlag ? "disabled" : ""}`}
                             onChange={onPressAssemblyCheckbox}
                         >
-                        Manage Applicabilities For Multi Technology Assembly
-                        <input
-                            type="checkbox"
-                            readOnly
-                            checked={state.isAssemblyCheckbox}
-                            disabled={state?.isEditFlag ? true : false}
-                        />
-                        <span
-                            className=" before-box"
-                            checked={state.isAssemblyCheckbox}
-                            onChange={onPressAssemblyCheckbox}
-                        />
+                            Manage Applicabilities For Multi Technology Assembly
+                            <input
+                                type="checkbox"
+                                readOnly
+                                checked={state.isAssemblyCheckbox}
+                                disabled={state?.isEditFlag ? true : false}
+                            />
+                            <span
+                                className=" before-box"
+                                checked={state.isAssemblyCheckbox}
+                                onChange={onPressAssemblyCheckbox}
+                            />
                         </label>
                     </Col>
 
                     <Col md="3">
-                        <div  id="EffectiveDate_Container" className="form-group date-section">
+                        <div id="EffectiveDate_Container" className="form-group date-section">
                             <DatePickerHookForm
                                 name={`EffectiveDate`}
                                 label={'Effective Date'}
@@ -535,7 +537,7 @@ const AddOverheadMasterDetails = (props) => {
                                 autoComplete={"off"}
                                 disabledKeyboardNavigation
                                 minDate={state?.isEditFlag ? new Date(state.minEffectiveDate) : getEffectiveDateMinDate()}
-                                // maxDate={getEffectiveDateMinDate()}
+                                maxDate={getEffectiveDateMaxDate()}
                                 errors={errors && errors.EffectiveDate}
                                 disabled={state?.isViewMode}
                             />
@@ -569,70 +571,70 @@ const AddOverheadMasterDetails = (props) => {
                             disabled={state?.isViewMode}
                         />
                     </Col>
-                    
+
                     {state?.OverheadApplicability?.label != "Fixed" &&
-                    <Col md="3">
-                        <TextFieldHookForm
-                            label={`${props?.applicabilityLabel ?? ''} (%)`}
-                            name={'OverheadPercentage'}
-                            Controller={Controller}
-                            id={'overhead-percentage'}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: (Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed",
-                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                max: {
-                                    value: 100,
-                                    message: 'Percentage cannot be greater than 100'
-                                },
-                            }}
-                            mandatory={(Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed"}
-                            handleChange={handleOverheadPercentageChange}
-                            defaultValue={''}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.OverheadPercentage}
-                            disabled={!(Object.keys(state?.OverheadApplicability).length > 0) || state?.isViewMode}
-                        />
-                    </Col>
+                        <Col md="3">
+                            <TextFieldHookForm
+                                label={`${props?.applicabilityLabel ?? ''} (%)`}
+                                name={'OverheadPercentage'}
+                                Controller={Controller}
+                                id={'overhead-percentage'}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: (Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed",
+                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                    max: {
+                                        value: 100,
+                                        message: 'Percentage cannot be greater than 100'
+                                    },
+                                }}
+                                mandatory={(Object.keys(state?.OverheadApplicability).length > 0) && state?.OverheadApplicability?.label && state?.OverheadApplicability?.label !== "Fixed"}
+                                handleChange={handleOverheadPercentageChange}
+                                defaultValue={''}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.OverheadPercentage}
+                                disabled={!(Object.keys(state?.OverheadApplicability).length > 0) || state?.isViewMode}
+                            />
+                        </Col>
                     }
 
                     <Col md="3">
                         <div className={`pt-2 mt-4 pr-0 mb-3`}>
                             {editItemId ? (
-                            <>
-                                <button type="button" className={"btn btn-primary pull-left mr5"} 
-                                    onClick={handleAddApplicability}
-                                >Update</button>
-                                <button
-                                    type="button"
-                                    className={"mr15 ml-1 add-cancel-btn cancel-btn my-0"}
-                                    disabled={state?.isViewMode}
-                                    onClick={handleResetApplicability}
-                                >
-                                <div className={"cancel-icon"}></div>Cancel
-                                </button>
-                            </>
-                            ) : (
-                            <>
-                                <button id="AddFuel_AddData"
-                                    type="button"
-                                    className={"user-btn pull-left mr10"}
-                                    disabled={state?.isViewMode}
-                                    onClick={handleAddApplicability}
+                                <>
+                                    <button type="button" className={"btn btn-primary pull-left mr5"}
+                                        onClick={handleAddApplicability}
+                                    >Update</button>
+                                    <button
+                                        type="button"
+                                        className={"mr15 ml-1 add-cancel-btn cancel-btn my-0"}
+                                        disabled={state?.isViewMode}
+                                        onClick={handleResetApplicability}
                                     >
-                                    <div className={"plus"}></div>ADD
-                                </button>
-                                <button
-                                    type="button"
-                                    className={"mr15 ml-1 reset-btn"}
-                                    disabled={state?.isViewMode}
-                                    onClick={handleResetApplicability}
-                                >
-                                Reset
-                                </button>
-                            </>
+                                        <div className={"cancel-icon"}></div>Cancel
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button id="AddFuel_AddData"
+                                        type="button"
+                                        className={"user-btn pull-left mr10"}
+                                        disabled={state?.isViewMode}
+                                        onClick={handleAddApplicability}
+                                    >
+                                        <div className={"plus"}></div>ADD
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={"mr15 ml-1 reset-btn"}
+                                        disabled={state?.isViewMode}
+                                        onClick={handleResetApplicability}
+                                    >
+                                        Reset
+                                    </button>
+                                </>
                             )}
                         </div>
                     </Col>
@@ -649,35 +651,35 @@ const AddOverheadMasterDetails = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                    {state?.ApplicabilityDetails && state?.ApplicabilityDetails.length > 0 &&
-                        state.ApplicabilityDetails.map((item, index) => {
-                        return (
-                            <tr key={index}>
-                                <td>{item?.Applicability}</td>
-                                <td>{item?.Percentage}</td>
-                                <td>
-                                    <button
-                                        className="Edit mr-2"
-                                        title='Edit'
-                                        type={"button"}
-                                        disabled={state?.isViewMode || item?.IsAssociated}
-                                        onClick={() =>
-                                            editApplicability(item)
-                                        }
-                                    />
-                                    <button
-                                        className="Delete"
-                                        title='Delete'
-                                        type={"button"}
-                                        disabled={state?.isViewMode || item?.IsAssociated}
-                                        onClick={() =>
-                                            deleteApplicability(item?.ApplicabilityId)
-                                        }
-                                    />
-                                </td>
-                            </tr>
-                        );
-                        })}
+                        {state?.ApplicabilityDetails && state?.ApplicabilityDetails.length > 0 &&
+                            state.ApplicabilityDetails.map((item, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{item?.Applicability}</td>
+                                        <td>{item?.Percentage}</td>
+                                        <td>
+                                            <button
+                                                className="Edit mr-2"
+                                                title='Edit'
+                                                type={"button"}
+                                                disabled={state?.isViewMode || item?.IsAssociated}
+                                                onClick={() =>
+                                                    editApplicability(item)
+                                                }
+                                            />
+                                            <button
+                                                className="Delete"
+                                                title='Delete'
+                                                type={"button"}
+                                                disabled={state?.isViewMode || item?.IsAssociated}
+                                                onClick={() =>
+                                                    deleteApplicability(item?.ApplicabilityId)
+                                                }
+                                            />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                     </tbody>
 
                     {state?.ApplicabilityDetails?.length === 0 && (

@@ -479,7 +479,7 @@ function CostingDetailStepTwo(props) {
   }
 
   const handleBackButton = () => {
-    if (isNFR) {
+    if (isNFR && false) {
       reactLocalStorage.setObject('isFromDiscountObj', true)
       setNfrListing(true)
     } else {
