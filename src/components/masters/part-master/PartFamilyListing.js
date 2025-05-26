@@ -599,7 +599,7 @@ const PartFamilyListing = (props) => {
   return (
     <>
       <div
-        className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`}
+        className={`ag-grid-react custom-pagination ${permissions.Download ? "show-table-btn" : ""}`}
       >
         {state.isLoader && <LoaderCustom />}
         {state.disableDownload && (
