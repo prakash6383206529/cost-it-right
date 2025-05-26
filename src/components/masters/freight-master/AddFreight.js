@@ -708,7 +708,7 @@ const AddFreight = (props) => {
 
   useEffect(() => {
       callExchangeRateAPI()
-  }, [state.currency, state.ExchangeSource, state.hidePlantCurrency]);
+  }, [state.currency, state.ExchangeSource, state.hidePlantCurrency,state.effectiveDate]);
 
   const gridHandler = () => {
     const { FullTruckCapacity, RateCriteria, gridTable, Load, truckDimensions, isShowTruckDimensions } = state;
