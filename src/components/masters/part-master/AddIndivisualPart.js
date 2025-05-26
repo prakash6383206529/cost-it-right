@@ -797,7 +797,7 @@ class AddIndivisualPart extends Component {
                                   placeholder={isEditFlag ? '-' : "Select"}
                                   options={this?.state?.modelOptions}
                                   validate={
-                                    this?.state?.Model == null || this?.state?.Model.length === 0 ? [required] : []}
+                                    (PartMasterConfigurable?.IsPartModelMandatory && (this?.state?.Model == null || this?.state?.Model.length === 0)) ? [required] : []}
                                   required={PartMasterConfigurable?.IsPartModelMandatory}
                                   handleChangeDescription={this.handleModelChange}
                                   valueDescription={this?.state?.Model}
@@ -832,7 +832,7 @@ class AddIndivisualPart extends Component {
                               component={searchableSelect}
                               placeholder={"Select"}
                               options={this.renderListing("PartFamily")}
-                              validate={this?.state?.PartFamilySelected == null || this?.state?.PartFamilySelected.length === 0 ? [required] : []}
+                              validate={(PartMasterConfigurable?.IsPartFamilyMandatory && (this?.state?.PartFamilySelected == null || this?.state?.PartFamilySelected.length === 0)) ? [required] : []}
                               required={PartMasterConfigurable?.IsPartFamilyMandatory}
                               handleChangeDescription={this.handlePartFamilyChange}
                               valueDescription={this?.state?.PartFamilySelected}
