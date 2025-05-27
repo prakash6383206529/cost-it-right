@@ -300,7 +300,7 @@ const AddProfitMaster = (props) => {
 
       if (JSON.stringify(DataToChange?.ApplicabilityDetails ?? []) === JSON.stringify(state?.ApplicabilityDetails ?? []) && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) &&
         DropdownNotChanged) {
-        Toaster.warning('Please change the data to save Interest Rate Details');
+        Toaster.warning('Please change the data to save Profit Details');
         return false;
       }
 

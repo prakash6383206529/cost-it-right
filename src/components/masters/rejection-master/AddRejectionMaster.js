@@ -267,7 +267,7 @@ const AddRejectionMaster = (props) => {
         (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged
         && (JSON.stringify(ApplicabilityDetails) === JSON.stringify(DataToChange.ApplicabilityDetails))
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
-        Toaster.warning('Please change the data to save Overhead Details')
+        Toaster.warning('Please change the data to save Rejection Details')
         return false
       }
 
