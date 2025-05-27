@@ -4869,18 +4869,16 @@ export const PartComponentTempData = [
 export const PartFamily = [
     {label: 'PartFamilyName', value: 'PartFamilyName', },
     { label: 'PartFamilyCode', value: 'PartFamilyCode', },
-    { label: 'Description', value: 'Description', },
-        { label: 'EffectiveDate', value: 'EffectiveDate', },
-
-
+    { label: 'Remarks', value: 'Description', },
+    // { label: 'EffectiveDate', value: 'EffectiveDate', },
 ]
 
 export const PartFamilyTempData = [
     {
         'PartFamilyName': 'PartFamilyName123',
         'PartFamilyCode': '123',
-        'Description': 'Part Family Description',
-        'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+        'Description': 'Test Remarks',
+        // 'EffectiveDate': DayTime().format('DD-MM-YYYY'),
     }
 ]
 // USED IN BULK UPLOAD FOR PRODUCT COMPONENT
