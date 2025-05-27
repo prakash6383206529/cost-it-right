@@ -626,7 +626,7 @@ const AddRejectionMaster = (props) => {
                           handleChange={handleMessageChange}
                           customClassName={'textAreaWithBorder'}
                           className=""
-                          errors={errors.remark}
+                          errors={errors.Remark}
                           disabled={isViewMode}
                           rowHeight={4.8}
                         />

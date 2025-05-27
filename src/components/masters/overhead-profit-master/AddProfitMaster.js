@@ -662,7 +662,7 @@ const AddProfitMaster = (props) => {
                           }}
                           handleChange={handleMessageChange}
                           customClassName={'textAreaWithBorder'}
-                          errors={errors.remark}
+                          errors={errors.Remark}
                           disabled={isViewMode}
                           rowHeight={4.8}
                         />
