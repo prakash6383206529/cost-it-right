@@ -1362,7 +1362,7 @@ class AddAssemblyPart extends Component {
                               <Field
                                 name="model"
                                 type="text"
-                                label={`Model`}
+                                label={`Part Model`}
                                 component={searchableSelect}
                                 placeholder={isEditFlag ? '-' : "Select"}
                                 options={this?.state?.modelOptions}

@@ -4835,9 +4835,9 @@ export const PartComponent = [
     { label: 'ECNNumber', value: 'ECNNumber', },
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
-    { label: 'PartsModelMaster', value: 'PartsModelMaster', },
+    { label: 'PartModel', value: 'PartsModelMaster', },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
-    { label: 'NEPNumber', value: 'NEPNumber', },
+    { label: 'NEP', value: 'NEPNumber', },
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" },
@@ -5017,9 +5017,9 @@ export const BOMUpload = [
     { label: "ECNNumber", value: "ECNNumber" },
     { label: "RevisionNo", value: "RevisionNo" },
     { label: "DrawingNo", value: "DrawingNo" },
-    { label: "PartsModelMaster", value: "PartsModelMaster" },
+    { label: "PartModel", value: "PartsModelMaster" },
     { label: "PartFamilyCode", value: "PartFamilyCode" },
-    { label: "NEPNumber", value: "NEPNumber" },
+    { label: "NEP", value: "NEPNumber" },
     { label: "SAPCode", value: "SAPCode", },
     { label: "IsAssembly", value: "IsAssembly" }, //NOUI,*
     { label: "BOMLevel", value: "BOMLevel" }, //NOUI,*
