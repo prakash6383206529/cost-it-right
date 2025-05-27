@@ -664,7 +664,9 @@ class AddOperation extends Component {
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
           }
-          this.props.change('plantCurrency', Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+          // this.props.change('plantCurrency', Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+          // For domestic and import case we need to get data for plantCurrency from LocalCurrency key only.
+          this.props.change('plantCurrency', Data?.LocalCurrency)
           this.props.change('RateLocalConversion', Data?.RateLocalConversion)
           this.props.change('RateConversion', Data?.RateConversion)
           if (Data?.OperationEntryType === ENTRY_TYPE_IMPORT) {

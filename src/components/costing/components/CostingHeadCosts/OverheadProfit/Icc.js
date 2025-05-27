@@ -591,6 +591,7 @@ function Icc(props) {
                                             errors={errors.iccRemark}
                                             disabled={CostingViewMode}
                                             hidden={false}
+                                            validateWithRemarkValidation={true}
                                         />
                                         <Row>
                                             <Col md="12" className='remark-btn-container'>

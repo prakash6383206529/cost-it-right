@@ -195,6 +195,10 @@ function AddNpvCost(props) {
             return false
         }
 
+        if (errors.Quantity) {
+            return false
+        }
+
         // Get the current data in the table and set some initial variables.
         let table = [...tableData]
         let indexOfNpvType
