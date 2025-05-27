@@ -355,32 +355,32 @@ function AssemblyPart(props) {
 
         // Save remark and costingId to Redux state for API call
         dispatch(setBopRemark(remark, bopCostingId));
-        
+
         // Update the remark in RMCCTabData as well
         if (RMCCTabData && RMCCTabData.length > 0) {
           const updatedRMCCTabData = JSON.parse(JSON.stringify(RMCCTabData));
-          
+
           // Search through all items in RMCCTabData to find matching BOP
           updatedRMCCTabData.forEach(rmccItem => {
             if (rmccItem?.CostingChildPartDetails && rmccItem?.CostingChildPartDetails?.length > 0) {
               // Find the BOP within CostingChildPartDetails that matches the PartNumber and AssemblyPartNumber
               const childBopIndex = rmccItem?.CostingChildPartDetails?.findIndex(
-                childPart => childPart?.PartType === 'BOP' && 
-                             childPart?.PartNumber === activeRemark?.partNumber && 
-                             childPart?.AssemblyPartNumber === activeRemark?.assemblyPartNumber
+                childPart => childPart?.PartType === 'BOP' &&
+                  childPart?.PartNumber === activeRemark?.partNumber &&
+                  childPart?.AssemblyPartNumber === activeRemark?.assemblyPartNumber
               );
-              
+
               if (childBopIndex !== -1) {
                 // Update the remark for the matching BOP
                 rmccItem.CostingChildPartDetails[childBopIndex].Remark = remark;
               }
             }
           });
-          
+
           // Dispatch updated RMCCTabData to the Redux store
-          dispatch(setRMCCData(updatedRMCCTabData, () => {}));
+          dispatch(setRMCCData(updatedRMCCTabData, () => { }));
         }
-        
+
         setCallSaveAssemblyApi(true);
         Toaster.success('Remark saved successfully');
       }
@@ -526,16 +526,16 @@ function AssemblyPart(props) {
             {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) : 0}
             {(item?.CostingPartDetails?.TotalOperationCostPerAssembly || item?.CostingPartDetails?.TotalProcessCostPerAssembly ||
               item?.CostingPartDetails?.TotalOperationCostSubAssembly || item?.CostingPartDetails?.TotalProcessCostSubAssembly ||
-              item?.CostingPartDetails?.TotalOperationCostComponent || item?.CostingPartDetails?.TotalProcessCostComponent ||item?.CostingPartDetails?.TotalWeldingCostComponent||
+              item?.CostingPartDetails?.TotalOperationCostComponent || item?.CostingPartDetails?.TotalProcessCostComponent || item?.CostingPartDetails?.TotalWeldingCostComponent ||
               item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly || item?.CostingPartDetails?.TotalOtherOperationCostComponent) ?
               <div class="tooltip-n ml-2 assembly-tooltip"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                 <span class="tooltiptext">
-                  {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly)+checkForNull(item?.CostingPartDetails?.NetLabourCost), initialConfiguration.NoOfDecimalForPrice)}`}
+                  {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) + checkForNull(item?.CostingPartDetails?.NetLabourCost) + checkForNull(item?.CostingPartDetails?.StaffCost) + checkForNull(item?.CostingPartDetails?.IndirectLaborCost), initialConfiguration.NoOfDecimalForPrice)}`}
                   <br></br>
-                  {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly)+checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly), initialConfiguration.NoOfDecimalForPrice)}`}
+                  {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly), initialConfiguration.NoOfDecimalForPrice)}`}
                   <br></br>
                   {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.NetConversionCost - item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`} */}
-                  {`Child Parts Conversion Cost:- ${checkForDecimalAndNull((checkForNull(item?.CostingPartDetails?.TotalOperationCostComponent)+checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponent) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponent) + checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostComponent)), initialConfiguration.NoOfDecimalForPrice)}`}
+                  {`Child Parts Conversion Cost:- ${checkForDecimalAndNull((checkForNull(item?.CostingPartDetails?.TotalOperationCostComponent) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponent) + checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostComponent)), initialConfiguration.NoOfDecimalForPrice)}`}
                 </span >
               </div > : ''
             }
