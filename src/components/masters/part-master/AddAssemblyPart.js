@@ -1378,14 +1378,14 @@ class AddAssemblyPart extends Component {
                               isEditFlag ?
                                 <Button
                                   id="Model-edit"
-                                  className="drawer-edit mt30"
+                                  className="drawer-edit mt10 mb-0"
                                   variant="Edit"
                                   onClick={() => this.modelToggler(this?.state?.Model.value)}
                                 /> :
                                 <div className='d-flex justify-content-center align-items-center'>
                                   <Button
                                     id="Model-add"
-                                    className="mb-3"
+                                    className="mb-0"
                                     variant="plus-icon-square"
                                     onClick={() => this.modelToggler('')}
                                   />
