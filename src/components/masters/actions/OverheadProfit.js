@@ -166,7 +166,7 @@ export function getOverheadData(ID, callback) {
 export function getOverheadDataCheck(data, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        axios.get(`${API.getOverheadDataCheck}?overheadId=${data?.overheadId??null}&modelTypeId=${data?.modelTypeId??null}&costingHeadId=${data?.costingHeadId??null}&plantId=${data?.plantId??null}&vendorId=${data?.vendorId??null}&customerId=${data?.customerId??null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId??null}&isRejection=${data?.isRejection ?? false}`, config())
+        axios.get(`${API.getOverheadDataCheck}?overheadId=${data?.overheadId ?? null}&modelTypeId=${data?.modelTypeId ?? null}&costingHeadId=${data?.costingHeadId ?? null}&plantId=${data?.plantId ?? null}&vendorId=${data?.vendorId ?? null}&customerId=${data?.customerId ?? null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId ?? null}&isRejection=${data?.isRejection ?? false}&partFamilyId=${data?.partFamilyId ?? null}`, config())
             .then((response) => {
                 if (response.data.Result === true || response.status === 204) {
                     dispatch({
@@ -189,7 +189,7 @@ export function getOverheadDataCheck(data, callback) {
 export function getProfitDataCheck(data, callback) {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        axios.get(`${API.getProfitDataCheck}?overheadId=${data?.overheadId??null}&modelTypeId=${data?.modelTypeId??null}&costingHeadId=${data?.costingHeadId??null}&plantId=${data?.plantId??null}&vendorId=${data?.vendorId??null}&customerId=${data?.customerId??null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId??null}`, config())
+        axios.get(`${API.getProfitDataCheck}?overheadId=${data?.overheadId ?? null}&modelTypeId=${data?.modelTypeId ?? null}&costingHeadId=${data?.costingHeadId ?? null}&plantId=${data?.plantId ?? null}&vendorId=${data?.vendorId ?? null}&customerId=${data?.customerId ?? null}&effectiveDate=${data?.effectiveDate ? data?.effectiveDate : null}&loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data?.technologyId ?? null}&partFamilyId=${data?.partFamilyId ?? null}`, config())
             .then((response) => {
                 if (response.data.Result === true || response.status === 204) {
                     dispatch({
@@ -241,17 +241,18 @@ export function getProfitData(ID, callback) {
  * @method getOverheadDataList
  * @description get Overhead all record.
  */
-export function getOverheadDataList(data, skip, take, isPagination, obj, isRejection=false, callback) {
+export function getOverheadDataList(data, skip, take, isPagination, obj, isRejection = false, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = encodeQueryParamsAndLog({
             loggedInUserId: loggedInUserId(),
             costing_head: obj.costing_head, vendor_id: obj.vendor_id, overhead_applicability_type_id: obj.overhead_applicability_type_id, model_type_id: obj.model_type_id,
             CostingHead: obj.CostingHead, VendorName: obj.VendorName, ClientName: obj.ClientName, ModelType: obj.ModelType,
-            OverheadApplicability: obj.OverheadApplicabilityType, OverheadApplicabilityPercentage: obj.OverheadPercentage, OverheadOnRMPercentage: obj.OverheadRMPercentage, OverheadOnBOPPercentage: obj.OverheadBOPPercentage,
+            OverheadApplicabilityPercentage: obj.OverheadPercentage, OverheadOnRMPercentage: obj.OverheadRMPercentage, OverheadOnBOPPercentage: obj.OverheadBOPPercentage,
             OverheadOnCCPercentage: obj.OverheadMachiningCCPercentage, EffectiveDate: obj.EffectiveDateNew, Plant: obj.PlantName, applyPagination: isPagination,
             skip: skip, take: take, CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '', RawMaterialName: obj.RawMaterialName !== undefined ? obj.RawMaterialName : '',
             RawMaterialGrade: obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : '', TechnologyName: obj.TechnologyName !== undefined ? obj.TechnologyName : '',
+            PartFamily: obj?.PartFamily, OverheadApplicability: obj?.Applicability,
             IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false,
             IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc, IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc,
             IsRejection: isRejection
@@ -297,6 +298,7 @@ export function getProfitDataList(data, skip, take, isPagination, obj, callback)
             ProfitOnCCPercentage: obj.ProfitMachiningCCPercentage, EffectiveDate: obj.EffectiveDateNew, Plant: obj.PlantName, applyPagination: isPagination,
             skip: skip, take: take, CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '', RawMaterialName: obj.RawMaterialName !== undefined ? obj.RawMaterialName : '',
             RawMaterialGrade: obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : '', TechnologyName: obj.TechnologyName !== undefined ? obj.TechnologyName : '',
+            PartFamily: obj?.PartFamily, ProfitApplicability: obj?.Applicability,
             IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false,
             IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc, IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc
         });

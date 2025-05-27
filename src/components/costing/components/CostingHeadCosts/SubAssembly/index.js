@@ -1,6 +1,6 @@
 import React, { useContext, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, IsNFRContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
 import { getCostingBopAndBopHandlingDetails, getCostingLabourDetails, getRMCCTabData, openCloseStatus, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setIsBreakupBoughtOutPartCostingFromAPI, setRMCCData, setBopRemark } from '../../../actions/Costing';
@@ -50,6 +50,7 @@ function AssemblyPart(props) {
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext)
   const costData = useContext(costingInfoContext);
   const isPartType = useContext(IsPartType);
 
@@ -61,7 +62,7 @@ function AssemblyPart(props) {
   const toggle = (BOMLevel, PartNumber, AssemblyPartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
     dispatch(openCloseStatus({ bopHandling: isBOPExists && !IsOpen, }))
-    if (isNFR && !openAllTabs) {
+    if (isNFR && !openAllTabs && false) {
       Toaster.warning("All Raw Material's price has not added in the Raw Material master against this vendor and plant.")
       return false;
     }
@@ -354,32 +355,32 @@ function AssemblyPart(props) {
 
         // Save remark and costingId to Redux state for API call
         dispatch(setBopRemark(remark, bopCostingId));
-        
+
         // Update the remark in RMCCTabData as well
         if (RMCCTabData && RMCCTabData.length > 0) {
           const updatedRMCCTabData = JSON.parse(JSON.stringify(RMCCTabData));
-          
+
           // Search through all items in RMCCTabData to find matching BOP
           updatedRMCCTabData.forEach(rmccItem => {
             if (rmccItem?.CostingChildPartDetails && rmccItem?.CostingChildPartDetails?.length > 0) {
               // Find the BOP within CostingChildPartDetails that matches the PartNumber and AssemblyPartNumber
               const childBopIndex = rmccItem?.CostingChildPartDetails?.findIndex(
-                childPart => childPart?.PartType === 'BOP' && 
-                             childPart?.PartNumber === activeRemark?.partNumber && 
-                             childPart?.AssemblyPartNumber === activeRemark?.assemblyPartNumber
+                childPart => childPart?.PartType === 'BOP' &&
+                  childPart?.PartNumber === activeRemark?.partNumber &&
+                  childPart?.AssemblyPartNumber === activeRemark?.assemblyPartNumber
               );
-              
+
               if (childBopIndex !== -1) {
                 // Update the remark for the matching BOP
                 rmccItem.CostingChildPartDetails[childBopIndex].Remark = remark;
               }
             }
           });
-          
+
           // Dispatch updated RMCCTabData to the Redux store
-          dispatch(setRMCCData(updatedRMCCTabData, () => {}));
+          dispatch(setRMCCData(updatedRMCCTabData, () => { }));
         }
-        
+
         setCallSaveAssemblyApi(true);
         Toaster.success('Remark saved successfully');
       }
@@ -404,7 +405,7 @@ function AssemblyPart(props) {
         confirmPopup={handleRemarkPopupConfirm}
         header={"Remark"}
         isInputField={true}
-        isDisabled={CostingViewMode}
+        isDisabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
         defaultValue={remark}
         maxLength={REMARKMAXLENGTH}
       />
@@ -525,11 +526,11 @@ function AssemblyPart(props) {
             {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) : 0}
             {(item?.CostingPartDetails?.TotalOperationCostPerAssembly || item?.CostingPartDetails?.TotalProcessCostPerAssembly ||
               item?.CostingPartDetails?.TotalOperationCostSubAssembly || item?.CostingPartDetails?.TotalProcessCostSubAssembly ||
-              item?.CostingPartDetails?.TotalOperationCostComponent || item?.CostingPartDetails?.TotalProcessCostComponent ||
+              item?.CostingPartDetails?.TotalOperationCostComponent || item?.CostingPartDetails?.TotalProcessCostComponent || item?.CostingPartDetails?.TotalWeldingCostComponent ||
               item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly || item?.CostingPartDetails?.TotalOtherOperationCostComponent) ?
               <div class="tooltip-n ml-2 assembly-tooltip"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                 <span class="tooltiptext">
-                  {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly), initialConfiguration.NoOfDecimalForPrice)}`}
+                  {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) + checkForNull(item?.CostingPartDetails?.NetLabourCost) + checkForNull(item?.CostingPartDetails?.StaffCost) + checkForNull(item?.CostingPartDetails?.IndirectLaborCost), initialConfiguration.NoOfDecimalForPrice)}`}
                   <br></br>
                   {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssembly) + checkForNull(item?.CostingPartDetails?.TotalOtherOperationCostPerSubAssembly), initialConfiguration.NoOfDecimalForPrice)}`}
                   <br></br>
@@ -563,7 +564,7 @@ function AssemblyPart(props) {
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={labourHandlingDrawer}>
-                <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button >
+                <div className={`${(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button >
               </>}
               {
                 isBOPExists && item?.CostingPartDetails?.IsOpen && <><button
@@ -571,7 +572,7 @@ function AssemblyPart(props) {
                   id='Add_BOP_Handling_Charge'
                   className={'user-btn add-oprn-btn mr-1'}
                   onClick={bopHandlingDrawer}>
-                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
+                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
                 </>
               }
               {
@@ -588,7 +589,7 @@ function AssemblyPart(props) {
                     id="assembly_addOperation"
                     className={'user-btn add-oprn-btn mr-1'}
                     onClick={() => DrawerToggle(item)}>
-                    <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>
+                    <div className={`${(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>
               }
               <button
                 type="button"
@@ -596,7 +597,7 @@ function AssemblyPart(props) {
                 onClick={() => ProcessDrawerToggle(item)}
                 title={'Add Process'}
               >
-                <div className={`${(CostingViewMode || checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) !== 0) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
+                <div className={`${(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ || checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) !== 0) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
               </button>
             </div >
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
@@ -620,7 +621,7 @@ function AssemblyPart(props) {
           ID={''}
           anchor={'right'}
           item={item}
-          CostingViewMode={CostingViewMode}
+          CostingViewMode={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
           setAssemblyOperationCost={props.setAssemblyOperationCost}
           itemInState={itemInState}
         />

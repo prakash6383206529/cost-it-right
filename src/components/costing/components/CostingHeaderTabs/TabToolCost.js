@@ -6,7 +6,7 @@ import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
   setComponentToolItemData, saveDiscountOtherCostTab, saveAssemblyPartRowCostingCalculation, isToolDataChange, saveCostingPaymentTermDetail
 } from '../../actions/Costing';
-import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, IsNFRContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
@@ -31,21 +31,23 @@ import { PreviousTabData } from '../CostingHeaderTabs';
 import _ from 'lodash'
 import { useLabels } from '../../../../helper/core';
 function TabToolCost(props) {
-
   const { handleSubmit } = useForm();
   const dispatch = useDispatch()
+  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, PaymentTermDataDiscountTab, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
-  const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
+  const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(ToolTabData?.[0]?.CostingPartDetails?.IsToolCostProcessWise ?? false)
+  const [IsApplicableOverall, setIsApplicableOverall] = useState(false);
+  const [netToolCostOverallApplicability, setNetToolCostOverallApplicability] = useState(0);
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState([])
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, PaymentTermDataDiscountTab, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const [gridData, setGridData] = useState([])
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -96,7 +98,7 @@ function TabToolCost(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
-    if (CostingViewMode === false && ToolTabData?.length > 0) {
+    if ((CostingViewMode === false || IsLockTabInCBCCostingForCustomerRFQ===false) && ToolTabData?.length > 0) {
       let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0]?.CostingPartDetails !== undefined ? ToolTabData[0]?.CostingPartDetails : null;
       //setTimeout(() => {
 
@@ -114,14 +116,19 @@ function TabToolCost(props) {
       //}, 1500)
     }
 
+    const toolOperationId = gridData?.[0]?.ToolOperationId || null;
     if (ToolTabData) {
-      if (ToolTabData[0]?.CostingPartDetails?.IsToolCostProcessWise) {
+      if (ToolTabData[0]?.CostingPartDetails?.IsToolCostProcessWise && toolOperationId !== null) {
+        
         setIsApplicableProcessWise(true)
+      // CJ2-I262 It will help identify tool cost tab (Applicability: overall) previously saved or not.
+      } else if(ToolTabData[0]?.CostingPartDetails?.IsToolCostProcessWise === false && toolOperationId !== null) {
+        setIsApplicableOverall(true)
       }
     }
   }, [ToolTabData]);
   useEffect(() => {
-    if (gridData && gridData.length > 0) {
+    if (gridData && gridData?.length > 0) {
       const totalToolInterestCostPerPc = gridData.reduce((sum, item) => sum + (Number(item.ToolInterestCostPerPiece) || 0), 0);
       const totalToolMaintenanceCostPerPc = gridData.reduce((sum, item) => sum + (Number(item.ToolMaintenanceCostPerPiece) || 0), 0);
       const totalToolAmortizationCost = gridData.reduce((sum, item) => sum + (Number(item.ToolAmortizationCost) || 0), 0);
@@ -210,13 +217,13 @@ function TabToolCost(props) {
   const dispatchToolCost = (ToolGrid, IsChanged, arr) => {
     const updatedToolTabData = _.cloneDeep(arr)
     let tempArr = [];
+    let IsToolCostProcessWise = !updatedToolTabData?.[0]?.CostingPartDetails?.IsToolCostProcessWise ? IsApplicableProcessWise : updatedToolTabData?.[0]?.CostingPartDetails?.IsToolCostProcessWise
     try {
-
       tempArr = updatedToolTabData && updatedToolTabData.map(i => {
 
         i.CostingPartDetails.CostingToolCostResponse = ToolGrid;
         i.CostingPartDetails.TotalToolCost = getTotalCost(ToolGrid);
-        i.CostingPartDetails.IsToolCostProcessWise = IsApplicableProcessWise
+        i.CostingPartDetails.IsToolCostProcessWise = IsToolCostProcessWise
         i.CostingPartDetails.NetToolAmortizationCost = ToolGrid.reduce((sum, item) => sum + (Number(item.ToolAmortizationCost) || 0), 0);
         i.CostingPartDetails.NetToolMaintenanceCost = ToolGrid.reduce((sum, item) => sum + (Number(item.ToolMaintenanceCostPerPiece) || 0), 0);
         i.CostingPartDetails.NetToolInterestCost = ToolGrid.reduce((sum, item) => sum + (Number(item.ToolInterestCostPerPiece) || 0), 0);
@@ -253,7 +260,7 @@ function TabToolCost(props) {
       setIsApplicableProcessWise(!IsApplicableProcessWise)
       dispatch(isToolDataChange(true))
     }, 300);
-
+    
   }
 
   useEffect(() => {
@@ -262,7 +269,12 @@ function TabToolCost(props) {
     }
     if (ToolTabData && ToolTabData.length > 0) {
       setLoader(false)
-      setGridData(ToolTabData && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse)
+      // CJ2-I262 From Backend we are getting CostingToolCostResponse with blank json object and all key values null.
+      if (ToolTabData && ToolTabData?.[0]?.CostingPartDetails?.CostingToolCostResponse.length > 0 && ToolTabData?.[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolOperationId === null) {
+        setGridData([])
+      } else {
+        setGridData(ToolTabData && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse)
+      }
     }
 
   }, [IsApplicableProcessWise, props.activeTab, ToolTabData])
@@ -271,7 +283,7 @@ function TabToolCost(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = debounce(handleSubmit((formData) => {
+  const saveCosting = debounce(handleSubmit(async (formData) => {
     if (checkIsToolTabChange) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
@@ -279,7 +291,7 @@ function TabToolCost(props) {
       const discountAndOtherTabData = DiscountCostData
       const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
       const toolTabData = ToolTabData && ToolTabData[0]
-
+      
       const data = {
         "IsToolCostProcessWise": IsApplicableProcessWise,
         "CostingId": costData.CostingId,
@@ -292,15 +304,12 @@ function TabToolCost(props) {
         "TotalCost": netPOPrice,
         "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
-      if (costData.IsAssemblyPart === true && !partType) {
-
-        if (!CostingViewMode) {
-          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 5, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
-          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-        }
+      if (!IsApplicableProcessWise) {
+        setIsApplicableOverall(true)
+        setNetToolCostOverallApplicability(ToolTabData?.[0]?.CostingPartDetails?.TotalToolCost)
       }
       if (partType) {
-
+ 
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetToolCost = ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost
         let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost)
@@ -311,25 +320,44 @@ function TabToolCost(props) {
           checkForNull(totalOverheadPrice) +
           checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) -
           checkForNull(DiscountCostData?.HundiOrDiscountValue)
-
+ 
         let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
         dispatch(gridDataAdded(true))
       }
-
-      dispatch(saveToolTab(data, res => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
-          dispatch(setComponentToolItemData({}, () => { }))
-          dispatch(isToolDataChange(false))
-          InjectDiscountAPICall()
-
+        // Calling API sequentially because 2nd API saveAssemblyPartRowCostingCalculation was setting IsToolCostProcessWise NULL in backend. 
+        const apiCalls = [];
+        apiCalls.push({
+            label: 'saveToolTab',
+            call: () => new Promise((resolve) => {
+            dispatch(saveToolTab(data, res => resolve(res)))
+            }),
+        })
+      if (costData.IsAssemblyPart === true && !partType) {
+        if (!CostingViewMode || !IsLockTabInCBCCostingForCustomerRFQ) {
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 5, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
+          apiCalls.push({
+            label: 'saveAssemblyPartRowCostingCalculation',
+            call: () => new Promise((resolve) => {
+              dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => resolve(res)));
+            }),
+          });
         }
-      }))
+      }
+        try {
+            for (const {call} of apiCalls) {
+                await call()
+            }
+            Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS)
+            dispatch(setComponentToolItemData({}, () => {}))
+            dispatch(isToolDataChange(false));
+            InjectDiscountAPICall()
+        } catch (error) {
+        }
     }
-
+ 
   }), 500);
-
+  
   const InjectDiscountAPICall = () => {
     let basicRate = 0
     if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY & !partType) {
@@ -378,7 +406,7 @@ function TabToolCost(props) {
     setToolCost(filteredList, true);
   }
 
- 
+
   const editItem = (index, data) => {
     let tempArr = data && data.find((el, i) => i === index)
     setEditIndex(index)
@@ -394,7 +422,7 @@ function TabToolCost(props) {
     return (
       <>
         {!shouldShowButtons && row?.PartType !== 'Component' && <div className={`${'lock_icon tooltip-n'}`} title='This part is already present at multiple level in this BOM. Please go to the lowest level to edit the data.'></div>}
-        {(!CostingViewMode && shouldShowButtons) && (
+        {((!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) && shouldShowButtons) && (
           <>
             <button
               title='Edit'
@@ -508,7 +536,7 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={CostingViewMode || state.disableToggle}
+                            disabled={CostingViewMode || state.disableToggle || IsApplicableOverall || IsLockTabInCBCCostingForCustomerRFQ}
                             //disabled={true}
                             background="#4DC771"
                             onColor="#4DC771"
@@ -526,7 +554,7 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md={IsApplicableProcessWise ? "8" : "3"} className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
+                <Col md={IsApplicableProcessWise ? "8" : "3"} className="border-section d-flex justify-content-between align-items-center text-dark-blue">
                   {IsApplicableProcessWise && <><div>
                     {"Net Tool Maintenance Cost (per pcs):"}
                     <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(state?.toolmaintenanceCostPerPc, initialConfiguration?.NoOfDecimalForPrice)}</span>
@@ -541,13 +569,17 @@ function TabToolCost(props) {
                     </div> </>}
                   <div>
                     {"Net Tool Cost:"}
-                    <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(IsApplicableProcessWise ? state?.netToolCost : gridData?.[0]?.NetToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
+                    {/* When Tool Cost Applicability is Overall.
+                        ToolTabData?.[0]?.CostingPartDetails?.TotalToolCost used for Initial Page load.
+                        netToolCostOverallApplicability is used when we save tool cost. 
+                    */}
+                    <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(IsApplicableProcessWise ? state?.netToolCost : netToolCostOverallApplicability ? netToolCostOverallApplicability : ToolTabData?.[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
                   </div>
                   {IsApplicableProcessWise &&
                     <>
-                      {!CostingViewMode && <button
+                      {(!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) && <button
                         type="button"
-                        className={'user-btn'}
+                        className={'user-btn tool-btn'}
                         onClick={DrawerToggle}
                       >
                         <div className={'plus'}></div>ADD TOOL</button>}
@@ -573,7 +605,7 @@ function TabToolCost(props) {
                                     <div>
                                       <Tool
                                         index={index}
-                                        IsApplicableProcessWise={item?.CostingPartDetails?.IsToolCostProcessWise}
+                                        IsApplicableProcessWise={IsApplicableProcessWise}
                                         data={item}
                                         // headCostRMCCBOPData={props.headCostRMCCBOPData}
                                         setOverAllApplicabilityCost={setOverAllApplicabilityCost}
@@ -632,7 +664,7 @@ function TabToolCost(props) {
                                 <AgGridColumn field="PartType" headerName="Part Type"></AgGridColumn>
                                 <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation" ></AgGridColumn>
                                 <AgGridColumn field="ProcessOrOperationType" headerName="Process/Operation Type" ></AgGridColumn>
-                                <AgGridColumn field="ProcessOrOperationQuantity" headerName="Process Run Count" cellRenderer={'valueFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ProcessRunCount" headerName="Process Run Count" cellRenderer={'valueFormatter'}></AgGridColumn>
                                 <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
                                 <AgGridColumn field="ToolName" headerName="Tool Name" ></AgGridColumn>
                                 <AgGridColumn field="ToolCost" headerName="Tool Rate" cellRenderer={'decimalFormatter'}></AgGridColumn>
@@ -664,7 +696,7 @@ function TabToolCost(props) {
       </div >
 
 
-      {!CostingViewMode && IsApplicableProcessWise &&
+      {(!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) && IsApplicableProcessWise &&
         <div className="col-sm-12 text-right bluefooter-butn btn-sticky-container">
           <button
             type={'button'}
@@ -682,7 +714,8 @@ function TabToolCost(props) {
           isOpen={isDrawerOpen}
           closeDrawer={closeDrawer}
           isEditFlag={isEditFlag}
-          CostingViewMode={CostingViewMode}
+          CostingViewMode={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
+          IsLockTabInCBCCostingForCustomerRFQ={IsLockTabInCBCCostingForCustomerRFQ} 
           ID={''}
           setToolCost={setToolCost}
           editIndex={editIndex}

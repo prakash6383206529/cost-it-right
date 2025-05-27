@@ -10,9 +10,9 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, removeBOPfro
 //MINDA
 // import {removeBOPFromList } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
-import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../../../actions/Costing';
+import { isToolDataChange, setComponentToolItemData, setToolsErrors, setOverallApplicabilityToolData } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
-import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, IsNFRContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import _, { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
@@ -65,13 +65,13 @@ function Tool(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [applicability, setApplicability] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? { label: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType, value: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
   const [valueByAPI, setValueByAPI] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? true : false)
-  const { costingData, isBreakupBoughtOutPartCostingFromAPI, getToolTabData } = useSelector(state => state.costing)
-
+  const { costingData, isBreakupBoughtOutPartCostingFromAPI, getToolTabData } = useSelector(state => state.costing) 
   const [toolObj, setToolObj] = useState(data?.CostingPartDetails?.CostingToolCostResponse[0])
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext)
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
-  const [state, setState] = useState({
+  const [state, setState] = useState({  
     ToolInterestCost: 0,
     ToolInterestCostPerPc: 0,
     ToolMaintenanceCostPerPc: 0
@@ -124,6 +124,7 @@ function Tool(props) {
     let request = partType ? 'multiple technology assembly' : 'toolcost'
     let isRequestForMultiTechnology = partType ? true : false
     dispatch(fetchCostingHeadsAPI(request, false, isRequestForMultiTechnology, (res) => { }))
+    dispatch(setOverallApplicabilityToolData(null, () => { }))
   }, [])
 
   useEffect(() => {
@@ -289,6 +290,7 @@ function Tool(props) {
 
 
   const handleToolApplicabilityChange = (newValue) => {
+    dispatch(setOverallApplicabilityToolData(newValue, () => { }))
     if (newValue && newValue !== '') {
       setValue('ToolMaintainancePerentage', '')
       setValueByAPI(false)
@@ -305,11 +307,12 @@ function Tool(props) {
       setValue('ToolMaintenanceCost', 0)
       setValue('maintanencePercentage', 0)
       setValue('toolCostType', '')
-      setValue('ToolCost', 0)
-      setValue('Life', 0)
-      setValue('ToolAmortizationCost', 0)
+      // setValue('ToolCost', 0)
+      // setValue('Life', 0)
+      // setValue('ToolAmortizationCost', 0)
       setValue('NetToolCost', 0)
       setValue('crmHeadTool', '')
+      setValue('ToolMaintenanceCostPerPc', 0);
     }
     setValue('maintanencePercentage', 0)
     setValue('maintanenceToolCost', 0)
@@ -357,7 +360,7 @@ function Tool(props) {
       setValue('MaintananceCostApplicability', checkForDecimalAndNull(baseCost, noOfDecimal));
       setValue('ToolMaintenanceCost', checkForDecimalAndNull(toolCost, noOfDecimal));
       setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(costPerPc, noOfDecimal));
-  
+      
       setToolObj({
         ...toolObj,
         ToolApplicabilityId: applicability.value,
@@ -428,13 +431,15 @@ function Tool(props) {
       case 'Fixed':
         setValue('MaintananceCostApplicability', '-');
         setValue('ToolMaintenanceCost', checkForDecimalAndNull(maintanenceToolCost, noOfDecimal));
+        setValue('ToolMaintenanceCostPerPc', 0);
         setToolObj({
           ...toolObj,
           ToolApplicabilityId: applicability.value,
           ToolApplicability: applicability.label,
           MaintanencePercentage: maintanencePercentage,
           ToolApplicabilityCost: maintanenceToolCost,
-          ToolMaintenanceCost: checkForNull(maintanenceToolCost)
+          ToolMaintenanceCost: checkForNull(maintanenceToolCost),
+          ToolMaintenanceCostPerPiece: 0
         });
         break;
   
@@ -449,21 +454,24 @@ function Tool(props) {
 
   const calculateNetToolCost = () => {
 
-    const ToolMaintenanceCostPerPiece = checkForNull(toolObj?.ToolMaintenanceCostPerPiece)
     const ToolCost = checkForNull(getValues('ToolCost'));
     const Life = checkForNull(getValues('Life'))
+    const costPerPc = ToolCost / Life;
+    const ToolMaintenanceCostPerPiece = checkForNull(costPerPc)   
     const ToolAmortizationCost = ToolCost / Life
     const toolInterestRatePercent = checkForNull(getValues('ToolInterestRatePercent'))
     const toolInterestCost= ToolCost * toolInterestRatePercent / 100
     const toolInterestCostPerPc = toolInterestCost / checkForNull(getValues('Life'))
     setValue('ToolInterestCost', checkForDecimalAndNull(toolInterestCost, initialConfiguration?.NoOfDecimalForPrice))
     setValue('ToolInterestCostPerPc', checkForDecimalAndNull(toolInterestCostPerPc, initialConfiguration?.NoOfDecimalForPrice))
+    setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(costPerPc, initialConfiguration?.NoOfDecimalForPrice));
     setState(prevState => ({
       ...prevState,
       ToolInterestCost: toolInterestCost,
-      ToolInterestCostPerPc: toolInterestCostPerPc
+      ToolInterestCostPerPc: toolInterestCostPerPc,
+      ToolMaintenanceCostPerPiece: costPerPc
     }))
-    const netToolValue = checkForNull(ToolMaintenanceCostPerPiece) + checkForNull(ToolAmortizationCost) + checkForNull(toolInterestCostPerPc)
+    const netToolValue = checkForNull(ToolMaintenanceCostPerPiece) + checkForNull(ToolAmortizationCost) + checkForNull(toolInterestCostPerPc)    
     if (netToolValue) {
       setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
       setValue('NetToolCost', checkForDecimalAndNull(netToolValue, initialConfiguration.NoOfDecimalForPrice))
@@ -489,8 +497,9 @@ function Tool(props) {
         "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
         "ToolInterestCost": toolInterestCost,
         "ToolInterestCostPerPiece": toolInterestCostPerPc,
-        "ToolMaintenanceCostPerPiece": toolObj?.ToolMaintenanceCost / Life,
+        "ToolMaintenanceCostPerPiece": ToolMaintenanceCostPerPiece
       }
+      
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       dispatch(isToolDataChange(true))
       setTimeout(() => {
@@ -607,7 +616,7 @@ function Tool(props) {
                       handleChange={(e) => {
                         e.preventDefault()}}
                       errors={errors && errors.ToolCost}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -630,7 +639,7 @@ function Tool(props) {
                         handleToolLifeChange(e)
                       }}
                       errors={errors && errors.Life}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={CostingViewMode  || IsLockTabInCBCCostingForCustomerRFQ ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -666,7 +675,7 @@ function Tool(props) {
                       mandatory={false}
                       handleChange={handleToolApplicabilityChange}
                       errors={errors.toolCostType}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -697,7 +706,7 @@ function Tool(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.maintanencePercentage}
-                          disabled={CostingViewMode ? true : false}
+                          disabled={CostingViewMode  || IsLockTabInCBCCostingForCustomerRFQ? true : false}
                         />
                       </div>
                       :
@@ -724,7 +733,7 @@ function Tool(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.maintanenceToolCost}
-                          disabled={CostingViewMode ? true : false}
+                          disabled={CostingViewMode||IsLockTabInCBCCostingForCustomerRFQ ? true : false}
 
                         />
 
@@ -820,7 +829,7 @@ function Tool(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ToolInterestRatePercent}
-                          disabled={!getValues('ToolCost')|| CostingViewMode ? true : false}
+                          disabled={!getValues('ToolCost')|| CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ ? true : false}
                         />
                   </Col>
                   <Col md="3">
@@ -901,7 +910,7 @@ function Tool(props) {
                         options={CRMHeads}
                         required={false}
                         handleChange={onCRMHeadChange}
-                        disabled={CostingViewMode}
+                        disabled={CostingViewMode ||IsLockTabInCBCCostingForCustomerRFQ}
                       />
                     </Col>
                   }
@@ -913,7 +922,7 @@ function Tool(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between mt25 sticky-btn-footer tab-tool-cost-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
 
-                {!CostingViewMode && <button
+                {!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ && <button
                   type={'button'}
                   onClick={onSubmit}
                   className="submit-button mr5 save-btn">

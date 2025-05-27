@@ -8,8 +8,8 @@ import NoContentFound from '../../common/NoContentFound';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import DayTime from '../../common/DayTimeWrapper';
 import { useTranslation } from 'react-i18next';
-import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull, maxLength7 } from "../../../helper";
-import { CBCTypeId, EMPTY_DATA, OVERHEADMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull,maxLength7 } from "../../../helper";
+import { CBCTypeId, EMPTY_DATA, OVERHEADMASTER, PROFITMASTER, REJECTIONMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { fetchApplicabilityList, getVendorNameByVendorSelectList, fetchSpecificationDataAPI } from '../../../actions/Common';
 import { autoCompleteDropdown, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
@@ -48,7 +48,7 @@ const AddOverheadMasterDetails = (props) => {
             })
             return temp
         }
-    
+
         if (label === 'grade') {
             gradeSelectList && gradeSelectList.map((item) => {
                 if (item.Value === '0') return false
@@ -96,36 +96,36 @@ const AddOverheadMasterDetails = (props) => {
 
         if (label === 'Plant') {
             plantSelectList && plantSelectList.map((item) => {
-              if (item.PlantId === '0') return false
-              temp.push({ label: item.PlantNameCode, value: item.PlantId })
-              return null
+                if (item.PlantId === '0') return false
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
+                return null
             })
             return temp
         }
 
         if (label === 'PartFamily') {
             partFamilySelectList && partFamilySelectList.map((item) => {
-              if (item.Value === '--0--') return false
-              temp.push({ label: item.Text, value: item.Value })
-              return null
+                if (item.Value === '--0--') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
             })
             return temp
         }
 
         if (label === 'singlePlant') {
             plantSelectList && plantSelectList.map((item) => {
-              if (item.PlantId === '0') return false
-              temp.push({ label: item.PlantNameCode, value: item.PlantId })
-              return null
+                if (item.PlantId === '0') return false
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
+                return null
             })
             return temp
         }
 
         if (label === 'ClientList') {
             clientSelectList && clientSelectList.map(item => {
-              if (item.Value === '0') return false;
-              temp.push({ label: item.Text, value: item.Value })
-              return null;
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -136,17 +136,17 @@ const AddOverheadMasterDetails = (props) => {
         setValue("OverheadApplicability", e)
     }
 
-    const handleModelTypeChange = (newValue, actionMeta=null) => {
+    const handleModelTypeChange = (newValue, actionMeta = null) => {
         if (newValue && newValue !== '') {
-          setState(prev => ({ ...prev, ModelType: newValue }));
+            setState(prev => ({ ...prev, ModelType: newValue }));
         } else {
-          setState(prev => ({ ...prev, ModelType: [] }));
+            setState(prev => ({ ...prev, ModelType: [] }));
         }
         let modelTypeValue = (props?.applicabilityLabel === "ICC") ? newValue.value : Number(newValue.value)
         if (state.ModelType.value === modelTypeValue) {
           setState(prev => ({ ...prev, DropdownNotChanged: true, IsFinancialDataChanged: false }));
         } else {
-          setState(prev => ({ ...prev, DropdownNotChanged: false, IsFinancialDataChanged: true }));
+            setState(prev => ({ ...prev, DropdownNotChanged: false, IsFinancialDataChanged: true }));
         }
     };
 
@@ -156,7 +156,7 @@ const AddOverheadMasterDetails = (props) => {
             ...prev,
             OverheadPercentage: val,
             IsFinancialDataChanged: true
-          }));
+        }));
     }
 
     const handleAddApplicability = async () => {
@@ -171,11 +171,11 @@ const AddOverheadMasterDetails = (props) => {
             const isPercentageValid = await trigger("OverheadPercentage");
             if (!isPercentageValid) return;
         }
-        if(!checkForNull(percentage) && state?.OverheadApplicability?.label != "Fixed"){ 
+        if (!checkForNull(percentage) && state?.OverheadApplicability?.label != "Fixed") {
             setValue("OverheadPercentage", "")
             return false
-        }      
-        if((state?.OverheadApplicability?.label === "Fixed" || percentage) && applicability){
+        }
+        if ((state?.OverheadApplicability?.label === "Fixed" || percentage) && applicability) {
             let prevApplicability = [...state.ApplicabilityDetails]
             let obj = {
                 "ApplicabilityId": applicability.value,
@@ -183,14 +183,14 @@ const AddOverheadMasterDetails = (props) => {
                 "Percentage": percentage,
                 ...(state?.IsPaymentTermsRecord && { RepaymentPeriod: repaymentPeriod })
             }
-            if(editItemId){
+            if (editItemId) {
                 prevApplicability = [...state.ApplicabilityDetails]
                 const ind = prevApplicability.findIndex((item) => item.ApplicabilityId === editItemId)
                 prevApplicability[ind] = obj
                 setEditItemId("");
-            }else{
+            } else {
                 prevApplicability = [...state.ApplicabilityDetails, obj]
-            }           
+            }
             setState(prev => ({ ...prev, ApplicabilityDetails: prevApplicability, OverheadApplicability: {}, OverheadPercentage: "" }));
             setValue("OverheadPercentage", "");
             setValue("OverheadApplicability", "");
@@ -269,9 +269,9 @@ const AddOverheadMasterDetails = (props) => {
             else {
                 let VendorData = reactLocalStorage?.getObject('Data')
                 if (inputValue) {
-                return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+                    return autoCompleteDropdown(inputValue, VendorData, false, [], false)
                 } else {
-                return VendorData
+                    return VendorData
                 }
             }
         }
@@ -279,42 +279,42 @@ const AddOverheadMasterDetails = (props) => {
 
     const handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-          setState(prev => ({ ...prev, vendorName: newValue, isVendorNameNotSelected: false }));
+            setState(prev => ({ ...prev, vendorName: newValue, isVendorNameNotSelected: false }));
         } else {
-          setState(prev => ({ ...prev, vendorName: [] }));
+            setState(prev => ({ ...prev, vendorName: [] }));
         }
         setState(prev => ({ ...prev, DropdownNotChanged: false }));
     };
 
     const handleClient = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-          setState(prev => ({ ...prev, client: newValue }));
+            setState(prev => ({ ...prev, client: newValue }));
         } else {
-          setState(prev => ({ ...prev, client: [] }));
+            setState(prev => ({ ...prev, client: [] }));
         }
     };
 
     const handleRMChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-          setState(prev => ({...prev, RawMaterial: newValue, RMGrade: [] }));
-          fetch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => {}));
+            setState(prev => ({ ...prev, RawMaterial: newValue, RMGrade: [] }));
+            fetch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }));
         } else {
-          setState(prev => ({...prev, RMGrade: [], RMSpec: [], RawMaterial: [], }));
-          fetch(getRMGradeSelectListByRawMaterial('', false, (res) => {}));
-          fetch(fetchSpecificationDataAPI(0, () => {}));
+            setState(prev => ({ ...prev, RMGrade: [], RMSpec: [], RawMaterial: [], }));
+            fetch(getRMGradeSelectListByRawMaterial('', false, (res) => { }));
+            fetch(fetchSpecificationDataAPI(0, () => { }));
         }
     };
 
     const handleGradeChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-          setState(prev => ({...prev, RMGrade: newValue}));
+            setState(prev => ({ ...prev, RMGrade: newValue }));
         } else {
-          setState(prev => ({...prev, RMGrade: []}));
+            setState(prev => ({ ...prev, RMGrade: [] }));
         }
     }
 
     const handleEffectiveDate = (value) => {
-        setState(prev => ({...prev, EffectiveDate: value, IsFinancialDataChanged: true}));
+        setState(prev => ({ ...prev, EffectiveDate: value, IsFinancialDataChanged: true }));
         setValue("EffectiveDate", value);
     }
 
@@ -449,8 +449,8 @@ const AddOverheadMasterDetails = (props) => {
                                 Controller={Controller}
                                 control={control}
                                 register={register}
-                                rules={{ required: true }} 
-                                mandatory={true} 
+                                rules={{ required: true }}
+                                mandatory={true}
                                 options={renderListing("singlePlant")}
                                 handleChange={handleSinglePlant}
                                 defaultValue={''}
@@ -482,9 +482,9 @@ const AddOverheadMasterDetails = (props) => {
                                 disabled={state?.isEditFlag || state?.isViewMode}
                             />
                         </Col>
-                    ) }
+                    )}
 
-                    {props?.isShowPartFamily && getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily &&
+                    {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily &&
                         <Col md="3">
                             <SearchableSelectHookForm
                                 label={`Part Family (Code)`}
@@ -527,7 +527,7 @@ const AddOverheadMasterDetails = (props) => {
                     </Col>
 
                     <Col md="3">
-                        <div  id="EffectiveDate_Container" className="form-group date-section">
+                        <div id="EffectiveDate_Container" className="form-group date-section">
                             <DatePickerHookForm
                                 name={`EffectiveDate`}
                                 label={'Effective Date'}
@@ -549,7 +549,7 @@ const AddOverheadMasterDetails = (props) => {
                                 autoComplete={"off"}
                                 disabledKeyboardNavigation
                                 minDate={state?.isEditFlag ? new Date(state.minEffectiveDate) : getEffectiveDateMinDate()}
-                                // maxDate={getEffectiveDateMinDate()}
+                                maxDate={getEffectiveDateMaxDate()}
                                 errors={errors && errors.EffectiveDate}
                                 disabled={state?.isViewMode}
                             />

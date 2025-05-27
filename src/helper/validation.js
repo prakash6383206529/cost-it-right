@@ -30,6 +30,7 @@ export const minValueLessThan1 = minValue(0.1);
 export const maxValue366 = maxValue(366)
 export const maxPercentValue = maxPercentageValue(100)
 export const maxValue24 = maxValue(24)
+export const maxValue31 = maxValue(31)
 
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
@@ -139,9 +140,9 @@ export const checkSingleSpaceInString = value => {
 export const number = value =>
     value && (isNaN(Number(value)) || Number(value) < 0 || !/^\d*\.?\d+$/.test(value))
         ? 'Please enter a positive number.' : undefined;
-        
+
 // This is to check negative number for disaled or autocalculated fields
-export const disableNegativeNumber   = value =>
+export const disableNegativeNumber = value =>
     value && (isNaN(Number(value)) || Number(value) < 0 || !/^\d*\.?\d+$/.test(value))
         ? 'Negative number is not allowed, please verify your calculations.' : undefined;
 
@@ -591,6 +592,20 @@ export const validateSpecialChars = (value) => {
     return undefined;
 };
 
+export const validateSpecialCharsForRemarks = (value) => {
+    if (!value) return undefined
+    const firstChar = value.charAt(0)
+    const lastChar = value.charAt(value.length - 1)
+    const specialChars = "!@#$%^&*()_+-=[]{};':\"\\|,<>/?`~"
+    if (firstChar === ".") {
+      return "Input cannot start with character fullstop (period)"
+    } else if (specialChars.includes(firstChar) || specialChars.includes(lastChar)) {
+      return "Input cannot start or end with special characters."
+    }
+    return undefined
+  }
+
+
 export const validateFileName = (fileName) => {
     // Check for spaces, special characters, and multiple extensions
     const hasSpacesOrSpecialChars = /[\s@!#$%^&*(),?":{}|<>]/.test(fileName);
@@ -619,8 +634,57 @@ export const innerVsOuterValidation = (getValues) => (value) => {
     const outer = parseFloat(getValues('OuterDiameter'));
     if (!isFinite(outer)) return true;
     if (value) {
-    return parseFloat(value) <= outer - 0.00000001
-      || 'Inner Diameter should not be greater than outer diameter.';
+        return parseFloat(value) <= outer - 0.00000001
+            || 'Inner Diameter should not be greater than outer diameter.';
     }
     return true
 };
+
+export const blockInvalidNumberKeys = (e) => {
+    if (['e', 'E', '+', '-'].includes(e.key)) {
+        e.preventDefault();
+    }
+};
+
+export const allowOnlySpecificSpecialChars = value => {
+    if (!value) return undefined;
+
+    // Pattern allows /, \, -, comma, and space at start, middle, and end positions
+    // Example: "-test-" or "/path/to/file" or "\server\path\" or "test, test" are all valid
+    const pattern = /^[-/\\, .a-zA-Z0-9]*$/;
+
+    // Check if string contains any characters other than allowed ones
+    const hasInvalidChars = !pattern.test(value);
+
+    if (hasInvalidChars) {
+        return 'Only letters, numbers, and special characters (/, \\, -, .) are allowed. These special characters can be used anywhere, including start and end of text.';
+    }
+    return undefined;
+}
+
+export const parseConfigurationString = () => {
+    const localStorageConfig = reactLocalStorage.getObject('InitialConfiguration');
+    const configString = localStorageConfig?.RubberTechnologyCalculatorsList || false
+    const defaultConfig = {
+        RubberCompound: true,
+        Standard: true,
+        isDataFromWebConfig: false
+    }
+
+    if (!configString) return defaultConfig;
+
+    const parsedConfig = configString.split(',').reduce((acc, item) => {
+        const [key, value] = item.split('=').map(s => s.trim());
+        if (key && value !== undefined) {
+            const normalizedKey = key.replace(/\s+/g, '');
+            acc[normalizedKey] = value.toLowerCase() === 'true';
+        }
+        return acc;
+    }, {});
+
+    return {
+        RubberCompound: parsedConfig.RubberCompound ?? defaultConfig.RubberCompound,
+        Standard: parsedConfig.STANDARD ?? defaultConfig.Standard,
+        isDataFromWebConfig: true
+    };
+} 

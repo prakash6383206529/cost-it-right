@@ -1115,7 +1115,7 @@ function RfqListing(props) {
                                             enableBrowserTooltips={true}
                                         >
                                             <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' cellRenderer={'partNumberFormatter'}></AgGridColumn>
-                                            {initialConfiguration?.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
+                                            {initialConfiguration?.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='Customer RFQ No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
                                             <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>

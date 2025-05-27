@@ -2016,7 +2016,7 @@ class AddPower extends Component {
                           <Col md="3">
                             <Field
                               label="Exchange Rate Source"
-                              name="ExchangeSource"
+                              name="exchangeSource"
                               placeholder="Select"
                               options={this.renderListing("ExchangeSource")}
                               handleChangeDescription={this.handleExchangeRateSource}

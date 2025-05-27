@@ -682,6 +682,8 @@ class AddMachineRate extends Component {
       ...this.initialState,
       // MachineNumber: this?.props?.fieldsObj?.MachineNumber,
       costingTypeId: costingHeadFlag,
+      processGrid: [],
+      rowData: [],
       isImport: currentIsImport // Preserve isImport value
     }, () => {
       if (costingHeadFlag === CBCTypeId) {
@@ -2051,7 +2053,7 @@ class AddMachineRate extends Component {
                           <Col md="3">
                             <Field
                               label="Exchange Rate Source"
-                              name="ExchangeSource"
+                              name="exchangeSource"
                               placeholder="Select"
                               options={this.renderListing("ExchangeSource")}
                               handleChangeDescription={this.handleExchangeRateSource}
@@ -2187,7 +2189,7 @@ class AddMachineRate extends Component {
                         {this.state?.isImport && <Col md="3">
                           <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
                           <Field
-                            name="Currency"
+                            name="currency"
                             type="text"
                             label="Currency"
                             id="currency"
@@ -2460,7 +2462,7 @@ class AddMachineRate extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode || (isEditFlag && IsDetailedEntry)} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} rowData={this.state.rowData} setRowData={this.setRowdata} checksFinancialDataChanged={this.checksFinancialDataChanged} />
+                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode || (isEditFlag && IsDetailedEntry)} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} rowData={this.state.rowData} setRowData={this.setRowdata} checksFinancialDataChanged={this.checksFinancialDataChanged} costingTypeId={this.state.costingTypeId}/>
                           </Col>
                         </Row>
                       }

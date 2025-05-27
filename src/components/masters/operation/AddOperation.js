@@ -25,7 +25,7 @@ import { CheckApprovalApplicableMaster, getExchangeRateParams, onFocus, showData
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -664,7 +664,9 @@ class AddOperation extends Component {
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
           }
-          this.props.change('plantCurrency', Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+          // this.props.change('plantCurrency', Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+          // For domestic and import case we need to get data for plantCurrency from LocalCurrency key only.
+          this.props.change('plantCurrency', Data?.LocalCurrency)
           this.props.change('RateLocalConversion', Data?.RateLocalConversion)
           this.props.change('RateConversion', Data?.RateConversion)
           if (Data?.OperationEntryType === ENTRY_TYPE_IMPORT) {
@@ -1561,7 +1563,7 @@ class AddOperation extends Component {
                         <Col md="3">
                           <Field
                             label="Exchange Rate Source"
-                            name="ExchangeSource"
+                            name="exchangeSource"
                             placeholder="Select"
                             options={this.renderListing("ExchangeSource")}
                             handleChangeDescription={this.handleExchangeRateSource}
@@ -1623,6 +1625,7 @@ class AddOperation extends Component {
                             type="text"
                             validate={[required]}
                             minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                            maxDate={getEffectiveDateMaxDate()}
                             autoComplete={'off'}
                             required={true}
                             changeHandler={(e) => {

@@ -85,7 +85,7 @@ import {
   COST_RATIO_REPORT,
   BUDGETING,
   NFR_LISTING,
-  NFR,
+  CUSTOMER_RFQ,
   MASTER_BENCHMARK_REPORT,
   COST_MOVEMENT_REPORT,
   SUPPLIER_CONTRIBUTION_REPORT,
@@ -116,6 +116,7 @@ import {
   COST_VARIANCE_REPORT,
   COST_DEVIATION_REPORT,
   REJECTION,
+  CUSTOMER_RFQ_LISTING,
 } from "../config/constants";
 import ApprovalSummary from "./costing/components/approval/ApprovalSummary";
 import CostingSummaryBulkUpload from "./costing/components/CostingSummaryBulkUpload";
@@ -374,14 +375,15 @@ class Main extends Component {
                 location.pathname !== SUPPLIER_MANAGEMENT &&
                 location.pathname !== lOGIN_AUDITS &&
                 location.pathname !== SUPPLIER_APPROVAL_SUMMARY &&
-                location.pathname !== ADD_AUCTION && (
+                location.pathname !== ADD_AUCTION && 
+                location.pathname !== CUSTOMER_RFQ_LISTING && (
                   <LeftMenu {...this.props} />
                 )}
 
               <div
                 className={
                   isLogin
-                    ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}`
+                    ? `content-page w-100 ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}`
                     : ""
                 }
               >
@@ -684,8 +686,8 @@ class Main extends Component {
                       component={AuthMiddleware(RfqListing, RFQ)}
                     />
                     <Route
-                      path="/nfr"
-                      component={AuthMiddleware(NfrTabs, NFR)}
+                      path="/customer-rfq"
+                      component={AuthMiddleware(NfrTabs, CUSTOMER_RFQ)}
                     />
                     <Route
                       path="/budgeting"

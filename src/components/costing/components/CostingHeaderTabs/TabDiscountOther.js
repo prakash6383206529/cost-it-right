@@ -1365,11 +1365,11 @@ function TabDiscountOther(props) {
           // dispatch(setComponentDiscountOtherItemData({}, () => { }))
           dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
           dispatch(isDiscountDataChange(false))
-          if (gotoNextValue && !isNFR) {
+          if (gotoNextValue) {
             props.toggle('2')
             history.push('/costing-summary')
           }
-          if (isNFR && gotoNextValue) {
+          if (isNFR && gotoNextValue && false) {
             reactLocalStorage.setObject('isFromDiscountObj', true)
             setNfrListing(true)
           }
@@ -1535,17 +1535,17 @@ function TabDiscountOther(props) {
   }
 
 
-  if (nfrListing === true) {
+  // if (nfrListing === true) {
 
-    return <Redirect
-      to={{
-        pathname: "/nfr",
-        state: {
-        }
+  //   return <Redirect
+  //     to={{
+  //       pathname: "/customer-rfq",
+  //       state: {
+  //       }
 
-      }}
-    />
-  }
+  //     }}
+  //   />
+  // }
   function handleInputChanges(quantity, percentage, sumForNPV) {
     let totalFinal = 0
 
@@ -1998,17 +1998,17 @@ function TabDiscountOther(props) {
     }
   }
 
-  if (nfrListing === true) {
+  // if (nfrListing === true) {
 
-    return <Redirect
-      to={{
-        pathname: "/nfr",
-        state: {
-        }
+  //   return <Redirect
+  //     to={{
+  //       pathname: "/customer-rfq",
+  //       state: {
+  //       }
 
-      }}
-    />
-  }
+  //     }}
+  //   />
+  // }
   /**
  * @method handlePaymentTerm
  * @description  handlePaymentTerm
@@ -2331,7 +2331,7 @@ function TabDiscountOther(props) {
                       tableData={npvTableData}
                       closeDrawer={openAndCloseAddNpvDrawer}
                       anchor={'right'}
-                      netPOPrice={netPOPrice - totalNpvCost}
+                      netPOPrice={initialConfiguration?.IsAddNPVInNetCost ? netPOPrice - totalNpvCost : netPOPrice}
                       costingId={costData?.CostingId}
                       totalCostFromSummary={false}
                       CostingViewMode={CostingViewMode}

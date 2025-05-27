@@ -76,10 +76,10 @@ const DepartmentsListing = (props) => {
       dispatch(getAllDivisionAPI((res) => {
         if (res && res.data && res.data.DataList) {
           let Data = res.data.DataList;
-          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }));
+          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, noData: false }));
         }
         else {
-          setState((prevState) => ({ ...prevState, isLoader: false }));
+          setState((prevState) => ({ ...prevState, isLoader: false, noData: true }));
         }
       }
       ));
@@ -87,10 +87,10 @@ const DepartmentsListing = (props) => {
       dispatch(getAllDepartmentAPI((res) => {
         if (res && res.data && res.data.DataList) {
           let Data = res.data.DataList;
-          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }));
+          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, noData: false }));
         }
         else {
-          setState((prevState) => ({ ...prevState, isLoader: false }));
+          setState((prevState) => ({ ...prevState, isLoader: false, noData: true }));
         }
       }
       ));
@@ -180,12 +180,11 @@ const DepartmentsListing = (props) => {
   const buttonFormatter = (props) => {
     const cellValue = props.data.DepartmentId;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    const isDepartmentAssociated = rowData?.IsAssociated ? true : false && !getConfigurationKey().IsDivisionAllowedForDepartment
     const { EditAccessibility, DeleteAccessibility } = state;
     return (
       <>
-        {EditAccessibility && !isDepartmentAssociated && <Button id={`departmentListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />}
-        {DeleteAccessibility && !isDepartmentAssociated && <Button id={`departmentListing_delete${props.rowIndex}`} className={"Delete m15 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+        {EditAccessibility  && <Button id={`departmentListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />}
+        {DeleteAccessibility &&  <Button id={`departmentListing_delete${props.rowIndex}`} className={"Delete m15 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };

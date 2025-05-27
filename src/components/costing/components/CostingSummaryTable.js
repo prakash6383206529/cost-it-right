@@ -572,7 +572,8 @@ const CostingSummaryTable = (props) => {
       let viewCostingDataObj = viewCostingData[index]
       let HangerCostDetails = viewCostingData[index]?.HangerCostDetails
       let PaintAndTapeDetails = viewCostingData[index]?.PaintAndTapeDetails
-      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, viewCostingDataObj: viewCostingDataObj, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails })
+      let LabourCostDetails = viewCostingData[index]?.CostingLabourResponse
+      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, viewCostingDataObj: viewCostingDataObj, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails, LabourCostDetails: LabourCostDetails })
     }
   }
   /**
@@ -1289,6 +1290,10 @@ const CostingSummaryTable = (props) => {
                     }
                   }))
                 }
+                else{
+                  sendForApprovalData(multipleCostings)
+                  setShowApproval(true)
+                }
               })
 
 
@@ -1396,51 +1401,6 @@ const CostingSummaryTable = (props) => {
   }
 
   const sendForApprovalDown = (data) => {
-    //MINDA
-    // if (initialConfiguration?.IsReleaseStrategyConfigured) {
-    //   let returnValue = true
-    //   let dataList = costingIdObj(data)
-    //   let requestObject = {
-    //     "RequestFor": "COSTING",
-    //     "TechnologyId": technologyId,
-    //     "LoggedInUserId": loggedInUserId(),
-    //     "ReleaseStrategyApprovalDetails": dataList
-    //   }
-    //   dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-    //     setReleaseStrategyDetails(res?.data?.Data)
-    //     if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
-    //       let temp = moduleHandler(data[0]?.costingId, 'down', data)
-    //       if (!temp) {
-    //         sendForApprovalData([data[0]?.costingId], index)
-    //         setShowApproval(true)
-    //       } else {
-    //         Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
-    //       }
-    //     } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-    //       if (data && !isFinalCommonApproval) {
-    //         let temp = moduleHandler(data[0]?.costingId, 'down', data)
-    //         if (!temp) {
-    //           sendForApprovalData([data[0]?.costingId], index)
-    //           setShowApproval(true)
-    //         } else {
-    //           Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
-    //         }
-    //       } else {
-    //         Toaster.warning('This is final level user')
-    //         return false
-    //       }
-    //     } else if (res?.data?.Data?.IsFinalApprover === true) {
-    //       returnValue = false
-    //       Toaster.warning('This is final level user')
-    //       return false
-    //     } else {
-    //       returnValue = false
-    //       Toaster.warning('This user is not in approval cycle')
-    //       return false
-    //     }
-    //   }))
-    //   return returnValue
-    // } else {
     if (data) {
       let temp = moduleHandler(data[0]?.costingId, 'down', data)
       if (!temp) {
@@ -1911,7 +1871,7 @@ const CostingSummaryTable = (props) => {
           let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
           let HangerCostDetails = viewCostingData[index]?.HangerCostDetails
           let PaintAndTapeDetails = viewCostingData[index]?.PaintAndTapeDetails
-          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, operationHide: true, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails })
+          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, operationHide: true, labourHide: true, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails })
         }
 
         break;
@@ -1926,14 +1886,22 @@ const CostingSummaryTable = (props) => {
           let viewCostingDataObj = viewCostingData[index]
           let HangerCostDetails = viewCostingData[index]?.HangerCostDetails
           let PaintAndTapeDetails = viewCostingData[index]?.PaintAndTapeDetails
-          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, processHide: true, viewCostingDataObj: viewCostingDataObj, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails })
+          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, processHide: true, labourHide: true, viewCostingDataObj: viewCostingDataObj, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails })
         }
         break;
       case 'labour':
         setDrawerOpen({ labour: true })
         setIndex(index)
         if (index !== -1) {
-          let data = viewCostingData[index]?.netLabourCostView
+          let data = viewCostingData[index]?.netConversionCostView
+          let netTransportationCostView = viewCostingData[index]?.netTransportationCostView
+          let surfaceTreatmentDetails = viewCostingData[index]?.surfaceTreatmentDetails
+          let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
+          let viewCostingDataObj = viewCostingData[index]
+          let HangerCostDetails = viewCostingData[index]?.HangerCostDetails
+          let PaintAndTapeDetails = viewCostingData[index]?.PaintAndTapeDetails
+          let LabourCostDetails = viewCostingData[index]?.CostingLabourResponse
+          setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false, processHide: true, operationHide: true, labourHide: false, viewCostingDataObj: viewCostingDataObj, HangerCostDetails: HangerCostDetails, PaintAndTapeDetails: PaintAndTapeDetails, LabourCostDetails: LabourCostDetails })
         }
         break;
       default:
@@ -2097,7 +2065,7 @@ const CostingSummaryTable = (props) => {
   ${viewRejectAndModelType?.isIncludeSurfaceTreatmentWithOverheadAndProfit ? 'Surface Treatment Cost Included.' : ''}
 `.trim();
 
-const iccToolTipText = `
+  const iccToolTipText = `
   ${viewRejectAndModelType?.isIncludeToolCostInCCForICC ? 'Tool Cost Included.' : ''}
   ${viewRejectAndModelType?.isIncludeOverheadAndProfitInICC ? 'Overhead and Profit Included.' : ''}
 `.trim();
@@ -2745,6 +2713,8 @@ const iccToolTipText = `
                               </td>
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
+                                  
+                                  
                                   return (
                                     <td className={tableDataClass(data)}>
                                       {data?.bestCost !== true && <>
@@ -2760,16 +2730,16 @@ const iccToolTipText = `
                                           <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('process', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netProcessCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
                                         <span className={highlighter("", "rm-reducer")}>
-                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netOperationCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(checkForNull(data?.netOperationCost)+checkForNull(data?.netWeldingCost), initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
                                         <span className={highlighter("LabourCost")}>
                                           <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('labour', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.NetLabourCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
                                         </span>
                                         <span className={highlighter("IndirectLabourCost")}>
-                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('labour', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.IndirectLaborCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
+                                          {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.IndirectLaborCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                         </span>
                                         <span className={highlighter("StaffCost")}>
-                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('labour', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.StaffCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
+                                          {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.StaffCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                         </span>
                                       </>}
                                     </td>
@@ -3326,39 +3296,33 @@ const iccToolTipText = `
                             (!(checkTechnologyIdAndRfq(viewCostingData)) || (checkTechnologyIdAndRfq(viewCostingData) && !rfqCosting)) && (
                               <>
                                 {!drawerDetailPDF ? (
-                                <tr>
-                                <td>
-                                  <span className={highlighter("sTreatment")}>Net Tool Maintenance Cost (per pcs)</span>
-                                  <span className={highlighter("tCost")}> Net Tool Interest Cost (per pcs) </span>
-                                  <span className={highlighter("HangerCostPerPart")}> Net Tool Amortization Cost </span>
-                                  <span className={highlighter("TotalPaintCost")}> Net Tool Cost </span>
-                                </td>
-                                {viewCostingData &&
-                                  viewCostingData?.map((data) => {
-                                    return (
-                                      <td className={tableDataClass(data)}>
-                                        <span className={highlighter("sTreatment")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?  <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
-                                        </span>
-                                        <span className={highlighter("tCost")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
-                                            (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolInterestCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolInterestCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
-                                            : '')}
-                                        </span>
-                                        <span className={highlighter("HangerCostPerPart")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
-                                            (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
-                                            : '')}
-                                        </span>
-                                        <span className={highlighter("TotalPaintCost")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
-                                            (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
-                                            : '')}
-                                        </span>
-                                      </td>
-                                    )
-                                  })}
-                              </tr>
+                                  <tr>
+                                    <td>
+                                      <span className={highlighter("sTreatment")}>Net Tool Maintenance Cost (per pcs)</span>
+                                      <span className={highlighter("tCost")}> Net Tool Interest Cost (per pcs) </span>
+                                      <span className={highlighter("HangerCostPerPart")}> Net Tool Amortization Cost </span>
+                                    </td>
+                                    {viewCostingData &&
+                                      viewCostingData?.map((data) => {
+                                        return (
+                                          <td className={tableDataClass(data)}>
+                                            <span className={highlighter("sTreatment")}>
+                                              {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
+                                            </span>
+                                            <span className={highlighter("tCost")}>
+                                              {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                                (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolInterestCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolInterestCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                                : '')}
+                                            </span>
+                                            <span className={highlighter("HangerCostPerPart")}>
+                                              {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                                (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
+                                                : '')}
+                                            </span>
+                                          </td>
+                                        )
+                                      })}
+                                  </tr>
                                 ) : (
                                   <tr>
                                     <th colSpan={2} className="py-0">
@@ -3668,7 +3632,7 @@ const iccToolTipText = `
                                   // For regular columns
                                   <>
                                     {`${viewCostingData?.[0]?.CostingCurrency || initialConfiguration?.BaseCurrency}: `}
-                                    {displayValueWithSign(data, "NetPOPriceConversion")}
+                                    {displayValueWithSign(data, "nPOPrice")}
                                   </>
                                 )}
                                 {(data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
@@ -3985,13 +3949,19 @@ const iccToolTipText = `
       }
       {
         drawerOpen.labour && (
-          <AddLabourCost
+          <ViewConversionCost
             isOpen={drawerOpen.labour}
-            item={{ CostingId: viewCostingData[index]?.costingId }}
+            viewConversionCostData={viewConversionCostData}
             closeDrawer={closeViewDrawer}
             anchor={'right'}
-            isCostingSummary={true}
-          />)
+            index={index}
+            isPDFShow={false}
+            isLabourCost={true}
+
+            hideProcessAndOtherCostTable={checkTechnologyIdAndRfq(viewCostingData)}
+
+          />
+        )
 
       }
       {

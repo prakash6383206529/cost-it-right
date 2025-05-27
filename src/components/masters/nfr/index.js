@@ -45,7 +45,7 @@ function NfrTabs(props) {
                                     Customer RFQ Listing
                                 </NavLink>
                             </NavItem>
-                            <NavItem>
+                            {/* <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "2" })}
                                     onClick={() => {
@@ -54,7 +54,7 @@ function NfrTabs(props) {
                                 >
                                     Customer RFQ Approval
                                 </NavLink>
-                            </NavItem>
+                            </NavItem> */}
                         </Nav>
                     )}
                     <TabContent activeTab={activeTab}>
@@ -68,9 +68,9 @@ function NfrTabs(props) {
                             />}
                         </TabPane>
 
-                        <TabPane tabId="2">
+                        {/* <TabPane tabId="2">
                             {activeTab === '2' && <NFRApprovalListing activeTab={activeTab} />}
-                        </TabPane>
+                        </TabPane> */}
                     </TabContent>
                 </div>
             </div>

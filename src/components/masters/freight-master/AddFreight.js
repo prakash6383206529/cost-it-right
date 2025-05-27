@@ -144,8 +144,9 @@ const AddFreight = (props) => {
     setState(prev => ({ ...prev, costingTypeId: getCostingTypeIdByCostingPermission() }));
 
     if (!state.isViewMode) {
+      const plantId = state?.Plant?.value
       dispatch(getFreigtFullTruckCapacitySelectList((res) => { }));
-      dispatch(getFreigtRateCriteriaSelectList((res) => { }));
+      dispatch(getFreigtRateCriteriaSelectList(plantId, (res) => { }));
       dispatch(getTruckDimensionsSelectList((res) => { }));
       dispatch(getCurrencySelectList(() => { }))
     }
@@ -373,8 +374,8 @@ const AddFreight = (props) => {
         } else {
           setState(prev => ({ ...prev, hidePlantCurrency: true }))
         }
-        callExchangeRateAPI()
       }))
+      dispatch(getFreigtRateCriteriaSelectList(newValue?.value, (res) => { }))
     } else {
       setState(prev => ({ ...prev, Plant: [] }));
     }
@@ -488,6 +489,7 @@ const AddFreight = (props) => {
             }));
             setState(prev => ({ ...prev, isLoader: false }));
           }, 200);
+          dispatch(getFreigtRateCriteriaSelectList(Data?.PlantId, (res) => { }));
         }
       }));
     } else {
@@ -702,9 +704,11 @@ const AddFreight = (props) => {
       effectiveDate: date,
       showEffectiveDateError: false
     }));
-    callExchangeRateAPI()
   };
 
+  useEffect(() => {
+      callExchangeRateAPI()
+  }, [state.currency, state.ExchangeSource, state.hidePlantCurrency]);
 
   const gridHandler = () => {
     const { FullTruckCapacity, RateCriteria, gridTable, Load, truckDimensions, isShowTruckDimensions } = state;
@@ -968,6 +972,11 @@ const AddFreight = (props) => {
       return false;
     }
 
+    if(state.showPlantWarning) {
+      Toaster.warning(`${getValuesMainForm('plantCurrency')} rate is not present in the Exchange Master`);
+      return false;
+    }    
+
     if (checkForNull(state?.gridTable?.length) === 0) {
       Toaster.warning("Please add at least one data in Load Section.");
       return false;
@@ -1137,11 +1146,9 @@ const AddFreight = (props) => {
   };
   const handleExchangeRate = (newValue) => {
     setState(prev => ({ ...prev, ExchangeSource: newValue }));
-    callExchangeRateAPI();
   };
   const handleCurrency = (newValue) => {
     setState(prev => ({ ...prev, currency: newValue }));
-    callExchangeRateAPI();
   };
 
   const freightRateTitle = () => {
@@ -1161,11 +1168,12 @@ const AddFreight = (props) => {
     const plantCurrencyRate = plantCurrency ?? '0';
 
     // Generate tooltip text based on the condition
-    return <>
-      {!state?.hidePlantCurrency
-        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`
-        : ''}
-    </>;
+    return `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`
+    // return <>
+    //   {!state?.hidePlantCurrency
+    //     ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`
+    //     : ''}
+    // </>;
   };
 
 
@@ -1345,7 +1353,7 @@ const AddFreight = (props) => {
                         </Col>
                         {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col className="col-md-15">
                           <SearchableSelectHookForm
-                            name="ExchangeSource"
+                            name="exchangeSource"
                             label="Exchange Rate Source"
                             Controller={Controller}
                             control={controlMainForm}

@@ -16,7 +16,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 import { MACHINING, REMARKMAXLENGTH, } from '../../../../../config/masterData'
-import { findProcessCost, findProductionPerHour, swappingLogicCommon } from '../../../CostingUtil';
+import { findProcessCost, findProductionPerHour, swappingLogicCommon, handleRemarkPopup } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
@@ -25,6 +25,7 @@ import TourWrapper from '../../../../common/Tour/TourWrapper';
 import { Steps } from '../../TourMessages';
 import { useTranslation } from 'react-i18next';
 import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
+import { IsNFRContext } from '../../CostingDetailStepTwo';
 
 let counter = 0;
 function ProcessCost(props) {
@@ -69,6 +70,7 @@ function ProcessCost(props) {
   const [isProcessSequenceChanged, setIsProcessSequenceChanged] = useState(false)
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const { rmFinishWeight, rmGrossWeight } = props
@@ -177,7 +179,7 @@ function ProcessCost(props) {
       BOMLevel: props?.item?.BOMLevel,
       PartNumber: props?.item?.PartNumber,
     }
-    if (!CostingViewMode && !IsLocked) {
+    if (!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) {
       selectedIds(gridData)
       if (JSON.stringify(gridData) !== JSON.stringify(data && data.CostingProcessCostResponse)) {
         dispatch(isDataChange(true))
@@ -1410,7 +1412,7 @@ function ProcessCost(props) {
         return (
           <tr>
             <td>{'-'}</td>
-            <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={CostingViewMode ? false : true}>{item.ProcessName}</span></td>
+            <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.ProcessName}</span></td>
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
@@ -1441,7 +1443,7 @@ function ProcessCost(props) {
                       }}
 
                       // errors={ }
-                      disabled={(CostingViewMode || IsLocked) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                     />
 
                   }
@@ -1480,11 +1482,15 @@ function ProcessCost(props) {
                 </>
               }
             </td>
+            {/* Group process applicability td column */}
+            <td></td>
             <td>
               <div className='action-btn-wrapper'>
-                {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
+                {(!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
                 <Popup trigger={<button id={`popUpTriggers${index}.${parentIndex}`} title="Remark" className="Comment-box" type={'button'} />}
-                  position="top right">
+                  position="top right"
+                  onOpen={() => handleRemarkPopup("open", `${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`)}
+                  onClose={() => handleRemarkPopup()}>
                   <TextAreaHookForm
                     label="Remark:"
                     name={`${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`}
@@ -1503,12 +1509,13 @@ function ProcessCost(props) {
                     customClassName={"withBorder"}
                     errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[`${index}${parentIndex}`] !== undefined ? errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                    disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                     hidden={false}
+                    validateWithRemarkValidation={true}
                   />
                   <Row>
                     <Col md="12" className='remark-btn-container'>
-                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickGroup(index, parentIndex, process.ProcessList)} > <div className='save-icon'></div> </button>
+                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClickGroup(index, parentIndex, process.ProcessList)} > <div className='save-icon'></div> </button>
                       <button className='reset' onClick={() => onRemarkPopUpCloseGroup(index, parentIndex)} > <div className='cancel-icon'></div></button>
                     </Col>
                   </Row>
@@ -1714,7 +1721,7 @@ function ProcessCost(props) {
                   }} />}</div>
             </Col>
             <Col md={'2'}>
-              {(!CostingViewMode && !IsLocked) &&
+              {(!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) &&
                 <Button
                   id="Costing_addProcess"
                   onClick={DrawerToggle}
@@ -1760,7 +1767,7 @@ function ProcessCost(props) {
                                     className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div>
 
                               }
-                              <span className='link' onClick={() => setOpenMachineForm({ isOpen: true, id: item.MachineId })} title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={CostingViewMode ? false : true}>
+                              <span className='link' onClick={() => setOpenMachineForm({ isOpen: true, id: item.MachineId })} title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>
                                 {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
                             </td>
                             {processGroup && <td className='text-overflow'><span title={item.ProcessName}>{'-'}</span></td>}
@@ -1793,7 +1800,7 @@ function ProcessCost(props) {
                                           handleQuantityChange(e, index)
                                         }}
 
-                                        disabled={(CostingViewMode || IsLocked || (item.GroupName !== '' && item.GroupName !== null)) ? true : false}
+                                        disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ || (item.GroupName !== '' && item.GroupName !== null)) ? true : false}
                                       />
                                     }
 
@@ -1856,7 +1863,7 @@ function ProcessCost(props) {
                                   options={CRMHeads}
                                   required={false}
                                   handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                  disabled={CostingViewMode}
+                                  disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                 />
                               </td>
                             }
@@ -1880,16 +1887,19 @@ function ProcessCost(props) {
                                 options={processApplicabilitySelect}
                                 required={false}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
-                                disabled={(CostingViewMode || IsLocked) ? true : false}
+                                disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
                               />
                             </td>
 
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && !IsLocked) && <button title='Delete' id={`process_delete${0}`} className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                                {(!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' id={`process_delete${0}`} className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                                 {(item?.GroupName === '' || item?.GroupName === null) && <Popup trigger={<button id={`process_popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
-                                  position="top right">
+                                  position="top right"
+                                  onOpen={() => handleRemarkPopup("open", `${ProcessGridFields}.${index}.remarkPopUp`)}
+                                  onClose={() => handleRemarkPopup()}
+                                  >
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${ProcessGridFields}.${index}.remarkPopUp`}
@@ -1906,19 +1916,20 @@ function ProcessCost(props) {
                                     customClassName={"withBorder"}
                                     errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                                    disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     hidden={false}
+                                    validateWithRemarkValidation={true}
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
-                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                       <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
                                 </Popup>}
                                 {
 
-                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || IsLocked) ? '' : <button className="additional-add" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
+                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? '' : <button className="additional-add" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
                                 }
                               </div>
                             </td>
@@ -1984,6 +1995,7 @@ function ProcessCost(props) {
             Ids={Ids}
             MachineIds={MachineIds}
             groupMachineId={groupNameMachine}
+            item={item}
           />
         )
       }
@@ -1994,7 +2006,7 @@ function ProcessCost(props) {
             calculatorData={calculatorData}
             isOpen={isCalculator}
             item={item}
-            CostingViewMode={CostingViewMode || IsLocked}
+            CostingViewMode={CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ}
             rmFinishWeight={props.rmFinishWeight}
             closeDrawer={closeCalculatorDrawer}
             anchor={'right'}

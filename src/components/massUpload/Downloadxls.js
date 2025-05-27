@@ -81,6 +81,21 @@ export const checkRM_Process_OperationConfigurable = (excelData) => {
                 }
             }
         }
+        if (getConfigurationKey().IsBasicRateAndCostingConditionVisible === false) {
+            if (el.value === 'CostingCondition') return false
+            if (el.value === 'TypeForCostingCondition') return false
+            if (el.value === 'QuantityForCostingCondition') return false
+            if (el.value === 'ApplicabilityForCostingCondition') return false
+            if (el.value === 'PercentageOrCostForCostingCondition') return false
+        }
+        // if IsShowSourceVendorInRawMaterial coming true then no need to show these 2 fields
+        if (getConfigurationKey().IsShowSourceVendorInRawMaterial) {
+            if (el.value === 'Source') return false
+            if (el.value === 'SourceLocation') return false
+        }
+        if (getConfigurationKey().IsSourceExchangeRateNameVisible === false) {
+            if (el.value === 'ExchangeRateSourceName') return false
+        }
         return true; // Include the element if none of the conditions above are met
     });
 }
@@ -197,8 +212,23 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
         if (getConfigurationKey().IsSAPCodeRequired === false) {
             if (el.value === 'SAPPartNumber') return false;
         }
+        if (getConfigurationKey().IsBasicRateAndCostingConditionVisible === false) {
+            if (el.value === 'CostingCondition') return false
+            if (el.value === 'TypeForCostingCondition') return false
+            if (el.value === 'QuantityForCostingCondition') return false
+            if (el.value === 'ApplicabilityForCostingCondition') return false
+            if (el.value === 'PercentageOrCostForCostingCondition') return false
+        }
         if (!(getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily)) {
             if (el.value === 'PartFamilyCode') return false;
+        }
+        // if IsShowSourceVendorInRawMaterial coming true then no need to show these 2 fields
+        if (getConfigurationKey().IsShowSourceVendorInRawMaterial) {
+            if (el.value === 'Source') return false
+            if (el.value === 'SourceLocation') return false
+        }
+        if (getConfigurationKey().IsSourceExchangeRateNameVisible === false) {
+            if (el.value === 'ExchangeRateSourceName') return false
         }
         return true;
     })
@@ -354,7 +384,7 @@ class Downloadxls extends React.Component {
     renderZBCSwitch = (master) => {
         let updatedLabels
         switch (master) {
-            case 'RM':
+            case 'RM':                
                 if (!this.props.isImport) {
                     const localizedRMHeaders = this.localizeHeaders(RMDomesticZBC);
                     return this.returnExcelColumn(checkRM_Process_OperationConfigurable(localizedRMHeaders), RMDomesticZBCTempData, true);
@@ -611,7 +641,7 @@ class Downloadxls extends React.Component {
             : fileName;
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
-        if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Payment Terms' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit' || fileName === 'Payment Terms' )) {
             return (
                 <ExcelFile hideElement={true} filename={`${downloadFileName} ZBC`} fileExtension={'.xls'} >
                     {isMachineMoreTemplate || costingTypeId === ZBCADDMOREOPERATION ? this.renderZBCSwitch(costingTypeId) : this.renderZBCSwitch(fileName)}
@@ -628,7 +658,7 @@ class Downloadxls extends React.Component {
         }
 
         // DOWNLOAD FILE:- CALLED WHEN VBC FILE FAILED
-        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION || bopType === DETAILED_BOP) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Rejection' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Payment Terms' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION || bopType === DETAILED_BOP) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Rejection' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit' || fileName === 'Payment Terms' )) {
 
             return (
                 <ExcelFile hideElement={true} filename={`${downloadFileName}VBC`} fileExtension={'.xls'} >
@@ -637,7 +667,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN CBC FILE FAILED
-        if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Rejection' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Payment Terms' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Rejection' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit' || fileName === 'Payment Terms' )) {
 
             return (
                 <ExcelFile hideElement={true} filename={`${downloadFileName} CBC`} fileExtension={'.xls'} >

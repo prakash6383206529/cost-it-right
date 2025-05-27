@@ -81,6 +81,7 @@ import {
   GET_PAINT_COAT_LIST,
   GET_TOOL_TAB_DATA,
   SET_BOP_REMARK,
+  SET_OVERALL_APPLICABILITY_TOOL_DATA
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -693,7 +694,7 @@ export function getOperationDrawerDataList(data, callback) {
 export function getProcessDrawerDataList(data, callback) {
   return (dispatch) => {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}&MinimumMachineTonnageRequired=${data?.MinimumMachineTonnageRequired}`;
     const request = axios.get(`${API.getProcessDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -921,7 +922,7 @@ export function getOverheadProfitDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}`
+    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}&partFamilyId=${data?.partFamilyId}`
     const request = axios.get(`${API.getOverheadProfitDataByModelType}?${queryParams}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
@@ -1143,7 +1144,7 @@ export function getRateCriteriaByCapacitySelectList(Capacity) {
 export function getRateByCapacityCriteria(data, callback) {
   return (dispatch) => {
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const request = axios.get(`${API.getRateByCapacityCriteria}?loggedInUserId=${loggedInUser?.loggedInUserId}&Capacity=${data?.Capacity}&Criteria=${data?.Criteria}&plantId=${data?.PlantId}&vendorId=${data?.VendorId}&customerId=${data?.CustomerId}&effectiveDate=${data?.EffectiveDate}&costingTypeId=${data?.CostingTypeId}&EFreightLoadType=${data?.EFreightLoadType}`, config(),)
+    const request = axios.get(`${API.getRateByCapacityCriteria}?loggedInUserId=${loggedInUser?.loggedInUserId}&Capacity=${data?.Capacity}&Criteria=${data?.Criteria}&plantId=${data?.PlantId}&vendorId=${data?.VendorId}&customerId=${data?.CustomerId}&effectiveDate=${data?.EffectiveDate}&costingTypeId=${data?.CostingTypeId}&EFreightLoadType=${data?.EFreightLoadType}&costingId=${data?.costingId}`, config(),)
     request.then((response) => {
       if (response?.data?.Result) {
         callback(response)
@@ -2740,10 +2741,10 @@ export function createPFS2Costing(data, callback) {
 
 export function getLabourDetailsByFilter(data, callback) {
   return (dispatch) => {
-    const queryParams = `loggedInUserId=${loggedInUserId()}&effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${0}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${data?.labour_type_id || ''}&isRequestForCosting=${data?.isRequestForCosting || ''}&baseCostingId=${data?.baseCostingId || ''}&isZeroDataShow=${data?.isZeroDataShow || false}&isVendorDataShow=${data?.isVendorDataShow || false}&isCustomerDataShow=${data?.isCustomerDataShow || false}`
     const request = axios.get(`${API.getLabourDetailsByFilter}?${queryParams}`, config())
     request.then((response) => {
-      if (response.data.Result) {
+      if (response.data.Result || response.status === 204) {
         callback(response)
       }
     }).catch((error) => {
@@ -3223,6 +3224,7 @@ export function setOperationApplicabilitySelect(data) {
     });
   }
 };
+
 export function setProcessApplicabilitySelect(data) {
   return (dispatch) => {
     dispatch({
@@ -3299,7 +3301,7 @@ export function getCostingBopAndBopHandlingDetails(data, callback) {
 export function setBopRemark(remark, bopCostingId) {
   return (dispatch) => {
     dispatch({
-      type:SET_BOP_REMARK,
+      type: SET_BOP_REMARK,
       payload: { remark, bopCostingId }
     });
   };
@@ -3393,3 +3395,12 @@ export function saveIccCalculation(data, callback) {
     });
   };
 }
+export function setOverallApplicabilityToolData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OVERALL_APPLICABILITY_TOOL_DATA,
+      payload: data,
+    });
+  }
+}
+

@@ -418,9 +418,9 @@ function AddToComparisonDrawer(props) {
           obj.bopHandlingPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingPercentage : 0
           obj.bopHandlingChargeType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingChargeType : ''
 
-          obj.netAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost: 0
-          obj.netToolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost: 0
-          obj.netToolInterestCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolInterestCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolInterestCost: 0
+          obj.netAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolAmortizationCost : 0
+          obj.netToolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolMaintenanceCost : 0
+          obj.netToolInterestCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolInterestCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolInterestCost : 0
           obj.toolMaintenanceCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolMaintenanceCost : 0
           obj.toolPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCost : 0
           obj.amortizationQty = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].Life : 0
@@ -470,6 +470,7 @@ function AddToComparisonDrawer(props) {
           obj.netTransportationCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.ChildPartTransportationDetails ?? [] : []
           obj.HangerCostDetails = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.ChildPartHangerDetails : dataFromAPI?.CostingPartDetails?.HangerDetails ?? []
           obj.PaintAndTapeDetails = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.ChildPartPaintAndTapeDetails : dataFromAPI?.CostingPartDetails?.PaintAndTapeDetails ?? []
+          obj.CostingLabourResponse = dataFromAPI?.CostingPartDetails?.Type === 'Assembly' ? dataFromAPI?.CostingPartDetails?.CostingLabourResponse : []
           obj.surfaceTreatmentDetails = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentDetails : []
           // //OverheadCost and Profit
           obj.netOverheadCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail : '-'
@@ -576,6 +577,7 @@ function AddToComparisonDrawer(props) {
           // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
           obj.netChildPartsCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetChildPartsCost ? dataFromAPI?.CostingPartDetails?.NetChildPartsCost : 0
           obj.netOperationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
+          obj.netWeldingCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetWeldingCost ? dataFromAPI?.CostingPartDetails?.NetWeldingCost : 0
           obj.netProcessCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
           obj.netBoughtOutPartCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost : 0
           obj.multiTechnologyCostingDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails : ''

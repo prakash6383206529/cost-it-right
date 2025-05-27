@@ -197,7 +197,7 @@ function CostingDetails(props) {
       setPart({ label: partDetails?.PartNumber, value: partDetails?.PartId })
       setPartType({ label: partDetails?.PartType, value: partDetails?.PartTypeId })
       setTechnology({ label: partDetails?.Technology, value: partDetails?.TechnologyId })
-      
+
       setValue('Part', { label: partDetails?.PartNumber, value: partDetails?.PartId })
       setValue('PartType', { label: partDetails?.PartType, value: partDetails?.PartTypeId })
       setValue('Technology', { label: partDetails?.Technology, value: partDetails?.TechnologyId })
@@ -295,6 +295,8 @@ function CostingDetails(props) {
       setTimeout(() => {
         setTechnology({ label: partNumber.technologyName, value: partNumber.technologyId })
         setValue('Part', { label: partNumber.partNumber, value: partNumber.partId })
+        setPartFamily({ label: partNumber.partFamily, value: partNumber.partFamilyId })
+        setValue('PartFamily', { label: partNumber.PartFamily, value: partNumber.PartFamilyId })
         setIsTechnologySelected(true)
         setShowNextBtn(true)
 
@@ -310,7 +312,7 @@ function CostingDetails(props) {
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice))
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
-            setPartType({ label: Data.PartType, value: Data.PartTypeId })
+            setValue('PartFamily', Data?.PartFamily)
 
           }),
         )
@@ -448,6 +450,7 @@ function CostingDetails(props) {
               sessionStorage.setItem('costingArray', JSON.stringify([]))
               sessionStorage.setItem('surfaceCostingArray', JSON.stringify([]))
               setValue('PartName', Data?.PartName ? Data.PartName : '')
+              setValue("PartFamily", Data?.PartFamily ? Data.PartFamily : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
@@ -467,6 +470,7 @@ function CostingDetails(props) {
             setValue('DrawingNumber', '')
             setValue('RevisionNumber', '')
             setValue('ShareOfBusiness', '')
+            setValue('PartFamily', '')
             setEffectiveDate('')
             setShowNextBtn(false)
           }
@@ -1718,6 +1722,7 @@ function CostingDetails(props) {
         setValue("DrawingNumber", Data.DrawingNumber)
         setValue("RevisionNumber", Data.RevisionNumber)
         setValue("ShareOfBusiness", Data.Price)
+        setValue("PartFamily", Data?.PartFamily)
         setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
       }))
       setCostingOptionsSelectedObject({})
@@ -2062,7 +2067,7 @@ function CostingDetails(props) {
     const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && partName !== resultInput) {
       setInputLoader(true)
-      const res = await getPartSelectListByTechnology(technology.value, resultInput, partType?.value,partFamily?.value);
+      const res = await getPartSelectListByTechnology(technology.value, resultInput, partType?.value, partFamily?.value ?? null);
       setInputLoader(false)
       setpartName(resultInput)
       let partDataAPI = res?.data?.SelectList
@@ -2091,7 +2096,7 @@ function CostingDetails(props) {
 
     return <Redirect
       to={{
-        pathname: "/nfr",
+        pathname: "/customer-rfq",
         state: {
           isNFR: true
         }
@@ -2238,8 +2243,8 @@ function CostingDetails(props) {
                         />
 
                       </Col>
-                      <Col className="col-md-15">
-                        <SearchableSelectHookForm
+
+                      {/*  <SearchableSelectHookForm
                           label={`Part Family (Code)`}
                           name={'PartFamily'}
                           placeholder={'Select'}
@@ -2254,9 +2259,9 @@ function CostingDetails(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.PartFamily}
-                          disabled={(technology.length === 0) ? true : false}
+                          disabled={true}
                         />
-                      </Col>
+                      </Col>} */}
 
                       <Col className="col-md-15">
 
@@ -2274,10 +2279,30 @@ function CostingDetails(props) {
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(partType.length === 0 || partFamily.length === 0) ? true : false}
+                          disabled={partType.length === 0 ? true : false}
                           NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                         />
                       </Col>
+                      {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <Col className="col-md-15">
+
+                        <TextFieldHookForm
+                          label="Part Family"
+                          name={"PartFamily"}
+                          // title={titleObj.partFamilyTitle}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          rules={{ required: false }}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          errors={errors.PartFamily}
+                          disabled={true}
+                          placeholder="-"
+                        />
+                      </Col>}
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Assembly/Part Name"
@@ -2918,7 +2943,7 @@ function CostingDetails(props) {
                           )}
 
 
-                          {IsOpenVendorSOBDetails && showCostingSection.WAC && partInfo?.PartType === ASSEMBLYNAME && !breakupBOP && (
+                          {IsOpenVendorSOBDetails && showCostingSection.WAC && partInfo?.PartType === ASSEMBLYNAME && !breakupBOP && !isNFR && (
                             <>
                               <Row className="align-items-center">
                                 <Col md="6" className={"mb-2 mt-3"}>

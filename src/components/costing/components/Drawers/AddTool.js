@@ -21,7 +21,7 @@ function AddTool(props) {
   const { rowObjData, isEditFlag, gridData, CostingViewMode } = props;
 
   const costData = useContext(costingInfoContext)
-  const { RMCCTabData } = useSelector(state => state.costing)
+  const { RMCCTabData, IsIncludedToolCost, includeToolCostIcc } = useSelector(state => state.costing)
   const { toolMaintenanceCostLabel, toolMaintenanceCostPerPcLabel, toolInterestRatePercentLabel, toolInterestCostLabel, toolInterestCostPerPcLabel } = useLabels();
 
   const defaultValues = {
@@ -29,7 +29,7 @@ function AddTool(props) {
     ProcessOrOperation: rowObjData?.ProcessOrOperation ? { label: rowObjData.ProcessOrOperation, value: rowObjData.ProcessOrOperation } : [],
     ToolCategory: rowObjData?.ToolCategory ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : [],
     ToolName: rowObjData?.ToolName ? rowObjData.ToolName : '',
-    Quantity: rowObjData?.Quantity ? rowObjData.Quantity : '',
+    Quantity: rowObjData?.ProcessRunCount ? rowObjData.ProcessRunCount : '',
     ToolCost: rowObjData?.ToolCost ? rowObjData.ToolCost : '',
     Life: rowObjData?.Life ? rowObjData.Life : '',
     TotalToolCost: rowObjData?.TotalToolCost ? rowObjData.TotalToolCost : '',
@@ -120,7 +120,7 @@ function AddTool(props) {
     const processRunCount=checkForNull(getValues('Quantity'))
     const partQuantity=checkForNull(getValues('partQuantity'))
     const costApplicability=checkForNull(getValues('MaintananceCostApplicability'))
-    const toolAmortizationCost = toolCost/life
+    const toolAmortizationCost = (toolCost * partQuantity * processRunCount) /life
     const toolInterestCost = (toolCost * interestRatePercent * processRunCount * partQuantity) / 100
     const toolInterestCostPerPc = toolInterestCost / life
     let toolMaintenanceCost = 0
@@ -206,9 +206,15 @@ function AddTool(props) {
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
+        if (IsIncludedToolCost || includeToolCostIcc) {
+          if (item.Text === 'Fixed') {
+            temp.push({ label: item.Text, value: item.Value })
+          }
+        } else {
+          temp.push({ label: item.Text, value: item.Value })
+        }
+        return null
+      })
       return temp
     }
   }
@@ -354,7 +360,7 @@ function AddTool(props) {
         PartType: item?.Type,
         PartQuantity: item?.Quantity,
         ProcessOrOperationType: getValues('type'),
-        ProcessOrOperationQuantity: 1,
+        ProcessOrOperationQuantity: getValues('Quantity'),
         BOMLevel: item?.Level,
         PartNumber: costData?.PartNumber,
         PartId: costData?.PartId,
@@ -378,7 +384,8 @@ function AddTool(props) {
         ToolMaintenanceCostPerPiece:state.toolMaintenanceCostPerPc,
         ToolInterestRatePercent:getValues('ToolInterestRatePercent'),
         ToolInterestCost:state.toolInterestCost,
-        ToolInterestCostPerPiece:state.toolInterestCostPerPc
+        ToolInterestCostPerPiece:state.toolInterestCostPerPc,
+        ProcessRunCount: getValues('Quantity')
       };
     });
 
@@ -404,6 +411,19 @@ function AddTool(props) {
           item.Life = getValues('Life')
           item.NetToolCost = totalToolCost
           item.ToolCRMHead = getValues('crmHead')?.label
+          item.ToolLife = getValues('Life')
+          item.ProcessOrOperationQuantity = getValues('Quantity')
+          item.ToolMaintenancePercentage = getValues('MaintenancePercentage')
+          item.ToolApplicabilityCost = getValues('MaintananceCostApplicability')
+          item.ToolInterestRatePercent = getValues('ToolInterestRatePercent')
+          item.ToolAmortizationCost = state.toolAmortizationCost
+          item.ToolApplicabilityTypeId= state.toolMaintenanceApplicability?.value
+          item.ToolCostType= state.toolMaintenanceApplicability?.label
+          item.ToolMaintenanceCost = state.toolMaintenanceCost
+          item.ToolMaintenanceCostPerPiece = state.toolMaintenanceCostPerPc
+          item.ToolInterestCost = state.toolInterestCost
+          item.ToolInterestCostPerPiece = state.toolInterestCostPerPc
+          item.ProcessRunCount = getValues('Quantity')
           // Here you can add any other property updates as needed
         } else if (rowObjData?.ProcessOrOperationType === 'Process' && item.ProcessIdRef === ProcessIdRef && item.ToolName === ToolName) {
 
@@ -417,6 +437,19 @@ function AddTool(props) {
           item.Life = getValues('Life')
           item.NetToolCost = totalToolCost
           item.ToolCRMHead = getValues('crmHead')?.label
+          item.ToolLife = getValues('Life')
+          item.ProcessOrOperationQuantity = getValues('Quantity')
+          item.ToolMaintenancePercentage = getValues('MaintenancePercentage')
+          item.ToolApplicabilityCost = getValues('MaintananceCostApplicability')
+          item.ToolInterestRatePercent = getValues('ToolInterestRatePercent')
+          item.ToolAmortizationCost = state.toolAmortizationCost
+          item.ToolApplicabilityTypeId= state.toolMaintenanceApplicability?.value
+          item.ToolCostType= state.toolMaintenanceApplicability?.label
+          item.ToolMaintenanceCost = state.toolMaintenanceCost
+          item.ToolMaintenanceCostPerPiece = state.toolMaintenanceCostPerPc
+          item.ToolInterestCost = state.toolInterestCost
+          item.ToolInterestCostPerPiece = state.toolInterestCostPerPc
+          item.ProcessRunCount = getValues('Quantity')
           // Here you can add any other property updates as needed
         }
       }
@@ -429,13 +462,29 @@ function AddTool(props) {
    * @method handleToolApplicabilityChange
    * @description This is for handling the tool applicability change
   */
-  const handleToolApplicabilityChange = (newValue) => {
-    setState(prevState => ({ ...prevState, toolMaintenanceApplicability: newValue }))
+  const handleToolApplicabilityChange = (newValue) => {        
     if(newValue?.label==='Tool Rate'){
-      setValue('MaintananceCostApplicability', getValues('ToolCost'))
+      setValue('MaintananceCostApplicability', checkForDecimalAndNull(getValues('ToolCost'), getConfigurationKey().NoOfDecimalForPrice))
+    } else {
+      setValue('MaintananceCostApplicability', 0)
     }
+    setValue('ToolInterestRatePercent', 0)
+    setValue('MaintenancePercentage', 0)
+    delete errors.MaintananceCostApplicability
+    delete errors.MaintenancePercentage
+    delete errors.ToolInterestRatePercent
+    setState(prevState => {
+      const newState = {...prevState, toolMaintenanceApplicability: newValue, toolMaintenanceCost: 0, toolMaintenanceCostPerPc: 0, toolInterestCost: 0, toolInterestCostPerPc:0 }
+      return newState 
+    })
   }
 
+  const handleToolRateChange = (e) => {
+    if (state.toolMaintenanceApplicability?.label === "Tool Rate") {
+      setValue('MaintananceCostApplicability', checkForDecimalAndNull(e.target.value, getConfigurationKey().NoOfDecimalForPrice))
+    }
+  }
+  
   /**
   * @method render
   * @description Renders the component
@@ -695,7 +744,7 @@ function AddTool(props) {
                         required: true,
                         validate: { number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10,6) }
                       }}
-                      handleChange={() => { }}
+                      handleChange={(e) => handleToolRateChange(e)}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -725,7 +774,7 @@ function AddTool(props) {
                     />
                   </Col>
                   <Col md="4">
-                    <TooltipCustom disabledIcon={true} id={'tool-amortization-cost'} tooltipText={'Tool Amortization Cost = Tool Rate/Life'} />
+                    <TooltipCustom disabledIcon={true} id={'tool-amortization-cost'} tooltipText={'Tool Amortization Cost = Tool Rate * Part Quantity * Process Run Count / Tool Life'} />
                     <TextFieldHookForm
                       label="Tool Amortization Cost"
                       name={'ToolAmortizationCost'}
@@ -806,7 +855,7 @@ function AddTool(props) {
                         disabled={state.toolMaintenanceApplicability?.label === "Tool Rate" ? true : CostingViewMode}
                       />
                     </Col>
-                    <Col md="4">{ <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={`${toolMaintenanceCostLabel} = ${state.toolMaintenanceApplicability?.label==='Fixed'? 'Cost (Applicability) * Process Run Count * Part Quantity':'(Maintenance Cost (%) * Cost(Applicability) / 100)'} `} />}
+                    <Col md="4">{ <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={`${toolMaintenanceCostLabel} = ${state.toolMaintenanceApplicability?.label==='Fixed'? 'Cost (Applicability) * Process Run Count * Part Quantity':'(Maintenance Cost (%) * Cost(Applicability) * Process Run Count / 100)'} `} />}
                     <TextFieldHookForm
                       label={toolMaintenanceCostLabel}
                       name={`ToolMaintenanceCost`}
@@ -823,7 +872,7 @@ function AddTool(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col md="4">{state.toolMaintenanceApplicability !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence-per-pc"} tooltipText={`${toolMaintenanceCostPerPcLabel}= (${toolMaintenanceCostLabel} / Amortization Quantity (Tool Life) `} />}
+                  <Col md="4">{state.toolMaintenanceApplicability !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence-per-pc"} tooltipText={`${toolMaintenanceCostPerPcLabel}= (${toolMaintenanceCostLabel}  * Process Run Count/ Amortization Quantity (Tool Life) `} />}
                     <TextFieldHookForm
                       label={toolMaintenanceCostPerPcLabel}
                       name={`ToolMaintenanceCostPerPc`}
@@ -937,7 +986,7 @@ function AddTool(props) {
                       disabled={CostingViewMode}
                     >
                       <div className={'save-icon'}></div>
-                      {'Save'}
+                      {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>
                 </Row>

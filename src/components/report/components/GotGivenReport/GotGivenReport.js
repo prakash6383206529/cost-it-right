@@ -149,7 +149,7 @@ const GotGivenReport = (props) => {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
             setInputLoader(true)
-            const res = await getPartSelectListByTechnology(technology.value, resultInput);
+            const res = await getPartSelectListByTechnology(technology.value, resultInput,null,null);
             setInputLoader(false)
             setpartName(resultInput)
             let partDataAPI = res?.data?.SelectList

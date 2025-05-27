@@ -137,7 +137,7 @@ export const RMDomesticZBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -145,7 +145,7 @@ export const RMDomesticZBCTempData = [
         "FreightCost": "10",    // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",    // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -349,7 +349,7 @@ export const RMDomesticVBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -357,7 +357,7 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",// KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",// KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -561,7 +561,7 @@ export const RMImportZBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -569,7 +569,7 @@ export const RMImportZBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -763,7 +763,7 @@ export const RMDomesticCBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -771,7 +771,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "1032",
@@ -967,7 +967,7 @@ export const RMImportVBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -975,7 +975,7 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1170,7 +1170,7 @@ export const RMImportCBCTempData = [
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
-        "IsCalculateScrapRate": false,
+        "IsCalculateScrapRate": "Yes",
         "ScrapRatePercentageOfRMRate": "5",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -1178,7 +1178,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
         "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapRate": "20",
-        "IsCalculateMachineScrapRate": false,
+        "IsCalculateMachineScrapRate": "No",
         "MachineScrapRatePercentageOfRMRate": "6",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
@@ -1586,6 +1586,7 @@ export const Overhead = [
     { label: 'PlantCode', value: 'PlantCode', },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -1597,23 +1598,26 @@ export const OverheadTempData = [
         'OverheadPercentage': '',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
@@ -1627,6 +1631,7 @@ export const OverheadVBC = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -1639,25 +1644,28 @@ export const OverheadVBC_TempData = [
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
@@ -1670,6 +1678,7 @@ export const OverheadCBC = [
     { label: "CustomerCode", value: "CustomerCode" },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -1682,25 +1691,28 @@ export const OverheadCBC_TempData = [
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 
@@ -2546,6 +2558,7 @@ export const Profit = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -2557,23 +2570,26 @@ export const ProfitTempData = [
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'Part Cost',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
@@ -2587,6 +2603,7 @@ export const ProfitVBC = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', }
 ]
 
@@ -2599,25 +2616,28 @@ export const ProfitTempDataVBC = [
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'Part Cost',
         'ProfitPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 ]
@@ -2630,6 +2650,7 @@ export const ProfitCBC = [
     { label: 'CustomerCode', value: 'CustomerCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', }
 ]
 
@@ -2642,25 +2663,28 @@ export const ProfitTempDataCBC = [
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
+        'Note': '',
         'ModelType': 'High volume',
         'ProfitApplicability': 'Part Cost',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 ]
@@ -2672,16 +2696,19 @@ export const Labour = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'EmploymentTerms', value: 'EmploymentTerms', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'Country', value: 'Country', }, //*
     { label: 'State', value: 'State', }, //*
+    { label: 'City', value: 'City', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineType', value: 'MachineType', }, //*
     { label: 'LabourType', value: 'LabourType', }, //*
-    { label: 'RatePerPersonPerMonth', value: 'RatePerPersonPerMonth', }, //*
+    { label: 'NoOfDays', value: 'NoOfDays', }, //*
+    { label: 'LabourRatePerMonth', value: 'LabourRatePerMonth', }, //*
     { label: 'RatePerPersonPerAnnum', value: 'RatePerPersonPerAnnum', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'ProductNumber', value: 'ProductNumber', },
     { label: 'Efficiency', value: 'Efficiency', },
-    { label: 'WorkingTime', value: 'WorkingTime', },
+    { label: 'WorkingHours', value: 'WorkingTime', },
 
 ]
 export const LabourTempData = [
@@ -2689,11 +2716,14 @@ export const LabourTempData = [
         "CustomerCode": 'C-10008',
         'EmploymentTerms': 'Contractual',
         'VendorCode': 'VC123',
+        'Country': 'India',
         'State': 'Madhya Pradesh',
+        'City': 'Indore',
         'PlantCode': 'Plant01',
         'MachineType': 'Grinder',
         'LabourType': 'Skilled',
-        'RatePerPersonPerMonth': 100000,
+        'NoOfDays': '20',
+        'LabourRatePerMonth': 100000,
         'RatePerPersonPerAnnum': 1200000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "ProductNumber": 'Silencer',
@@ -2704,11 +2734,14 @@ export const LabourTempData = [
         "CustomerCode": 'C-10008',
         'EmploymentTerms': 'Employed',
         'VendorCode': 'VC124',
+        'Country': 'India',
         'State': 'Madhya Pradesh',
+        'City': 'Indore',
         'PlantCode': 'Plant02',
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',
-        'RatePerPersonPerMonth': 100000,
+        'NoOfDays': '20',
+        'LabourRatePerMonth': 100000,
         'RatePerPersonPerAnnum': 1200000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "ProductNumber": 'Silencer',
@@ -7081,6 +7114,8 @@ export const LABOUR_DOWNLOAD_EXCEl = [
     { label: "Machine Type", value: "MachineType", },
     { label: "Labour Type", value: "LabourType", },
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
+    { label: "Currency", value: "LocalCurrency", },
+    { label: "Rate per Person/Shift", value: "LabourRatePerShift", },
     { label: "Rate per Person/Month", value: "LabourRatePerMonth", },
     { label: "Rate per Person/Annum", value: "LabourRate", },
     { label: "Effective Date", value: "EffectiveDate", }
@@ -8744,15 +8779,8 @@ export const statusDropdownforRfq = [
 ];
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },
-    { label: 'Pending For Approval', value: 2 },
-    { label: 'Approved', value: 3 },
-    { label: 'Rejected', value: 4 },
-    { label: 'History', value: 5 },
-    { label: 'Awaiting Approval', value: 6 },
-    { label: 'Error', value: 12 },
-    { label: 'Pushed', value: 13 },
-    { label: 'Under Approval', value: 21 },
-    { label: 'External Reject', value: 27 },
+    { label: 'ZBC Pending', value: 2 },
+    { label: 'ZBC Created', value: 3 },
 ];
 export const CostingBulkUploadTechnologyDropdown = [
     { label: "Sheet Metal", value: "8" },

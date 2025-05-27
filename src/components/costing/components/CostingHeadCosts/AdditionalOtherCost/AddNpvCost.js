@@ -7,7 +7,7 @@ import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layou
 import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
 import { typeofNpvDropdown } from '../../../../../config/masterData'
-import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, blockInvalidNumberKeys, nonZero } from "../../../../../helper/validation";
 import NpvCost from './NpvCost'
 import { setNPVData } from '../../../actions/Costing'
 import Toaster from '../../../../common/Toaster'
@@ -77,6 +77,7 @@ function AddNpvCost(props) {
         setDisableAllFields(false)
         setDisableTotalCost(false)
         setDisableNpvPercentage(false)
+        resetErrors()
         if (value.label === 'Tool Investment') {
             if (!IsEnterToolCostManually) {
                 setDisableQuantity(true)
@@ -194,6 +195,10 @@ function AddNpvCost(props) {
             return false
         }
 
+        if (errors.Quantity) {
+            return false
+        }
+
         // Get the current data in the table and set some initial variables.
         let table = [...tableData]
         let indexOfNpvType
@@ -250,6 +255,13 @@ function AddNpvCost(props) {
         setTotalCost('')
         setDisableAllFields(true)
         setIsEditMode(false)
+        resetErrors()
+    }
+
+    const resetErrors = () => {
+        delete errors.NpvPercentage
+        delete errors.Quantity
+        delete errors.Total
     }
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
@@ -340,7 +352,7 @@ function AddNpvCost(props) {
                                         <Col md="2" className='px-1'>
                                             <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'percentage'} tooltipText={'Percentage = (Total * 100) / Quantity * Net Cost'} />
                                             <NumberFieldHookForm
-                                                label={`Percenatge (%)`}
+                                                label={`Percentage (%)`}
                                                 name={'NpvPercentage'}
                                                 id={'percentage'}
                                                 Controller={Controller}
@@ -349,14 +361,14 @@ function AddNpvCost(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: false,
-                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation, nonZero },
                                                     max: {
                                                         value: 100,
                                                         message: 'Percentage should be less than 100'
                                                     },
 
                                                 }}
-
+                                                onKeyDown={blockInvalidNumberKeys}
                                                 handleChange={handleNpvPercentageChange}
                                                 defaultValue={''}
                                                 className=""
@@ -375,8 +387,9 @@ function AddNpvCost(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
                                                 }}
+                                                onKeyDown={blockInvalidNumberKeys}
                                                 handleChange={handleQuantityChange}
                                                 defaultValue={''}
                                                 className=""
@@ -397,8 +410,9 @@ function AddNpvCost(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
                                                 }}
+                                                onKeyDown={blockInvalidNumberKeys}
                                                 handleChange={handleTotalCostChange}
                                                 defaultValue={''}
                                                 className=""

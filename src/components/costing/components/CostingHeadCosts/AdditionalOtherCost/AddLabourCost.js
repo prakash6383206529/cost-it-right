@@ -10,13 +10,15 @@ import LabourCost from './LabourCost'
 import { getCostingLabourDetails, getLabourDetailsByFilter } from '../../../actions/Costing'
 import DayTime from '../../../../common/DayTimeWrapper'
 import { CBCTypeId, CRMHeads, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { costingInfoContext, IsNFRContext } from '../../CostingDetailStepTwo'
 import { ViewCostingContext } from '../../CostingDetails'
 import TooltipCustom from '../../../../common/Tooltip'
+import { getLabourTypeSelectList } from '../../../../../actions/Common'
 
 function AddLabourCost(props) {
     const { item } = props
     const [tableData, setTableData] = useState(props?.tableData)
+
     const [disableTotalCost, setDisableTotalCost] = useState(true)
     const [editIndex, setEditIndex] = useState('')
     const [isEditMode, setIsEditMode] = useState(false)
@@ -25,8 +27,11 @@ function AddLabourCost(props) {
     const [indirectLabourCostState, setIndirectLabourCostState] = useState(0)
     const [staffCostState, setStaffCostState] = useState(0)
     const [labourDetailsId, setLabourDetailsId] = useState(0)
+    const [labourDetailsFromMaster, setLabourDetailsFromMaster] = useState({ LabourRatePerShift: '', LabourRatePerMonth: '', LabourRate: '', Efficiency: '', WorkingTime: '', NoOfDays: '' })
     const dispatch = useDispatch()
-    const { costingData } = useSelector(state => state.costing)
+    const { costingData, currencySource } = useSelector(state => state.costing)
+    const { labourTypeSelectList } = useSelector(state => state.comman)
+
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -35,6 +40,7 @@ function AddLabourCost(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costData = useContext(costingInfoContext)
     const CostingViewMode = useContext(ViewCostingContext);
+    const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext)
 
     useEffect(() => {
         let labourObj = false
@@ -56,6 +62,7 @@ function AddLabourCost(props) {
                     setValue('StaffCRMHead', Data?.StaffCRMHead && { label: Data?.StaffCRMHead, value: 3 })
                     setStaffCostState(Number(Data?.StaffCost))
                     setIndirectLabourCostState(Data?.IndirectLaborCost)
+                    // setLabourDetailsId(Data?.LabourDetailsId)
                     let temp = []
                     list && list.map((item, index) => {
                         item.indirectLabourCostPercent = Data?.IndirectLaborCostPercentage
@@ -73,23 +80,13 @@ function AddLabourCost(props) {
                 }
             }
         }))
+
         if (!props?.isCostingSummary && !CostingViewMode) {
-            let obj = {}
-            obj.partId = costingData.CostingTypeId === CBCTypeId ? item.AssemblyPartId : EMPTY_GUID
-            obj.vendorId = costingData.CostingTypeId === VBCTypeId ? item.VendorId : EMPTY_GUID
-            obj.customerId = costingData.CostingTypeId === CBCTypeId ? item.CustomerId : EMPTY_GUID
-            obj.effectiveDate = DayTime(item.CostingDate).format('DD/MM/YYYY')
-            obj.costingHeadId = costingData.CostingTypeId === WACTypeId ? ZBCTypeId : costingData.CostingTypeId
-            obj.plantId = (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId || costData.CostingTypeId === WACTypeId) ? costData.PlantId : EMPTY_GUID
-            dispatch(getLabourDetailsByFilter(obj, (res) => {
-                if (res) {
-                    let Data = res?.data?.DataList[0]
-                    setValue('labourRate', Data.LabourRate)
-                    setValue('workingHours', Data.WorkingTime)
-                    setValue('efficiency', Data.Efficiency)
-                    setLabourDetailsId(Data.LabourDetailsId)
-                }
+
+            dispatch(getLabourTypeSelectList((res) => {
+
             }))
+
         }
 
     }, [])
@@ -137,7 +134,7 @@ function AddLabourCost(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['labourRate', 'workingHours', 'efficiency'],
+        name: ['LabourRatePerShift', 'workingHours', 'efficiency'],
 
     })
 
@@ -148,7 +145,7 @@ function AddLabourCost(props) {
     const calculateLabourCost = () => {
         let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
         let absentism = Number(checkForNull(getValues('absentism'))) / 100
-        let labourRate = Number(getValues('labourRate'))
+        let labourRate = Number(getValues('LabourRatePerShift'))
         let workingHours = Number(getValues('workingHours')) * 3600;
         let efficiency = Number(getValues('efficiency'))
         efficiency = efficiency / 100
@@ -164,7 +161,7 @@ function AddLabourCost(props) {
 
             let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
             let absentism = Number(checkForNull(getValues('absentism'))) / 100
-            let labourRate = Number(getValues('labourRate'))
+            let labourRate = Number(getValues('LabourRatePerShift'))
             let workingHours = Number(getValues('workingHours')) * 3600;
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
@@ -180,7 +177,7 @@ function AddLabourCost(props) {
         let labourCost
         let noOfLabour = Number(checkForNull(e?.target?.value))
         let absentism = Number(checkForNull(getValues('absentism'))) / 100
-        let labourRate = Number(getValues('labourRate'))
+        let labourRate = Number(getValues('LabourRatePerShift'))
         let workingHours = Number(getValues('workingHours')) * 3600;
         let efficiency = Number(getValues('efficiency'))
         efficiency = efficiency / 100
@@ -195,7 +192,7 @@ function AddLabourCost(props) {
             let labourCost
             let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
             let absentism = Number(checkForNull(e?.target?.value)) / 100
-            let labourRate = Number(getValues('labourRate'))
+            let labourRate = Number(getValues('LabourRatePerShift'))
             let workingHours = Number(getValues('workingHours')) * 3600;
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
@@ -234,12 +231,12 @@ function AddLabourCost(props) {
 
         // Get the current data in the table and set some initial variables.
         let indexOfLabour
-        let description = getValues('description') ? getValues('description') : ''
+        let labourType = getValues('labourType') ? getValues('labourType')?.label : ''
         let alreadyDataExist = false
 
         // Check if the new data to be added is a duplicate of existing data.
         table && table.map((item, index) => {
-            if (item.Description === description) {
+            if (item.LabourType === labourType) {
                 alreadyDataExist = true
                 indexOfLabour = index
             }
@@ -253,7 +250,8 @@ function AddLabourCost(props) {
 
         // Check if all required fields are filled out
         const requiredFields = {
-            'description': 'Description',
+            // 'description': 'Description',
+            'labourType': 'Labour Type',
             'noOfLabour': 'No. of Labour',
             'absentism': 'Absenteeism %',
             'labourRate': 'Labour Rate',
@@ -274,18 +272,24 @@ function AddLabourCost(props) {
             }
         });
 
+
         if (missingFields.length === 0) {
             let obj = {}
             obj.Description = getValues('description') ? getValues('description') : ''
-            obj.LabourRate = getValues('labourRate') ? getValues('labourRate') : ''
-            obj.WorkingTime = getValues('workingHours') ? getValues('workingHours') : ''
-            obj.Efficiency = getValues('efficiency') ? getValues('efficiency') : ''
+            obj.LabourRate = labourDetailsFromMaster?.LabourRate ? labourDetailsFromMaster?.LabourRate : ''
+            obj.WorkingTime = labourDetailsFromMaster?.WorkingTime ? labourDetailsFromMaster?.WorkingTime : ''
+            obj.Efficiency = labourDetailsFromMaster?.Efficiency ? labourDetailsFromMaster?.Efficiency : ''
             obj.CycleTime = getValues('cycleTime') ? getValues('cycleTime') : ''
             obj.LabourCost = totalCost ? totalCost : ''
-
+            obj.LabourRatePerMonth = labourDetailsFromMaster?.LabourRatePerMonth ? labourDetailsFromMaster?.LabourRatePerMonth : ''
+            obj.LabourRatePerShift = labourDetailsFromMaster?.LabourRatePerShift ? labourDetailsFromMaster?.LabourRatePerShift : ''
+            obj.LabourType = getValues('labourType') ? getValues('labourType')?.label : ''
+            obj.LabourTypeId = getValues('labourType') ? getValues('labourType')?.value : ''
             obj.AbsentismPercentage = getValues('absentism') ? getValues('absentism') : ''
             obj.NumberOfLabour = getValues('noOfLabour') ? getValues('noOfLabour') : ''
             obj.LabourDetailId = labourDetailsId
+            obj.NoOfDays = labourDetailsFromMaster?.NoOfDays ? labourDetailsFromMaster?.NoOfDays : ''
+
 
             // If we're in edit mode, update the existing row with the new data.
             // Otherwise, add the new row to the end of the table.
@@ -348,10 +352,15 @@ function AddLabourCost(props) {
         setValue('labourCost', '')
         setValue('absentism', '')
         setValue('noOfLabour', '')
+        setValue('LabourRatePerMonth', '')
+        setValue('labourType', '')
+        setValue('LabourRatePerShift', '')
+        setValue('NoOfDays', '')
         setDisableTotalCost(true)
         setTotalCost('')
         setEditIndex('')
         setIsEditMode(false)
+        setLabourDetailsFromMaster({})
     }
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
@@ -388,16 +397,22 @@ function AddLabourCost(props) {
 
             // Retrieve the data at the specified index from the tableData array, and set the values of various form fields based on the data.
             let Data = tableData[indexValue]
-            setValue('description', Data.Description)
-            setValue('labourRate', Data.LabourRate)
-            setValue('workingHours', Data.WorkingTime)
-            setValue('efficiency', Data.Efficiency)
-            setValue('cycleTime', Data.CycleTime)
-            setValue('labourCost', checkForDecimalAndNull(Data.LabourCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('absentism', Data.AbsentismPercentage)
-            setValue('noOfLabour', Data.NumberOfLabour)
+            setValue('description', Data?.Description)
+            setValue('labourRate', Data?.LabourRate)
+            setValue('workingHours', Data?.WorkingTime)
+            setValue('efficiency', Data?.Efficiency)
+            setValue('cycleTime', Data?.CycleTime)
+            setValue('labourCost', Data?.LabourCost)
+            setValue('absentism', Data?.AbsentismPercentage)
+            setValue('noOfLabour', Data?.NumberOfLabour)
+            setValue('LabourRatePerMonth', Data?.LabourRatePerMonth)
+            setValue('LabourRatePerShift', Data?.LabourRatePerShift)
+            setValue('NoOfDays', Data?.NoOfDays)
 
+            setValue('labourType', { label: Data?.LabourType, value: Data?.LabourTypeId })
+            setLabourDetailsId(Data?.LabourDetailId)
             setTotalCost(Data.LabourCost)
+            setLabourDetailsFromMaster(Data)
             if (Data.ConditionType === 'Fixed') {
                 setDisableTotalCost(false)
             } else {
@@ -435,6 +450,65 @@ function AddLabourCost(props) {
         return checkForNull(absenteeismCost + labourCost)
     }
 
+    const onLabourTypeChange = (e) => {
+
+
+
+        let obj = {}
+        obj.partId = null
+        obj.vendorId = item?.VendorId ?? null
+        obj.customerId = item?.CustomerId ?? null
+        obj.effectiveDate = DayTime(item?.CostingDate).format('DD/MM/YYYY')
+        obj.costingHeadId = costingData.CostingTypeId === WACTypeId ? ZBCTypeId : costingData.CostingTypeId
+        obj.plantId = (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId || costData.CostingTypeId === WACTypeId) ? costData.PlantId : EMPTY_GUID
+        obj.labour_type_id = e?.value
+        obj.isRequestForCosting = true
+        obj.baseCostingId = item?.CostingId ?? null
+        obj.isZeroDataShow = costingData?.CostingTypeId === ZBCTypeId || costingData?.CostingTypeId === WACTypeId ? true : false
+        obj.isVendorDataShow = costingData?.CostingTypeId === VBCTypeId || costingData?.CostingTypeId === NCCTypeId ? true : false
+        obj.isCustomerDataShow = costingData?.CostingTypeId === CBCTypeId ? true : false
+        dispatch(getLabourDetailsByFilter(obj, (res) => {
+
+            if (res.status === 204) {
+                Toaster.warning('Data does not exist for this labour type')
+                setValue('labourRate', '')
+                setValue('workingHours', '')
+                setValue('efficiency', '')
+                setLabourDetailsId('')
+                setValue('LabourRatePerMonth', '')
+                setValue('LabourRatePerShift', '')
+                setValue('NoOfDays', '')
+                setLabourDetailsFromMaster({})
+            }
+            else if (res.status === 200) {
+
+                let Data = res?.data?.DataList[0]
+                setValue('labourRate', Data?.LabourRate)
+                setValue('workingHours', Data?.WorkingTime)
+                setValue('efficiency', Data?.Efficiency)
+                setLabourDetailsId(Data?.LabourDetailsId)
+                setValue('LabourRatePerMonth', Data?.LabourRatePerMonth)
+                setValue('LabourRatePerShift', Data?.LabourRatePerShift)
+                setValue('NoOfDays', Data?.NoOfDays)
+                setLabourDetailsFromMaster(Data)
+            }
+        }))
+    }
+
+    //**
+    // @method handleLabourTypeByMachineTypeSelectList
+    // @description This method is used to handle the labour type by machine type select list
+    // @returns {Array} list
+    // /
+    const handleLabourTypeByMachineTypeSelectList = () => {
+        let list = []
+        labourTypeSelectList && labourTypeSelectList?.map((item) => {
+            if (item.Value === '0') return false
+            list.push({ label: item.Text, value: item.Value })
+        })
+        return list
+    }
+
     return (
 
         <div>
@@ -442,8 +516,8 @@ function AddLabourCost(props) {
             // onClose={(e) => toggleDrawer(e)}
             >
                 <div className={`ag-grid-react hidepage-size`}>
-                    <Container className="add-bop-drawer">
-                        <div className={'drawer-wrapper layout-min-width-820px'}>
+                    <Container className="view-conversion-cost-drawer">
+                        <div className={'drawer-wrapper drawer-1500px'}>
 
                             <Row className="drawer-heading">
                                 <Col className="pl-0">
@@ -458,8 +532,29 @@ function AddLabourCost(props) {
                             </Row>
                             <div className='hidepage-size'>
                                 <Row>
+                                    <Col md="3">
+                                        <SearchableSelectHookForm
+                                            name={`labourType`}
+                                            type="text"
+                                            label="Labour Type"
+                                            errors={`${errors.labourType}`}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            rules={{
+                                                required: true,
+                                            }}
+                                            defaultValue={''}
+                                            placeholder={'Select'}
+                                            options={handleLabourTypeByMachineTypeSelectList()}
+                                            required={false}
+                                            handleChange={onLabourTypeChange}
+                                            disabled={CostingViewMode}
+                                        />
+                                    </Col>
 
-                                    <Col md="3" className='pr-1'>
+                                    <Col md="3" >
                                         <TextFieldHookForm
                                             label={`Description`}
                                             name={'description'}
@@ -467,24 +562,24 @@ function AddLabourCost(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={true}
+                                            mandatory={false}
                                             handleChange={() => { }}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.description}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
 
-                                    <Col md="3" className='px-1'>
+                                    <Col md="3">
                                         <NumberFieldHookForm
                                             label={`No. of Labour`}
                                             name={'noOfLabour'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: true,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
@@ -494,11 +589,11 @@ function AddLabourCost(props) {
                                             customClassName={'withBorder'}
                                             errors={errors.noOfLabour}
                                             handleChange={handleNoOfLabour}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
 
-                                    <Col md="3" className='px-1'>
+                                    <Col md="3" >
                                         <NumberFieldHookForm
                                             label={`Absenteeism %`}
                                             name={'absentism'}
@@ -507,7 +602,7 @@ function AddLabourCost(props) {
                                             register={register}
                                             mandatory={false}
                                             rules={{
-                                                required: true,
+                                                required: false,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
                                             defaultValue={''}
@@ -515,13 +610,52 @@ function AddLabourCost(props) {
                                             customClassName={'withBorder'}
                                             handleChange={handleAbsentismChange}
                                             errors={errors.absentism}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
-
-                                    <Col md="3" className='px-1'>
+                                    <Col md="3">
                                         <NumberFieldHookForm
-                                            label={`Labour Rate (Rs/Shift)`}
+                                            label={`No. of Days`}
+                                            name={'NoOfDays'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{
+                                                required: true,
+                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                            }}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.NoOfDays}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                    <Col md="3" >
+                                        <NumberFieldHookForm
+                                            label={`Rate per Person/Month`}
+                                            name={'LabourRatePerMonth'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{
+                                                required: true,
+                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                            }}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.LabourRatePerMonth}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                    <Col md="3">
+                                        <NumberFieldHookForm
+                                            label={`Rate per Person/Annum`}
                                             name={'labourRate'}
                                             Controller={Controller}
                                             control={control}
@@ -535,12 +669,33 @@ function AddLabourCost(props) {
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.Cost}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            errors={errors.labourRate}
+                                            disabled={true}
                                         />
                                     </Col>
 
-                                    <Col md="3" className='px-1'>
+                                    <Col md="3">
+                                        <NumberFieldHookForm
+                                            label={`Rate per Person/Shift`}
+                                            name={'LabourRatePerShift'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{
+                                                required: true,
+                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                            }}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.LabourRatePerShift}
+                                            disabled={true}
+                                        />
+                                    </Col>
+
+                                    <Col md="3">
                                         <NumberFieldHookForm
                                             label={`Working hours`}
                                             name={'workingHours'}
@@ -559,7 +714,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.workingHours}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={true}
                                         />
                                     </Col>
                                     <Col md="3" className='pl-1'>
@@ -579,7 +734,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.efficiency}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={true}
                                         />
                                     </Col>
 
@@ -590,7 +745,7 @@ function AddLabourCost(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: true,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
@@ -600,14 +755,14 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.cycleTime}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
 
-                                    <Col md="3" className='px-1'>
-                                        <TooltipCustom disabledIcon={true} id={`labour-cost`} tooltipClass='weight-of-sheet' width={'300px'} tooltipText={"Labour Cost = (Labour Rate * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time))+(Labour Rate * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time)*Absenteeism %)"} />
+                                    <Col md="3">
+                                        <TooltipCustom disabledIcon={true} id={`labour-cost`} tooltipClass='weight-of-sheet' width={'300px'} tooltipText={"Labour Cost = (Rate per Person/Shift * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time))+(Labour Rate * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time)*Absenteeism %)"} />
                                         <NumberFieldHookForm
-                                            label={`Labour Cost Rs/Pcs`}
+                                            label={`Labour Cost ${currencySource?.label}/Pcs`}
                                             name={'labourCost'}
                                             id={`labour-cost`}
                                             Controller={Controller}
@@ -623,12 +778,12 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.labourCost}
-                                            disabled={CostingViewMode || disableTotalCost||props?.isCostingSummary}
+                                            disabled={CostingViewMode || disableTotalCost||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
                                     <Col md="3" className="mt-1 pt-2 mb-3">
 
-                                        {!CostingViewMode && < button
+                                        {!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ && < button
                                             type="button"
                                             className={"user-btn  pull-left mt-1"}
                                             onClick={addData}
@@ -636,7 +791,7 @@ function AddLabourCost(props) {
                                         >
                                             <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
                                         </button>}
-                                        {!CostingViewMode && <button
+                                        {!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ && <button
                                             type="button"
                                             className={"reset-btn pull-left mt-1 ml5"}
                                             onClick={resetData}
@@ -648,7 +803,7 @@ function AddLabourCost(props) {
                                         }
                                     </Col>
                                 </Row>
-                                {<LabourCost hideAction={CostingViewMode||props?.isCostingSummary} tableData={tableData} editData={editData} />}
+                                {<LabourCost hideAction={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ} tableData={tableData} editData={editData} />}
                                 <Row className='mt-4'>
 
                                     {initialConfiguration?.IsShowCRMHead && <Col md="3" className='pr-1'>
@@ -668,7 +823,7 @@ function AddLabourCost(props) {
                                             options={CRMHeads}
                                             required={false}
                                             handleChange={handleCrmHeadChangeNetLabour}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>}
 
@@ -689,7 +844,7 @@ function AddLabourCost(props) {
                                             options={CRMHeads}
                                             required={false}
                                             handleChange={handleCrmHeadChangeIndirectLabour}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>}
 
@@ -714,10 +869,10 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.indirectLabourCostPercent}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
-                                    <Col md="3" className='px-1'>
+                                    <Col md="3">
                                         <TooltipCustom disabledIcon={true} id={`Indirect-Labour-Cost`} tooltipClass='weight-of-sheet' tooltipText={"Indirect Labour Cost = Total Labour Rate * (Indirect Labour Cost %)"} />
                                         <NumberFieldHookForm
                                             label={`Indirect Labour Cost`}
@@ -757,11 +912,11 @@ function AddLabourCost(props) {
                                             options={CRMHeads}
                                             required={false}
                                             handleChange={handleCrmHeadChangeStaff}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>}
 
-                                    <Col md="3" className='px-1'>
+                                    <Col md="3">
                                         <NumberFieldHookForm
                                             label={`Staff Cost (%)`}
                                             name={'staffCostPercent'}
@@ -782,7 +937,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.staffCostPercent}
-                                            disabled={CostingViewMode||props?.isCostingSummary}
+                                            disabled={CostingViewMode||props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </Col>
                                     <Col md="3" className='pl-1'>
@@ -821,7 +976,7 @@ function AddLabourCost(props) {
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
-                                        disabled={CostingViewMode || props?.isCostingSummary}
+                                        disabled={CostingViewMode || props?.isCostingSummary || IsLockTabInCBCCostingForCustomerRFQ}
                                         onClick={() => { props.closeDrawer('save', tableData) }} >
                                         <div className={"save-icon"}></div>
                                         {'Save'}

@@ -12,12 +12,12 @@ import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, NFRTypeId, PAINTTECHNOLOG
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
 import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator } from '../../../actions/Costing'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { costingInfoContext, IsNFRContext } from '../../CostingDetailStepTwo'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
 import DayTime from '../../../../common/DayTimeWrapper'
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
-const ConsumptionWithUOM = <span>Consumption (lt/ dm<sup>2</sup>)</span>
+const ConsumptionWithUOM = <span>Consumption (ml/ dm<sup>2</sup>)</span>
 const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Effective Date', 'Action']
 
 const FORM_DEFAULTS = {
@@ -42,6 +42,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
     const dispatch = useDispatch()
     const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
+    const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
     const { CostingEffectiveDate, paintCoatList, SurfaceTabData } = useSelector(state => state.costing)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const [calculateState, setCalculateState] = useState(INITIAL_STATE)
@@ -124,6 +125,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                     ...prev,
                     Coats: Data?.Coats,
                     TapeCost: checkForNull(Data?.TapeCost),
+                    PaintConsumptionCost: checkForNull(Data?.PaintConsumptionCost),
                     PaintCost: checkForNull(Data?.PaintCost),
                     TotalPaintCost: checkForNull(Data?.TotalPaintCost)
                 }))
@@ -271,6 +273,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
             LoggedInUserId: loggedInUserId(),
             BaseCostingId: item?.CostingId
         }
+
         dispatch(saveSurfaceTreatmentRawMaterialCalculator(obj, (response) => {
             if (response && response?.status === 200) {
                 Toaster.success("Data saved successfully")
@@ -285,7 +288,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                 //     }
                 // })
                 // dispatch(setSurfaceData(newData, () => { }))
-                setSurfaceData({ paintAndMaskingObj: { TotalPaintCost: calculateState?.TotalPaintCost, PaintCost: calculateState?.PaintCost, TapeCost: calculateState?.TapeCost }, type: 'PaintAndMasking' })
+                setSurfaceData({ paintAndMaskingObj: { TotalPaintCost: calculateState?.TotalPaintCost, PaintCost: calculateState?.PaintCost, TapeCost: calculateState?.TapeCost, PaintConsumptionCost: calculateState?.PaintConsumptionCost }, type: 'PaintAndMasking' })
             }
         }))
     }
@@ -298,11 +301,22 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                 return rmTotal + (rmItem?.NetCost || 0);
             }, 0);
         }, 0);
+
+        const paintConsumptionCost = tableData?.reduce((total, paintData) => {
+            return total + paintData?.RawMaterials?.reduce((rmTotal, rmItem) => {
+
+                return rmTotal + (checkForNull((rmItem?.Consumption || 0) * checkForNull(rmItem?.BasicRatePerUOM || 0)) / 1000);
+            }, 0);
+        }, 0);
+
+
         totalPaintCost = totalNetCost + checkForNull(getTapValue)
         setCalculateState(prev => ({
             ...prev,
             PaintCost: totalNetCost,
+            PaintConsumptionCost: paintConsumptionCost,
             TotalPaintCost: totalPaintCost
+
         }));
         setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(totalPaintCost, NoOfDecimalForPrice))
     }
@@ -310,7 +324,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         // Default consumption to 1 if null/undefined/0 to avoid multiplication by 0
         const safeConsumption = consumption ? checkForNull(consumption) : 1;
         const safeSurfaceArea = checkForNull(surfaceArea);
-        const surfaceAreaAndConsumption = safeSurfaceArea * safeConsumption;
+        const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
         //Rejection Allowance = (Surface Area * Consumption) * Rejection Allowance Percentage / 100
         const rejectionAllowance = surfaceAreaAndConsumption * rejectionAllowancePercentage / 100
         //Net Cost = ((Surface Area * Consumption) + Rejection Allowance) * RM Rate
@@ -342,41 +356,41 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
     }, 300)
 
-    const handleSurfaceAreaForAll = (surfaceArea, parentIndex, childIndex, rm, fieldName, consumption=null) => {
+    const handleSurfaceAreaForAll = (surfaceArea, parentIndex, childIndex, rm, fieldName, consumption = null) => {
         let paintDataListTemp = [...calculateState.Coats];
         if (paintDataListTemp[parentIndex]?.RawMaterials[childIndex]) {
             const excludedRmId = paintDataListTemp[parentIndex]?.RawMaterials[childIndex]?.RawMaterialId
             let allMissingSurfaceArea = false;
-            if(paintDataListTemp && paintDataListTemp.length > 0){
+            if (paintDataListTemp && paintDataListTemp.length > 0) {
                 allMissingSurfaceArea = paintDataListTemp.every(coat =>
-                    coat.RawMaterials.length > 0 && coat.RawMaterials.every(material => 
+                    coat.RawMaterials.length > 0 && coat.RawMaterials.every(material =>
                         material.RawMaterialId === excludedRmId || !("SurfaceArea" in material) || material?.SurfaceArea === 0
                     )
                 );
             }
             if (allMissingSurfaceArea) {
                 paintDataListTemp.forEach((coat, parentIndex) => {
-                  coat.RawMaterials.forEach((rm, childIndex) => {
-                    const baseUpdate = {
-                        ...rm,
-                        SurfaceArea: checkForNull(surfaceArea),
-                    };
-                    const fullUpdate = {
-                        ...baseUpdate,
-                    };
-                    paintDataListTemp[parentIndex].RawMaterials[childIndex] = excludedRmId == rm?.RawMaterialId ? fullUpdate : baseUpdate;
-                    if(fieldName && fieldName === "SurfaceArea"){
-                        setValueTableForm(`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForNull(surfaceArea))
-                        delete errorsTableForm[`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`]
-                        const safeConsumption = consumption ? checkForNull(consumption) : 1;
-                        const safeSurfaceArea = checkForNull(surfaceArea);
-                        const surfaceAreaAndConsumption = safeSurfaceArea * safeConsumption;
-                        const rejectionAllowance = surfaceAreaAndConsumption * checkForNull(rm?.RejectionAllowancePercentage / 100)
-                        const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
-                        setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
-                        setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
-                    }
-                  });
+                    coat.RawMaterials.forEach((rm, childIndex) => {
+                        const baseUpdate = {
+                            ...rm,
+                            SurfaceArea: checkForNull(surfaceArea),
+                        };
+                        const fullUpdate = {
+                            ...baseUpdate,
+                        };
+                        paintDataListTemp[parentIndex].RawMaterials[childIndex] = excludedRmId == rm?.RawMaterialId ? fullUpdate : baseUpdate;
+                        if (fieldName && fieldName === "SurfaceArea") {
+                            setValueTableForm(`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForNull(surfaceArea))
+                            delete errorsTableForm[`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`]
+                            const safeConsumption = consumption ? checkForNull(consumption) : 1;
+                            const safeSurfaceArea = checkForNull(surfaceArea);
+                            const surfaceAreaAndConsumption = safeSurfaceArea * safeConsumption;
+                            const rejectionAllowance = surfaceAreaAndConsumption * checkForNull(rm?.RejectionAllowancePercentage / 100)
+                            const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
+                            setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
+                            setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
+                        }
+                    });
                 });
             }
         }
@@ -409,7 +423,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                     defaultValue={''}
                     customClassName={'withBorder mb-0 paint-and-masking'}
                     errors={errorsTableForm[`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`]}
-                    disabled={ViewMode || CostingViewMode || disabled || IsLocked}
+                    disabled={ViewMode || CostingViewMode || disabled || IsLocked || IsLockTabInCBCCostingForCustomerRFQ}
                     {...(name === 'SurfaceArea' ? {
                         onBlur: (e) => {
                             handleSurfaceAreaForAll(
@@ -516,7 +530,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         childIndex,
                         required: false,
                         disabled: true,
-                        tooltipText: 'Net Cost = ((Part Surface Area * Consumption) + Rejection Allowance) * RM Rate (Currency/UOM)'
+                        tooltipText: 'Net Cost = ((Part Surface Area * (Consumption)/1000) + Rejection Allowance) * RM Rate (Currency/UOM)'
                     })}</td>
                     <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
                     {childIndex === 0 && !ViewMode && !IsLocked && (
@@ -525,7 +539,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                 id={`PaintAndMasking_delete${parentIndex}-${childIndex}`}
                                 className="mr-1 Tour_List_Delete"
                                 variant="Delete"
-                                disabled={ViewMode || CostingViewMode}
+                                disabled={ViewMode || CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                 onClick={() => deleteItem(item, parentIndex)}
                                 title="Delete"
                             />
@@ -576,7 +590,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                         defaultValue=""
                                         customClassName="withBorder"
                                         errors={errorsInitialForm.PaintCoat}
-                                        disabled={ViewMode || CostingViewMode}
+                                        disabled={ViewMode || CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                     />
                                 </Col>
                                 <Col md="4">
@@ -595,7 +609,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                         defaultValue=""
                                         customClassName="withBorder"
                                         errors={errorsInitialForm.RawMaterial}
-                                        disabled={ViewMode || CostingViewMode}
+                                        disabled={ViewMode || CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                     />
                                 </Col>
                                 <Col md="4">
@@ -606,7 +620,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                             className="mr5 mb-2"
                                             icon="plus"
                                             buttonName="Add"
-                                            disabled={CostingViewMode || IsLocked}
+                                            disabled={CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ}
                                         />
                                     </div>
                                 </Col>
@@ -627,7 +641,20 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                             <tbody>
                                 {renderTableRows()}
                                 <tr className="table-footer">
-                                    <td colSpan={TABLE_HEADERS.length - 3} className="text-right">
+                                    <td colSpan={4} className="text-right">
+                                        Total Norm (Consumption) Cost
+                                    </td>
+                                    <td colSpan={2}>
+                                        {/* <TooltipCustom
+                                            id="totalGSM"
+                                            disabledIcon
+                                            tooltipText="Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM..."
+                                        /> */}
+                                        <div className="w-fit" id="totalGSM">
+                                            {checkForDecimalAndNull(calculateState?.PaintConsumptionCost, NoOfDecimalForPrice)}
+                                        </div>
+                                    </td>
+                                    <td colSpan={2} className="text-right">
                                         Total Paint Cost
                                     </td>
                                     <td colSpan={3}>
@@ -637,7 +664,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                             tooltipText="Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM..."
                                         /> */}
                                         <div className="w-fit" id="totalGSM">
-                                            {checkForDecimalAndNull(calculateState?.PaintCost, NoOfDecimalForInputOutput)}
+                                            {checkForDecimalAndNull(calculateState?.PaintCost, NoOfDecimalForPrice)}
                                         </div>
                                     </td>
                                 </tr>
@@ -658,7 +685,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                     defaultValue=""
                                     customClassName="withBorder mb-0"
                                     errors={errorsTableForm.TapeCost}
-                                    disabled={ViewMode || CostingViewMode || IsLocked}
+                                    disabled={ViewMode || CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ}
                                 />
                             </Col>
                             <Col md="4">
@@ -699,7 +726,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                     <Button
                                         id="PaintAndMasking_submit"
                                         type="submit"
-                                        disabled={ViewMode || CostingViewMode}
+                                        disabled={ViewMode || CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                         icon="save-icon"
                                         buttonName="Save"
                                     />

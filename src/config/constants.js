@@ -37,6 +37,8 @@ export const API = {
   getModelTypes: `${BASE_URL}/configuration/select-list-get-costing-model-type`,
   getTechnologySelectList: `${BASE_URL}/configuration/select-list-get-technology`,
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
+  getSegmentSelectList: `${BASE_URL}/nfr/get-selected-segment-list`,
+  getGroupCodeSelectList: `${BASE_URL}/nfr/get-selected-groupcode-list`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
   getPartSelectLists: `${BASE_URL}/masters-part/select-list-component-part-for-convert-to-assembly`,
 
@@ -1062,7 +1064,6 @@ export const API = {
   getPoamStatusSelectList: `${BASE_URL}/configuration/select-list-get-poam-status`,
 
   //PART FAMILY
-  getPartFamilySelectList: `${BASE_URL}/part-family/select-list-part-family`,
 
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
@@ -1198,6 +1199,7 @@ export const API = {
   getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
   rfqGetBestCostingDetails: `${BASE_URL}/rfq-costing/rfq-get-best-costing-details`,
   getAllNfrList: `${BASE_URL}/nfr/get-all-nfr-list`,
+  getCustomerRfqListing: `${BASE_URL}/nfr/get-customer-rfq-list`,
   getNfrPartDetails: `${BASE_URL}/nfr/get-nfr-part-details`,
   getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
   getBOPCostMovement: `${BASE_URL}/reports/get-bought-out-part-cost-movement`,
@@ -1211,6 +1213,7 @@ export const API = {
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
   createCustomerRfq: `${BASE_URL}/nfr/create-customer-rfq`,
+  updateCustomerRfq: `${BASE_URL}/nfr/update-customer-rfq`,
   getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-detail`,
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
@@ -1252,7 +1255,8 @@ export const API = {
   getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
   // pushNfrRmBopOnSap: `${BASE_URL}/nfr/push-nfr-rm-bop-on-sap`,
   deleteNFRDetailAPI: `${BASE_URL}/nfr/delete-nfr`,
-
+  deleteCustomerRfq: `${BASE_URL}/nfr/delete-customer-rfq`,
+  getCustomerRfqDetails: `${BASE_URL}/nfr/get-customer-rfq-details`,
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
   getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
   getCostingGotAndGivenDetails: `${BASE_URL}/reports/get-head-wise-costing-got-and-given-details`,
@@ -1369,6 +1373,8 @@ export const GET_SUPPLIER_SELECTLIST_SUCCESS = 'GET_SUPPLIER_SELECTLIST_SUCCESS'
 export const GET_TECHNOLOGY_SELECTLIST_SUCCESS = 'GET_TECHNOLOGY_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECTLIST_SUCCESS = 'GET_PLANT_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECTLIST_BY_TYPE = 'GET_PLANT_SELECTLIST_BY_TYPE'
+export const GET_SEGMENT_SELECTLIST = 'GET_SEGMENT_SELECTLIST'
+export const GET_GROUP_CODE_SELECTLIST = 'GET_GROUP_CODE_SELECTLIST'
 export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST'
 export const GET_USERS_MASTER_LEVEL_API = 'GET_USERS_MASTER_LEVEL_API'
 
@@ -1828,6 +1834,7 @@ export const SET_CURRENCY_SOURCE = 'SET_CURRENCY_SOURCE'
 export const SET_EXCHANGE_RATE_DATA = 'SET_EXCHANGE_RATE_DATA'
 export const SET_OPERATION_APPLICABILITY_SELECT = 'SET_OPERATION_APPLICABILITY_SELECT'
 export const SET_PROCESS_APPLICABILITY_SELECT = 'SET_PROCESS_APPLICABILITY_SELECT'
+export const SET_OVERALL_APPLICABILITY_TOOL_DATA = 'SET_OVERALL_APPLICABILITY_TOOL_DATA'
 
 //WEIGHT CALCULATION COSTING
 
@@ -2442,6 +2449,7 @@ export const NCC = 'NCC'
 export const WAC = 'WAC'
 export const CBC = 'CBC'
 export const NFR = 'NFR'
+export const CUSTOMER_RFQ = 'Customer RFQ'
 export const PFS1 = 'PFS1'
 export const PFS2 = 'PFS2'
 export const PFS3 = 'PFS3'
@@ -2492,6 +2500,7 @@ export const lOGIN_AUDITS = '/login-audit'
 export const SUPPLIER_APPROVAL_SUMMARY = '/supplier-approval-summary'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
 export const IMPACTED_DATA_LIST = '/impacted-data-list'
+export const CUSTOMER_RFQ_LISTING = '/customer-rfq'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -3408,7 +3417,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.42";
+export const VERSION = "V4.2.48";
 
 
 

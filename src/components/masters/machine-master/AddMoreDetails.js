@@ -1611,13 +1611,13 @@ class AddMoreDetails extends Component {
     let TotalMachineCostWithoutIntDepPerAnnum = 0
 
     if (IsIncludeMachineRateDepreciation) {
-      TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+      TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
       // Calculate without interest and depreciation
-      TotalMachineCostWithoutIntDepPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+      TotalMachineCostWithoutIntDepPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
 
     } else {
 
-      TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+      TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
 
       // Calculate without interest and depreciation  
       TotalMachineCostWithoutIntDepPerAnnum = checkForNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
@@ -3010,9 +3010,21 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
     const { initialConfiguration } = this.props
     let formula;
     if (IsIncludeMachineRateDepreciation) {
-      formula = `(Total Cost(${reactLocalStorage.getObject("baseCurrency")}) + Interest Value + Depreciation Amount(${reactLocalStorage.getObject("baseCurrency")}) + Total Machine Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) + Total Power Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) + Total Labour Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) )/No. of Working Hrs/Annum`;
+      formula = `Machine Rate/${this.state?.UOM?.label ? this.state?.UOM?.label : "UOM"} = (Total Cost(${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Interest Value + Depreciation Amount(${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Total Machine Cost/Annum(${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Total Power Cost/Annum(${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Total Labour Cost/Annum(${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) )/No. of Working Hrs/Annum (${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`;
     } else {
-      formula = `(Interest Value + Depreciation Amount(${reactLocalStorage.getObject("baseCurrency")}) + Total Machine Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) + Total Power Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) + Total Labour Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) )/No. of Working Hrs/Annum`;
+      formula = `Machine Rate/${this.state?.UOM?.label ?this.state?.UOM?.label : "UOM"} = (Interest Value (${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Depreciation Amount(${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Total Machine Cost/Annum(${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Total Power Cost/Annum(${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Total Labour Cost/Annum(${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) )/No. of Working Hrs/Annum (${!this.state.entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`;
     }
 
     switch (UOM.uom) {
@@ -3237,7 +3249,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                           <Col md="3">
                             <Field
                               label="Exchange Rate Source"
-                              name="ExchangeSource"
+                              name="exchangeSource"
                               placeholder="Select"
                               options={this.renderListing("ExchangeSource")}
                               handleChangeDescription={this.handleExchangeRateSource}
@@ -3324,7 +3336,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                                 required={true}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={isEditFlag}
+                                disabled={this.state.isViewFlag}
                               />
                             </div>
                           </div>
@@ -3504,7 +3516,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                         {this.state?.entryType && <Col md="3">
                           <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
                           <Field
-                            name="Currency"
+                            name="currency"
                             type="text"
                             label="Currency"
                             component={searchableSelect}
@@ -3709,7 +3721,8 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                             <Col md="4">
                               <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="RateOfInterestValue" width={'350px'} tooltipText={"Interest Value = (Loan %) / 100 * Total Cost * (Rate of Interest %) / 100"} />
                               <Field
-                                label={`Interest Value`}
+                                label={`Interest Value (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.RateOfInterestValue === 0 ? '-' : "RateOfInterestValue"}
                                 type="text"
                                 placeholder={'-'}
@@ -3841,7 +3854,8 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                             <Col md="3">
                               <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'350px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hrs/Shift * No. of Working days/Annum * (Availability %) / 100'} />
                               <Field
-                                label={`No. of Working Hrs/Annum`}
+                                label={`No. of Working Hrs/Annum (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.NumberOfWorkingHoursPerYear === 0 ? '-' : "NumberOfWorkingHoursPerYear"}
                                 type="text"
                                 id="NumberOfWorkingHoursPerYear"
@@ -4359,7 +4373,12 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                               />
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} width={"350px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost (${reactLocalStorage.getObject("baseCurrency")}) = Annual Maintenance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Consumable Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Insurance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Area Cost (${reactLocalStorage.getObject("baseCurrency")}) + Other Yearly Cost (${reactLocalStorage.getObject("baseCurrency")})`} />
+                              <TooltipCustom disabledIcon={true} width={"350px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost/Annum = Annual Maintenance Amount (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Annual Consumable Amount (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Annual Insurance Amount (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Annual Area Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')}) + Other Yearly Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`} />
 
                               <Field
                                 label={`Total Machine Cost/Annum  (${!entryType ? (this.props?.fieldsObj?.plantCurrency || 'Currency') :
@@ -4805,7 +4824,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                                     {getConfigurationKey().IsShowCRMHead && <th>{`CRM Head`}</th>}
                                     <th>{`Labour Type`}</th>
                                     <th>{`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
-                                    <th>{`No. of People`}</th>
+                                    <th>{`No of People (All Shifts)`}</th>
                                     <th>{`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Action`}</th>
                                   </tr>
@@ -5057,7 +5076,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                             </Col >
 
                             <Col md="12">
-                              <Table className="table border" size="sm" >
+                              <Table className="table border mt-2" size="sm" >
                                 <thead>
                                   <tr>
                                     <th>{`Process (Code)`}</th>

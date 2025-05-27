@@ -21,7 +21,7 @@ import { IdForMultiTechnology, MACHINING } from '../../../config/masterData'
 import { BOUGHTOUTPARTSPACING, COMPONENT_PART, PRODUCT_ID, searchCount } from '../../../config/constants'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
 import { MESSAGES } from '../../../config/message'
-import { getSelectListPartType } from '../../masters/actions/Part'
+import { getPartFamilySelectList, getSelectListPartType } from '../../masters/actions/Part'
 import { ASSEMBLY, DETAILED_BOP_ID } from '../../../config/masterData'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from './TourMessages'
@@ -63,8 +63,11 @@ function CostingSummary(props) {
   const [costingIdExist, setCostingIdExist] = useState(true);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [partType, setPartType] = useState([]);
+  const [partFamily, setPartFamily] = useState([])
   const { t } = useTranslation("Costing")
   const { technologyLabel } = useLabels();
+  const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
+
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
     if (Object.keys(costingData).length > 0 && reactLocalStorage.get('location') === '/costing-summary') {
@@ -87,6 +90,8 @@ function CostingSummary(props) {
     if (reactLocalStorage.get('location') === '/costing-summary') {
       dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
       dispatch(getPartInfo('', () => { }))
+      dispatch(getPartFamilySelectList(() => { }));
+
       dispatch(getSelectListPartType((res) => {
         setPartTypeList(res?.data?.SelectList)
       }))
@@ -108,6 +113,8 @@ function CostingSummary(props) {
         setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setPart(costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setValue('PartType', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
+        setValue('PartFamily', costingData && costingData !== undefined ? { label: costingData.PartFamily, value: costingData.PartFamilyId } : [])
+        setPartFamily(costingData && costingData !== undefined ? { label: costingData.PartFamily, value: costingData.PartFamilyId } : [])
         setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setDisabled(true)
         dispatch(getPartInfo(costingData.PartId, (res) => {
@@ -120,6 +127,7 @@ function CostingSummary(props) {
           setValue('DrawingNumber', Data.DrawingNumber)
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice))
+          setValue('PartFamily', Data?.PartFamily)
           setTechnologyId(Data?.TechnologyId)
           setPartType({ label: Data.PartType, value: Data.PartTypeId })
           setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
@@ -129,6 +137,8 @@ function CostingSummary(props) {
           newValue.partName = Data.PartName
           newValue.partNumber = costingData.PartNumber
           newValue.partId = costingData.PartId
+          newValue.partFamily = costingData.PartFamily
+          newValue.partFamilyId = costingData.PartFamilyId
 
           dispatch(storePartNumber(newValue))
           dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
@@ -190,6 +200,7 @@ function CostingSummary(props) {
       setTechnology(newValue)
       setPart([])
       setPartType([])
+      setPartFamily([])
       setIsTechnologySelected(true)
       dispatch(getPartInfo('', () => { }))
       setEffectiveDate('')
@@ -237,6 +248,14 @@ function CostingSummary(props) {
       })
       return temp
     }
+    if (label === 'PartFamily') {
+      partFamilySelectList && partFamilySelectList.map((item) => {
+        if (item.Value === '--0--') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
   }
 
   /**
@@ -265,6 +284,7 @@ function CostingSummary(props) {
                   setValue('ECNNumber', Data.ECNNumber)
                   setValue('DrawingNumber', Data.DrawingNumber)
                   setValue('RevisionNumber', Data.RevisionNumber)
+                  setValue('PartFamily', Data?.PartFamily)
                   setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice))
                   setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName }))
                   setTechnologyId(Data?.TechnologyId)
@@ -275,6 +295,8 @@ function CostingSummary(props) {
                   newValue.partName = Data.PartName
                   newValue.partNumber = newValue.label
                   newValue.partId = newValue.value
+                  newValue.partFamily = Data?.PartFamily
+                  newValue.partFamilyId = Data?.PartFamilyId
                   // const prNAme = (newValue.label).replace('/', '%2F')
                   setIsLoader(true)
                   dispatch(storePartNumber(newValue))
@@ -315,6 +337,7 @@ function CostingSummary(props) {
               setValue('DrawingNumber', '')
               setValue('RevisionNumber', '')
               setValue('ShareOfBusiness', '')
+              setValue('PartFamily', '')
               setEffectiveDate('')
               dispatch(setCostingViewData([]))
             }
@@ -364,6 +387,7 @@ function CostingSummary(props) {
     setPart([])
     setPartType([])
     setTechnology([])
+    setPartFamily([])
     setDisabled(false)
     setEffectiveDate('')
     dispatch(storePartNumber(''))
@@ -380,6 +404,7 @@ function CostingSummary(props) {
       RevisionNumber: '',
       ShareOfBusiness: '',
       PartType: '',
+      PartFamily: '',
     })
   }
 
@@ -407,7 +432,7 @@ function CostingSummary(props) {
     const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && partName !== resultInput) {
       setInputLoader(true)
-      const res = await getPartSelectListByTechnology(technology.value, resultInput, partType?.value);
+      const res = await getPartSelectListByTechnology(technology.value, resultInput, partType?.value, partFamily?.value);
       setInputLoader(false)
       setpartName(resultInput)
       let partDataAPI = res?.data?.SelectList
@@ -431,7 +456,9 @@ function CostingSummary(props) {
     }
 
   }
-
+  const handlePartFamily = (e) => {
+    setPartFamily(e)
+  }
   const loaderObj = { isLoader: inputLoader }
   return (
     <>
@@ -513,6 +540,7 @@ function CostingSummary(props) {
                           disabled={(technology.length === 0) ? true : false || disabled}
                         />
                       </Col>
+
                       <Col className="col-md-15">
 
                         <AsyncSearchableSelectHookForm
@@ -529,8 +557,8 @@ function CostingSummary(props) {
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(partType.length === 0) ? true : false || disabled}
-                          NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN }
+                          disabled={partType.length === 0 ? true : false || disabled}
+                          NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                         />
 
                         {/* <SearchableSelectHookForm
@@ -549,7 +577,26 @@ function CostingSummary(props) {
                           disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
                         /> */}
                       </Col>
+                      {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <Col className="col-md-15">
 
+                        <TextFieldHookForm
+                          label="Part Family"
+                          name={"PartFamily"}
+                          // title={titleObj.partFamilyTitle}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          rules={{ required: false }}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          errors={errors.PartFamily}
+                          disabled={true}
+                          placeholder="-"
+                        />
+                      </Col>}
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           title={titleObj.partNameTitle}
