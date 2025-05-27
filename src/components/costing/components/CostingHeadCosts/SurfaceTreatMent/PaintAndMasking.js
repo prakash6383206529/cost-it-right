@@ -219,7 +219,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         let paintCoatSequence = calculateState?.Coats?.length + 1
         let rawMaterialSequence = data?.RawMaterial?.length + 1
         const surfaceArea = calculateState?.Coats?.[0]?.RawMaterials?.[0]?.SurfaceArea ?? '';
-        data?.RawMaterial?.map((item, index) => {
+        const processedRawMaterials = data?.RawMaterial?.map((item, index) => {
             const safeConsumption = 1;
             const safeSurfaceArea = checkForNull(surfaceArea);
             const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
@@ -229,22 +229,28 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
             setValueTableForm(`RejectionAllowancePercentage${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
             setValueTableForm(`RejectionAllowance${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
             setValueTableForm(`NetCost${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
-            return null
+            // return null
+            return {
+                ...item,
+                RawMaterialSequence: rawMaterialSequence,
+                NetCost: netCost,
+            };
         })
-        setCalculateState(prev => ({
-            ...prev,
-            Coats: [...prev.Coats, {
+
+        const updatedCoats = [
+            ...(calculateState?.Coats ?? []),
+            {
                 PaintCoat: data?.PaintCoat?.label,
                 PaintCoatSequence: paintCoatSequence,
-                RawMaterials: data?.RawMaterial?.map(item => ({
-                    ...item,
-                    RawMaterialSequence: rawMaterialSequence
-                }))
-            }]
-        }))
+                RawMaterials: processedRawMaterials,
+            }
+        ];
 
-
-
+        setCalculateState(prev => ({
+            ...prev,
+            Coats: updatedCoats,
+        }));
+        calculateTotalCost(updatedCoats);
         resetInitialForm({
             PaintCoat: null,
             RawMaterial: null
@@ -349,7 +355,6 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
 
             // Calculate total NetCost across all items
             calculateTotalCost(paintDataListTemp)
-
         }
 
         setCalculateState(prev => ({
@@ -376,22 +381,20 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
             if (allMissingSurfaceArea) {
                 paintDataListTemp.forEach((coat, parentIndex) => {
                     coat.RawMaterials.forEach((rm, childIndex) => {
+                        const safeConsumption = consumption ? checkForNull(consumption) : 1;
+                        const safeSurfaceArea = checkForNull(surfaceArea);
+                        const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
+                        const rejectionAllowance = checkForNull(surfaceAreaAndConsumption) * checkForNull(rm?.RejectionAllowancePercentage / 100)
+                        const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
                         const baseUpdate = {
                             ...rm,
                             SurfaceArea: checkForNull(surfaceArea),
+                            NetCost: netCost,
                         };
-                        const fullUpdate = {
-                            ...baseUpdate,
-                        };
-                        paintDataListTemp[parentIndex].RawMaterials[childIndex] = excludedRmId == rm?.RawMaterialId ? fullUpdate : baseUpdate;
+                        paintDataListTemp[parentIndex].RawMaterials[childIndex] = baseUpdate;
                         if (fieldName && fieldName === "SurfaceArea") {
                             setValueTableForm(`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForNull(surfaceArea))
                             delete errorsTableForm[`${fieldName}${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`]
-                            const safeConsumption = consumption ? checkForNull(consumption) : 1;
-                            const safeSurfaceArea = checkForNull(surfaceArea);
-                            const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
-                            const rejectionAllowance = surfaceAreaAndConsumption * checkForNull(rm?.RejectionAllowancePercentage / 100)
-                            const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
                             setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rejectionAllowance, NoOfDecimalForInputOutput))
                             setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
                         }
@@ -399,6 +402,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                 });
             }
         }
+        calculateTotalCost(paintDataListTemp);
     }
 
     const renderInputBox = ({ item, name, coat, parentIndex, childIndex, required, disabled, onHandleChange, tooltipText = '' }) => {
