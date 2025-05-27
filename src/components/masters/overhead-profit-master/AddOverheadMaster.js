@@ -562,7 +562,7 @@ const AddOverheadMaster = (props) => {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Overhead Details
+                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Overhead
                       {/* {!isViewMode && <TourWrapper
                         buttonSpecificProp={{ id: "Add_Overhead_Form" }}
                         stepsSpecificProp={{

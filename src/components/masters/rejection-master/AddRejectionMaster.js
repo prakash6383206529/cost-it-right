@@ -524,7 +524,7 @@ const AddRejectionMaster = (props) => {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Rejection Details
+                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Rejection
                       {/* {!isViewMode && <TourWrapper
                         buttonSpecificProp={{ id: "Add_Overhead_Form" }}
                         stepsSpecificProp={{
