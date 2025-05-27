@@ -93,7 +93,7 @@ function AssemblyTechnology(props) {
                             checkForNull(costPerPieceTotal) +
                             checkForNull(CostPerAssemblyBOPTotal) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
-                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost)
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) 
 
 
                         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
@@ -103,7 +103,7 @@ function AssemblyTechnology(props) {
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
-                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost)
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
 
                         tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalLabourCost =
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
@@ -346,7 +346,7 @@ function AssemblyTechnology(props) {
             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost) +
             checkForNull(totalBOPCost) +
             (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
-                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost))
+                checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) )
        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost) +
             checkForNull(totalBOPCost) +
@@ -354,7 +354,7 @@ function AssemblyTechnology(props) {
                 checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost)) +
             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
-            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost)
+            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
 
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
@@ -516,11 +516,11 @@ function AssemblyTechnology(props) {
 
                         {(item?.PartType === 'Assembly' && (subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost ||
                             subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost ||
-                            subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost || checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost) || subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost)) ?
+                            subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost ||  subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetBoughtOutPartCost)) ?
 
                             <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                                 <span class="tooltiptext">
-                                    {`Operation Cost/Assembly:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost + subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost, initialConfiguration?.NoOfDecimalForPrice) : '0'}`}
+                                    {`Operation Cost/Assembly:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost, initialConfiguration?.NoOfDecimalForPrice) : '0'}`}
                                     <br></br>
                                     {`Process Cost/Assembly:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost, initialConfiguration?.NoOfDecimalForPrice) : '0'}`}
                                     <br></br>
