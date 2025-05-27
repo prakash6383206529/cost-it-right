@@ -5,7 +5,7 @@ import { Col, Container, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation, calculateScrapWeight, calculatePercentage } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation, calculateScrapWeight, calculatePercentage, getConfigurationKey } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
@@ -16,37 +16,24 @@ import { maxLength7, nonZero } from '../../../../../helper/validation'
 import { useLabels } from '../../../../../helper/core'
 import TooltipCustom from '../../../../common/Tooltip'
 import { Drawer } from '@material-ui/core'
-import { getIccCalculation } from '../../../actions/Costing'
+import { getIccCalculation, saveIccCalculation } from '../../../actions/Costing'
 import TableRenderer from '../../../../common/TableRenderer'
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo'
+import InventoryDetails from './InventoryTable'
+import Button from '../../../../layout/Button'
 
 function IccCalculator(props) {
-    const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, item, CostingViewMode } = props
-    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
-    const { finishWeightLabel } = useLabels()
+    const { CostingViewMode } = props
     const headerCosts = useContext(netHeadCostContext);
     const costData = useContext(costingInfoContext);
     const { SurfaceTabData, PackageAndFreightTabData, IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData } = useSelector(state => state.costing)
-
-
-    const defaultValues = {
-        StripWidth: WeightCalculatorRequest && WeightCalculatorRequest?.StripWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.StripWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        Thickness: WeightCalculatorRequest && WeightCalculatorRequest?.Thickness !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
-        Pitch: WeightCalculatorRequest && WeightCalculatorRequest?.Pitch !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Pitch, localStorage.NoOfDecimalForInputOutput) : '',
-        Cavity: WeightCalculatorRequest && WeightCalculatorRequest?.Cavity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Cavity, localStorage.NoOfDecimalForInputOutput) : 1,
-        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest?.NetSurfaceArea !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
-        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest?.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
-        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest?.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
-        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '',
-        scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
-    }
-
+    const { costingData, IsCalculatorExist } = useSelector(state => state.costing)
+    console.log(IsCalculatorExist, 'IsCalculatorExist')
     const {
         register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
-            defaultValues: defaultValues,
+            defaultValues: '-',
         })
 
     const [state, setState] = useState({
@@ -54,6 +41,8 @@ function IccCalculator(props) {
         wipCompositionMethodDetails: [],
         annualInterestPercent: 0,
         totalWipCost: 0,
+        totalIccReceivable: 0,
+        calculatorData: {}
     })
 
 
@@ -65,25 +54,51 @@ function IccCalculator(props) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(getIccCalculation(props.iccInterestRateId, props.costingId, (response) => {
+
+        dispatch(getIccCalculation(props.iccInterestRateId, !IsCalculatorExist ? null : costingData?.CostingId, (response) => {
             let data = response?.data?.Data
+            console.log(data, 'data')
             setValue("InterestOnReceivables", data?.CreditBasedAnnualICCPercent)
-            setState({
+            setValue('MarkupFactor', data?.MarkupFactor)
+            setState(prev => ({
+                ...prev,
                 inventoryTypeDetails: data?.CostingInterestRateInventoryTypeDetails,
                 wipCompositionMethodDetails: data?.CostingInterestRateWIPCompositionMethodDetails,
-                annualInterestPercent: data?.CreditBasedAnnualICCPercent
-            })
-            checkInventoryApplicability(data?.CostingInterestRateWIPCompositionMethodDetails,data?.CreditBasedAnnualICCPercent)
+                annualInterestPercent: data?.CreditBasedAnnualICCPercent,
+                calculatorData: data
+            }))
+            checkInventoryApplicability(data?.CostingInterestRateWIPCompositionMethodDetails, data?.CreditBasedAnnualICCPercent)
         }))
     }, [])
 
     useEffect(() => {
-        setState(prev => ({
-            ...prev,
-            totalWipCost: state.wipCompositionMethodDetails?.reduce((acc, item) => acc + item.ApplicabilityCost, 0)
-        }))
+        if (state?.wipCompositionMethodDetails?.length > 0) {
+            let totalWipCost = state.wipCompositionMethodDetails?.reduce((acc, item) => acc + item.ApplicabilityCost, 0);
+            let totalIccReceivable = state.wipCompositionMethodDetails?.reduce((acc, item) => acc + item.NetCost, 0);
+            setState(prev => ({
+                ...prev,
+                totalWipCost: totalWipCost,
+                totalIccReceivable: totalIccReceivable
+            }))
+            calculateInventoryCarryingCost(totalIccReceivable, 0)
+            const updatedInventoryTypeDetails = state.inventoryTypeDetails?.map(item => {
+                if (item?.InventoryType === 'WIP') {
+                    return {
+                        ...item,
+                        ApplicabilityCost: totalWipCost,
+                        NetCost: checkForNull((totalWipCost * item?.NumberOfDays * state?.annualInterestPercent) / 36500)
+                    };
+                }
+                return item;
+            });
+
+            setState(prev => ({
+                ...prev,
+                inventoryTypeDetails: updatedInventoryTypeDetails
+            }));
+        }
     }, [state.wipCompositionMethodDetails])
-    console.log(state?.totalWipCost,'state?.totalWipCost');
+
     /**
      * @method checkInventoryApplicability
      * @description Calculates inventory applicability and net costs
@@ -94,8 +109,8 @@ function IccCalculator(props) {
         }
         // Calculate net raw materials cost
         const NetRawMaterialsCost = props.isNetWeight && !costData?.IsAssemblyPart && !props.isPartApplicability
-            ? (JSON.parse(sessionStorage.getItem('costingArray'))?.[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate || 0) * 
-              (JSON.parse(sessionStorage.getItem('costingArray'))?.[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight || 0)
+            ? (JSON.parse(sessionStorage.getItem('costingArray'))?.[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate || 0) *
+            (JSON.parse(sessionStorage.getItem('costingArray'))?.[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight || 0)
             : headerCosts.NetRawMaterialsCost;
 
 
@@ -104,9 +119,9 @@ function IccCalculator(props) {
             const getApplicabilityCost = () => {
                 switch (item.InventoryType) {
                     case 'RM':
-                        return NetRawMaterialsCost 
+                        return NetRawMaterialsCost
                     case 'BOP':
-                        return headerCosts.NetBoughtOutPartCost 
+                        return headerCosts.NetBoughtOutPartCost
                     case 'Paint':
                         return SurfaceTabData[0]?.CostingPartDetails?.TotalPaintCost;
                     case 'Packaging':
@@ -119,7 +134,7 @@ function IccCalculator(props) {
             };
 
             const applicabilityCost = getApplicabilityCost();
-            const netCost = item.InventoryType === 'default' 
+            const netCost = item.InventoryType === 'default'
                 ? checkForNull(item?.NetCost)
                 : checkForNull((applicabilityCost * item?.InterestDays * annualInterestPercent) / 36500);
 
@@ -143,48 +158,50 @@ function IccCalculator(props) {
 
 
     /**
-     * @method renderListing
-     * @description Used show listing of unit of measurement
-     */
-    const renderListing = (label) => {
-        const temp = []
-
-
-    }
-
-
-    /**
      * @method cancel
      * @description used to Reset form
      */
     const cancel = () => {
-        props.closeCalculator()
+        props.closeCalculator(state?.calculatorData, IsCalculatorExist)
     }
 
     /**
      * @method onSubmit
      * @description Used to Submit the form
      */
-    const onSubmit = debounce(handleSubmit((values) => {
-
+    const onSubmit = debounce(((values) => {
+        let formData = {
+            "IccDetailId": null,
+            "BaseCostingId": costingData?.CostingId,
+            "LoggedInUserId": loggedInUserId(),
+            "CreditBasedAnnualICCPercent": values?.InterestOnReceivables,
+            "MarkupFactor": values?.MarkupFactor,
+            "ICCReceivableFromSupplierCost": state?.totalIccReceivable,
+            "ICCPayableToSupplierCost": state?.totalIccPayable,
+            "NetICC": values?.InventoryCarryingCost,
+            "CostingInterestRateInventoryTypeDetails": state?.inventoryTypeDetails,
+            "CostingInterestRateWIPCompositionMethodDetails": state?.wipCompositionMethodDetails,
+            "InterestRateId": props.iccInterestRateId
+        }
+        dispatch(saveIccCalculation(formData, (response) => {
+            setState(prev => ({ ...prev, calculatorData: formData }))
+            props.closeCalculator(formData, true)
+        }))
     }), 500)
 
-    const handleInventoryDayTypeChange = (value) => {
-        console.log("value", value)
-    }
+
     const handleApplicabilityCostChange = (e, data) => {
         let val = checkForNull(e.target.value);
         let netCost = 0;
         const updatedwipCompositionMethodDetails = state.wipCompositionMethodDetails.map(item => {
             if (item.InventoryType === data?.InventoryType) {
-                netCost = checkForNull((val * item?.InterestDays * state?.annualInterestPercent)/365);
-                console.log(netCost,'netCost');
+                netCost = checkForNull((val * item?.InterestDays * state?.annualInterestPercent) / 36500);
                 return { ...item, ApplicabilityCost: val, NetCost: netCost };
             }
             return item;
         });
         setState(prev => ({ ...prev, wipCompositionMethodDetails: updatedwipCompositionMethodDetails }));
-        checkInventoryApplicability(updatedwipCompositionMethodDetails,state?.annualInterestPercent)
+        checkInventoryApplicability(updatedwipCompositionMethodDetails, state?.annualInterestPercent)
     }
     const wipCompositionColumns = [
         {
@@ -224,32 +241,15 @@ function IccCalculator(props) {
             key: "NetCost",
             identifier: "cost",
         },
-
-
     ]
-    const inventoryTypeColumns = [
-        {
-            columnHead: "Inventory Day Type",
-            key: "InventoryType",
-            identifier: "text",
-        },
-        {
-            columnHead: "No of Days",
-            key: "NumberOfDays",
-            identifier: "inputOutput",
-        },
-        {
-            columnHead: "Applicabilty Cost",
-            key: "ApplicabilityCost",
-            identifier: "cost",
-        },
-        {
-            columnHead: "Net Cost",
-            key: "NetCost",
-            identifier: "cost",
-        }
-    ]
-
+    const calculateInventoryCarryingCost = (totalIccReceivable, totalIccPayable) => {
+        let totalInventoryCarryingCost = checkForNull(totalIccPayable - totalIccReceivable);
+        setValue('InventoryCarryingCost', checkForDecimalAndNull(totalInventoryCarryingCost, getConfigurationKey()?.NoOfDecimalForPrice));
+        setState(prev => ({ ...prev, totalIccPayable: totalIccPayable }));
+    }
+    const setInventoryDetail = (data) => {
+        setState(prev => ({ ...prev, inventoryTypeDetails: data }));
+    }
     return (
 
         <div>
@@ -301,48 +301,49 @@ function IccCalculator(props) {
                                             errors={errors}
                                             isViewMode={CostingViewMode}
                                             setValue={setValue}
+                                            isWipInventory={true}
+                                            totalIccReceivable={state?.totalIccReceivable}
                                         />
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col md="3">
-                                        <TextFieldHookForm
-                                            label={`Markup Factor`}
-                                            name={'MarkupFactor'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={false}
-                                            rules={{
-                                                required: false,
-                                                validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
-                                            }}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.MarkupFactor}
-                                            disabled={CostingViewMode ? true : false}
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md="12">
-                                        <TableRenderer
-                                            data={state.inventoryTypeDetails}
-                                            columns={inventoryTypeColumns}
-                                            register={register}
-                                            Controller={Controller}
-                                            control={control}
-                                            errors={errors}
-                                            isViewMode={CostingViewMode}
-                                            setValue={setValue}
-                                        />
-                                    </Col>
+                                    <InventoryDetails
+                                        register={register}
+                                        Controller={Controller}
+                                        control={control}
+                                        errors={errors}
+                                        isViewMode={CostingViewMode}
+                                        setValue={setValue}
+                                        inventoryTypeDetails={state?.inventoryTypeDetails}
+                                        totalWipCost={state?.totalWipCost}
+                                        annualInterestPercent={state.annualInterestPercent}
+                                        getValues={getValues}
+                                        totalIccReceivable={state?.totalIccReceivable}
+                                        calculateInventoryCarryingCost={calculateInventoryCarryingCost}
+                                        wipCompositionMethodDetails={state?.wipCompositionMethodDetails}
+                                        setInventoryDetail={setInventoryDetail}
+                                    />
                                 </Row>
 
-                                {/* <NpvCost showAddButton={false} tableData={tableData} hideAction={false} editData={editData} /> */}
                             </div >
+                            <Row>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        name="InventoryCarryingCost"
+                                        label="Inventory Carrying Cost"
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        placeholder="-"
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        errors={errors.InventoryCarryingCost}
+                                        disabled={true}
+                                        defaultValue={''}
+                                    />
+                                </Col>
+
+                            </Row >
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                     <button
@@ -351,6 +352,17 @@ function IccCalculator(props) {
                                         onClick={cancel || props?.disabled} >
                                         <div className={'cancel-icon'}></div> {'Cancel'}
                                     </button>
+                                    <button
+                                        id="AddOperation_Save"
+                                        type="submit"
+                                        className="user-btn mr5 save-btn"
+                                        disabled={CostingViewMode}
+                                        onClick={handleSubmit(onSubmit)}
+                                    >
+                                        <div className={"save-icon"}></div>
+                                        {"Save"}
+                                    </button>
+
 
                                 </div>
                             </Row>

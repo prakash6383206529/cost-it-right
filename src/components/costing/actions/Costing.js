@@ -81,7 +81,8 @@ import {
   GET_PAINT_COAT_LIST,
   GET_TOOL_TAB_DATA,
   SET_BOP_REMARK,
-  SET_OVERALL_APPLICABILITY_TOOL_DATA
+  SET_OVERALL_APPLICABILITY_TOOL_DATA,
+  SET_IS_CALCULATOR_EXIST
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -3404,3 +3405,16 @@ export function setOverallApplicabilityToolData(data) {
   }
 }
 
+
+/**
+ * @method setIsCalculatorExist
+ * @description SET OVERHEAD PROFIT TAB DATA  
+ */
+export function setIsCalculatorExist(isExist) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_IS_CALCULATOR_EXIST,
+      payload: isExist,
+    });
+  }
+};

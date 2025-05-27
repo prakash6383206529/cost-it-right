@@ -33,7 +33,8 @@ import {
   GET_PAINT_COAT_LIST,
   GET_TOOL_TAB_DATA,
   SET_BOP_REMARK,
-  SET_OVERALL_APPLICABILITY_TOOL_DATA
+  SET_OVERALL_APPLICABILITY_TOOL_DATA,
+  SET_IS_CALCULATOR_EXIST
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -947,6 +948,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         overallApplicabilityToolData: action.payload,
       }
+      case SET_IS_CALCULATOR_EXIST:
+        return {
+          ...state,
+          loading: false,
+          IsCalculatorExist: action.payload
+        }
     default:
       return state
   }

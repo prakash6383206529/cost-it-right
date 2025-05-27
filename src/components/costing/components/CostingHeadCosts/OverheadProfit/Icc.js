@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
-import { getIccDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
+import { getIccDataByModelType, gridDataAdded, isOverheadProfitDataChange, setIsCalculatorExist, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { CBCTypeId, CRMHeads, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
@@ -44,15 +44,19 @@ function Icc(props) {
     const [errorMessage, setErrorMessage] = useState('')
     const [isNetWeight, setIsNetWeight] = useState((ICCApplicabilityDetail?.IsICCCalculationOnNetWeight) ? (ICCApplicabilityDetail?.IsICCCalculationOnNetWeight) : false)
     const [totalOverHeadAndProfit, setTotalOverHeadAndProfit] = useState((OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) ? (OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) : 0)
-    const { CostingEffectiveDate } = useSelector(state => state.costing)
+    const { CostingEffectiveDate, IsCalculatorExist } = useSelector(state => state.costing)
     const [state, setState] = useState({
         iccDetails: ICCApplicabilityDetail?.ICCCostingApplicabilityDetails,
         modelType: { label: InventoryObj?.ICCModelType, value: InventoryObj?.ICCModelTypeId },
         isApplyInventoryDay: ICCApplicabilityDetail?.IsApplyInventoryDay,
         iccMethod: InventoryObj?.ICCMethod,
         openCalculatorIcc: false,
+        totalIccPayable: ICCApplicabilityDetail?.ICCPayableToSupplierCost,
+        totalIccReceivable: ICCApplicabilityDetail?.ICCReceivableFromSupplierCost,
+        totalIccNetCost: CostingInterestRateDetail?.NetICC,
+        markUpFactor: ICCApplicabilityDetail?.MarkupFactor
     })
-
+    
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData?.CostingTypeId === WACTypeId)
 
@@ -82,7 +86,6 @@ function Icc(props) {
             }));
         }))
     }, [])
-
 
     /**
      * @method onPressInventory
@@ -214,10 +217,10 @@ function Icc(props) {
                             cost = ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
                             break;
                         case 'Overhead':
-                            cost = checkForNull(TopHeaderValues.OverheadCost)
+                            cost = checkForNull(includeOverHeadProfitIcc ? TopHeaderValues.OverheadCost : 0)
                             break;
                         case 'Profit':
-                            cost = checkForNull(TopHeaderValues.ProfitCost)
+                            cost = checkForNull(includeOverHeadProfitIcc ? TopHeaderValues.ProfitCost : 0)
                             break;
                         case 'Fixed':
                             cost = item.Cost;
@@ -254,20 +257,20 @@ function Icc(props) {
 
 
     useEffect(() => {
-        checkInventoryApplicability(ICCapplicability?.label)
+        checkInventoryApplicability(state?.iccDetails, state?.isApplyInventoryDay)
     }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight, includeOverHeadProfitIcc, totalOverHeadAndProfit, includeToolCostIcc]);
-
 
     useEffect(() => {
         // Only update if either InventoryObj or iccDetails have meaningful changes
         const hasChanges = JSON.stringify(InventoryObj) !== JSON.stringify(tempInventoryObj) ||
             JSON.stringify(state.iccDetails) !== JSON.stringify(tempInventoryObj?.ICCCostingApplicabilityDetails);
-
+        console.log(hasChanges, 'hasChanges')
         if (hasChanges && !CostingViewMode) {
             const tempObj = {
                 ...InventoryObj,
                 ICCCostingApplicabilityDetails: state.iccDetails
             }
+            console.log(tempObj, 'tempObj')
             props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
         }
     }, [InventoryObj, state.iccDetails, tempInventoryObj, CostingViewMode])
@@ -318,9 +321,16 @@ function Icc(props) {
             iccDetails: [],
             isApplyInventoryDay: false,
             modelType: ModelTypeValues,
+            totalIccPayable: 0,
+            totalIccReceivable: 0,
+            totalIccNetCost: 0
         }))
         setValue('ICCMethod', '')
         setValue('InventoryDayType', '')
+        setValue('totalIccPayable', 0)
+        setValue('totalIccReceivable', 0)
+        setValue('totalIccNetCost', 0)
+        dispatch(setIsCalculatorExist(false))
         if (ModelTypeValues && ModelTypeValues !== '' && ModelTypeValues.value !== undefined) {
             const reqParams = {
                 ModelTypeId: ModelTypeValues.value,
@@ -437,6 +447,35 @@ function Icc(props) {
         setState(prev => ({
             ...prev,
             openCalculatorIcc: !state.openCalculatorIcc
+        }))
+    }
+    const closeCalculator = (formData, isCalculatorExist) => {
+        if (isCalculatorExist) {
+            setState(prev => ({
+                ...prev,
+                totalIccPayable: formData?.ICCPayableToSupplierCost,
+                totalIccReceivable: formData?.ICCReceivableFromSupplierCost,
+                totalIccNetCost: formData?.NetICC,
+                markUpFactor: formData?.MarkupFactor
+            }))
+            setValue('totalIccPayable', checkForDecimalAndNull(formData?.ICCPayableToSupplierCost, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('totalIccReceivable', checkForDecimalAndNull(formData?.ICCReceivableFromSupplierCost, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('totalIccNetCost', checkForDecimalAndNull(formData?.NetICC, getConfigurationKey()?.NoOfDecimalForPrice))
+            setInventoryObj({
+                ...InventoryObj,
+                NetICC: formData?.NetICC,
+                ICCPayableToSupplierCost: formData?.ICCPayableToSupplierCost,
+                ICCReceivableFromSupplierCost: formData?.ICCReceivableFromSupplierCost,
+                MarkupFactor: formData?.MarkupFactor
+            })
+            dispatch(setIsCalculatorExist(true))
+            
+        } else {
+            dispatch(setIsCalculatorExist(false))
+        }
+        setState(prev => ({
+            ...prev,
+            openCalculatorIcc: false
         }))
     }
 
@@ -568,18 +607,64 @@ function Icc(props) {
                                         defaultValue={InventoryObj?.CreditBasedAnnualICCPercent}
                                     />
                                 </Col>)}
-                        {state.iccMethod === 'Credit Based' && <Col md="3">
-                            <span className="head-text">Calculator ICC</span>
-                            <div>
-                                <button
-                                    id={`calculatorIcc`}
-                                    className={`CalculatorIcon cr-cl-icon calculatorIcc`}
-                                    type={'button'}
-                                    onClick={() => toggleWeightCalculator()}
-                                    disabled={CostingViewMode}
-                                />
-                            </div>
-                        </Col>}
+                        {state.iccMethod === 'Credit Based' &&
+                            <>
+                                <Col md="3">
+                                    <span className="head-text">Calculator ICC</span>
+                                    <div>
+                                        <button
+                                            id={`calculatorIcc`}
+                                            className={`CalculatorIcon cr-cl-icon calculatorIcc`}
+                                            type={'button'}
+                                            onClick={() => toggleWeightCalculator()}
+                                            disabled={CostingViewMode}
+                                        />
+                                    </div>
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        name="totalIccPayable"
+                                        label="ICC Payable To Supplier"
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        placeholder="-"
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        disabled={true}
+                                        defaultValue={state.totalIccPayable}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        name="totalIccReceivable"
+                                        label="ICC Receivable From Supplier"
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        placeholder="-"
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        disabled={true}
+                                        defaultValue={state.totalIccReceivable}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        name="totalIccNetCost"
+                                        label="ICC Net Cost"
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        placeholder="-"
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        disabled={true}
+                                        defaultValue={state.totalIccNetCost}
+                                    />
+                                </Col>
+                            </>
+                        }
 
                     </Row>
                     {state.iccMethod !== 'Credit Based' && <Row>
@@ -593,6 +678,7 @@ function Icc(props) {
                                 errors={errors}
                                 isViewMode={CostingViewMode}
                                 setValue={setValue}
+                                includeOverHeadProfitIcc={includeOverHeadProfitIcc}
                             />
                         </Col>
                     </Row>}
@@ -640,7 +726,7 @@ function Icc(props) {
                     {state.openCalculatorIcc && <IccCalculator
                         anchor={`right`}
                         isOpen={state.openCalculatorIcc}
-                        closeCalculator={() => setState(prev => ({ ...prev, openCalculatorIcc: false }))}
+                        closeCalculator={closeCalculator}
                         rmRowData={state.iccDetails}
                         CostingViewMode={CostingViewMode}
                         iccInterestRateId={ICCInterestRateId}
