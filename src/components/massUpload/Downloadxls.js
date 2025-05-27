@@ -75,6 +75,21 @@ export const checkRM_Process_OperationConfigurable = (excelData) => {
                 }
             }
         }
+        if (getConfigurationKey().IsBasicRateAndCostingConditionVisible === false) {
+            if (el.value === 'CostingCondition') return false
+            if (el.value === 'TypeForCostingCondition') return false
+            if (el.value === 'QuantityForCostingCondition') return false
+            if (el.value === 'ApplicabilityForCostingCondition') return false
+            if (el.value === 'PercentageOrCostForCostingCondition') return false
+        }
+        // if IsShowSourceVendorInRawMaterial coming true then no need to show these 2 fields
+        if (getConfigurationKey().IsShowSourceVendorInRawMaterial) {
+            if (el.value === 'Source') return false
+            if (el.value === 'SourceLocation') return false
+        }
+        if (getConfigurationKey().IsSourceExchangeRateNameVisible === false) {
+            if (el.value === 'ExchangeRateSourceName') return false
+        }
         return true; // Include the element if none of the conditions above are met
     });
 }
@@ -188,8 +203,23 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
         if (getConfigurationKey().IsSAPCodeRequired === false) {
             if (el.value === 'SAPPartNumber') return false;
         }
+        if (getConfigurationKey().IsBasicRateAndCostingConditionVisible === false) {
+            if (el.value === 'CostingCondition') return false
+            if (el.value === 'TypeForCostingCondition') return false
+            if (el.value === 'QuantityForCostingCondition') return false
+            if (el.value === 'ApplicabilityForCostingCondition') return false
+            if (el.value === 'PercentageOrCostForCostingCondition') return false
+        }
         if (!(getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily)) {
             if (el.value === 'PartFamilyCode') return false;
+        }
+        // if IsShowSourceVendorInRawMaterial coming true then no need to show these 2 fields
+        if (getConfigurationKey().IsShowSourceVendorInRawMaterial) {
+            if (el.value === 'Source') return false
+            if (el.value === 'SourceLocation') return false
+        }
+        if (getConfigurationKey().IsSourceExchangeRateNameVisible === false) {
+            if (el.value === 'ExchangeRateSourceName') return false
         }
         return true;
     })
@@ -345,7 +375,7 @@ class Downloadxls extends React.Component {
     renderZBCSwitch = (master) => {
         let updatedLabels
         switch (master) {
-            case 'RM':
+            case 'RM':                
                 if (!this.props.isImport) {
                     const localizedRMHeaders = this.localizeHeaders(RMDomesticZBC);
                     return this.returnExcelColumn(checkRM_Process_OperationConfigurable(localizedRMHeaders), RMDomesticZBCTempData, true);

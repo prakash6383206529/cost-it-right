@@ -297,7 +297,7 @@ function AddAssemblyOperation(props) {
                   <div className="cr-process-costwrap multi-technology-container">
                     <Row className="cr-innertool-cost">
 
-                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${partType ? checkForNull(operationCostAssemblyTechnology)+checkForNull(weldingCostAssemblyTechnology) : checkForNull(operationCost)+checkForNull(weldingCost)}`}</span></Col>
+                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${partType ? checkForNull(operationCostAssemblyTechnology) : checkForNull(operationCost)}`}</span></Col>
                       <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{``}</span></Col>
                     </Row>
 

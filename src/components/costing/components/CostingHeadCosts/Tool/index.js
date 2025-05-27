@@ -10,7 +10,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, removeBOPfro
 //MINDA
 // import {removeBOPFromList } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
-import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../../../actions/Costing';
+import { isToolDataChange, setComponentToolItemData, setToolsErrors, setOverallApplicabilityToolData } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, IsNFRContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
@@ -65,14 +65,13 @@ function Tool(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [applicability, setApplicability] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? { label: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType, value: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
   const [valueByAPI, setValueByAPI] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? true : false)
-  const { costingData, isBreakupBoughtOutPartCostingFromAPI, getToolTabData } = useSelector(state => state.costing)
-
+  const { costingData, isBreakupBoughtOutPartCostingFromAPI, getToolTabData } = useSelector(state => state.costing) 
   const [toolObj, setToolObj] = useState(data?.CostingPartDetails?.CostingToolCostResponse[0])
   const CostingViewMode = useContext(ViewCostingContext);
   const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext)
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
-  const [state, setState] = useState({
+  const [state, setState] = useState({  
     ToolInterestCost: 0,
     ToolInterestCostPerPc: 0,
     ToolMaintenanceCostPerPc: 0
@@ -125,6 +124,7 @@ function Tool(props) {
     let request = partType ? 'multiple technology assembly' : 'toolcost'
     let isRequestForMultiTechnology = partType ? true : false
     dispatch(fetchCostingHeadsAPI(request, false, isRequestForMultiTechnology, (res) => { }))
+    dispatch(setOverallApplicabilityToolData(null, () => { }))
   }, [])
 
   useEffect(() => {
@@ -290,6 +290,7 @@ function Tool(props) {
 
 
   const handleToolApplicabilityChange = (newValue) => {
+    dispatch(setOverallApplicabilityToolData(newValue, () => { }))
     if (newValue && newValue !== '') {
       setValue('ToolMaintainancePerentage', '')
       setValueByAPI(false)
@@ -359,7 +360,7 @@ function Tool(props) {
       setValue('MaintananceCostApplicability', checkForDecimalAndNull(baseCost, noOfDecimal));
       setValue('ToolMaintenanceCost', checkForDecimalAndNull(toolCost, noOfDecimal));
       setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(costPerPc, noOfDecimal));
-  
+      
       setToolObj({
         ...toolObj,
         ToolApplicabilityId: applicability.value,
@@ -453,19 +454,22 @@ function Tool(props) {
 
   const calculateNetToolCost = () => {
 
-    const ToolMaintenanceCostPerPiece = checkForNull(toolObj?.ToolMaintenanceCostPerPiece)
     const ToolCost = checkForNull(getValues('ToolCost'));
     const Life = checkForNull(getValues('Life'))
+    const costPerPc = ToolCost / Life;
+    const ToolMaintenanceCostPerPiece = checkForNull(costPerPc)   
     const ToolAmortizationCost = ToolCost / Life
     const toolInterestRatePercent = checkForNull(getValues('ToolInterestRatePercent'))
     const toolInterestCost= ToolCost * toolInterestRatePercent / 100
     const toolInterestCostPerPc = toolInterestCost / checkForNull(getValues('Life'))
     setValue('ToolInterestCost', checkForDecimalAndNull(toolInterestCost, initialConfiguration?.NoOfDecimalForPrice))
     setValue('ToolInterestCostPerPc', checkForDecimalAndNull(toolInterestCostPerPc, initialConfiguration?.NoOfDecimalForPrice))
+    setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(costPerPc, initialConfiguration?.NoOfDecimalForPrice));
     setState(prevState => ({
       ...prevState,
       ToolInterestCost: toolInterestCost,
-      ToolInterestCostPerPc: toolInterestCostPerPc
+      ToolInterestCostPerPc: toolInterestCostPerPc,
+      ToolMaintenanceCostPerPiece: costPerPc
     }))
     const netToolValue = checkForNull(ToolMaintenanceCostPerPiece) + checkForNull(ToolAmortizationCost) + checkForNull(toolInterestCostPerPc)    
     if (netToolValue) {
@@ -493,8 +497,9 @@ function Tool(props) {
         "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
         "ToolInterestCost": toolInterestCost,
         "ToolInterestCostPerPiece": toolInterestCostPerPc,
-        "ToolMaintenanceCostPerPiece": toolObj?.ToolMaintenanceCost / Life,
+        "ToolMaintenanceCostPerPiece": ToolMaintenanceCostPerPiece
       }
+      
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       dispatch(isToolDataChange(true))
       setTimeout(() => {

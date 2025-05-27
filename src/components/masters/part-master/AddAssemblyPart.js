@@ -1429,6 +1429,7 @@ class AddAssemblyPart extends Component {
                       </Row>
 
                       <Row>
+                      {initialConfiguration?.IsSAPCodeRequired &&
                         <Col md="3">
                           <Field
                             label={`SAP Code`}
@@ -1443,7 +1444,7 @@ class AddAssemblyPart extends Component {
                             customClassName={"withBorder"}
                             disabled={(isViewMode || (isEditFlag && !this?.state?.isBomEditable)) ? true : false}
                           />
-                        </Col>
+                        </Col>}
                         {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <Col md="3">
                           <TooltipCustom id="uom_tooltip" width="350px" tooltipText="If UOM is not selected, 'No.' will be set by default" />
 
