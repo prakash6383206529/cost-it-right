@@ -131,6 +131,8 @@ export const MESSAGES = {
   //REJECTION
   REJECTION_ADDED_SUCCESS: 'Rejection added successfully',
   REJECTION_UPDATE_SUCCESS: 'Rejection updated successfully',
+  DELETE_REJECTION_SUCCESS: 'Rejection deleted successfully',
+  REJECTION_DELETE_ALERT: 'Are you sure you want to delete this Rejection Detail?',
 
   //DEPRECIATION
   DEPRECIATION_ADD_SUCCESS: 'Depreciation added successfully',
