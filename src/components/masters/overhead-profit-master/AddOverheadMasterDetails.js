@@ -201,11 +201,14 @@ const AddOverheadMasterDetails = (props) => {
         setValue("OverheadPercentage", "");
         setValue("OverheadApplicability", "");
         clearErrors(["OverheadApplicability", "OverheadPercentage"]);
+        setEditItemId("");
     }
 
     const deleteApplicability = (id) => {
         const filteredApplicability = state.ApplicabilityDetails.filter((item, ind) => item.ApplicabilityId !== id)
-        setState(prev => ({ ...prev, ApplicabilityDetails: filteredApplicability }));
+        setState(prev => ({ ...prev, ApplicabilityDetails: filteredApplicability, OverheadApplicability: {}, OverheadPercentage: "" }));
+        setValue("OverheadPercentage", "");
+        setValue("OverheadApplicability", {});
     }
 
     const editApplicability = (editItem) => {
@@ -568,7 +571,7 @@ const AddOverheadMasterDetails = (props) => {
                             isMulti={false}
                             handleChange={handleApplicabilityChange}
                             errors={errors.OverheadApplicability}
-                            disabled={state?.isViewMode}
+                            disabled={!!(state?.isViewMode || editItemId)}
                         />
                     </Col>
 
