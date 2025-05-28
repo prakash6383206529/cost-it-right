@@ -602,9 +602,9 @@ function CostingDetailStepTwo(props) {
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
                           <th style={{ width: '180px' }}><span className="font-weight-500">{`${partType ? "Cost/ Assembly" : (breakupBOP ? "Net RMC + CC" : `Net RMC + ${showBopLabel()} + CC`)}`}</span></th>
                           <th style={{ width: '220px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
-                          {costingData?.TechnologyId !== TOOLING_ID && <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>}
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight Cost`}</span></th>
+                          {costingData?.TechnologyId !== TOOLING_ID && <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>}
                           <th style={{ width: '160px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`Discounts`}</span></th>
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <th style={{ width: '100px' }}><span className="font-weight-500">{`Basic Price`}</span></th>}
@@ -624,9 +624,9 @@ function CostingDetailStepTwo(props) {
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetConversionCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetTotalRMBOPCC, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetSurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
-                                    {costingData?.TechnologyId !== TOOLING_ID && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.ToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>}
-                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOverheadAndProfitCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
+                                    {costingData?.TechnologyId !== TOOLING_ID && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.ToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>}
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOtherCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetDiscountsCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.BasicRate, initialConfiguration?.NoOfDecimalForPrice)}</span></td>}

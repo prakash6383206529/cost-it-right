@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
-import { getIccDataByModelType, gridDataAdded, isOverheadProfitDataChange, setIsCalculatorExist, setOverheadProfitErrors, } from '../../../actions/Costing';
+import { getIccDataByModelType, gridDataAdded, isIccDataChange, isOverheadProfitDataChange, setIsCalculatorExist, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { CBCTypeId, CRMHeads, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
@@ -23,27 +23,29 @@ import IccCalculator from './IccCalculator';
 let counter = 0;
 function Icc(props) {
 
-    const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail } = props
+    const { Controller, control, register, data, setValue, getValues, errors, useWatch } = props
+    
     const headerCosts = useContext(netHeadCostContext);
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
 
-    const ICCApplicabilityDetail = CostingInterestRateDetail && CostingInterestRateDetail.ICCApplicabilityDetail !== null ? CostingInterestRateDetail.ICCApplicabilityDetail : {}
+    
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-    const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData } = useSelector(state => state.costing)
+    const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData,costingDetailForIcc } = useSelector(state => state.costing)
+    const ICCApplicabilityDetail = costingDetailForIcc && costingDetailForIcc.ICCApplicabilityDetail !== null ? costingDetailForIcc.ICCApplicabilityDetail : {}
 
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
     const [tempInventoryObj, setTempInventoryObj] = useState(ICCApplicabilityDetail)
     const [isPartApplicability, setIsPartApplicability] = useState(false)
 
-    const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost ? true : false)
+    const [IsInventoryApplicable, setIsInventoryApplicable] = useState(costingDetailForIcc && costingDetailForIcc.IsInventoryCarringCost ? true : false)
     const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : {})
 
     const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
     const [InterestRateFixedLimit, setInterestRateFixedLimit] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
     const [isNetWeight, setIsNetWeight] = useState((ICCApplicabilityDetail?.IsICCCalculationOnNetWeight) ? (ICCApplicabilityDetail?.IsICCCalculationOnNetWeight) : false)
-    const [totalOverHeadAndProfit, setTotalOverHeadAndProfit] = useState((OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) ? (OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) : 0)
+    const [totalOverHeadAndProfit, setTotalOverHeadAndProfit] = useState((OverheadProfitTabData?.[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) ? (OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) : 0)
     const { CostingEffectiveDate, IsCalculatorExist } = useSelector(state => state.costing)
     const [state, setState] = useState({
         iccDetails: ICCApplicabilityDetail?.ICCCostingApplicabilityDetails,
@@ -53,7 +55,7 @@ function Icc(props) {
         openCalculatorIcc: false,
         totalIccPayable: ICCApplicabilityDetail?.ICCPayableToSupplierCost,
         totalIccReceivable: ICCApplicabilityDetail?.ICCReceivableFromSupplierCost,
-        totalIccNetCost: CostingInterestRateDetail?.NetICC,
+        totalIccNetCost: costingDetailForIcc?.NetICC,
         markUpFactor: ICCApplicabilityDetail?.MarkupFactor
     })
     
@@ -109,59 +111,6 @@ function Icc(props) {
 
     }
 
-    /**
-     * @method callInventoryAPIByModelType
-     * @description When we toogle on ICC to call API
-    */
-    const callInventoryAPIByModelType = (callAPI) => {
-        if (Object.keys(costData).length > 0 && callAPI && !CostingViewMode) {
-            const reqParams = {
-                VendorId: (costData?.CostingTypeId === VBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData?.VendorId : EMPTY_GUID,
-                costingTypeId: Number(costData?.CostingTypeId) === NFRTypeId ? VBCTypeId : Number(costData?.CostingTypeId === WACTypeId) ? ZBCTypeId : costData?.CostingTypeId,
-                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData?.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId || costData?.CostingTypeId === NFRTypeId || costData?.CostingTypeId === NCCTypeId) ? costData?.DestinationPlantId : EMPTY_GUID,
-                customerId: costData?.CostingTypeId === CBCTypeId ? costData?.CustomerId : EMPTY_GUID,
-                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : '',
-                rawMaterialGradeId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
-                rawMaterialChildId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
-                technologyId: null,
-            }
-            dispatch(getIccDataByModelType(reqParams, res => {
-                if (res && res.data && res.data?.Result) {
-                    let Data = res.data?.Data;
-                    setValue('InterestRatePercentage', Data?.InterestRate)
-                    setICCInterestRateId(Data?.InterestRateId !== null ? Data?.InterestRateId : EMPTY_GUID)
-                    setICCapplicability({ label: Data?.ICCApplicability, value: Data?.ICCApplicability })
-                    setInventoryObj(Data)
-                    checkInventoryApplicability(Data?.ICCApplicability)
-
-                    props.setICCDetail(Data, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
-                } else if (res && res.status === 204) {
-                    setValue('InterestRatePercentage', '')
-                    setValue('CostApplicability', '')
-                    setValue('NetICCTotal', '')
-                    checkInventoryApplicability('')
-                    setICCapplicability([])
-                    setInventoryObj({})
-                }
-
-            }))
-        } else {
-            setICCapplicability([])
-            // Clear all ICC-related values when toggle is turned off
-            setValue('InterestRatePercentage', '')
-            setValue('CostApplicability', '')
-            setValue('NetICCTotal', '')
-            setValue('crmHeadIcc', '')
-            setValue('iccRemark', '')
-            setICCInterestRateId('')
-            setInventoryObj({})
-            setTempInventoryObj({})
-            if (!CostingViewMode) {
-                // props.setICCDetail(null, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })  OPENING THIS CREATED CLEARING OF OVERHEAD REDUCER WHEN CLOSE ICC TOGGLE
-            }
-        }
-    }
-
     useEffect(() => {
 
         if (ICCApplicabilityDetail) {
@@ -181,8 +130,8 @@ function Icc(props) {
     }, [interestRateValues])
 
     useEffect(() => {
-        setTotalOverHeadAndProfit(OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly)
-    }, [OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly])
+        setTotalOverHeadAndProfit(OverheadProfitTabData?.[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly)
+    }, [OverheadProfitTabData?.[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly])
 
     /**
       * @method checkInventoryApplicability
@@ -190,17 +139,17 @@ function Icc(props) {
       */
     const checkInventoryApplicability = (data, IsApplyInventoryDay) => {
         if (headerCosts !== undefined && Text !== '' && !CostingViewMode) {
-            let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData?.length > 0 && OverheadProfitTabData[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData[0]?.CostingPartDetails : null;
+            let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData?.length > 0 && OverheadProfitTabData?.[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData?.[0]?.CostingPartDetails : null;
             let NetRawMaterialsCost;
             if (isNetWeight && !(costData?.IsAssemblyPart) && !(isPartApplicability)) {
                 let rmValue = JSON.parse(sessionStorage.getItem('costingArray'))
-                let newRmCost = (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate) * (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight)
+                let newRmCost = (Array.isArray(rmValue) && rmValue?.[0]?.CostingPartDetails?.CostingRawMaterialsCost?.[0]?.RMRate) * (Array.isArray(rmValue) && rmValue?.[0]?.CostingPartDetails?.CostingRawMaterialsCost?.[0]?.FinishWeight)
                 NetRawMaterialsCost = newRmCost
             } else {
                 NetRawMaterialsCost = headerCosts.NetRawMaterialsCost
             }
 
-            const toolCost = checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost)
+            const toolCost = checkForNull(ToolTabData?.[0]?.CostingPartDetails?.TotalToolCost)
             const ConversionCostForCalculation = costData?.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) + checkForNull(includeToolCostIcc ? toolCost : 0) : headerCosts.NetProcessCost + headerCosts.NetOperationCost + checkForNull(includeToolCostIcc ? toolCost : 0);
             let totalCost = 0;
             if (Array.isArray(data)) {
@@ -250,8 +199,7 @@ function Icc(props) {
                 }));
                 return;
             }
-
-
+            dispatch(isIccDataChange(true))
         }
     }
 
@@ -264,13 +212,11 @@ function Icc(props) {
         // Only update if either InventoryObj or iccDetails have meaningful changes
         const hasChanges = JSON.stringify(InventoryObj) !== JSON.stringify(tempInventoryObj) ||
             JSON.stringify(state.iccDetails) !== JSON.stringify(tempInventoryObj?.ICCCostingApplicabilityDetails);
-        console.log(hasChanges, 'hasChanges')
         if (hasChanges && !CostingViewMode) {
             const tempObj = {
                 ...InventoryObj,
                 ICCCostingApplicabilityDetails: state.iccDetails
             }
-            console.log(tempObj, 'tempObj')
             props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
         }
     }, [InventoryObj, state.iccDetails, tempInventoryObj, CostingViewMode])
@@ -483,7 +429,7 @@ function Icc(props) {
         <>
             <Row className="mt-15 pt-15">
                 <Col md="12" className="switch mb-2">
-                    <label className="switch-level" id="Inventory_Carrying_Cost_switch">
+                    {/* <label className="switch-level" id="Inventory_Carrying_Cost_switch">
                         <Switch
                             onChange={onPressInventory}
                             checked={IsInventoryApplicable}
@@ -499,11 +445,11 @@ function Icc(props) {
                             width={46}
                         />
                         <div className={'right-title'}>Inventory Carrying Cost</div>
-                    </label>
+                    </label> */}
                 </Col>
             </Row>
 
-            {IsInventoryApplicable &&
+            {
                 <>
                     <Col md="3">
                         <SearchableSelectHookForm

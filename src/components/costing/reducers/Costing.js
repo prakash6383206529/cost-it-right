@@ -34,7 +34,11 @@ import {
   GET_TOOL_TAB_DATA,
   SET_BOP_REMARK,
   SET_OVERALL_APPLICABILITY_TOOL_DATA,
-  SET_IS_CALCULATOR_EXIST
+  SET_IS_CALCULATOR_EXIST,
+  GET_COSTING_DETAIL_FOR_ICC,
+  SET_ICC_COST,
+  CHECK_IS_ICC_DATA_CHANGE,
+  SET_COMPONENT_ICC_DATA
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -96,7 +100,8 @@ const initialState = {
   paintCoatList: [],
   getToolTabData: [],
   remark: '',
-  bopCostingId: ''
+  bopCostingId: '',
+  costingDetailForIcc: {}
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -598,7 +603,7 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         checkIsDataChange: action.payload
       }
-    case SET_ARRAY_FOR_COSTING:
+      case SET_ARRAY_FOR_COSTING:
       return {
         ...state,
         loading: false,
@@ -953,6 +958,30 @@ export default function costingReducer(state = initialState, action) {
           ...state,
           loading: false,
           IsCalculatorExist: action.payload
+      }
+    case GET_COSTING_DETAIL_FOR_ICC:
+      return {
+        ...state,
+        loading: false,
+        costingDetailForIcc: action.payload
+      }
+    case SET_ICC_COST:
+      return {
+        ...state,
+        loading: false,
+        IccCost: action.payload
+      }
+    case CHECK_IS_ICC_DATA_CHANGE:
+      return {
+        ...state,
+        loading: false,
+        checkIsIccDataChange: action.payload
+      }
+      case SET_COMPONENT_ICC_DATA:
+        return {
+          ...state,
+          loading: false,
+          IccDataDiscountTab: action.payload
         }
     default:
       return state

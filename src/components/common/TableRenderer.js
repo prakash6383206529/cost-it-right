@@ -127,10 +127,10 @@ const TableRenderer = ({
                   const cellValue = col?.identifier === "inputOutput" 
                     ? checkForDecimalAndNull(item?.[col.key], getConfigurationKey()?.NoOfDecimalForInputOutput) 
                     : col?.identifier === "cost" 
-                      ? checkForDecimalAndNull(item?.[col.key], getConfigurationKey()?.NoOfDecimalForPrice) 
+                      ? checkForDecimalAndNull(item?.[col.key], getConfigurationKey()?.NoOfDecimalForPrice)
                       : item?.[col.key]??'-';
                   
-                  return <td key={colIdx}>{cellValue || ''}</td>;
+                  return <td key={colIdx}>{cellValue || '-'}</td>;
                 }
               })}
             </tr>

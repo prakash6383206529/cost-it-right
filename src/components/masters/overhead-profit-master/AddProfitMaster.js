@@ -624,6 +624,7 @@ const AddProfitMaster = (props) => {
 
                   <AddOverheadMasterDetails
                     costingTypeId={costingTypeId}
+                    conditionTypeId={conditionTypeId}
                     state={state}
                     setState={setState}
                     register={register}

@@ -602,6 +602,8 @@ export const API = {
   getIccDataByModelType: `${BASE_URL}/costing/get-costing-interest-rate-icc-applicability`,
   getIccCalculation: `${BASE_URL}/costing/get-costing-icc-calculation-details`,
   saveIccCalculation: `${BASE_URL}/costing/save-costing-icc-calculation-details`,
+  getCostingDetailForIcc: `${BASE_URL}/costing/get-costing-detail-for-icc`,
+  saveCostingDetailForIcc: `${BASE_URL}/costing/save-costing-detail-for-icc`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
@@ -1810,7 +1812,11 @@ export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
 export const CHECK_IS_PAYMENT_TERMS_DATA_CHANGE = 'CHECK_IS_PAYMENT_TERMS_DATA_CHANGE'
 export const CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE = 'CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE'
 export const SET_BOP_REMARK = "SET_BOP_REMARK"
-export const SET_IS_CALCULATOR_EXIST='SET_IS_CALCULATOR_EXIST'
+export const SET_IS_CALCULATOR_EXIST = 'SET_IS_CALCULATOR_EXIST'
+export const CHECK_IS_ICC_DATA_CHANGE = 'CHECK_IS_ICC_DATA_CHANGE'
+export const GET_COSTING_DETAIL_FOR_ICC = 'GET_COSTING_DETAIL_FOR_ICC'
+export const SET_ICC_COST = 'SET_ICC_COST'
+export const SET_COMPONENT_ICC_DATA = 'SET_COMPONENT_ICC_DATA'
 
 export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
 export const GET_FG_WISE_IMPACT_DATA_FOR_COSTING = 'GET_FG_WISE_IMPACT_DATA_FOR_COSTING'

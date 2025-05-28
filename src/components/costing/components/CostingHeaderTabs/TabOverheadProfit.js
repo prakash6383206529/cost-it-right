@@ -584,26 +584,6 @@ function TabOverheadProfit(props) {
       dispatch(isOverheadProfitDataChange(true))
     }
   }
-
-  const onPressIncludeOverheadProfitInIcc = () => {
-
-    dispatch(setIncludeOverheadProfitIcc(!IncludeOverheadProfitInIcc, () => { }))
-    setIsPressedOverHeadAndProfit(true)
-    setIncludeOverheadProfitInIcc(!IncludeOverheadProfitInIcc)
-    dispatch(isOverheadProfitDataChange(true))
-  }
-  const onPressIsIncludeToolCostInCCForICC = () => {
-    if (ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed' || (overallApplicabilityToolData && overallApplicabilityToolData?.label !== 'Fixed')) {
-      Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in ICC.')
-      return false
-    } else {
-      dispatch(setIncludeToolCostIcc(!IsIncludeToolCostInCCForICC, () => { }))
-      setIsPressedToolCostICC(true)
-      setIsIncludeToolCostInCCForICC(!IsIncludeToolCostInCCForICC)
-      dispatch(isOverheadProfitDataChange(true))
-    }
-  }
-
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -701,43 +681,6 @@ function TabOverheadProfit(props) {
                       onChange={onPressIncludeToolCost}
                     />
                   </label>
-
-                  <label
-                    id="Overhead_profit_checkbox4"
-                    className={`custom-checkbox mb-0 w-fit-content`}
-                    onChange={onPressIncludeOverheadProfitInIcc}
-                  >
-                    Include Overhead & Profit in ICC
-                    <input
-                      type="checkbox"
-                      checked={IncludeOverheadProfitInIcc}
-                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
-                    />
-                    <span
-                      className=" before-box"
-                      checked={IncludeOverheadProfitInIcc}
-                      onChange={onPressIncludeOverheadProfitInIcc}
-                    />
-                  </label>
-
-                  <label
-                    id="Overhead_profit_checkbox5"
-                    className={`custom-checkbox mb-0 w-fit-content`}
-                    onChange={onPressIsIncludeToolCostInCCForICC}
-                  >
-                    Include Tool Cost in CC for ICC
-                    <input
-                      type="checkbox"
-                      checked={IsIncludeToolCostInCCForICC}
-                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
-                    />
-                    <span
-                      className=" before-box"
-                      checked={IsIncludeToolCostInCCForICC}
-                      onChange={onPressIsIncludeToolCostInCCForICC}
-                    />
-                  </label>
-
                 </Col>
               </Row>
 

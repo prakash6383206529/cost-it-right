@@ -6,7 +6,12 @@ import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
   getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange, setNPVData, setPOPrice, resetExchangeRateData, setOtherCostData,
   setOtherDiscountData, getCostingPaymentTermDetail, setDiscountAndOtherCostData, saveCostingPaymentTermDetail, setPaymentTermsDataInDiscountOtherTab, isPaymentTermsDataChange, getCostingTcoDetails, setPaymentTermCost,
-  getExternalIntegrationEvaluationType
+  getExternalIntegrationEvaluationType, getCostingDetailForIcc,
+  setIccDataInDiscountOtherTab,
+  saveCostingDetailForIcc,
+  setIncludeOverheadProfitIcc,
+  isIccDataChange,
+  setIsCalculatorExist
 } from '../../actions/Costing';
 import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, getTaxCodeSelectList, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -43,6 +48,7 @@ import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
 import { setSAPData } from '../../actions/Approval';
 import { useLabels } from '../../../../helper/core';
 import YOYCost from '../CostingHeadCosts/AdditionalOtherCost/YOYCost';
+import Icc from '../CostingHeadCosts/OverheadProfit/Icc';
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -82,7 +88,8 @@ function TabDiscountOther(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType,IccDataDiscountTab, checkIsIccDataChange,costingDetailForIcc } = useSelector(state => state.costing)
+  
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
   const [reRender, setRerender] = useState([])
@@ -131,7 +138,9 @@ function TabDiscountOther(props) {
   const [isShowValuationType, setIsShowValuationType] = useState(false)
   const taxCodeList = useSelector(state => state.comman.taxCodeList)
   const [count, setCount] = useState(0)
-
+  const [icc, setIcc] = useState(false)
+  const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(false)
+  const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(false)
   const npvDrawerCondition = (
     ((IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
     (!(IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
@@ -151,7 +160,7 @@ function TabDiscountOther(props) {
   const isPartType = useContext(IsPartType);
   const [paymentTerms, setPaymentTerms] = useState(false)
   const [paymentTermsWarning, setPaymentTermsWarning] = useState(false)
-  const { getCostingPaymentDetails } = useSelector(state => state.costing);
+  const { getCostingPaymentDetails ,overallApplicabilityToolData} = useSelector(state => state.costing);
   const { evaluationType } = useSelector((state) => state?.costing)
   const { currencySource, exchangeRateSource } = useSelector((state) => state?.costing);
 
@@ -204,14 +213,16 @@ function TabDiscountOther(props) {
         plantCode: costData?.PlantCode,
         partNumber: costData?.PartNumber
       }
-      dispatch(getExternalIntegrationEvaluationType(data, res => { }))
+    dispatch(getExternalIntegrationEvaluationType(data, res => { }))
     }
 
   }, [])
   useEffect(() => {
-    dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => {
-
+    dispatch(getCostingDetailForIcc(costData?.CostingId, (res) => {
+      let isCalculatorExist=res?.data?.Data?.IsCalculatorExist
+      dispatch(setIsCalculatorExist(isCalculatorExist))
     }))
+    dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => {}))
   }, [costData])
   const viewAddButtonIcon = (data, type) => {
 
@@ -1361,6 +1372,9 @@ function TabDiscountOther(props) {
           if (checkIsPaymentTermsDataChange === true) {
             dispatch(saveCostingPaymentTermDetail(obj, res => { }))
           }
+          if (checkIsIccDataChange === true) {
+            dispatch(saveCostingDetailForIcc(obj, res => { }))
+          }
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           // dispatch(setComponentDiscountOtherItemData({}, () => { }))
           dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
@@ -1558,7 +1572,7 @@ function TabDiscountOther(props) {
   const refreshAllData = () => {
     let finalListCondition = []
     let tempListCondition = [...conditionTableData]
-    
+
     const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost)
     const RMBOPCC = checkForNull(headerCosts.NetBoughtOutPartCost) + checkForNull(headerCosts.NetRawMaterialsCost) + checkForNull(ConversionCostForCalculation)
     const RMBOP = checkForNull(headerCosts.NetRawMaterialsCost) + checkForNull(headerCosts.NetBoughtOutPartCost);
@@ -1640,8 +1654,8 @@ function TabDiscountOther(props) {
       }
 
       totalCost = applicabilityCost * calculatePercentage(percent);
-      
-      
+
+
       return {
         ...item,
         ApplicabilityCost: applicabilityCost,
@@ -1653,9 +1667,9 @@ function TabDiscountOther(props) {
     const totalOtherCostTemp = otherCostTemp.reduce((total, item) => total + item.AnyOtherCost, 0);
 
     let discountTemp = otherDiscountData.gridData?.length > 0 ? otherDiscountData.gridData.map(item => calculateCostByApplicability(item, true)) : [];
-    
+
     const totalDiscountTemp = discountTemp.reduce((total, item) => total + item.NetCost, 0);
-    
+
     dispatch(setOtherCostData({ gridData: otherCostTemp, otherCostTotal: totalOtherCostTemp }));
     dispatch(setOtherDiscountData({ gridData: discountTemp, totalCost: totalDiscountTemp }));
     setOtherCostArray(otherCostTemp)
@@ -2034,6 +2048,27 @@ function TabDiscountOther(props) {
     dispatch(setPaymentTermsDataInDiscountOtherTab(updatedPaymentTermobj, () => { }))
     dispatch(setDiscountAndOtherCostData(data, () => { }));
   };
+    /**
+ * @method setIccDetail
+ * @description  set updated NetPaymentTermCost 
+ */
+    const setICCDetail = (data, params) => {
+      console.log("data",data)
+      let updatedIccobj = {
+        ...IccDataDiscountTab,
+        ICCCostingApplicabilityDetails: {
+          ...data
+        }
+      };
+      updatedIccobj.NetPaymentTermCost = data.NetCost;
+  
+      dispatch(setIccDataInDiscountOtherTab(updatedIccobj, () => { }))
+      dispatch(setDiscountAndOtherCostData(data, () => { }));
+    };
+    
+  
+  
+
 
   const handleValuationType = (value) => {
     if (!value) {
@@ -2057,6 +2092,26 @@ function TabDiscountOther(props) {
     }
     basicrate = basicrate + ' - Hundi/Discount Value'
     return { basicrate: basicrate, netCost: netCost }
+  }
+  const handleIcc = () => {
+    setIcc(!icc)
+  }
+  const onPressIncludeOverheadProfitInIcc = () => {
+    dispatch(setIncludeOverheadProfitIcc(!IncludeOverheadProfitInIcc, () => { }))
+    setIncludeOverheadProfitInIcc(!IncludeOverheadProfitInIcc)
+    dispatch(isIccDataChange(true))
+  }
+  const onPressIsIncludeToolCostInCCForICC = () => {
+    console.log(ToolTabData[0],'ToolTabData');
+    
+    if (ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed' || (overallApplicabilityToolData && overallApplicabilityToolData?.label !== 'Fixed')) {
+      Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in ICC.')
+      return false
+    } else {
+      dispatch(setIsIncludeToolCostInCCForICC(!IsIncludeToolCostInCCForICC, () => { }))
+      setIsIncludeToolCostInCCForICC(!IsIncludeToolCostInCCForICC)
+      dispatch(isIccDataChange(true))
+    }
   }
 
   return (
@@ -2082,6 +2137,81 @@ function TabDiscountOther(props) {
                   noValidate
                   className="form"
                 >
+                  <Col md="12">
+                    <Row>
+                      <Col md="8"><div className="left-border mt-1">ICC:</div></Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle YOY-acc ml-1" type="button" onClick={() => { handleIcc() }}>
+                          {icc ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+                    <Row className="m-0 border-left border-right">
+             
+
+              {icc &&  <Col md="12" className="py-3 overhead-profit-tab">
+
+                  <label
+                    id="Overhead_profit_checkbox4"
+                    className={`custom-checkbox mb-0 w-fit-content`}
+                    onChange={onPressIncludeOverheadProfitInIcc}
+                  >
+                    Include Overhead & Profit in ICC
+                    <input
+                      type="checkbox"
+                      checked={IncludeOverheadProfitInIcc}
+                      disabled={(CostingViewMode )}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IncludeOverheadProfitInIcc}
+                      onChange={onPressIncludeOverheadProfitInIcc}
+                    />
+                  </label>
+
+                  <label
+                    id="Overhead_profit_checkbox5"
+                    className={`custom-checkbox mb-0 w-fit-content`}
+                    onChange={onPressIsIncludeToolCostInCCForICC}
+                  >
+                    Include Tool Cost in CC for ICC
+                    <input
+                      type="checkbox"
+                      checked={IsIncludeToolCostInCCForICC}
+                      disabled={(CostingViewMode )}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IsIncludeToolCostInCCForICC}
+                      onChange={onPressIsIncludeToolCostInCCForICC}
+                    />
+                  </label>
+
+                </Col>}
+              </Row>
+                  </Col>
+                  <Row>
+                    <Col md="12">
+                      {icc && <Icc
+                        Controller={Controller}
+                        control={control}
+                        //  rules={rules}
+                        register={register}
+                        defaultValue={''}
+                        setValue={setValue}
+                        getValues={getValues}
+                        errors={errors}
+                        useWatch={useWatch}
+                        CostingInterestRateDetail={CostingInterestRateDetail}
+                        data={DiscountCostData}
+                        setICCDetail={setICCDetail}
+                      />}
+                    </Col>
+                  </Row>
                   <Row>
                     {/* {
                       initialConfiguration?.IsShowCRMHead && <Col md="3">
