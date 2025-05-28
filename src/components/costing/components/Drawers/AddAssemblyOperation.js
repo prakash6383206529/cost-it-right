@@ -68,9 +68,8 @@ function AddAssemblyOperation(props) {
           if (!item?.IsChild) {
             if (item?.ForType === "Welding") {
               weldingCost += checkForNull(item?.OperationCost);
-            } else {
-              operationCost += checkForNull(item?.OperationCost);
             }
+            operationCost += checkForNull(item?.OperationCost);
           }
         });
 
@@ -133,26 +132,17 @@ function AddAssemblyOperation(props) {
 
         let operation = 0, welding = 0
         grid?.forEach(el => {
-          el.ForType === "Welding"
-            ? welding += checkForNull(el.OperationCost)
-            : operation += checkForNull(el.OperationCost);
+          if (el?.ForType === "Welding") {
+            welding += checkForNull(el?.OperationCost);
+          }
+          operation += checkForNull(el?.OperationCost);
         });
 
         setOperationCostAssemblyTechnology(operation);
-        setWeldingCostAssemblyTechnology(welding); tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingOperationCostResponse = grid;
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
-          checkForNull(costPerPieceTotal) +
-          checkForNull(CostPerAssemblyBOPTotal) +
-          checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
-          checkForNull(operation) + checkForNull(welding);
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
-          checkForNull(costPerPieceTotal) +
-          checkForNull(CostPerAssemblyBOPTotal) +
-          checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
-          checkForNull(operation) + checkForNull(welding) +
-          checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
-          checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
-          checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost);
+        setWeldingCostAssemblyTechnology(welding);
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingOperationCostResponse = grid;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerPieceTotal) + checkForNull(CostPerAssemblyBOPTotal) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) + checkForNull(operation)
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC = checkForNull(costPerPieceTotal) + checkForNull(CostPerAssemblyBOPTotal) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) + checkForNull(operation) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost);
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetOperationCost = checkForNull(operation) || 0;
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetWeldingCost = checkForNull(welding) || 0;
         // Update overhead and profit costs
@@ -160,6 +150,10 @@ function AddAssemblyOperation(props) {
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetOperationCostForProfit = getOverheadAndProfitCostTotal(grid, "Profit")?.profitOperationCost;
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetWeldingCostForOverhead = getOverheadAndProfitCostTotal(grid, "Overhead")?.overheadWeldingCost;
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetWeldingCostForProfit = getOverheadAndProfitCostTotal(grid, "Profit")?.profitWeldingCost;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = getOverheadAndProfitCostTotal(grid, "Overhead")?.overheadOperationCost;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCostPerAssemblyForProfit = getOverheadAndProfitCostTotal(grid, "Profit")?.profitOperationCost;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalWeldingCostPerAssemblyForOverhead = getOverheadAndProfitCostTotal(grid, "Overhead")?.overheadWeldingCost;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalWeldingCostPerAssemblyForProfit = getOverheadAndProfitCostTotal(grid, "Profit")?.profitWeldingCost;
         // Update Redux state
 
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }));
@@ -230,6 +224,7 @@ function AddAssemblyOperation(props) {
       }
 
       let requestObj = createSaveAssemblyRMCCObject(item, costData, basicRate, totalCostSaveAPI, CostingEffectiveDate, operationGridData, true)
+      
       if (isAssemblyTechnology) {
         item.NetOperationCost = operationCostAssemblyTechnology
         item.NetWeldingCost = weldingCostAssemblyTechnology
