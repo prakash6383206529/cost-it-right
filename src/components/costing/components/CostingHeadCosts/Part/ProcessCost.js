@@ -351,7 +351,7 @@ function ProcessCost(props) {
         dispatch(setProcessGroupGrid(formatReducerArray(tempArray)))
         setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity)
         setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '')
-        setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData?.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
       }, 100)
     } else {
       // PROCESS UNDER THE GROUP IS UPDATING
@@ -1223,7 +1223,7 @@ function ProcessCost(props) {
     }
 
     let gridTempArr = Object.assign([...list], { [index]: tempData })
-    setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(tempData.ProcessCost, getConfigurationKey().NoOfDecimalForInputOutput))
+    setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(tempData?.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
 
       //MAIN PROCESS ROW WITH GROUP
       const groupTotals = gridTempArr?.reduce((acc, el) => ({
@@ -1470,7 +1470,7 @@ function ProcessCost(props) {
                     control={control}
                     register={register}
                     mandatory={false}
-                    defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
+                    defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, getConfigurationKey().NoOfDecimalForPrice) : '0.00'}
                     className=""
                     customClassName={'withBorder'}
                     handleChange={(e) => {
