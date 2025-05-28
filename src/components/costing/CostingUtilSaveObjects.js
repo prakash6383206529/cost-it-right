@@ -43,6 +43,7 @@ export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicR
 }
 
 export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCostSaveAPI, effectiveDate, gridData, isOperation) => {
+    
     const requestObj = {
         "CostingPartDetails": {
             "AssemblyCostingOperationCostRequest": isOperation ? gridData : item?.CostingPartDetails?.CostingOperationCostResponse,
@@ -53,7 +54,7 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
         "SubAssemblyCostingId": item?.SubAssemblyCostingId,
         "NetRawMaterialsCost": 0,
         "NetBoughtOutPartCost": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-        "NetConversionCost": checkForNull(item?.CostingPartDetails?.NetOperationCost) + checkForNull(item?.CostingPartDetails?.NetProcessCost) + checkForNull(item?.NetLabourCost) + checkForNull(item?.IndirectLaborCost) + checkForNull(item?.StaffCost) + checkForNull(item?.CostingPartDetails?.NetWeldingCost),
+        "NetConversionCost": checkForNull(item?.CostingPartDetails?.NetOperationCost) + checkForNull(item?.CostingPartDetails?.NetProcessCost) + checkForNull(item?.NetLabourCost) + checkForNull(item?.IndirectLaborCost) + checkForNull(item?.StaffCost),
         "NetOperationCost": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
         "NetWeldingCost": item?.CostingPartDetails?.TotalWeldingCostPerAssembly,
         "NetOtherOperationCost": 0,
@@ -74,10 +75,10 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
         "NetChildPartsCost": 0,
         "NetProcessCostForOverhead": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead,
         "NetProcessCostForProfit": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit,
-        "NetOperationCostForOverhead": item?.CostingPartDetails?.NetOperationCostForOverhead,
-        "NetOperationCostForProfit": item?.CostingPartDetails?.NetOperationCostForProfit,
-        "NetWeldingCostForOverhead": item?.CostingPartDetails?.NetWeldingCostForOverhead,
-        "NetWeldingCostForProfit": item?.CostingPartDetails?.NetWeldingCostForProfit,
+        "NetOperationCostForOverhead": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead,
+        "NetOperationCostForProfit": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit,
+        "NetWeldingCostForOverhead": item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead,
+        "NetWeldingCostForProfit": item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForProfit,
         "NetCCForOtherTechnologyCostForOverhead": item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead,
         "NetCCForOtherTechnologyCostForProfit": item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForProfit,
     }

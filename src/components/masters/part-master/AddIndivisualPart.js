@@ -792,12 +792,12 @@ class AddIndivisualPart extends Component {
                                 <Field
                                   name="model"
                                   type="text"
-                                  label={`Model`}
+                                  label={`Part Model`}
                                   component={searchableSelect}
                                   placeholder={isEditFlag ? '-' : "Select"}
                                   options={this?.state?.modelOptions}
                                   validate={
-                                    this?.state?.Model == null || this?.state?.Model.length === 0 ? [required] : []}
+                                    (PartMasterConfigurable?.IsPartModelMandatory && (this?.state?.Model == null || this?.state?.Model.length === 0)) ? [required] : []}
                                   required={PartMasterConfigurable?.IsPartModelMandatory}
                                   handleChangeDescription={this.handleModelChange}
                                   valueDescription={this?.state?.Model}
@@ -809,14 +809,14 @@ class AddIndivisualPart extends Component {
                                 isEditFlag ?
                                   <Button
                                     id="Model-edit"
-                                    className="drawer-edit mt30"
+                                    className="drawer-edit mt10 mb-0"
                                     variant="Edit"
                                     onClick={() => this.modelToggler(this?.state?.Model.value)}
                                   /> :
                                   <div className='d-flex justify-content-center align-items-center'>
                                     <Button
                                       id="Model-add"
-                                      className="mb-3"
+                                      className="mb-0"
                                       variant="plus-icon-square"
                                       onClick={() => this.modelToggler('')}
                                     />
@@ -832,7 +832,7 @@ class AddIndivisualPart extends Component {
                               component={searchableSelect}
                               placeholder={"Select"}
                               options={this.renderListing("PartFamily")}
-                              validate={this?.state?.PartFamilySelected == null || this?.state?.PartFamilySelected.length === 0 ? [required] : []}
+                              validate={(PartMasterConfigurable?.IsPartFamilyMandatory && (this?.state?.PartFamilySelected == null || this?.state?.PartFamilySelected.length === 0)) ? [required] : []}
                               required={PartMasterConfigurable?.IsPartFamilyMandatory}
                               handleChangeDescription={this.handlePartFamilyChange}
                               valueDescription={this?.state?.PartFamilySelected}
