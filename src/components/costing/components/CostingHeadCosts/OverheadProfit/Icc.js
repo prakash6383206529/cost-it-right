@@ -427,8 +427,8 @@ function Icc(props) {
 
     return (
         <>
-            <Row className="mt-15 pt-15">
-                <Col md="12" className="switch mb-2">
+            {/* <Row className="mt-15 pt-15 here">
+                <Col md="12" className="switch mb-2"> */}
                     {/* <label className="switch-level" id="Inventory_Carrying_Cost_switch">
                         <Switch
                             onChange={onPressInventory}
@@ -446,11 +446,12 @@ function Icc(props) {
                         />
                         <div className={'right-title'}>Inventory Carrying Cost</div>
                     </label> */}
-                </Col>
-            </Row>
+                {/* </Col>
+            </Row> */}
 
             {
                 <>
+                <Row>
                     <Col md="3">
                         <SearchableSelectHookForm
                             label={'Model Type for Icc'}
@@ -471,7 +472,8 @@ function Icc(props) {
                             isClearable={true}
                         />
                     </Col>
-                    {initialConfiguration?.IsShowCRMHead && <Col md="3">
+                    {initialConfiguration?.IsShowCRMHead && 
+                    <Col md="3">
                         <SearchableSelectHookForm
                             name={`crmHeadIcc`}
                             type="text"
@@ -490,7 +492,9 @@ function Icc(props) {
                             handleChange={handleCrmHeadChange}
                             disabled={CostingViewMode}
                         />
-                    </Col>}
+                    </Col>
+                    }
+                </Row>
                     <Row>
                         <Col md="3">
                             <TextFieldHookForm
@@ -507,7 +511,7 @@ function Icc(props) {
                                 defaultValue={InventoryObj?.ICCMethod}
                             />
                         </Col>
-                        <Col md="2" className="st-operation mt-4 pt-2">
+                        <Col md="3" className="st-operation mt-4 pt-2">
                             <label id="AddInterestRate_ApplyPartCheckbox"
                                 className={`custom-checkbox disabled`}
                                 onChange={() => { }}
@@ -556,11 +560,11 @@ function Icc(props) {
                         {state.iccMethod === 'Credit Based' &&
                             <>
                                 <Col md="3">
-                                    <span className="head-text">Calculator ICC</span>
+                                    <label>Calculator ICC</label>
                                     <div>
                                         <button
                                             id={`calculatorIcc`}
-                                            className={`CalculatorIcon cr-cl-icon calculatorIcc`}
+                                            className={`CalculatorIcon cr-cl-icon calculatorIcc mt10`}
                                             type={'button'}
                                             onClick={() => toggleWeightCalculator()}
                                             disabled={CostingViewMode}
@@ -609,36 +613,9 @@ function Icc(props) {
                                         defaultValue={state.totalIccNetCost}
                                     />
                                 </Col>
-                            </>
-                        }
-
-                    </Row>
-                    {state.iccMethod !== 'Credit Based' && <Row>
-                        <Col md="12">
-                            <TableRenderer
-                                data={state.iccDetails}
-                                columns={Inventory_Day_Columns}
-                                register={register}
-                                Controller={Controller}
-                                control={control}
-                                errors={errors}
-                                isViewMode={CostingViewMode}
-                                setValue={setValue}
-                                includeOverHeadProfitIcc={includeOverHeadProfitIcc}
-                            />
-                        </Col>
-                    </Row>}
-                    <Row>
-
-                        <Col md="11" className='first-section'>
-
-                            {/* / */}
-                        </Col>
-                        <Col md="1" className='second-section pr-2'>
-                            <div className='costing-border-inner-section'>
-                                <Col md="12" className='text-center'>Remark</Col>
-                                <Col md="12">
-                                    <Popup trigger={<button id={`popUpTriggerIcc`} title="Remark" className="Comment-box" type={'button'} />}
+                                <Col md="3">
+                                <label>Remark</label>
+                                <Popup trigger={<button id={`popUpTriggerIcc`} title="Remark" className="Comment-box mt10" type={'button'} />}
                                         position="top center">
                                         <TextAreaHookForm
                                             label="Remark:"
@@ -666,9 +643,25 @@ function Icc(props) {
                                         </Row>
                                     </Popup>
                                 </Col>
-                            </div>
-                        </Col>
+                            </>
+                        }
+
                     </Row>
+                    {state.iccMethod !== 'Credit Based' && <Row>
+                        <Col md="12">
+                            <TableRenderer
+                                data={state.iccDetails}
+                                columns={Inventory_Day_Columns}
+                                register={register}
+                                Controller={Controller}
+                                control={control}
+                                errors={errors}
+                                isViewMode={CostingViewMode}
+                                setValue={setValue}
+                                includeOverHeadProfitIcc={includeOverHeadProfitIcc}
+                            />
+                        </Col>
+                    </Row>}
                     {state.openCalculatorIcc && <IccCalculator
                         anchor={`right`}
                         isOpen={state.openCalculatorIcc}
