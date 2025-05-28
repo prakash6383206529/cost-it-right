@@ -837,9 +837,10 @@ class AddAssemblyPart extends Component {
         String(DataToCheck.RevisionNumber) === String(values?.RevisionNumber) &&
         String(DataToCheck?.DrawingNumber) === String(values?.DrawingNumber) &&
         String(DataToCheck?.Remark) === String(values?.Remark) &&
-        String(DataToCheck?.SAPCode) === String(values?.SAPCode) &&
-        (partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartModelId) === String(this?.state?.Model?.value) : true) &&
-        (partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartsModelMaster) === String(this?.state?.Model?.label) : true) &&
+        String(DataToCheck?.SAPCode ?? "") === String(values?.SAPCode ?? "") &&
+        // (partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartModelId) === String(this?.state?.Model?.value) : true) &&
+        // (partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartsModelMaster) === String(this?.state?.Model?.label) : true) &&
+        (this?.state?.isBomEditable ? String(DataToCheck?.PartModelId) === String(values?.Model?.value) : true) && // Handled via "isBOMEditable" to allow edits even if "partPermissions?.IsPartModelMandatory" is false. user can edit without warning mesage 
         (partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamilyId) === String(this?.state?.PartFamilySelected?.value) : true) &&
         (partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamily) === String(this?.state?.PartFamilySelected?.label) : true) &&
         (partPermissions?.IsNepNumberMandatory ? String(DataToCheck?.NEPNumber) === String(values?.NEP) : true);
