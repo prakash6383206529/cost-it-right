@@ -58,7 +58,7 @@ class ModelDrawer extends Component {
       this.props.editModel(updateData, (res) => {
         this.setState({ isLoader: false });
         if (res && res.data && res.data.Result) {
-          Toaster.success(res?.data?.Message);
+          Toaster.success("Parts Model updated successfully");
           if (this.props.refreshModelList) this.props.refreshModelList();
           if (this.props.onClose) this.props.onClose({
             ...res.data.Data,
@@ -75,7 +75,7 @@ class ModelDrawer extends Component {
       this.props.addModel(addData, (res) => {
         this.setState({ isLoader: false });
         if (res && res.data && res.data.Result) {
-          Toaster.success(res?.data?.Message);
+          Toaster.success("Parts Model added successfully");
           if (this?.props?.refreshModelList) this?.props?.refreshModelList();
           if (this.props.onClose) this.props.onClose({
             ...res.data.Data,
