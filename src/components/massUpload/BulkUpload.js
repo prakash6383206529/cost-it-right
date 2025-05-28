@@ -43,7 +43,7 @@ import {
 //MINDA
 // import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
 import {
-    AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm,
+    AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, MHRMoreVBC, MHRMoreCBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm,
     IndexCommodityListing, CommodityInIndexListing, StandardizedCommodityNameListing,
     IndexDataListing,
     OverheadVBC,
@@ -468,7 +468,7 @@ class BulkUpload extends Component {
                             masterDataArray = localizedProductComponent
                             checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(localizedProductComponent), fileHeads)
                             break;
-                        case String(MACHINEBULKUPLOAD):
+                        case String(MACHINEBULKUPLOAD):                            
                             if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedMachineZBC = this.localizeHeaders(MachineZBC);
                                 masterDataArray = localizedMachineZBC
@@ -484,10 +484,20 @@ class BulkUpload extends Component {
                                 masterDataArray = localizedMachineCBC
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedMachineCBC, ZBCTypeId), fileHeads)
                             }
-                            else {
+                            else if (this.state.costingTypeId === ZBCADDMORE) {
                                 const localizedMHRMoreZBC = this.localizeHeaders(MHRMoreZBC);
                                 masterDataArray = localizedMHRMoreZBC
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreZBC, ZBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreZBC, MHRMoreZBC), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === VBCADDMORE) {
+                                const localizedMHRMoreVBC = this.localizeHeaders(MHRMoreVBC);
+                                masterDataArray = localizedMHRMoreVBC                               
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreVBC, MHRMoreVBC), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCADDMORE) {
+                                const localizedMHRMoreCBC = this.localizeHeaders(MHRMoreCBC);
+                                masterDataArray = localizedMHRMoreCBC
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreCBC, MHRMoreCBC), fileHeads)
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
