@@ -1444,6 +1444,7 @@ export const RejectionCBC = [
     { label: "CustomerCode", value: "CustomerCode" },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -1457,6 +1458,7 @@ export const RejectionCBC_TempData = [
         "CustomerCode": 'C-10006',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
         'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
@@ -1467,6 +1469,7 @@ export const RejectionCBC_TempData = [
         "CustomerCode": 'C-10006',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
@@ -1478,6 +1481,7 @@ export const RejectionCBC_TempData = [
         "CustomerCode": 'C-10006',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 
@@ -1492,6 +1496,7 @@ export const Rejection = [
     { label: 'PlantCode', value: 'PlantCode', },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -1504,6 +1509,7 @@ export const RejectionTempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }, {
         'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
@@ -1513,6 +1519,7 @@ export const RejectionTempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
@@ -1523,6 +1530,7 @@ export const RejectionTempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
@@ -1536,6 +1544,7 @@ export const RejectionVBC = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -1549,6 +1558,7 @@ export const RejectionVBC_TempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
         'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
@@ -1559,6 +1569,7 @@ export const RejectionVBC_TempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
@@ -1570,6 +1581,7 @@ export const RejectionVBC_TempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
