@@ -192,7 +192,7 @@ function StandardRub(props) {
     }
 
     const calculateTonnage = (type) => {
-        const rmName = rmRowDataState?.RMName?.split(" - ")[0]?.trim();
+        const rmName = (rmRowDataState?.RMName?.split(" - ")[0]?.trim())?.toUpperCase();
         const pressureArr = RM_PRESSURE_MAP[rmName] ? RM_PRESSURE_MAP[rmName] : [DEFAULTRMPRESSURE, DEFAULTRMPRESSURE];
         const pressure = type === "MinTonnage" ? pressureArr[0] : pressureArr[1];
         const area = calculateArea();
@@ -395,7 +395,7 @@ function StandardRub(props) {
             Tonnage: calculateTonnage("Tonnage"),
             MinimumTonnage: calculateTonnage("MinTonnage"),
         }
-
+        console.log("Obj",obj)
         const lastRow = tableData[tableData.length - 1]
         const validationFields = [
             ...(isVolumeAutoCalculate ? ["OuterDiameter"] : ["Volume"]),

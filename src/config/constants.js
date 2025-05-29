@@ -3225,7 +3225,7 @@ export const RM_PRESSURE_MAP = {
   "NBR": [500, 600],
   "98 AU 30500": [550, 650],
   "FKM": [600, 700],
-  "Fluoroprene XP": [600, 700],
+  "FLUOROPRENE XP": [600, 700],
   "FFKM": [700, 800]
 };
 
