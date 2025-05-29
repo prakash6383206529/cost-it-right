@@ -220,9 +220,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         let rawMaterialSequence = data?.RawMaterial?.length + 1
         const surfaceArea = calculateState?.Coats?.[0]?.RawMaterials?.[0]?.SurfaceArea ?? '';
         const processedRawMaterials = data?.RawMaterial?.map((item, index) => {
-            const safeConsumption = 1;
+            // const safeConsumption = 1;
             const safeSurfaceArea = checkForNull(surfaceArea);
-            const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
+            // const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
+            const surfaceAreaAndConsumption = safeSurfaceArea;
             let netCost = checkForNull(surfaceAreaAndConsumption)*checkForNull(item?.BasicRatePerUOM)
             setValueTableForm(`SurfaceArea${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, surfaceArea)
             setValueTableForm(`Consumption${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
