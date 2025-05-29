@@ -4,7 +4,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Button from '../../layout/Button';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
-import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, maxLength80, required } from '../../../helper';
+import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, maxLength80, required, hashValidation, validateSpecialCharsForModelName } from '../../../helper';
 import { renderText } from '../../layout/FormInputs';
 import { addModel, editModel, getModelById } from '../actions/Part';
 import { loggedInUserId } from "../../../helper/auth";
@@ -41,9 +41,7 @@ class ModelDrawer extends Component {
     if (this.props.onClose) this.props.onClose();
   };
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-    
+  submitForm = () => {
     const { ModelName } = this.props.formData;
     if (!ModelName) {
       Toaster.warning("Please fill all required fields");
@@ -99,7 +97,7 @@ class ModelDrawer extends Component {
             <form
               noValidate
               className="form"
-              onSubmit={this.handleSubmit}
+              onSubmit={this.props.handleSubmit(this.submitForm)}
               onKeyDown={this.handleKeyDown}
             >
               <Row className="drawer-heading">
@@ -120,7 +118,7 @@ class ModelDrawer extends Component {
                     name={"ModelName"}
                     type="text"
                     placeholder={isEditFlag ? '-' : "Enter"}
-                    validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                    validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation, validateSpecialCharsForModelName]}
                     component={renderText}
                     required={true}
                     className=""

@@ -173,10 +173,11 @@ function TabDiscountOther(props) {
         setValue('HundiOrDiscountPercentage', discountObj !== undefined && discountObj?.HundiOrDiscountPercentage !== null ? discountObj?.HundiOrDiscountPercentage : '')
         // setValue('HundiOrDiscountValue', discountObj !== undefined && discountObj?.DiscountCostType === 'Percentage' ? discountObj !== undefined && (netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)) : otherDiscountData.otherCostTotal)
         setValue('AnyOtherCost', discountObj !== undefined && checkForDecimalAndNull(discountObj?.AnyOtherCost, initialConfiguration?.NoOfDecimalForPrice))
+        
         let topHeaderData = {
           DiscountsAndOtherCost: checkForNull(otherDiscountData.totalCost),
           HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
-          AnyOtherCost: checkForNull(discountObj.AnyOtherCost),
+          AnyOtherCost: checkForNull(otherCostData.otherCostTotal),
           DiscountCostType: discountObj !== undefined && discountObj?.DiscountCostType,
           HundiOrDiscountValue: discountObj && checkForDecimalAndNull(otherDiscountData.totalCost !== null ? otherDiscountData.totalCost : '', initialConfiguration?.NoOfDecimalForPrice),
           DiscountApplicability: discountObj && discountObj?.DiscountApplicability,
@@ -745,7 +746,7 @@ function TabDiscountOther(props) {
 
 
             dispatch(setDiscountCost(discountValues, () => { }))
-
+            
             // setTimeout(() => {           // IF ANY ISSUE COME IN DISCOUNT TAB UNCOMMENT THE SETTIMEOUT ON FIRST PRIORITY AND TEST 
             let topHeaderData = {
               ...Data, ...Data?.CostingPartDetails,
@@ -800,10 +801,11 @@ function TabDiscountOther(props) {
     dispatch(setDiscountCost(discountValues, () => { }))
 
     setTimeout(() => {
+      
       let topHeaderData = {
         DiscountsAndOtherCost: checkForNull(otherDiscountData.totalCost),
         HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
-        AnyOtherCost: checkForNull(discountObj?.AnyOtherCost),
+        AnyOtherCost: checkForNull(otherCostData?.otherCostTotal),
         // OtherCostType: discountObj?.OtherCostType,
         // PercentageOtherCost: checkForNull(discountObj?.PercentageOtherCost),
         HundiOrDiscountValue: checkForNull(otherDiscountData.totalCost !== null ? otherDiscountData.totalCost : ''),
@@ -891,7 +893,7 @@ function TabDiscountOther(props) {
     let topHeaderData = {
       DiscountsAndOtherCost: checkForNull(otherDiscountData.totalCost),
       HundiOrDiscountPercentage: checkForNull(discountObj?.HundiOrDiscountPercentage),
-      AnyOtherCost: checkForNull(discountObj?.AnyOtherCost),
+      AnyOtherCost: checkForNull(otherCostData?.otherCostTotal),
       // OtherCostType: otherCostType?.value,
       PercentageOtherCost: checkForNull(discountObj?.OtherCostPercentage),
       DiscountCostType: hundiscountType.value,
@@ -1654,8 +1656,7 @@ function TabDiscountOther(props) {
 
     let discountTemp = otherDiscountData.gridData?.length > 0 ? otherDiscountData.gridData.map(item => calculateCostByApplicability(item, true)) : [];
     
-    const totalDiscountTemp = discountTemp.reduce((total, item) => total + item.NetCost, 0);
-    
+    const totalDiscountTemp = discountTemp.reduce((total, item) => total + item.NetCost, 0);    
     dispatch(setOtherCostData({ gridData: otherCostTemp, otherCostTotal: totalOtherCostTemp }));
     dispatch(setOtherDiscountData({ gridData: discountTemp, totalCost: totalDiscountTemp }));
     setOtherCostArray(otherCostTemp)
