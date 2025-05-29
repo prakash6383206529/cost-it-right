@@ -2167,69 +2167,65 @@ let iccObj={
                         </button>
                       </Col>
                     </Row>
-                    <Row className="m-0 border-left border-right">
-             
-
-              {icc &&  <Col md="12" className="py-3 overhead-profit-tab">
-
-                  <label
-                    id="Overhead_profit_checkbox4"
-                    className={`custom-checkbox mb-0 w-fit-content`}
-                    onChange={onPressIncludeOverheadProfitInIcc}
-                  >
-                    Include Overhead & Profit in ICC
-                    <input
-                      type="checkbox"
-                      checked={IncludeOverheadProfitInIcc}
-                      disabled={(CostingViewMode )}
-                    />
-                    <span
-                      className=" before-box"
-                      checked={IncludeOverheadProfitInIcc}
-                      onChange={onPressIncludeOverheadProfitInIcc}
-                    />
-                  </label>
-
-                  <label
-                    id="Overhead_profit_checkbox5"
-                    className={`custom-checkbox mb-0 w-fit-content`}
-                    onChange={onPressIsIncludeToolCostInCCForICC}
-                  >
-                    Include Tool Cost in CC for ICC
-                    <input
-                      type="checkbox"
-                      checked={IsIncludeToolCostInCCForICC}
-                      disabled={(CostingViewMode )}
-                    />
-                    <span
-                      className=" before-box"
-                      checked={IsIncludeToolCostInCCForICC}
-                      onChange={onPressIsIncludeToolCostInCCForICC}
-                    />
-                  </label>
-
-                </Col>}
-              </Row>
+                    
                   </Col>
-                  <Row>
-                    <Col md="12">
-                      {icc && <Icc
-                        Controller={Controller}
-                        control={control}
-                        //  rules={rules}
-                        register={register}
-                        defaultValue={''}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                        useWatch={useWatch}
-                        CostingInterestRateDetail={CostingInterestRateDetail}
-                        data={DiscountCostData}
-                        setICCDetail={setICCDetail}
-                      />}
-                    </Col>
-                  </Row>
-                  <Row>
+                  {icc && <div className='costing-border px-2 py-4 m-0 row'>
+                    <Row className="m-0 border-left border-right">
+                      {icc &&  <Col md="12" className="py-3">
+                        <label
+                          id="Overhead_profit_checkbox4"
+                          className={`custom-checkbox mb-0 w-fit-content`}
+                          onChange={onPressIncludeOverheadProfitInIcc}
+                        >
+                          Include Overhead & Profit in ICC
+                          <input
+                            type="checkbox"
+                            checked={IncludeOverheadProfitInIcc}
+                            disabled={(CostingViewMode )}
+                          />
+                          <span
+                            className=" before-box"
+                            checked={IncludeOverheadProfitInIcc}
+                            onChange={onPressIncludeOverheadProfitInIcc}
+                          />
+                        </label>
+
+                        <label
+                          id="Overhead_profit_checkbox5"
+                          className={`custom-checkbox mb-0 w-fit-content`}
+                          onChange={onPressIsIncludeToolCostInCCForICC}
+                        >
+                          Include Tool Cost in CC for ICC
+                          <input
+                            type="checkbox"
+                            checked={IsIncludeToolCostInCCForICC}
+                            disabled={(CostingViewMode )}
+                          />
+                          <span
+                            className=" before-box"
+                            checked={IsIncludeToolCostInCCForICC}
+                            onChange={onPressIsIncludeToolCostInCCForICC}
+                          />
+                        </label>
+
+                      </Col>}
+                    </Row>
+                        {icc && <Icc
+                          Controller={Controller}
+                          control={control}
+                          //  rules={rules}
+                          register={register}
+                          defaultValue={''}
+                          setValue={setValue}
+                          getValues={getValues}
+                          errors={errors}
+                          useWatch={useWatch}
+                          CostingInterestRateDetail={CostingInterestRateDetail}
+                          data={DiscountCostData}
+                          setICCDetail={setICCDetail}
+                        />}
+                    </div>}
+                    <Row>
                     {/* {
                       initialConfiguration?.IsShowCRMHead && <Col md="3">
                         <SearchableSelectHookForm
