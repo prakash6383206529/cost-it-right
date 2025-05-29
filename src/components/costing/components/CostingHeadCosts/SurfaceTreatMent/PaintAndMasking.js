@@ -332,14 +332,19 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(totalPaintCost, NoOfDecimalForPrice))
     }
     const calculateValues = debounce((surfaceArea, consumption, rejectionAllowancePercentage, parentIndex, childIndex, rm) => {
-        // Default consumption to 1 if null/undefined/0 to avoid multiplication by 0
-        const safeConsumption = consumption ? checkForNull(consumption) : 1;
+
+        const safeConsumption = checkForNull(consumption);
         const safeSurfaceArea = checkForNull(surfaceArea);
-        const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
-        //Rejection Allowance = (Surface Area * Consumption) * Rejection Allowance Percentage / 100
-        const rejectionAllowance = surfaceAreaAndConsumption * rejectionAllowancePercentage / 100
-        //Net Cost = ((Surface Area * Consumption) + Rejection Allowance) * RM Rate
-        const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
+        let surfaceAreaAndConsumption;
+        if (!safeConsumption) {
+        // When consumption is null or 0, skip division by 1000
+        surfaceAreaAndConsumption = safeSurfaceArea;
+        } else {
+            surfaceAreaAndConsumption = safeSurfaceArea * (safeConsumption / 1000);
+        }
+
+        const rejectionAllowance = surfaceAreaAndConsumption * (rejectionAllowancePercentage / 100);
+        const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM;
         let paintDataListTemp = [...calculateState.Coats];
         if (paintDataListTemp[parentIndex]?.RawMaterials[childIndex]) {
             paintDataListTemp[parentIndex].RawMaterials[childIndex] = {
@@ -381,9 +386,15 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
             if (allMissingSurfaceArea) {
                 paintDataListTemp.forEach((coat, parentIndex) => {
                     coat.RawMaterials.forEach((rm, childIndex) => {
-                        const safeConsumption = consumption ? checkForNull(consumption) : 1;
+                        const safeConsumption = checkForNull(consumption);
                         const safeSurfaceArea = checkForNull(surfaceArea);
-                        const surfaceAreaAndConsumption = (safeSurfaceArea * (safeConsumption / 1000));
+                        let surfaceAreaAndConsumption;
+                        if (!safeConsumption) {
+                        // When consumption is null or 0, skip division by 1000
+                        surfaceAreaAndConsumption = safeSurfaceArea;
+                        } else {
+                            surfaceAreaAndConsumption = safeSurfaceArea * (safeConsumption / 1000);
+                        }
                         const rejectionAllowance = checkForNull(surfaceAreaAndConsumption) * checkForNull(rm?.RejectionAllowancePercentage / 100)
                         const netCost = (surfaceAreaAndConsumption + rejectionAllowance) * rm?.BasicRatePerUOM
                         const baseUpdate = {
