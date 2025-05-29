@@ -393,7 +393,7 @@ function StandardRub(props) {
             IsVolumeAutoCalculate: isVolumeAutoCalculate,
             Area: calculateArea(),
             Tonnage: calculateTonnage("Tonnage"),
-            MinTonnage: calculateTonnage("MinTonnage"),
+            MinimumTonnage: calculateTonnage("MinTonnage"),
         }
 
         const lastRow = tableData[tableData.length - 1]
@@ -530,7 +530,7 @@ function StandardRub(props) {
         obj.BaseCostingId = item?.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialRubberStandardWeightCalculator = tableData
-        obj.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? Math.min(...tableData.map(item => item.MinTonnage)) : null;
+        obj.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? Math.min(...tableData.map(item => item.MinimumTonnage)) : null;
         obj.usedRmData = usedRmData
 
         if (unUsedRmData.length > 0) {
