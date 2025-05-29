@@ -1077,8 +1077,7 @@ function ViewConversionCost(props) {
                     </>
                   }
 
-
-                  {(showLabourData && !props.viewConversionCostData?.labourHide && props.viewConversionCostData?.IsAssemblyCosting && !props.viewConversionCostData?.isSurfaceTreatmentCost) && <>
+                  {(labourTable?.length > 0 && showLabourData && !props.viewConversionCostData?.labourHide && props.viewConversionCostData?.IsAssemblyCosting && !props.viewConversionCostData?.isSurfaceTreatmentCost) && <>
                     {labourTableData()}
                   </>
                   }
