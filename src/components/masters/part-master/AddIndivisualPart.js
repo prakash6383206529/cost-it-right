@@ -458,16 +458,17 @@ class AddIndivisualPart extends Component {
         }
       }
       //THIS CONDITION TO CHECK IF ALL VALUES ARE SAME (IF YES, THEN NO NEED TO CALL UPDATE API JUST SEND IT TO LISTING PAGE)
-      if (DropdownChanged && String(DataToCheck.PartName) === String(values?.PartName) && String(DataToCheck.Description) === String(values?.Description) &&
+      const partDetailNotChange = partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartModelId) === String(this?.state?.Model?.value) : true &&
+        partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartsModelMaster) === String(this?.state?.Model?.label) : true &&
+          partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamilyId) === String(this?.state?.PartFamilySelected?.value) : true &&
+            partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamily) === String(this?.state?.PartFamilySelected?.label) : true &&
+              partPermissions?.IsNepNumberMandatory ? String(DataToCheck?.NEPNumber) === String(values?.NEP) : true
+      const DataNotChange = DropdownChanged && String(DataToCheck.PartName) === String(values?.PartName) && String(DataToCheck.Description) === String(values?.Description) &&
         String(DataToCheck.ECNNumber) === String(values?.ECNNumber) && JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(productArray) &&
         String(DataToCheck.RevisionNumber) === String(values?.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values?.DrawingNumber)
         && String(DataToCheck.Remark) === String(values?.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values?.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)
-        && (partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamilyId) === String(this?.state?.PartFamilySelected?.value) : true) &&
-              (partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamily) === String(this?.state?.PartFamilySelected?.label) : true) &&
-                (partPermissions?.IsNepNumberMandatory ? String(DataToCheck?.NEPNumber) === String(values?.NEP) : true) &&
-                (this?.state?.isBomEditable ? String(DataToCheck?.PartModelId) === String(values?.Model?.value) : true) // Handled via "isBOMEditable" to allow edits even if "partPermissions?.IsPartModelMandatory" is false. user can edit without warning mesage 
-      ) {
 
+      if (DataNotChange && partDetailNotChange) {
         Toaster.warning('Please change data to save Part Details');
         return false;
       }
