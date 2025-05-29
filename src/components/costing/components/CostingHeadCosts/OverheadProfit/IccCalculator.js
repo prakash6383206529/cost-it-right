@@ -28,7 +28,6 @@ function IccCalculator(props) {
     const costData = useContext(costingInfoContext);
     const { SurfaceTabData, PackageAndFreightTabData, IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData } = useSelector(state => state.costing)
     const { costingData, IsCalculatorExist } = useSelector(state => state.costing)
-    console.log(IsCalculatorExist, 'IsCalculatorExist')
     const {
         register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
             mode: 'onChange',
@@ -57,7 +56,6 @@ function IccCalculator(props) {
 
         dispatch(getIccCalculation(props.iccInterestRateId, !IsCalculatorExist ? null : costingData?.CostingId, (response) => {
             let data = response?.data?.Data
-            console.log(data, 'data')
             setValue("InterestOnReceivables", data?.CreditBasedAnnualICCPercent)
             setValue('MarkupFactor', data?.MarkupFactor)
             setState(prev => ({

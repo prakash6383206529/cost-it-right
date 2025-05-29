@@ -11,7 +11,9 @@ import {
   saveCostingDetailForIcc,
   setIncludeOverheadProfitIcc,
   isIccDataChange,
-  setIsCalculatorExist
+  setIsCalculatorExist,
+  setIncludeToolCostIcc,
+  setToolCostInOverheadProfit
 } from '../../actions/Costing';
 import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, getTaxCodeSelectList, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -88,7 +90,7 @@ function TabDiscountOther(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType,IccDataDiscountTab, checkIsIccDataChange,costingDetailForIcc } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType,IccDataDiscountTab, checkIsIccDataChange,costingDetailForIcc,IccCost,includeOverHeadProfitIcc, includeToolCostIcc, } = useSelector(state => state.costing)
   
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
@@ -139,8 +141,8 @@ function TabDiscountOther(props) {
   const taxCodeList = useSelector(state => state.comman.taxCodeList)
   const [count, setCount] = useState(0)
   const [icc, setIcc] = useState(false)
-  const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(false)
-  const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(false)
+  const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC??false)
+  const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(costingDetailForIcc?.IsIncludeToolCostInCCForICC??false)
   const npvDrawerCondition = (
     ((IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
     (!(IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
@@ -224,6 +226,10 @@ function TabDiscountOther(props) {
     }))
     dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => {}))
   }, [costData])
+  useEffect(() => {
+    dispatch(setIncludeToolCostIcc(costingDetailForIcc?.IsIncludeToolCostInCCForICC, () => { }))
+    dispatch(setIncludeOverheadProfitIcc(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC, () => { }))
+  }, [costingDetailForIcc])
   const viewAddButtonIcon = (data, type) => {
 
     let className = ''
@@ -917,7 +923,7 @@ function TabDiscountOther(props) {
 
   useEffect(() => {
     setValueForTopHeader()
-  }, [discountObj])
+  }, [discountObj,IccCost])
 
   /**
   * @method handleAnyOtherCostChange
@@ -1356,7 +1362,17 @@ function TabDiscountOther(props) {
         "Remark": DiscountAndOtherCostTabData?.Remark || ""
       }
     };
-
+let iccObj={
+  "LoggedInUserId": loggedInUserId(),
+  "CostingId": costData?.CostingId,
+  "IsIncludeToolCostInCCForICC":IsIncludeToolCostInCCForICC,
+  "IsIncludeOverheadAndProfitInICC":IncludeOverheadProfitInIcc,
+  "NetPOPrice": netPOPrice,
+  "BasicRate": netPOPrice - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)),
+  "NetICC": IccCost?.NetCost,
+  "IsInventoryCarringCost": true,
+  "ICCApplicabilityDetail":IccDataDiscountTab
+}
     if (costData.IsAssemblyPart === true && !partType) {
       let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
       if (!CostingViewMode) {
@@ -1372,8 +1388,9 @@ function TabDiscountOther(props) {
           if (checkIsPaymentTermsDataChange === true) {
             dispatch(saveCostingPaymentTermDetail(obj, res => { }))
           }
+          
           if (checkIsIccDataChange === true) {
-            dispatch(saveCostingDetailForIcc(obj, res => { }))
+            dispatch(saveCostingDetailForIcc(iccObj, res => { }))
           }
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           // dispatch(setComponentDiscountOtherItemData({}, () => { }))
@@ -2053,12 +2070,9 @@ function TabDiscountOther(props) {
  * @description  set updated NetPaymentTermCost 
  */
     const setICCDetail = (data, params) => {
-      console.log("data",data)
       let updatedIccobj = {
         ...IccDataDiscountTab,
-        ICCCostingApplicabilityDetails: {
           ...data
-        }
       };
       updatedIccobj.NetPaymentTermCost = data.NetCost;
   
@@ -2102,14 +2116,17 @@ function TabDiscountOther(props) {
     dispatch(isIccDataChange(true))
   }
   const onPressIsIncludeToolCostInCCForICC = () => {
-    console.log(ToolTabData[0],'ToolTabData');
+    // console.log(ToolTabData[0],'ToolTabData');
+    // console.log(overallApplicabilityToolData,'overallApplicabilityToolData');
     
-    if (ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed' || (overallApplicabilityToolData && overallApplicabilityToolData?.label !== 'Fixed')) {
+    
+    if ((ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Fixed') || 
+        (overallApplicabilityToolData?.label !== 'Fixed')) {
       Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in ICC.')
       return false
     } else {
-      dispatch(setIsIncludeToolCostInCCForICC(!IsIncludeToolCostInCCForICC, () => { }))
       setIsIncludeToolCostInCCForICC(!IsIncludeToolCostInCCForICC)
+      dispatch(setIncludeToolCostIcc(!IsIncludeToolCostInCCForICC, () => { }))
       dispatch(isIccDataChange(true))
     }
   }

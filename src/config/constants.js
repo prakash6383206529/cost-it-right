@@ -3406,7 +3406,8 @@ export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra
 export const OVERHEADMASTER = "Overhead Master"
 export const PROFITMASTER = "Profit Master"
 export const REJECTIONMASTER = "Rejection Master"
-export const ICCANDPAYMENTMASTER = "ICC And Payment Master"
+export const ICCMASTER = "ICC Master"
+export const PAYMENTTERMMASTER='PaymentTerm Master'
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"

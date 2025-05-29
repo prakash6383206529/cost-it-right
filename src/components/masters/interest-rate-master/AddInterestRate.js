@@ -9,7 +9,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import DayTime from '../../common/DayTimeWrapper';
 import { useTranslation } from 'react-i18next';
 // import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull } from "../../../helper";
-import { CBCTypeId, EMPTY_DATA, ICCANDPAYMENTMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, EMPTY_DATA, ICCMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { fetchApplicabilityList, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { autoCompleteDropdown, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
@@ -125,7 +125,7 @@ const AddInterestRate = (props) => {
     const { applicabilityList } = useSelector((state) => state.comman);
     const vendorSelectList = useSelector((state) => state.comman.vendorSelectList);
 
-    const conditionTypeId = getCostingConditionTypes(ICCANDPAYMENTMASTER);
+    const conditionTypeId = getCostingConditionTypes(ICCMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
 

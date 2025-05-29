@@ -8,7 +8,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import DayTime from '../../common/DayTimeWrapper';
 import { useTranslation } from 'react-i18next';
 // import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull } from "../../../helper";
-import { CBCTypeId, EMPTY_DATA, ICCANDPAYMENTMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, EMPTY_DATA, PAYMENTTERMMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { fetchApplicabilityList, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { autoCompleteDropdown, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
@@ -107,7 +107,7 @@ const AddPaymentTerms = (props) => {
     const costingHead = useSelector((state) => state.comman.costingHead);
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
     const { iccApplicabilitySelectList, interestRateData, iccMethodSelectList, inventoryDayTypeSelectList, wipCompositionMethodSelectList } = useSelector((state) => state.interestRate);
-    const conditionTypeId = getCostingConditionTypes(ICCANDPAYMENTMASTER);
+    const conditionTypeId = getCostingConditionTypes(PAYMENTTERMMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
 

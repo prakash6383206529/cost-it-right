@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
-import { getIccDataByModelType, gridDataAdded, isIccDataChange, isOverheadProfitDataChange, setIsCalculatorExist, setOverheadProfitErrors, } from '../../../actions/Costing';
+import { getIccDataByModelType, gridDataAdded, isIccDataChange, isOverheadProfitDataChange, setIccCost, setIsCalculatorExist, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { CBCTypeId, CRMHeads, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
@@ -33,7 +33,6 @@ function Icc(props) {
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData,costingDetailForIcc } = useSelector(state => state.costing)
     const ICCApplicabilityDetail = costingDetailForIcc && costingDetailForIcc.ICCApplicabilityDetail !== null ? costingDetailForIcc.ICCApplicabilityDetail : {}
-
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
     const [tempInventoryObj, setTempInventoryObj] = useState(ICCApplicabilityDetail)
     const [isPartApplicability, setIsPartApplicability] = useState(false)
@@ -88,6 +87,9 @@ function Icc(props) {
             }));
         }))
     }, [])
+    useEffect(() => {
+        dispatch(setIccCost({ NetCost:costingDetailForIcc?.NetICC}))
+    }, [costingDetailForIcc])
 
     /**
      * @method onPressInventory
@@ -195,8 +197,10 @@ function Icc(props) {
                 });
                 setState(prev => ({
                     ...prev,
-                    iccDetails: updatedData
+                    iccDetails: updatedData,
+                    totalIccCost: updatedData.reduce((sum, item) => sum + item.TotalCost, 0)
                 }));
+                dispatch(setIccCost({ NetCost:updatedData.reduce((sum, item) => sum + item?.TotalCost, 0)}))
                 return;
             }
             dispatch(isIccDataChange(true))
@@ -205,7 +209,9 @@ function Icc(props) {
 
 
     useEffect(() => {
-        checkInventoryApplicability(state?.iccDetails, state?.isApplyInventoryDay)
+        if(state?.iccDetails?.length > 0){
+            checkInventoryApplicability(state?.iccDetails, state?.isApplyInventoryDay)
+        }
     }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight, includeOverHeadProfitIcc, totalOverHeadAndProfit, includeToolCostIcc]);
 
     useEffect(() => {
@@ -277,6 +283,7 @@ function Icc(props) {
         setValue('totalIccReceivable', 0)
         setValue('totalIccNetCost', 0)
         dispatch(setIsCalculatorExist(false))
+        dispatch(setIccCost({ NetCost:0}))
         if (ModelTypeValues && ModelTypeValues !== '' && ModelTypeValues.value !== undefined) {
             const reqParams = {
                 ModelTypeId: ModelTypeValues.value,
@@ -306,6 +313,7 @@ function Icc(props) {
                     checkInventoryApplicability(data?.ICCCostingApplicabilityDetails, data?.IsApplyInventoryDay)
                 }
             }))
+        dispatch(isIccDataChange(true))
         } else {
             setState(prev => ({
                 ...prev,
@@ -404,6 +412,7 @@ function Icc(props) {
                 totalIccNetCost: formData?.NetICC,
                 markUpFactor: formData?.MarkupFactor
             }))
+            dispatch(setIccCost({ NetCost:formData?.NetICC}))
             setValue('totalIccPayable', checkForDecimalAndNull(formData?.ICCPayableToSupplierCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('totalIccReceivable', checkForDecimalAndNull(formData?.ICCReceivableFromSupplierCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('totalIccNetCost', checkForDecimalAndNull(formData?.NetICC, getConfigurationKey()?.NoOfDecimalForPrice))
@@ -415,6 +424,7 @@ function Icc(props) {
                 MarkupFactor: formData?.MarkupFactor
             })
             dispatch(setIsCalculatorExist(true))
+            dispatch(isIccDataChange(true))
             
         } else {
             dispatch(setIsCalculatorExist(false))
@@ -578,7 +588,7 @@ function Icc(props) {
                                         mandatory={false}
                                         handleChange={() => { }}
                                         disabled={true}
-                                        defaultValue={state.totalIccPayable}
+                                        defaultValue={checkForDecimalAndNull(state.totalIccPayable,getConfigurationKey()?.NoOfDecimalForPrice)}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -592,7 +602,7 @@ function Icc(props) {
                                         mandatory={false}
                                         handleChange={() => { }}
                                         disabled={true}
-                                        defaultValue={state.totalIccReceivable}
+                                        defaultValue={checkForDecimalAndNull(state.totalIccReceivable,getConfigurationKey()?.NoOfDecimalForPrice)}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -606,7 +616,7 @@ function Icc(props) {
                                         mandatory={false}
                                         handleChange={() => { }}
                                         disabled={true}
-                                        defaultValue={state.totalIccNetCost}
+                                        defaultValue={checkForDecimalAndNull(state.totalIccNetCost,getConfigurationKey()?.NoOfDecimalForPrice)}
                                     />
                                 </Col>
                             </>
