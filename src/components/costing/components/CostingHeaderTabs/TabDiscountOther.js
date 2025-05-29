@@ -2169,8 +2169,8 @@ let iccObj={
                     </Row>
                     
                   </Col>
-                  {icc && <div className='costing-border px-2 py-4 m-0 row'>
-                    <Row className="m-0 border-left border-right">
+                  {icc && <div className='costing-border px-2 py-4 m-0 mb-4 row'>
+                    <Row className="m-0 border-left border-right pl-0">
                       {icc &&  <Col md="12" className="py-3">
                         <label
                           id="Overhead_profit_checkbox4"

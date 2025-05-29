@@ -518,6 +518,7 @@ function Icc(props) {
                                 handleChange={() => { }}
                                 errors={errors.ICCMethod}
                                 disabled={true}
+                                customClassName={"withBorder"}
                                 defaultValue={InventoryObj?.ICCMethod}
                             />
                         </Col>
@@ -548,6 +549,7 @@ function Icc(props) {
                                     handleChange={() => { }}
                                     errors={errors.InventoryDayType}
                                     disabled={true}
+                                    customClassName={"withBorder"}
                                     defaultValue={InventoryObj?.ApplicabilityBasedInventoryDayType}
                                 />
                             </Col>) :
@@ -564,6 +566,7 @@ function Icc(props) {
                                         handleChange={() => { }}
                                         errors={errors.CreditBasedAnnualIcc}
                                         disabled={true}
+                                        customClassName={"withBorder"}
                                         defaultValue={InventoryObj?.CreditBasedAnnualICCPercent}
                                     />
                                 </Col>)}
@@ -592,6 +595,7 @@ function Icc(props) {
                                         mandatory={false}
                                         handleChange={() => { }}
                                         disabled={true}
+                                        customClassName={"withBorder"}
                                         defaultValue={checkForDecimalAndNull(state.totalIccPayable,getConfigurationKey()?.NoOfDecimalForPrice)}
                                     />
                                 </Col>
@@ -606,6 +610,7 @@ function Icc(props) {
                                         mandatory={false}
                                         handleChange={() => { }}
                                         disabled={true}
+                                        customClassName={"withBorder"}
                                         defaultValue={checkForDecimalAndNull(state.totalIccReceivable,getConfigurationKey()?.NoOfDecimalForPrice)}
                                     />
                                 </Col>
@@ -620,6 +625,7 @@ function Icc(props) {
                                         mandatory={false}
                                         handleChange={() => { }}
                                         disabled={true}
+                                        customClassName={"withBorder"}
                                         defaultValue={checkForDecimalAndNull(state.totalIccNetCost,getConfigurationKey()?.NoOfDecimalForPrice)}
                                     />
                                 </Col>
@@ -658,7 +664,7 @@ function Icc(props) {
 
                     </Row>
                     {state.iccMethod !== 'Credit Based' && <Row>
-                        <Col md="12">
+                        <Col md="11" className='pr-0'>
                             <TableRenderer
                                 data={state.iccDetails}
                                 columns={Inventory_Day_Columns}
@@ -670,6 +676,40 @@ function Icc(props) {
                                 setValue={setValue}
                                 includeOverHeadProfitIcc={includeOverHeadProfitIcc}
                             />
+                        </Col>
+                        <Col md="1" className='second-section mb-3'>
+                                <div className='costing-border-inner-section'>
+                                <Col md="12" className='text-center pb-2 text-black'>Remark</Col>
+                                <Col md="12">
+                                <Popup trigger={<button id={`popUpTriggerIcc`} title="Remark" className="Comment-box mt10" type={'button'} />}
+                                    position="top center">
+                                    <TextAreaHookForm
+                                        label="Remark:"
+                                        name={`iccRemark`}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            maxLength: REMARKMAXLENGTH
+                                        }}
+                                        handleChange={() => { }}
+                                        className=""
+                                        customClassName={"withBorder"}
+                                        errors={errors.iccRemark}
+                                        disabled={CostingViewMode}
+                                        hidden={false}
+                                        validateWithRemarkValidation={true}
+                                    />
+                                    <Row>
+                                        <Col md="12" className='remark-btn-container'>
+                                            <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickIcc()} > <div className='save-icon'></div> </button>
+                                            <button className='reset' onClick={() => onRemarkPopUpCloseIcc()} > <div className='cancel-icon'></div></button>
+                                        </Col>
+                                    </Row>
+                                </Popup>
+                                </Col>
+                            </div>
                         </Col>
                     </Row>}
                     {state.openCalculatorIcc && <IccCalculator
