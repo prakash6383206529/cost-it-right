@@ -126,13 +126,13 @@ function LabourListing(props) {
       baseCostingId: null,
     }
     dispatch(getLabourDataList(true, filterData, (res) => {
-      setState((prevState) => ({ ...prevState, isLoader: false }))
       if (res.status === 204 && res.data === '') {
-        setState((prevState) => ({ ...prevState, tableData: [] }))
+        setState((prevState) => ({ ...prevState, tableData: [], isLoader: false, noData: true }))
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        setState((prevState) => ({ ...prevState, tableData: Data, totalRecordCount: Data?.length }))
+        setState((prevState) => ({ ...prevState, tableData: Data, totalRecordCount: Data?.length, isLoader: false, noData: false }))
       } else {
+        setState((prevState) => ({ ...prevState, isLoader: false }))
       }
     }))
   }
@@ -333,7 +333,7 @@ function LabourListing(props) {
     state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-    setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0, globalTake: defaultPageSize }));
+    setState((prevState) => ({ ...prevState, isLoader: true, dataCount: 0, globalTake: defaultPageSize, noData: false }));
     filterList()
   }
 
