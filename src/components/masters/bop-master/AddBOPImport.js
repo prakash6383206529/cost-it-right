@@ -1401,6 +1401,11 @@ class AddBOPImport extends Component {
       currencyValue, DropdownChanged, IsSAPCodeUpdated, IsSAPCodeHandle, LocalExchangeRateId, LocalCurrencyId, plantCurrencyValue, ExchangeRateId, ExchangeSource } = this.state;
     const { isBOPAssociated } = this.props
 
+    if (costingTypeId === VBCTypeId && (values?.Source === null || values?.Source === undefined || values?.Source === '')) {
+      Toaster.warning("Source is required")
+      return false
+    }
+
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -2113,7 +2118,7 @@ class AddBOPImport extends Component {
                                   name={"Source"}
                                   type="text"
                                   placeholder={isEditFlag ? '-' : "Enter"}
-                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation, required]}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation]}
                                   component={renderText}
                                   valueDescription={this.state.source}
                                   onChange={this.handleSource}

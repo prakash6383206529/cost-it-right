@@ -1063,6 +1063,11 @@ class AddBOPDomestic extends Component {
     const { fieldsObj, isBOPAssociated } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
 
+    if (costingTypeId === VBCTypeId && (values?.Source === null || values?.Source === undefined || values?.Source === '')) {
+      Toaster.warning("Source is required")
+      return false
+    }
+
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -1764,7 +1769,7 @@ class AddBOPDomestic extends Component {
                                   name={"Source"}
                                   type="text"
                                   placeholder={isViewMode ? "-" : "Enter"}
-                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80), hashValidation, required]}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80), hashValidation]}
                                   component={renderText}
                                   valueDescription={this.state.source}
                                   onChange={this.handleSource}
