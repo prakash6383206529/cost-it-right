@@ -13,10 +13,10 @@ import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncS
 import { fetchApplicabilityList, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { autoCompleteDropdown, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material';
-import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, getWipCompositionMethodList, getInventoryDayTypeSelectList, getInterestRateDataList, getICCMethodSelectList } from '../actions/InterestRateMaster';
+import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getInterestRateData, getInterestRateDataList, getInterestRateDataCheck } from '../actions/InterestRateMaster';
 import { getClientSelectList } from '../actions/Client';
 import { getPartFamilySelectList } from '../actions/Part';
-import { fetchCostingHeadsAPI, fetchModelTypeAPI, getPlantSelectListByType } from '../../../actions/Common';
+import { getPlantSelectListByType } from '../../../actions/Common';
 import { ASSEMBLY } from '../../../config/masterData';
 import WarningMessage from '../../common/WarningMessage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -25,8 +25,6 @@ import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import { checkEffectiveDate } from '../masterUtil';
-import { required, postiveNumber, maxLength10, nonZero, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, checkForNull, maxLength7 } from "../../../helper/validation";
-import { fetchSpecificationDataAPI } from '../../../actions/Common';
 import AddOverheadMasterDetails from '../overhead-profit-master/AddOverheadMasterDetails';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
@@ -116,41 +114,96 @@ const AddPaymentTerms = (props) => {
         if (!(props.data.isEditFlag || state.isViewMode)) {
             dispatch(getClientSelectList(() => {}));
             dispatch(getPartFamilySelectList(() => {}));
-            dispatch(fetchModelTypeAPI('--Model Types--', (res) => {}));
         }
-        dispatch(getWipCompositionMethodList(() => {}));
-        dispatch(getInventoryDayTypeSelectList(() => {}));
-        dispatch(getICCMethodSelectList(() => {}));
-
-        const isRequestForMultiTechnology = state.isAssemblyCheckbox;
+        const isRequestForMultiTechnology = state?.isAssemblyCheckbox;
         dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, () => {}));
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => {}));
         getDetail();
-        dispatch(getICCAppliSelectList(() => {}));
-        dispatch(fetchCostingHeadsAPI('payment terms', false, false, res => {
-            const temp = [];
-            res?.data?.SelectList?.map((item) => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value });
-                return null;
-            });
-            setState(prev => ({ ...prev, paymentTermsApplicability: temp }));
-            
-            dispatch(fetchCostingHeadsAPI('ICC', false, false, res => {
-                const temp = [];
-                res?.data?.SelectList?.map((item) => {
-                    if (item.Value === '0') return false;
-                    temp.push({ label: item.Text, value: item.Value });
-                    return null;
-                });
-                setState(prev => ({ ...prev, iccApplicability: temp }));
-            }));
-        }));
-
         if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
             dispatch(getRawMaterialNameChild(() => {}));
         }
     }, []);
+
+
+    function getPlants() {
+        const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'));
+        let plantArray = [];
+        if (state?.costingTypeId === VBCTypeId) {
+            plantArray.push({ PlantName: state?.singlePlantSelected?.label, PlantId: state?.singlePlantSelected?.value });
+        } else {
+            state?.selectedPlants && state?.selectedPlants?.map((item) => {
+                plantArray.push({ PlantName: item.label, PlantId: item.value });
+                return plantArray;
+            });
+        }
+
+        let cbcPlantArray = [];
+        if (state?.costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) {
+            cbcPlantArray.push({ PlantName: state?.singlePlantSelected.label, PlantId: state?.singlePlantSelected?.value });
+        } else {
+            userDetailsInterest?.Plants.map((item) => {
+                cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode });
+                return cbcPlantArray;
+            });
+        }
+        return {plantArray, cbcPlantArray}
+    }
+
+    useEffect(() => {
+        if (!(props?.data?.isEditFlag || state.isViewMode)) {
+            const hasRequiredFields = (
+            (state.costingTypeId === ZBCTypeId) ||
+            (state.costingTypeId === CBCTypeId && state?.client) ||
+            (state.costingTypeId === VBCTypeId && state?.vendorName)
+            );
+            if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
+            const { plantArray, cbcPlantArray } = getPlants();
+            let data = {
+                vendorInterestRateId: state?.InterestRateId,
+                costingHeadId: state?.costingTypeId,
+                plantId: state?.costingTypeId === CBCTypeId ? cbcPlantArray[0]?.PlantId : plantArray[0]?.PlantId,
+                vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
+                customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
+                isPaymentTermsRecord: true,
+                partFamilyId: state?.selectedPartFamily?.value,
+                modelTypeId: state?.ModelType?.value,
+                iccMethodId: state.selectedICCMethod?.value,
+                effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+                technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null
+            }
+            dispatch(getInterestRateDataCheck(data, (res) => {
+                if (res?.status === 200) {
+                let Data = res?.data?.Data;
+                if(Object.keys(Data).length > 0){
+                    setValue("Remark", Data.Remark)
+                    setValue("costingTypeId", Data.CostingTypeId);
+                    setState(prev => ({ ...prev, 
+                    IsFinancialDataChanged: false,
+                    isEditFlag: true,
+                    remarks: Data.Remark,
+                    files: Data.Attachements,
+                    RawMaterial: Data.RawMaterialName !== undefined ? { label: Data?.RawMaterialName, value: Data?.RawMaterialChildId } : [],
+                    RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data?.RawMaterialGrade, value: Data?.RawMaterialGradeId } : [],
+                    ApplicabilityDetails: Data?.PaymentTermsApplicabilityDetails !== undefined ? Data.PaymentTermsApplicabilityDetails : [],
+                    minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
+                    InterestRateId: Data?.VendorInterestRateId,
+                    }));
+                }
+                } else {
+                setState(prev => ({
+                    ...prev,
+                    isEditFlag: false,
+                    ApplicabilityDetails: [],
+                    files: [],
+                    IsFinancialDataChanged: true,
+                    minEffectiveDate: '',
+                    InterestRateId: "",
+                }));
+                }
+            }));
+            }
+        }
+    }, [state?.ModelType, state?.selectedPlants, state?.vendorName, state?.client, state?.EffectiveDate, state.isAssemblyCheckbox]);
 
 
     const getDetail = () => {
@@ -196,16 +249,12 @@ const AddPaymentTerms = (props) => {
                             selectedPlants: Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId }] : [],
                             singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {},
                             ApplicabilityDetails: Data?.PaymentTermsApplicabilityDetails !== undefined ? Data.PaymentTermsApplicabilityDetails : [],
-
-                            // ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
                             PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
                             EffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
                             RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
                             isAssemblyCheckbox: Data?.TechnologyId === ASSEMBLY ? true : false ,
                             selectedPartFamily: Data?.PartFamily !== undefined ? { label: Data?.PartFamily, value: Data?.PartFamilyId } : [],
-                            // ApplicabilityDetails: Data?.PaymentTermsApplicabilityDetails !== undefined ? Data.PaymentTermsApplicabilityDetails : [],
-                            // ModelType: Data.ICCModelType !== undefined ? { label: Data?.ICCModelType, value: Data?.ICCModelTypeId } : [],
                             isLoader: false
                         }));
                     }, 500);
@@ -290,9 +339,6 @@ const AddPaymentTerms = (props) => {
             "PaymentTermApplicability": PaymentTermsApplicability.label,
             "CostingTypeId": costingTypeId,
             "VendorIdRef": costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-            "ICCPercent": values.ICCPercent,
-            "PaymentTermPercent": values.PaymentTermPercent,
-            "RepaymentPeriod": values.RepaymentPeriod,
             "EffectiveDate": DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
             "IsActive": true,
             "CreatedDate": '',
@@ -305,46 +351,25 @@ const AddPaymentTerms = (props) => {
             "RawMaterialGrade": RMGrade?.label,
             "PartFamilyId": selectedPartFamily?.value,
             "PartFamily": selectedPartFamily?.label,
-            "ICCApplicabilityDetails": null,
-            "InterestRateInventoryTypeDetails": null,
-            "InterestRateWIPCompositionMethodDetails": null,
             "PaymentTermsApplicabilityDetails": state?.ApplicabilityDetails,
             "IsPaymentTermsRecord": true,
-            "ICCModelType": "",
-            "ICCModelTypeId": 0,
-            "ICCMethod": "",
-            "ICCMethodId": 0,
-            "ApplicabilityBasedInventoryDayType": "",
-            "CreditBasedAnnualICCPercent": 0,
             "IsApplyInventoryDay": state?.isApplyInventoryDays,
             "TechnologyId": state.isAssemblyCheckbox ? ASSEMBLY : null,
         };
 
         if (state.isEditFlag) {
-            if (Data.ICCApplicability === ICCApplicability.label && 
-                Data.ICCPercent === values.ICCPercent &&
-                Data.PaymentTermApplicability === PaymentTermsApplicability.label &&
-                Data.PaymentTermPercent === values.PaymentTermPercent &&
-                Data.RepaymentPeriod === values.RepaymentPeriod && 
+            if (JSON.stringify(Data?.PaymentTermsApplicabilityDetails) === JSON.stringify(state?.ApplicabilityDetails) && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) &&
                 DropdownNotChanged) {
                 Toaster.warning('Please change the data to save Interest Rate Details');
                 return false;
             }
-
-            let financialDataChanged = (Number(Data?.ICCPercent) !== Number(values?.ICCPercent)) || 
-                (Number(Data?.PaymentTermPercent) !== Number(values?.PaymentTermPercent)) || 
-                (Number(Data?.RepaymentPeriod) !== Number(values?.RepaymentPeriod)) ||
-                ((Data?.ICCApplicability) !== (ICCApplicability.label)) || 
-                ((Data?.PaymentTermApplicability) !== (PaymentTermsApplicability.label));
-
-            if (financialDataChanged && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && props?.IsAssociatedData) {
+            let financialDataChanged = JSON.stringify(Data?.PaymentTermsApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails);
+            if (financialDataChanged && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && props?.IsPaymentTermAssociated) {
                 setState(prev => ({ ...prev, setDisable: false }));
                 Toaster.warning('Please update the Effective date.');
                 return false;
             }
-
             formData.IsFinancialDataChanged = financialDataChanged ? true : false;
-
             dispatch(updateInterestRate(formData, (res) => {
                 setState(prev => ({ ...prev, setDisable: false }));
                 if (res?.data?.Result) {
