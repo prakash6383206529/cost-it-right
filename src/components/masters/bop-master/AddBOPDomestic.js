@@ -9,7 +9,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction, getExchangeRateSource } from '../../../actions/Common';
-import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
+import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo, getBOPDataBySourceVendor } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
@@ -47,6 +47,7 @@ import { subDays } from 'date-fns';
 import { getPlantUnitAPI } from '../actions/Plant';
 import AddOtherCostDrawer from '../material-master/AddOtherCostDrawer';
 import { getPartFamilySelectList } from '../actions/Part';
+import { AsyncDropdownHookForm } from '../../layout/HookFormInputs';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -134,8 +135,13 @@ class AddBOPDomestic extends Component {
       totalOtherCost: 0,
       OtherNetCostConversion: 0,
       isSAPCodeDisabled: false,
-      sourceLocationInputLoader: false // Add new state for source location loader
-
+      sourceLocationInputLoader: false, // Add new state for source location loader
+      IsPartOutsourced: false,
+      sourceVendor: [],
+      isSourceVendorNameNotSelected: false,
+      sourceInputLoader: false,
+      sourceVendorFilterList: [],
+      sourceVendorBOPId: null,
     }
     this.state = { ...this.initialState };
 
@@ -284,6 +290,7 @@ class AddBOPDomestic extends Component {
       this.commonFunction(this.state?.selectedPlants && this.state?.selectedPlants?.value)
     }
   }
+
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
   }
@@ -999,6 +1006,71 @@ class AddBOPDomestic extends Component {
     this.setState({ showPopup: false })
   }
 
+  onPressIsPartOutsourced = () => {
+    this.setState({ IsPartOutsourced: !this.state.IsPartOutsourced })
+    // dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, HasDifferentSource: state.HasDifferentSource }, () => { }))
+  }
+
+  handleSourceVendorDataFetch(data) {
+    if (data?.sourceVendorId && data?.costingHeadId) {
+      this.setState({ disableSendForApproval: true });
+      this.props.getBOPDataBySourceVendor(data, res => {
+        this.setState({ disableSendForApproval: false });
+        if (res?.status === 200) {
+          const Data = res?.data?.Data;
+          // this.setState({
+          //   isSourceVendorApiCalled: true,
+          //   sourceVendorBOPId: Data?.RawMaterialId,
+          //   DataToChange: Data,
+          //   disableAll: true,
+          //   isLoader: false,
+          //   commodityDetails: Data?.MaterialCommodityIndexRateDetails,
+          //   disableSendForApproval: false,
+          // });
+        } else {
+          // this.setState({
+          //   isSourceVendorApiCalled: true,
+          //   sourceVendorBOPId: null,
+          //   DataToChange: {},
+          //   disableAll: false,
+          //   isLoader: false,
+          //   commodityDetails: [],
+          // });
+        }
+       })
+    }
+  }
+
+  handleSourceVendor = (newValue, VendorLabel) => {
+    if (newValue && newValue !== '') {
+        if (newValue?.value === this.state?.vendorName?.value) {
+            Toaster.warning(`${VendorLabel} and Source ${VendorLabel} cannot be the same`);
+            this.setState({ sourceVendor: [] });
+            // setState(prevState => ({ ...prevState, sourceVendor: [] }));
+        } else {
+            // setState(prevState => ({ ...prevState, sourceVendor: newValue }));
+            this.setState({ sourceVendor: newValue });
+            this.props.change("sourceVendorName", { label: newValue?.label, value: newValue?.value })
+            // dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, SourceVendor: newValue }, () => { }));
+
+            const data = {
+              // rawMaterialSpecificationId: currentRawMaterialSpec?.value,
+              sourceVendorId: newValue?.value,
+              technologyId: this.state?.Technology?.value,
+              // isIndexationDetails: showIndexCheckBox,
+              costingHeadId: this.state?.costingTypeId,
+              categoryId: this.state?.BOPCategory.value,
+              boughtOutPartChildId: ""
+            };
+
+            this.handleSourceVendorDataFetch(data);
+        }
+    } else {
+        // dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, SourceVendor: [] }, () => { }));
+        this.setState({ sourceVendor: [] });
+    }
+  };
+
   /**
    * @method handleSubmitOfSapCode
    * @description used to update sapcode 
@@ -1359,6 +1431,43 @@ class AddBOPDomestic extends Component {
         }
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
+        let vendorDataAPI = res?.data?.SelectList
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+        } else {
+          return vendorDataAPI
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('Data')
+          if (inputValue) {
+            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+          } else {
+            return VendorData
+          }
+        }
+      }
+    };
+
+    const sourceFilterList = async (inputValue) => {
+      const { sourceVendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
+      const resultInput = inputValue.slice(0, searchCount)
+      if (inputValue?.length >= searchCount && sourceVendorFilterList !== resultInput) {
+        this.setState({ sourceInputLoader: true })
+        let res
+        if (costingTypeId === VBCTypeId) {
+          res = await getVendorNameByVendorSelectList(BOP_VENDOR_TYPE, resultInput)
+        }
+        else {
+          res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+        }
+        this.setState({ sourceInputLoader: false })
+        this.setState({ sourceVendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
@@ -1756,7 +1865,58 @@ class AddBOPDomestic extends Component {
                               </Col>
                             </>
                           )}
-                          {costingTypeId === VBCTypeId && (
+
+                          <Col md="3" className="mt-4 pt-2">
+                              <div className=" flex-fills d-flex justify-content-between align-items-center">
+                                  <label id="AddRMDomestic_HasDifferentSource"
+                                      className={`custom-checkbox w-auto mb-0}`}
+                                      onChange={this.onPressIsPartOutsourced}
+                                  >
+                                      Is Part Outsourced?
+                                      <input
+                                          type="checkbox"
+                                          checked={this.state?.IsPartOutsourced}
+                                          // disabled={(states.costingTypeId === VBCTypeId) ? true : false}
+                                      />
+                                      <span
+                                          className=" before-box p-0"
+                                          checked={this.state?.IsPartOutsourced}
+                                          onChange={this.onPressIsPartOutsourced}
+                                      />
+                                  </label>
+                              </div>
+                          </Col>
+
+                          {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowSourceVendorInBoughtOutPart && (
+                            <>
+                              <Col md="3" className='mb-4'>
+                                <label>Source {VendorLabel} Code<span className="asterisk-required">*</span></label>
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div className="fullinput-icon p-relative">
+                                    {this.state.sourceInputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                    <AsyncSelect
+                                      name="sourceVendorName"
+                                      id="Source_vendor_name_form_vendor_based"
+                                      // ref={this.myRef}
+                                      key={this.state.updateAsyncDropdown}
+                                      loadOptions={sourceFilterList}
+                                      onChange={(e) => this.handleSourceVendor(e, VendorLabel)}
+                                      value={this.state.sourceVendor}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                      isDisabled={(isEditFlag) ? true : false}
+                                      onFocus={() => onFocus(this)}
+                                      onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                                {((this.state.showErrorOnFocus && this.state.sourceVendor.length === 0) || this.state.isSourceVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                              </Col>
+                            </>
+                          )}
+
+                          {costingTypeId === VBCTypeId && !getConfigurationKey()?.IsShowSourceVendorInBoughtOutPart && (
                             <>
                               <Col md="3">
                                 <Field
@@ -2367,6 +2527,7 @@ export default connect(mapStateToProps, {
   checkAndGetBopPartNo,
   getExchangeRateSource,
   getPlantUnitAPI,
+  getBOPDataBySourceVendor,
   getExchangeRateByCurrency
 })(reduxForm({
   form: 'AddBOPDomestic',
