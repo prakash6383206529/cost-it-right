@@ -35,7 +35,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, compareRateCommon,checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue, getEffectiveDateMaxDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, compareRateCommon, checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue, getEffectiveDateMaxDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -60,7 +60,7 @@ class AddBOPImport extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
-    this.debouncedCompareRate = debounce(()=>compareRateCommon(this.state?.DataToChange?.BoughtOutPartOtherCostDetailsSchema, this.state?.DataToChange?.BoughtOutPartConditionsDetails), 1000);
+    this.debouncedCompareRate = debounce(() => compareRateCommon(this.state?.DataToChange?.BoughtOutPartOtherCostDetailsSchema, this.state?.DataToChange?.BoughtOutPartConditionsDetails), 1000);
     this.initialState = {
       isEditFlag: this.props?.data?.isEditFlag ? true : false,
       IsVendor: false,
@@ -692,7 +692,7 @@ class AddBOPImport extends Component {
     const { bopCategorySelectList, partSelectList, plantSelectList, exchangeRateSourceList, partFamilySelectList,
       UOMSelectList, currencySelectList, clientSelectList, IncoTermsSelectList, PaymentTermsSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
-    if(label === 'PartFamily') {
+    if (label === 'PartFamily') {
       partFamilySelectList && partFamilySelectList.map((item) => {
         if (item.Value === '--0--') return false
         temp.push({ label: item.Text, value: item.Value })
@@ -1399,7 +1399,7 @@ class AddBOPImport extends Component {
       UOM, DataToChange, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible,
       Technology, NetConditionCost, conditionTableData, BasicPrice, NetLandedCost, otherCostTableData, totalOtherCost,
       currencyValue, DropdownChanged, IsSAPCodeUpdated, IsSAPCodeHandle, LocalExchangeRateId, LocalCurrencyId, plantCurrencyValue, ExchangeRateId, ExchangeSource } = this.state;
-    const {  isBOPAssociated } = this.props
+    const { isBOPAssociated } = this.props
 
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -1500,7 +1500,7 @@ class AddBOPImport extends Component {
       ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
       ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
       DropdownChanged &&
-      (isTechnologyVisible?(DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : '') : true)
+      (isTechnologyVisible ? (DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : '') : true)
     if (isEditFlag) {
       if (!isBOPAssociated) {
         if (financialDataNotChanged && nonFinancialDataNotChanged) {
@@ -1881,7 +1881,7 @@ class AddBOPImport extends Component {
                             />
                           </Col>
 
-                          {initialConfiguration?.PartAdditionalMasterFields?.IsShowPartFamily && 
+                          {initialConfiguration?.PartAdditionalMasterFields?.IsShowPartFamily &&
                             (<Col md="3">
                               <Field
                                 name="partFamily"
@@ -2113,13 +2113,14 @@ class AddBOPImport extends Component {
                                   name={"Source"}
                                   type="text"
                                   placeholder={isEditFlag ? '-' : "Enter"}
-                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation]}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation, required]}
                                   component={renderText}
                                   valueDescription={this.state.source}
                                   onChange={this.handleSource}
                                   disabled={isViewMode}
                                   className=" "
                                   customClassName=" withBorder"
+                                  required={true}
                                 />
                               </Col>
                               <Col md="3">
@@ -2565,7 +2566,7 @@ class AddBOPImport extends Component {
                                 id="addBOPIMport_sendForApproval"
                                 type="submit"
                                 className="mr5"
-                                disabled={isViewMode || setDisable || disableSendForApproval || this?.state?.showWarning || this.state?.showPlantWarning }
+                                disabled={isViewMode || setDisable || disableSendForApproval || this?.state?.showWarning || this.state?.showPlantWarning}
                                 icon="send-for-approval"
                                 buttonName="Send For Approval"
                               />
@@ -2574,7 +2575,7 @@ class AddBOPImport extends Component {
                                 id="addBOPIMport_save"
                                 type="submit"
                                 className="mr5"
-                                disabled={isViewMode || setDisable || this?.state?.showWarning || this.state?.showPlantWarning }
+                                disabled={isViewMode || setDisable || this?.state?.showWarning || this.state?.showPlantWarning}
                                 icon="save-icon"
                                 buttonName={isEditFlag ? "Update" : "Save"}
                               />
