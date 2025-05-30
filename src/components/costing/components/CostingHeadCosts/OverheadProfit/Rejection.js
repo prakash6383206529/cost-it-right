@@ -63,6 +63,7 @@ function Rejection(props) {
     })
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+    const isFixedRecord = CostingRejectionDetail?.CostingRejectionApplicabilityDetails?.some(item => item?.Applicability === 'Fixed')
 
     const dispatch = useDispatch()
 
@@ -106,7 +107,14 @@ function Rejection(props) {
         if (!CostingViewMode) {
             checkRejectionApplicability(applicability.label)
         }
-    }, [rejectionFieldValues]);
+    }, [rejectionFieldValues,IsIncludedSurfaceInRejection]);
+    useEffect(() => {
+        if (state.modelType && state.modelType.value !== undefined) {
+            checkRejectionModelType(CostingRejectionDetail)
+        }
+    }, [headerCosts && headerCosts.NetTotalRMBOPCC,IsIncludedSurfaceInRejection])
+
+
 
     useEffect(() => {
         if (!CostingViewMode) {
@@ -118,7 +126,7 @@ function Rejection(props) {
     // useEffect(() => {
     //     setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration?.NoOfDecimalForPrice))
     //     setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice))
-    //     console.log(rejectionObj?.CostingRejectionApplicabilityDetails,'rejectionObj?.CostingRejectionApplicabilityDetails')
+    //     
     //     setState(prev => ({
     //         ...prev,
     //         gridData: rejectionObj?.CostingRejectionApplicabilityDetails
@@ -179,8 +187,8 @@ function Rejection(props) {
         const BOP = checkForNull(headerCosts.NetBoughtOutPartCost);
         const CCForMachining = checkForNull(headerCosts.NetCCForOtherTechnologyCost)
         const CC = partType
-            ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost)-checkForNull(headerCosts.NetCCForOtherTechnologyCost)
-            : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)-checkForNull(headerCosts.NetCCForOtherTechnologyCost);
+            ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) - checkForNull(headerCosts.NetCCForOtherTechnologyCost)
+            : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts.NetCCForOtherTechnologyCost);
 
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
@@ -215,8 +223,8 @@ function Rejection(props) {
                         item.NetCost = totalCost
                         break;
                     case 'CCForMachining':
-                        totalCost = ((CCForMachining + SurfaceCost) * calculatePercentage(item.Percentage));
-                        item.Cost = CCForMachining + SurfaceCost;
+                        totalCost = (CCForMachining * calculatePercentage(item.Percentage));
+                        item.Cost = CCForMachining
                         item.TotalCost = totalCost;
                         item.NetCost = totalCost
                         break;
@@ -229,11 +237,9 @@ function Rejection(props) {
                 ...prev,
                 gridData: newData
             }));
-
+            
             dispatch(isOverheadProfitDataChange(true));
         }
-
-
     };
     const checkRejectionApplicability = (applicability) => {
         const RM = checkForNull(headerCosts.NetRawMaterialsCost);
@@ -281,23 +287,25 @@ function Rejection(props) {
                 }))
                 break;
             case 'CCForMachining':
-                setValue('RejectionCost', checkForDecimalAndNull(CCForMachining + SurfaceCost, initialConfiguration?.NoOfDecimalForPrice))
-                setValue('RejectionTotalCost', checkForDecimalAndNull((CCForMachining + SurfaceCost) * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
-                setValue('NetRejectionCost', checkForDecimalAndNull((CCForMachining + SurfaceCost) * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
+                setValue('RejectionCost', checkForDecimalAndNull(CCForMachining, initialConfiguration?.NoOfDecimalForPrice))
+                setValue('RejectionTotalCost', checkForDecimalAndNull(CCForMachining * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
+                setValue('NetRejectionCost', checkForDecimalAndNull(CCForMachining * calculatePercentage(percentage), initialConfiguration?.NoOfDecimalForPrice))
                 setState(prev => ({
                     ...prev,
-                    rejectionCost: (CCForMachining + SurfaceCost),
-                    rejectionTotalCost: (CCForMachining + SurfaceCost) * calculatePercentage(percentage),
-                    netRejectionCost: (CCForMachining + SurfaceCost) * calculatePercentage(percentage),
+                    rejectionCost: (CCForMachining),
+                    rejectionTotalCost: (CCForMachining) * calculatePercentage(percentage),
+                    netRejectionCost: (CCForMachining) * calculatePercentage(percentage),
                 }))
                 break;
             case "Fixed":
+                 setValue('RejectionCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
                 setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
                 setValue('NetRejectionCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
                 setState(prev => ({
                     ...prev,
                     rejectionTotalCost: checkForNull(getValues('RejectionPercentage')),
                     netRejectionCost: checkForNull(getValues('RejectionPercentage')),
+                    rejectionCost: checkForNull(getValues('RejectionPercentage')),
                 }))
                 break;
             default:
@@ -897,8 +905,45 @@ function Rejection(props) {
                                     <tr key={index}>
                                         <td>{item?.Applicability ?? '-'}</td>
                                         <td>{item?.Applicability !== 'Fixed' ? item?.Percentage : '-'}</td>
-                                        <td>{checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
-                                        <td>{checkForDecimalAndNull(item?.TotalCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
+                                        <td>
+                                            {item?.Applicability === 'Fixed' && fetchRejectionDataFromMaster() ? (
+                                                <TextFieldHookForm
+                                                    label=""
+                                                    name={`RejectionFixedCost${index}`}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={false}
+                                                    handleChange={(e) => {
+                                                        const updatedGridData = [...state?.gridData];
+                                                        const value = e?.target?.value;
+                                                        const fixedValue = checkForNull(value);
+                                                        updatedGridData[index] = {
+                                                            ...updatedGridData[index],
+                                                            Cost: fixedValue,
+                                                            TotalCost: fixedValue,
+                                                            NetCost: fixedValue,
+                                                            Percentage: '-'
+                                                        };
+                                                        setState(prev => ({
+                                                            ...prev,
+                                                            gridData: updatedGridData
+                                                        }));
+                                                        setValue('RejectionTotalCost', fixedValue);
+                                                        setValue('NetRejectionCost', fixedValue);
+                                                        dispatch(isOverheadProfitDataChange(true));
+                                                    }}
+                                                    defaultValue={checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)}
+                                                    className=""
+                                                    customClassName={'withBorder w-75'}
+                                                    errors={errors[`RejectionFixedCost${index}`]}
+                                                    disabled={CostingViewMode || !isFixedRecord}
+                                                />
+                                            ) : (
+                                                checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)
+                                            )}
+                                        </td>
+                                        <td>{item?.Applicability === 'Fixed' ? checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.TotalCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
                                         {getConfigurationKey().IsRejectionRecoveryApplicable && !IdForMultiTechnology.includes(String(costData?.TechnologyId)) && <td>
 
                                             <div className='d-flex align-items-center'>
