@@ -225,7 +225,9 @@ function TabDiscountOther(props) {
       let isCalculatorExist=res?.data?.Data?.IsCalculatorExist
       dispatch(setIsCalculatorExist(isCalculatorExist))
     }))
-    dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => {}))
+    if(initialConfiguration?.IsShowPaymentTerm){
+      dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => {}))
+    }
   }, [costData])
   useEffect(() => {
     dispatch(setIncludeToolCostIcc(costingDetailForIcc?.IsIncludeToolCostInCCForICC, () => { }))
@@ -1387,12 +1389,12 @@ let iccObj={
       dispatch(saveDiscountOtherCostTab(data, res => {
         setIsLoader(false)
         if (res.data.Result) {
-          if (checkIsPaymentTermsDataChange === true) {
+          if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
             dispatch(saveCostingPaymentTermDetail(obj, res => { }))
           }
           
           if (checkIsIccDataChange === true) {
-            dispatch(saveCostingDetailForIcc(iccObj, res => { }))
+            dispatch(saveCostingDetailForIcc(iccObj, res => { })) 
           }
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           // dispatch(setComponentDiscountOtherItemData({}, () => { }))
@@ -2367,7 +2369,7 @@ let iccObj={
                         </Col>
                       </Row>
                     </Col>}
-                    <Col md="12">
+                  { initialConfiguration?.IsShowPaymentTerm && <Col md="12">
                       <Row>
                         <Col md="8"><div className="left-border mt-1">Payment Terms:</div></Col>
                         <Col md="4" className="text-right">
@@ -2380,7 +2382,7 @@ let iccObj={
                           </button>
                         </Col>
                       </Row>
-                    </Col>
+                    </Col>}
                     <Row>
                       {/* net cost *(90- usersvalues 60)/30 *1% */}
                       {paymentTerms && <Col md="12" className='payment-terms'>
