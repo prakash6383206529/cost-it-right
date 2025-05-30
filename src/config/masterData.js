@@ -4110,6 +4110,9 @@ export const MachineZBC = [
     { label: 'MachineSpecification', value: 'MachineSpecification', },
     { label: 'MachineName', value: 'MachineName', }, //*
     { label: 'MachineType', value: 'MachineType', },
+    { label: 'Type', value: 'Type', },
+    { label: 'Applicability', value: 'Applicability', },
+    { label: 'Percentage', value: 'Percentage', },
     { label: 'MachineCapacityAndTonnage', value: 'MachineCapacityAndTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
     { label: 'ProcessCode', value: 'ProcessCode', }, //*
@@ -4127,11 +4130,14 @@ export const MachineZBCTempData = [
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
+        'Type': 'Cost Applicability Basis',
+        'Applicability': 'RM',
+        'Percentage': '5',
         'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'MachineRate': 55,
+        "UOM": "",
+        'MachineRate': "",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
     }, {
@@ -4141,6 +4147,9 @@ export const MachineZBCTempData = [
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
+        'Type': 'MHR Basis',
+        'Applicability': '',
+        'Percentage': '',
         'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
@@ -4155,6 +4164,9 @@ export const MachineZBCTempData = [
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
+        'Type': 'MHR Basis',
+        'Applicability': '',
+        'Percentage': '',
         'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
@@ -4169,6 +4181,9 @@ export const MachineZBCTempData = [
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
+        'Type': 'MHR Basis',
+        'Applicability': '',
+        'Percentage': '',
         'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
@@ -4183,6 +4198,9 @@ export const MachineZBCTempData = [
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
+        'Type': 'MHR Basis',
+        'Applicability': '',
+        'Percentage': '',
         'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
@@ -4206,6 +4224,9 @@ export const MHRMoreZBC = [
     { label: "MachineSpecification", value: "MachineSpecification", },
     { label: "Description", value: "Description", },
     { label: "MachineType", value: "MachineType", },
+    { label: "Type", value: "Type", },
+    { label: "Applicability", value: "Applicability", },
+    { label: "Percentage", value: "Percentage", },
     { label: 'MachineRate', value: 'MachineRate', },
     { label: "Manufacturer", value: "Manufacturer", },
     { label: "YearOfManufacturing", value: "YearOfManufacturing", },
@@ -4301,6 +4322,9 @@ export const MHRMoreZBCTempData = [
         "MachineSpecification": "Machine Specification",
         "Description": "Description text",
         "MachineType": "Mechanical",
+        "Type": "Cost Applicability Basis",
+        "Applicability": "RM",
+        "Percentage": "5",
         "MachineRate": 55,
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
@@ -4370,6 +4394,9 @@ export const MHRMoreZBCTempData = [
         "MachineSpecification": "Machine Specification",
         "Description": "Description text",
         "MachineType": "Mechanical",
+        'Type': 'MHR Basis',
+        'Applicability': '',
+        'Percentage': '',
         "MachineRate": 55,
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
@@ -4437,6 +4464,9 @@ export const MHRMoreZBCTempData = [
         "MachineSpecification": "Machine Specification",
         "Description": "Description text",
         "MachineType": "Mechanical",
+        'Type': 'MHR Basis',
+        'Applicability': '',
+        'Percentage': '',
         "MachineRate": 55,
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
@@ -4504,6 +4534,9 @@ export const MHRMoreZBCTempData = [
         "MachineSpecification": "Machine Specification",
         "Description": "Description text",
         "MachineType": "Mechanical",
+        'Type': 'MHR Basis',
+        'Applicability': '',
+        'Percentage': '',
         "MachineRate": 55,
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
@@ -4571,6 +4604,9 @@ export const MHRMoreZBCTempData = [
         "MachineSpecification": "Machine Specification",
         "Description": "Description text",
         "MachineType": "Mechanical",
+        'Type': 'Cost Applicability Basis',
+        'Applicability': 'BOP',
+        'Percentage': '7',
         "MachineRate": 55,
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
@@ -4867,10 +4903,10 @@ export const PartComponentTempData = [
 
 //Part Family
 export const PartFamily = [
-    {label: 'PartFamilyName', value: 'PartFamilyName', },
+    { label: 'PartFamilyName', value: 'PartFamilyName', },
     { label: 'PartFamilyCode', value: 'PartFamilyCode', },
     { label: 'Description', value: 'Description', },
-        { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
 
 
 ]
@@ -6674,7 +6710,7 @@ export const NFR_LISTING_DOWNLOAD_EXCEL = [
     { label: "Created By", value: "CreatedBy" },
     { label: "Created Date", value: "CreatedDate" },
     { label: "Status", value: "Status" }
-  ];
+];
 
 
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
@@ -6828,6 +6864,9 @@ export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Machine Type", value: "MachineTypeName", },
     { label: "Machine Tonnage", value: "TonnageCapacity", },
     { label: "Process Name", value: "ProcessName", },
+    { label: "Type", value: "Type", },
+    { label: "Applicability", value: "Applicability", },
+    { label: "Percentage", value: "Percentage", },
     { label: "UOM", value: "UOM" },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Plant (Code)", value: "Plant", },

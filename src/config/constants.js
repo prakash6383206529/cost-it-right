@@ -3371,6 +3371,9 @@ export const COSTINGSURFACETREATMENTEXTRACOST = "Costing Surface Treatment Extra
 export const OVERHEADMASTER = "Overhead Master"
 export const PROFITMASTER = "Profit Master"
 export const REJECTIONMASTER = "Rejection Master"
+export const MACHINEMASTER = "Machine Master"
+export const COSTAPPLICABILITYBASIS = "Cost Applicability Basis"
+export const MHRBASIS = "MHR Basis"
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"
