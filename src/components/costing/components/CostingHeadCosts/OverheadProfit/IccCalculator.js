@@ -284,6 +284,7 @@ function IccCalculator(props) {
                                             errors={errors.InterestOnReceivables}
                                             disabled={true}
                                             defaultValue={''}
+                                            customClassName={"withBorder"}
                                         />
                                     </Col>
 
@@ -338,6 +339,7 @@ function IccCalculator(props) {
                                         errors={errors.InventoryCarryingCost}
                                         disabled={true}
                                         defaultValue={''}
+                                        customClassName={"withBorder"}
                                     />
                                 </Col>
 

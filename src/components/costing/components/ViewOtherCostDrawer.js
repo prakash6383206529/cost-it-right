@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Container, Table } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
-import { useForm, } from 'react-hook-form'
+import { Controller, useForm, } from 'react-hook-form'
 import { useSelector, } from 'react-redux'
 import NpvCost from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/NpvCost'
 import ConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/ConditionCosting'
@@ -12,9 +12,12 @@ import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { TextFieldHookForm } from '../../layout/HookFormInputs'
+import TooltipCustom from '../../common/Tooltip'
+import IccCalculator from './CostingHeadCosts/OverheadProfit/IccCalculator'
 
 function ViewOtherCostDrawer(props) {
-    const { partId, vendorId, costingIndex, CostingPaymentTermDetails, npvCostData } = props
+    const { partId, vendorId, costingIndex, CostingPaymentTermDetails, npvCostData, iccPaymentData, isPDFShow, rejectAndModelType } = props
     const [tableData, setTableData] = useState(props.tableData)
     const [conditionTableData, seConditionTableData] = useState([])
     const [costingSummary, setCostingSummary] = useState(props.costingSummary ? props.costingSummary : false)
@@ -23,9 +26,13 @@ function ViewOtherCostDrawer(props) {
     const [totalDiscountCost, setTotalDiscountCost] = useState(0);
     const [isLoader, setIsLoader] = useState(false)
     const [discountData, setDiscountData] = useState([])
+    const [state, setState] = useState({
+        openWeightCalculator: false
+    })
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-
+    const { isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC } = rejectAndModelType;
+    const showToolTipForICC = [isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC]
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -84,6 +91,10 @@ function ViewOtherCostDrawer(props) {
     const cancel = () => {
         props.closeDrawer('Close')
     }
+    const iccToolTipText =
+
+        ` ${isIncludeToolCostInCCForICC ? 'Tool Cost Included' : ''}
+  ${isIncludeOverheadAndProfitInICC ? 'Overhead and Profit Included' : ''}`.trim()
     const DiscountCost = () => {
         return (<>
             <Col md="12">
@@ -173,6 +184,199 @@ function ViewOtherCostDrawer(props) {
                 </Table>
             </Col>
         </>)
+    }
+    const toggleWeightCalculator = () => {
+        setState({
+            openWeightCalculator: !state.openWeightCalculator
+        })
+    }
+
+    const modelShowDataForIcc = () => {
+        return <>
+            <Row>
+                <Col md="12">
+                    <div className="left-border">{"ICC:"}</div>
+                </Col>
+            </Row>
+            <Row>
+                <Col md="3">
+                    <TextFieldHookForm
+                        label="Model Type for ICC"
+                        name={"modeltypeForIcc"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        defaultValue={iccPaymentData?.ICCApplicabilityDetail?.ICCModelType}
+                        className=""
+                        customClassName={"withBorder"}
+                        disabled={true}
+                    />
+                </Col>
+                <Col md="3">
+                    <TextFieldHookForm
+                        label="ICC Method"
+                        name={"iccMethod"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        defaultValue={iccPaymentData?.ICCApplicabilityDetail?.ICCMethod}
+                        className=""
+                        customClassName={"withBorder"}
+                        disabled={true}
+                    />
+                </Col>
+                <Col md="3" className="st-operation mt-4 pt-2">
+                    <label id="AddInterestRate_ApplyPartCheckbox"
+                        className={`custom-checkbox disabled`}
+                        onChange={() => { }}
+                    >
+                        Apply Inventory Days
+                        <input
+                            type="checkbox"
+                            checked={iccPaymentData?.ICCApplicabilityDetail?.IsApplyInventoryDay}
+                            disabled={true}
+                        />
+                        <span className="before-box" checked={iccPaymentData?.ICCApplicabilityDetail?.IsApplyInventoryDay} />
+                    </label>
+                </Col>
+                {iccPaymentData?.ICCApplicabilityDetail?.ICCMethod !== 'Credit Based' && <Col md="3">
+                    <TextFieldHookForm
+                        name="InventoryDayType"
+                        label="Inventory Day Type"
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        placeholder="-"
+                        mandatory={false}
+                        handleChange={() => { }}
+                        errors={errors.InventoryDayType}
+                        disabled={true}
+                        customClassName={"withBorder"}
+                        defaultValue={iccPaymentData?.ICCApplicabilityDetail?.ApplicabilityBasedInventoryDayType}
+                    />
+                </Col>}
+
+                {iccPaymentData?.ICCApplicabilityDetail?.ICCMethod === 'Credit Based' &&
+                    <>
+                        <Col md="3">
+                            <TextFieldHookForm
+                                label="Credit Based Annual ICC (%)"
+                                name={"creditBasedAnnualIcc"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                defaultValue={iccPaymentData?.ICCApplicabilityDetail?.CreditBasedAnnualICCPercent}
+                                className=""
+                                customClassName={"withBorder"}
+                                disabled={true}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <span className="head-text">Calculator ICC</span>
+                            <div>
+                                <button
+                                    id={`calculatorIcc`}
+                                    className={`CalculatorIcon cr-cl-icon calculatorIcc`}
+                                    type={'button'}
+                                    onClick={() => toggleWeightCalculator()}
+                                    disabled={false}
+                                />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <TextFieldHookForm
+                                name="totalIccPayable"
+                                label="ICC Payable To Supplier"
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                placeholder="-"
+                                mandatory={false}
+                                handleChange={() => { }}
+                                disabled={true}
+                                defaultValue={checkForDecimalAndNull(iccPaymentData?.ICCApplicabilityDetail?.ICCPayableToSupplierCost, initialConfiguration?.NoOfDecimalForPrice)}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <TextFieldHookForm
+                                name="totalIccReceivable"
+                                label="ICC Receivable From Supplier"
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                placeholder="-"
+                                mandatory={false}
+                                handleChange={() => { }}
+                                disabled={true}
+                                defaultValue={checkForDecimalAndNull(iccPaymentData?.ICCApplicabilityDetail?.ICCReceivableFromSupplierCost, initialConfiguration?.NoOfDecimalForPrice)}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <TextFieldHookForm
+                                name="totalIccNetCost"
+                                label="ICC Net Cost"
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                placeholder="-"
+                                mandatory={false}
+                                handleChange={() => { }}
+                                disabled={true}
+                                defaultValue={checkForDecimalAndNull(iccPaymentData?.NetICC, initialConfiguration?.NoOfDecimalForPrice)}
+                            />
+                        </Col>
+                    </>
+                }
+            </Row>
+        </>
+    }
+    const iccTableData = () => {
+        return <>
+            <Row>
+                <Col md="12">
+                    <Table className="table cr-brdr-main add-min-width" size="sm">
+                        <thead>
+                            <tr>
+                                <th>{`Applicability`}</th>
+                               {iccPaymentData?.ICCApplicabilityDetail?.IsApplyInventoryDay && <th>{`No. of Days`}</th>}
+                                <th>{`Interest Rate (%)`}</th>
+                                <th>{`Cost (Applicability)`}</th>
+                                <th>{`Total Cost`}</th>
+                                {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                                <th>{`Remark`}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                (!iccPaymentData?.ICCApplicabilityDetail?.ICCCostingApplicabilityDetails?.length) ?
+                                    <tr>
+                                        <td colSpan={8}>
+                                            <NoContentFound title={EMPTY_DATA} />
+                                        </td>
+                                    </tr> :
+                                    iccPaymentData.ICCApplicabilityDetail.ICCCostingApplicabilityDetails.map((detail, index) => (
+                                        <tr key={index}>
+                                            <td>{detail.Applicability || '-'}</td>
+                                            {iccPaymentData?.ICCApplicabilityDetail?.IsApplyInventoryDay && <td>{detail.NoOfDays || '-'}</td>}
+                                            <td>{detail.Percentage ? checkForDecimalAndNull(detail.Percentage, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                            <td>{detail.Cost ? checkForDecimalAndNull(detail.Cost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                            <td>{detail.TotalCost ? checkForDecimalAndNull(detail.TotalCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                            {initialConfiguration?.IsShowCRMHead && <td>{iccPaymentData?.ICCApplicabilityDetail?.ICCCRMHead || '-'}</td>}
+                                            <td>{iccPaymentData.ICCApplicabilityDetail.Remark || '-'}</td>
+                                        </tr>
+                                    ))
+                            }
+                        </tbody>
+                    </Table>
+                </Col>
+            </Row>
+        </>
     }
     const paymentTableData = () => {
         return <>
@@ -300,6 +504,9 @@ function ViewOtherCostDrawer(props) {
             }
         </>
     }
+    const closeCalculator = () => {
+        setState(prev => ({ ...prev, openWeightCalculator: false }))
+    }
     return (
 
         <div>
@@ -324,6 +531,8 @@ function ViewOtherCostDrawer(props) {
                             <div className='hidepage-size'>
                                 {costingSummary && DiscountCost()}
                                 {costingSummary && OtherCost()}
+                                {costingSummary && modelShowDataForIcc()}
+                                {costingSummary && iccPaymentData?.ICCApplicabilityDetail?.ICCMethod !== "Credit Based" && iccTableData()}
                                 {costingSummary && paymentTableData()}
                                 {costingSummary && npvCostData && NpvCost()}
                                 {/* {initialConfiguration?.IsShowNpvCost && costingSummary &&
@@ -350,6 +559,13 @@ function ViewOtherCostDrawer(props) {
                                 {costingSummary && yoyCost()}
 
                             </div>
+                            {state.openWeightCalculator && <IccCalculator
+                                anchor={`right`}
+                                isOpen={state.openWeightCalculator}
+                                closeCalculator={closeCalculator}
+                                CostingViewMode={true}
+                                iccInterestRateId={iccPaymentData?.ICCApplicabilityDetail?.InterestRateId}
+                            />}
                         </div>
                     </Container>
                 </div>

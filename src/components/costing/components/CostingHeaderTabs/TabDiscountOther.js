@@ -2116,13 +2116,11 @@ let iccObj={
     dispatch(isIccDataChange(true))
   }
   const onPressIsIncludeToolCostInCCForICC = () => {
-    // console.log(ToolTabData[0],'ToolTabData');
-    // console.log(overallApplicabilityToolData,'overallApplicabilityToolData');
-    
-    
-    if ((ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Fixed') || 
-        (overallApplicabilityToolData?.label !== 'Fixed')) {
-      Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in ICC.')
+   
+    if ((ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Fixed' &&
+      ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Tool Rate') ||
+      (overallApplicabilityToolData?.label && overallApplicabilityToolData?.label !== 'Fixed' && overallApplicabilityToolData?.label !== 'Tool Rate')) {
+      Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in overhead & profit.')
       return false
     } else {
       setIsIncludeToolCostInCCForICC(!IsIncludeToolCostInCCForICC)

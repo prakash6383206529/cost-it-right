@@ -9,10 +9,8 @@ import { checkForDecimalAndNull, getConfigurationKey, showBopLabel } from '../..
 import { useSelector } from 'react-redux'
 import TooltipCustom from '../../../common/Tooltip'
 import { IdForMultiTechnology } from '../../../../config/masterData'
-import IccCalculator from '../CostingHeadCosts/OverheadProfit/IccCalculator'
 function ViewOverheadProfit(props) {
   const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow, viewRejectionRecovery } = props
-  console.log(iccPaymentData, 'iccPaymentData')
   const { rejectData, modelType, isRmCutOffApplicable, rawMaterialCostWithCutOff, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit, isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC } = rejectAndModelType;
   const showTooltipForOH = [isRmCutOffApplicable, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithOverheadAndProfit]
   const showToolTipForICC = [isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC]
@@ -26,9 +24,6 @@ function ViewOverheadProfit(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { viewCostingDetailData } = useSelector((state) => state.costing)
   const partType = IdForMultiTechnology?.includes(String(viewCostingDetailData[0]?.technologyId) || String(viewCostingDetailData[0]?.costingTypeId) === WACTypeId)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
-  const [state, setState] = useState({
-    openWeightCalculator: false
-  })
 
   useEffect(() => {
     setViewOverheadData(overheadData)
@@ -46,11 +41,6 @@ function ViewOverheadProfit(props) {
       return
     }
     props.closeDrawer('')
-  }
-  const toggleWeightCalculator = () => {
-    setState({
-      openWeightCalculator: !state.openWeightCalculator
-    })
   }
 
   const overheadAndProfitTooltipText =
@@ -84,134 +74,6 @@ function ViewOverheadProfit(props) {
           disabled={true}
         />
       </div>
-    </>
-  }
-  const modelShowDataForIcc = () => {
-    return <>
-      <Row>
-        <Col md="12">
-          <div className="left-border">{"ICC:"}</div>
-        </Col>
-      </Row>
-      <Row>
-        <Col md="3">
-          <TextFieldHookForm
-            label="Model Type for ICC"
-            name={"modeltypeForIcc"}
-            Controller={Controller}
-            control={control}
-            register={register}
-            mandatory={false}
-            handleChange={() => { }}
-            defaultValue={iccPaymentData?.ICCApplicabilityDetail?.ICCModelType}
-            className=""
-            customClassName={"withBorder"}
-            disabled={true}
-          />
-        </Col>
-        <Col md="3">
-          <TextFieldHookForm
-            label="ICC Method"
-            name={"iccMethod"}
-            Controller={Controller}
-            control={control}
-            register={register}
-            mandatory={false}
-            handleChange={() => { }}
-            defaultValue={iccPaymentData?.ICCApplicabilityDetail?.ICCMethod}
-            className=""
-            customClassName={"withBorder"}
-            disabled={true}
-          />
-        </Col>
-        <Col md="3" className="st-operation mt-4 pt-2">
-          <label id="AddInterestRate_ApplyPartCheckbox"
-            className={`custom-checkbox disabled`}
-            onChange={() => { }}
-          >
-            Apply Inventory Days
-            <input
-              type="checkbox"
-              checked={iccPaymentData?.ICCApplicabilityDetail?.IsApplyInventoryDay}
-              disabled={true}
-            />
-            <span className="before-box" checked={iccPaymentData?.ICCApplicabilityDetail?.IsApplyInventoryDay} />
-          </label>
-        </Col>
-        <Col md="3">
-          <TextFieldHookForm
-            label="Credit Based Annual ICC (%)"
-            name={"creditBasedAnnualIcc"}
-            Controller={Controller}
-            control={control}
-            register={register}
-            mandatory={false}
-            handleChange={() => { }}
-            defaultValue={iccPaymentData?.ICCApplicabilityDetail?.CreditBasedAnnualICCPercent}
-            className=""
-            customClassName={"withBorder"}
-            disabled={true}
-          />
-        </Col>
-        {iccPaymentData?.ICCApplicabilityDetail?.ICCMethod === 'Credit Based' &&
-          <>
-            <Col md="3">
-              <span className="head-text">Calculator ICC</span>
-              <div>
-                <button
-                  id={`calculatorIcc`}
-                  className={`CalculatorIcon cr-cl-icon calculatorIcc`}
-                  type={'button'}
-                  onClick={() => toggleWeightCalculator()}
-                  disabled={false}
-                />
-              </div>
-            </Col>
-            <Col md="3">
-              <TextFieldHookForm
-                name="totalIccPayable"
-                label="ICC Payable To Supplier"
-                Controller={Controller}
-                control={control}
-                register={register}
-                placeholder="-"
-                mandatory={false}
-                handleChange={() => { }}
-                disabled={true}
-                defaultValue={checkForDecimalAndNull(iccPaymentData?.ICCApplicabilityDetail?.ICCPayableToSupplierCost, initialConfiguration?.NoOfDecimalForPrice)}
-              />
-            </Col>
-            <Col md="3">
-              <TextFieldHookForm
-                name="totalIccReceivable"
-                label="ICC Receivable From Supplier"
-                Controller={Controller}
-                control={control}
-                register={register}
-                placeholder="-"
-                mandatory={false}
-                handleChange={() => { }}
-                disabled={true}
-                defaultValue={checkForDecimalAndNull(iccPaymentData?.ICCApplicabilityDetail?.ICCReceivableFromSupplierCost, initialConfiguration?.NoOfDecimalForPrice)}
-              />
-            </Col>
-            <Col md="3">
-              <TextFieldHookForm
-                name="totalIccNetCost"
-                label="ICC Net Cost"
-                Controller={Controller}
-                control={control}
-                register={register}
-                placeholder="-"
-                mandatory={false}
-                handleChange={() => { }}
-                disabled={true}
-                defaultValue={checkForDecimalAndNull(iccPaymentData?.NetICC, initialConfiguration?.NoOfDecimalForPrice)}
-              />
-            </Col>
-          </>
-        }
-      </Row>
     </>
   }
   const overheadTableData = () => {
@@ -416,51 +278,7 @@ function ViewOverheadProfit(props) {
         </Col>
       </Row></>
   }
-  const iccTableData = () => {
-    return <>
-      <Row>
-        {/*REJECTION RENDERING */}
-
-        <Col md="12">
-          <Table className="table cr-brdr-main add-min-width" size="sm">
-            <thead>
-              <tr>
-
-                <th>{`Applicability`}</th>
-                <th>{`Interest Rate ${iccPaymentData.ICCApplicabilityDetail.ICCApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th><div className='w-fit'>Cost (Applicability){showToolTipForICC.includes(true) && iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="icc-table" tooltipText={iccToolTipText} />}</div></th>
-                <th><div className='w-fit'>Net ICC  {!isPDFShow && getConfigurationKey().IsShowRmcAndNetWeightToggleForIcc && (iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight || iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('RM')) && <TooltipCustom customClass="mt-1 ml-1" id="icc-rm-applicable" tooltipText={iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight ? "ICC Calculation on Net Weight" : "ICC Calculation on RMC"} />}</div></th>
-                {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
-                <th>{`Remark`}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                (iccPaymentData.ICCApplicabilityDetail.ICCApplicability === null) ?
-                  <tr>
-                    <td colSpan={8}>
-                      <NoContentFound title={EMPTY_DATA} />
-                    </td>
-                  </tr> :
-                  <tr>
-                    <td>{iccPaymentData.ICCApplicabilityDetail ? iccPaymentData.ICCApplicabilityDetail.ICCApplicability : '-'}</td>
-                    <td>{iccPaymentData.ICCApplicabilityDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{iccPaymentData.ICCApplicabilityDetail.CostApplicability ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                    <td><div className='w-fit'>{iccPaymentData?.NetICC ? checkForDecimalAndNull(iccPaymentData?.NetICC, initialConfiguration?.NoOfDecimalForPrice) : '-'}</div></td>
-                    {initialConfiguration?.IsShowCRMHead && <td>{iccPaymentData?.ICCApplicabilityDetail?.ICCCRMHead}</td>}
-                    <td>{iccPaymentData.ICCApplicabilityDetail.Remark ? iccPaymentData.ICCApplicabilityDetail.Remark : '-'}</td>
-                  </tr>
-              }
-
-            </tbody>
-          </Table>
-        </Col>
-
-      </Row></>
-  }
-  const closeCalculator = () => {
-    setState(prev => ({ ...prev, openWeightCalculator: false }))
-  }
+ 
   return (
     <>
       {!isPDFShow ?
@@ -501,27 +319,8 @@ function ViewOverheadProfit(props) {
                 <div>
                   {viewRejectionRecovery && rejectRecoveryTableData()}
                 </div>
-                <br />
-                <div>
-                  {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
-                  {modelShowDataForIcc()}
-                  {iccPaymentData?.ICCApplicabilityDetail?.ICCMethod !== "Credit Based" && iccTableData()}
-                </div>
-
-                <br />
-                <div>
-                  {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
-                  {/* {paymentTableData()} */}
-                </div>
 
               </div>
-              {state.openWeightCalculator && <IccCalculator
-                        anchor={`right`}
-                        isOpen={state.openWeightCalculator}
-                        closeCalculator={closeCalculator}
-                        CostingViewMode={true}
-                        iccInterestRateId={iccPaymentData?.ICCApplicabilityDetail?.InterestRateId}
-                    />}
             </div>
           </Container>
         </Drawer> : <>
