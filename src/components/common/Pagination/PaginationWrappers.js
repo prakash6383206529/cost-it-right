@@ -30,6 +30,9 @@ export function PaginationWrappers(props) {
             case 'overHeadAndProfits':
                 getDataList(null, null, null, null, newSkip, numericPageSize, true, floatingFilterData);
                 break;
+            case 'interestRate':
+                getDataList(null, null, null, null, newSkip, numericPageSize, true, floatingFilterData);
+                break;
             case 'Operations':
                 getDataList(null, null, null, null, newSkip, numericPageSize, true, floatingFilterData,isImport);
                 break;

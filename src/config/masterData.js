@@ -5767,85 +5767,372 @@ export const ProductComponentTempData = [
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
+
 export const ZBCInterestRate = [
-    { label: 'VendorName', value: 'VendorName', }, //NOUI
-    { label: 'VendorCode', value: 'VendorCode', }, //NOUI
-    { label: 'ICCApplicability', value: 'ICCApplicability', }, //*
-    { label: 'ICCPercent', value: 'ICCPercent', }, //*
-    { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', }, //*
-    { label: 'RepaymentPeriod', value: 'RepaymentPeriod', }, //*
-    { label: 'PaymentTermPercent', value: 'PaymentTermPercent', }, //*
-    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "PartFamilyCode", value: "PartFamilyCode" },
+    { label: "ICCModelType", value: "ICCModelType" },
+    { label: "ICC Method", value: "ICCMethod" },
+    { label: "Inventory Days CheckBox", value: "InventoryDaysCheckBox" },
+    { label: "Applicability Based Inventory DayType", value: "ApplicabilityBasedInventoryDayType" },
+    { label: "Credit Based Annual ICC Percent", value: "CreditBasedAnnualICCPercent" },
+    { label: "Inventory Day Types", value: "InventoryDayTypes" },
+    { label: "No Of Days", value: "NoOfDays" },
+    { label: "WIP Head", value: "WIPHead" },
+    { label: "Inventory Days", value: "InventoryDays" },
+    { label: "Supplier Credit Days", value: "SupplierCreditDays" },
+    { label: "Interest Days", value: "InterestDays" },
+    { label: "ICC Applicability", value: "ICCApplicability" },
+    { label: "ICC Percent", value: "ICCPercent" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "Technology Name", value: "TechnologyName" },
+    { label: "RawMaterial Name", value: "RawMaterialName" },
+    { label: "Raw Material Grade", value: "RawMaterialGrade" },
+    { label: "Remark", value: "Remark" },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
 ]
 
 export const ZBCInterestRateTempData = [
     {
-        'VendorName': 'Systematix',
-        'VendorCode': 'VCode001',
-        'ICCApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
-        'ICCPercent': 10,
-        'PaymentTermApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
-        'RepaymentPeriod': 30,
-        'PaymentTermPercent': 10,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        PlantCode: '1511',
+        PartFamilyCode: '1234',
+        ICCModelType: 'All / High Investment / High Volume / Low Volume / Medium Volume / New Development',
+        ICCMethod: 'Applicability Based / Credit Based',
+        InventoryDaysCheckBox: 'YES',
+        ApplicabilityBasedInventoryDayType: 'General',
+        CreditBasedAnnualICCPercent: '',
+        InventoryDayTypes: '',
+        NoOfDays: '',
+        WIPHead: '',
+        InventoryDays: '',
+        SupplierCreditDays: '',
+        InterestDays: '',
+        ICCApplicability: 'RM',
+        ICCPercent: '10',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        TechnologyName: '',
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+        ManageApplicabilitiesForMultiTechnologyAssembly: 'NO'
+    },
+    {
+        PlantCode: '1512',
+        PartFamilyCode: '1235',
+        ICCModelType: 'All / High Investment / High Volume / Low Volume / Medium Volume / New Development',
+        ICCMethod: 'Credit Based / Applicability Based',
+        InventoryDaysCheckBox: 'YES',
+        ApplicabilityBasedInventoryDayType: '',
+        CreditBasedAnnualICCPercent: 2,
+        InventoryDayTypes: 'Finished Goods',
+        NoOfDays: 2,
+        WIPHead: 'RM',
+        InventoryDays: 3,
+        SupplierCreditDays: 15,
+        InterestDays: -12,
+        ICCApplicability: '',
+        ICCPercent: '',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        TechnologyName: '',
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+        ManageApplicabilitiesForMultiTechnologyAssembly: 'NO'
     }
 ]
 
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
+
 export const VBCInterestRate = [
-    { label: "RawMaterialName", value: "RawMaterialName", },
-    { label: "RawMaterialGrade", value: "RawMaterialGrade", },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
-    { label: "PlantCode", value: "PlantCode", },
-    { label: 'ICCApplicability', value: 'ICCApplicability', }, //*
-    { label: 'ICCPercent', value: 'ICCPercent', }, //*
-    { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', }, //*
-    { label: 'RepaymentPeriod', value: 'RepaymentPeriod', }, //*
-    { label: 'PaymentTermPercent', value: 'PaymentTermPercent', }, //*
-    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "PartFamilyCode", value: "PartFamilyCode" },
+    { label: "ICCModelType", value: "ICCModelType" },
+    { label: "ICC Method", value: "ICCMethod" },
+    { label: "Inventory Days CheckBox", value: "InventoryDaysCheckBox" },
+    { label: "Applicability Based Inventory DayType", value: "ApplicabilityBasedInventoryDayType" },
+    { label: "Credit Based Annual ICC Percent", value: "CreditBasedAnnualICCPercent" },
+    { label: "Inventory Day Types", value: "InventoryDayTypes" },
+    { label: "No Of Days", value: "NoOfDays" },
+    { label: "WIP Head", value: "WIPHead" },
+    { label: "Inventory Days", value: "InventoryDays" },
+    { label: "Supplier Credit Days", value: "SupplierCreditDays" },
+    { label: "Interest Days", value: "InterestDays" },
+    { label: "ICC Applicability", value: "ICCApplicability" },
+    { label: "ICC Percent", value: "ICCPercent" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "Technology Name", value: "TechnologyName" },
+    { label: "RawMaterial Name", value: "RawMaterialName" },
+    { label: "Raw Material Grade", value: "RawMaterialGrade" },
+    { label: "Remark", value: "Remark" },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
 ]
 
 export const VBCInterestRateTempData = [
-    {
-        'RawMaterialName': '45455457',
-        'RawMaterialGrade': '2',
-        'VendorCode': 'VCode001',
-        "PlantCode": "1511",
-        'ICCApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
-        'ICCPercent': '10   ',
-        'PaymentTermApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
-        'RepaymentPeriod': '30',
-        'PaymentTermPercent': '10',
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-    }
-]
+  {
+    VendorCode: 'VCode001',
+    PlantCode: '1511',
+    PartFamilyCode: '1234',
+    ICCModelType: 'All / High Investment / High Volume / Low Volume / Medium Volume / New Development',
+    ICCMethod: 'Applicability Based / Credit Based',
+    InventoryDaysCheckBox: 'YES',
+    ApplicabilityBasedInventoryDayType: 'General',
+    CreditBasedAnnualICCPercent: '',
+    InventoryDayTypes: '',
+    NoOfDays: '',
+    WIPHead: '',
+    InventoryDays: '',
+    SupplierCreditDays: '',
+    InterestDays: '',
+    ICCApplicability: 'RM',
+    ICCPercent: '10',
+    EffectiveDate: DayTime().format('DD-MM-YYYY'),
+    TechnologyName: '',
+    RawMaterialName: '',
+    RawMaterialGrade: '',
+    Remark: 'Test Remark',
+    ManageApplicabilitiesForMultiTechnologyAssembly: 'NO'
+  },
+  {
+    VendorCode: 'VCode002',
+    PlantCode: '1512',
+    PartFamilyCode: '1235',
+    ICCModelType: 'All / High Investment / High Volume / Low Volume / Medium Volume / New Development',
+    ICCMethod: 'Credit Based / Applicability Based',
+    InventoryDaysCheckBox: 'YES',
+    ApplicabilityBasedInventoryDayType: '',
+    CreditBasedAnnualICCPercent: 2,
+    InventoryDayTypes: 'Finished Goods',
+    NoOfDays: 2,
+    WIPHead: 'RM',
+    InventoryDays: 3,
+    SupplierCreditDays: 15,
+    InterestDays: -12,
+    ICCApplicability: '',
+    ICCPercent: '',
+    EffectiveDate: DayTime().format('DD-MM-YYYY'),
+    TechnologyName: '',
+    RawMaterialName: '',
+    RawMaterialGrade: '',
+    Remark: 'Test Remark',
+    ManageApplicabilitiesForMultiTechnologyAssembly: 'NO'
+  }
+];
+
 export const CBCInterestRate = [
-    { label: "RawMaterialName", value: "RawMaterialName", },
-    { label: "RawMaterialGrade", value: "RawMaterialGrade", },
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
-    { label: "PlantCode", value: "PlantCode", },
-    { label: 'ICCApplicability', value: 'ICCApplicability', }, //*
-    { label: 'ICCPercent', value: 'ICCPercent', }, //*
-    { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', }, //*
-    { label: 'RepaymentPeriod', value: 'RepaymentPeriod', }, //*
-    { label: 'PaymentTermPercent', value: 'PaymentTermPercent', }, //*
-    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "PartFamilyCode", value: "PartFamilyCode" },
+    { label: "ICC ModelType", value: "ICCModelType" },
+    { label: "ICC Method", value: "ICCMethod" },
+    { label: "Inventory Days CheckBox", value: "InventoryDaysCheckBox" },
+    { label: "Applicability Based Inventory DayType", value: "ApplicabilityBasedInventoryDayType" },
+    { label: "Credit Based Annual ICC Percent", value: "CreditBasedAnnualICCPercent" },
+    { label: "Inventory Day Types", value: "InventoryDayTypes" },
+    { label: "No Of Days", value: "NoOfDays" },
+    { label: "WIP Head", value: "WIPHead" },
+    { label: "Inventory Days", value: "InventoryDays" },
+    { label: "Supplier Credit Days", value: "SupplierCreditDays" },
+    { label: "Interest Days", value: "InterestDays" },
+    { label: "ICC Applicability", value: "ICCApplicability" },
+    { label: "ICC Percent", value: "ICCPercent" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "Technology Name", value: "TechnologyName" },
+    { label: "RawMaterial Name", value: "RawMaterialName" },
+    { label: "Raw Material Grade", value: "RawMaterialGrade" },
+    { label: "Remark", value: "Remark" },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
 ]
 
 export const CBCInterestRateTempData = [
     {
-        'RawMaterialName': '45455457',
-        'RawMaterialGrade': '2',
-        'CustomerCode': 'C-10008',
-        "PlantCode": "1511",
-        'ICCApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
-        'ICCPercent': '10   ',
-        'PaymentTermApplicability': 'RM/RM + CC/RM + CC + BOP/RM + BOP/Fixed/Part cost/Part cost + CC/Part Cost + BOP/Part cost + CC + BOP/BOP + CC/BOP/CC',
-        'RepaymentPeriod': '30',
-        'PaymentTermPercent': '10',
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        CustomerCode: 'C-10008',
+        PlantCode: '1511',
+        PartFamilyCode: '1234',
+        ICCModelType: 'All / High Investment / High Volume / Low Volume / Medium Volume / New Development',
+        ICCMethod: 'Applicability Based / Credit Based',
+        InventoryDaysCheckBox: 'YES',
+        ApplicabilityBasedInventoryDayType: 'General',
+        CreditBasedAnnualICCPercent: '',
+        InventoryDayTypes: '',
+        NoOfDays: '',
+        WIPHead: '',
+        InventoryDays: '',
+        SupplierCreditDays: '',
+        InterestDays: '',
+        ICCApplicability: 'RM',
+        ICCPercent: '10',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        TechnologyName: '',
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+        ManageApplicabilitiesForMultiTechnologyAssembly: 'NO'
+    },
+    {
+        CustomerCode: 'C-10009',
+        PlantCode: '1512',
+        PartFamilyCode: '1235',
+        ICCModelType: 'All / High Investment / High Volume / Low Volume / Medium Volume / New Development',
+        ICCMethod: 'Credit Based / Applicability Based',
+        InventoryDaysCheckBox: 'YES',
+        ApplicabilityBasedInventoryDayType: '',
+        CreditBasedAnnualICCPercent: 2,
+        InventoryDayTypes: 'Finished Goods',
+        NoOfDays: 2,
+        WIPHead: 'RM',
+        InventoryDays: 3,
+        SupplierCreditDays: 15,
+        InterestDays: -12,
+        ICCApplicability: '',
+        ICCPercent: '',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        TechnologyName: '',
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+        ManageApplicabilitiesForMultiTechnologyAssembly: 'NO'
+    }
+]
+
+/**
+* @desc USED IN EXCEL HEADER FOR PAYMENT TERMS BULK UPLOAD
+*/
+
+export const ZBCPaymentTerms = [
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "PartFamilyCode", value: "PartFamilyCode" },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    { label: "PaymentTermApplicability", value: "PaymentTermApplicability" },
+    { label: "RepaymentPeriod", value: "RepaymentPeriod" },
+    { label: "PaymentTermPercentage", value: "PaymentTermPercentage" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "Technology Name", value: "TechnologyName" },
+    { label: "RawMaterial Name", value: "RawMaterialName" },
+    { label: "Raw Material Grade", value: "RawMaterialGrade" },
+    { label: "Remark", value: "Remark" },
+]
+
+export const ZBCPaymentTermsTempData = [
+    {
+        PlantCode: '1511',
+        PartFamilyCode: '1234',
+        ManageApplicabilitiesForMultiTechnologyAssembly: 'NO',
+        PaymentTermApplicability: 'RM',
+        RepaymentPeriod: '30',
+        PaymentTermPercentage: '40',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        TechnologyName: '',
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+    },
+    {
+        PlantCode: '1512',
+        PartFamilyCode: '1235',
+        ManageApplicabilitiesForMultiTechnologyAssembly: 'NO',
+        PaymentTermApplicability: 'RM',
+        RepaymentPeriod: '31',
+        PaymentTermPercentage: '42',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        TechnologyName: '',
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+    }
+]
+
+export const VBCPaymentTerms = [
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "PartFamilyCode", value: "PartFamilyCode" },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    { label: "PaymentTermApplicability", value: "PaymentTermApplicability" },
+    { label: "RepaymentPeriod", value: "RepaymentPeriod" },
+    { label: "PaymentTermPercentage", value: "PaymentTermPercentage" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "Technology Name", value: "TechnologyName" },
+    { label: "RawMaterial Name", value: "RawMaterialName" },
+    { label: "Raw Material Grade", value: "RawMaterialGrade" },
+    { label: "Remark", value: "Remark" },
+]
+
+export const VBCPaymentTermsTempData = [
+  {
+    VendorCode: 'VCode001',
+    PlantCode: '1511',
+    PartFamilyCode: '1234',
+    ManageApplicabilitiesForMultiTechnologyAssembly: 'NO',
+    PaymentTermApplicability: 'RM',
+    RepaymentPeriod: '30',
+    PaymentTermPercentage: '40',
+    EffectiveDate: DayTime().format('DD-MM-YYYY'),
+    TechnologyName: '',
+    RawMaterialName: '',
+    RawMaterialGrade: '',
+    Remark: 'Test Remark',
+  },
+  {
+    VendorCode: 'VCode002',
+    PlantCode: '1512',
+    PartFamilyCode: '1235',
+    ManageApplicabilitiesForMultiTechnologyAssembly: 'NO',
+    PaymentTermApplicability: 'BOP',
+    RepaymentPeriod: '31',
+    PaymentTermPercentage: '42',
+    EffectiveDate: DayTime().format('DD-MM-YYYY'),
+    TechnologyName: '',
+    RawMaterialName: '',
+    RawMaterialGrade: '',
+    Remark: 'Test Remark',
+  }
+];
+
+export const CBCPaymentTerms = [
+    { label: 'CustomerCode', value: 'CustomerCode', },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "PartFamilyCode", value: "PartFamilyCode" },
+    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    { label: "PaymentTermApplicability", value: "PaymentTermApplicability" },
+    { label: "RepaymentPeriod", value: "RepaymentPeriod" },
+    { label: "PaymentTermPercentage", value: "PaymentTermPercentage" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "Technology Name", value: "TechnologyName" },
+    { label: "RawMaterial Name", value: "RawMaterialName" },
+    { label: "Raw Material Grade", value: "RawMaterialGrade" },
+    { label: "Remark", value: "Remark" },
+]
+
+export const CBCPaymentTermsTempData = [
+    {
+        CustomerCode: 'C-10008',
+        PlantCode: '1511',
+        PartFamilyCode: '1234',
+        ManageApplicabilitiesForMultiTechnologyAssembly: 'NO',
+        PaymentTermApplicability: 'RM',
+        RepaymentPeriod: '30',
+        PaymentTermPercentage: '40',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        TechnologyName: '',
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+    },
+    {
+        CustomerCode: 'C-10009',
+        PlantCode: '1511',
+        PartFamilyCode: '1234',
+        ManageApplicabilitiesForMultiTechnologyAssembly: 'NO',
+        PaymentTermApplicability: 'RM',
+        RepaymentPeriod: '30',
+        PaymentTermPercentage: '40',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        TechnologyName: '',
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
     }
 ]
 
@@ -7636,18 +7923,32 @@ export const POWERLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "CostingHead", },
-    { label: "Raw Material Name", value: "RawMaterialName", },
-    { label: "Raw Material Grade", value: "RawMaterialGrade", },
-    { label: "Plant (Code)", value: "PlantName", },
-    { label: "Vendor (Code)", value: "VendorName", },
-    { label: "Customer (Code)", value: "CustomerName", },
-    { label: "ICC Applicability", value: "ICCApplicability", },
-    { label: "Annual ICC (%)", value: "ICCPercent", },
-    { label: "Payment Term Applicability", value: "PaymentTermApplicability", },
-    { label: "Repayment Period (Days)", value: "RepaymentPeriod", },
-    { label: "Payment Term Interest Rate (%)", value: "PaymentTermPercent", },
-    { label: "Effective Date", value: "EffectiveDate", }
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "Raw Material Name", value: "RawMaterialName" },
+    { label: "Raw Material Grade", value: "RawMaterialGrade" },
+    { label: "Plant (Code)", value: "PlantName" },
+    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
+    { label: "Part Family (Code)", value: "PartFamily" },
+    { label: "ICC ModelType", value: "ICCModelType" },
+    { label: "ICC Method", value: "ICCMethod" },
+    { label: "ICC Applicability", value: "ICCApplicability" },
+    // { label: "Annual ICC (%)", value: "ICCPercent", },
+    { label: "Annual ICC (%)", value: "CreditBasedAnnualICCPercent", },
+    { label: "Effective Date", value: "EffectiveDate" }
+]
+
+export const PAYMENTTERMS_DOWNLOAD_EXCEl = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "Raw Material Name", value: "RawMaterialName" },
+    { label: "Raw Material Grade", value: "RawMaterialGrade" },
+    { label: "Plant (Code)", value: "PlantName" },
+    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
+    { label: "Payment Term Applicability", value: "PaymentTermApplicability" },
+    { label: "Repayment Period (Days)", value: "RepaymentPeriod" },
+    { label: "Payment Term Interest Rate (%)", value: "PaymentTermPercent" },
+    { label: "Effective Date", value: "EffectiveDate" }
 ]
 
 export const LABOUR_DOWNLOAD_EXCEl = [

@@ -41,6 +41,9 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
             case 'overHeadAndProfits':
                 getDataList(null, null, null, null, newSkip, pageSizeValue, true, floatingFilterData);
                 break;
+            case 'interestRate':
+                getDataList(null, null, null, null, newSkip, pageSizeValue, true, floatingFilterData);
+                break;
             case 'Operations':
                 getDataList(null, null, null, null, newSkip, pageSizeValue, true, floatingFilterData,isImport);
                 break;

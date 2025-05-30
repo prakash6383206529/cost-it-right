@@ -587,6 +587,7 @@ const AddRejectionMaster = (props) => {
 
                   <AddOverheadMasterDetails
                     costingTypeId={costingTypeId}
+                    conditionTypeId={conditionTypeId}
                     state={state}
                     trigger={trigger}
                     clearErrors={clearErrors}

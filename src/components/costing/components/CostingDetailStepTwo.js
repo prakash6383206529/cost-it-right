@@ -63,7 +63,7 @@ function CostingDetailStepTwo(props) {
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
-    PackageAndFreightTabData, ToolTabData, CostingEffectiveDate, breakupBOP, UpdatePaymentTermCost, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, checkIsDiscountChange, checkIsDataChange } = useSelector(state => state.costing)
+    PackageAndFreightTabData, ToolTabData, CostingEffectiveDate, breakupBOP, UpdatePaymentTermCost, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, checkIsDiscountChange, checkIsDataChange,IccCost } = useSelector(state => state.costing)
 
   const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId))
   const isNFR = useContext(IsNFR);
@@ -96,6 +96,7 @@ function CostingDetailStepTwo(props) {
             checkForNull(tempData.NetSurfaceTreatmentCost) +
             checkForNull(tempData.NetOverheadAndProfitCost) +
             checkForNull(tempData.NetPackagingAndFreight) +
+            checkForNull(IccCost?.NetCost) +
             checkForNull(ApplyCost) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(tempData.NetDiscountsCost)
         }
         return { totalCost: OverAllCost, basicRate: OverAllCost }
@@ -108,6 +109,7 @@ function CostingDetailStepTwo(props) {
             checkForNull(tempData.NetOverheadAndProfitCost) +
             checkForNull(tempData.NetPackagingAndFreight) +
             checkForNull(tempData.ToolCost) +
+            checkForNull(IccCost?.NetCost) +
             (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(tempData.NetDiscountsCost)
         }
         totalCost = checkForNull(OverAllCost) + checkForNull(DiscountCostData?.totalNpvCost) + checkForNull(DiscountCostData?.totalConditionCost)
@@ -121,6 +123,7 @@ function CostingDetailStepTwo(props) {
             checkForNull(data.NetOverheadProfitCost) +
             checkForNull(tempData.NetPackagingAndFreight) +
             checkForNull(tempData.ToolCost) +
+            checkForNull(IccCost?.NetCost) +
             (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(tempData.NetDiscountsCost)
         }
         return { totalCost: OverAllCost, basicRate: OverAllCost }
@@ -133,6 +136,7 @@ function CostingDetailStepTwo(props) {
             checkForNull(tempData.NetOverheadAndProfitCost) +
             checkForNull(data.NetFreightPackagingCost) +
             checkForNull(tempData.ToolCost) +
+            checkForNull(IccCost?.NetCost) +
             (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(tempData.NetDiscountsCost)
 
         }
@@ -148,6 +152,7 @@ function CostingDetailStepTwo(props) {
             checkForNull(tempData.NetOverheadAndProfitCost) +
             checkForNull(tempData.NetPackagingAndFreight) +
             checkForNull(ApplyCost) +
+            checkForNull(IccCost?.NetCost) +
             (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(tempData.NetDiscountsCost)
 
         }
@@ -160,6 +165,7 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
           checkForNull(tempData.ToolCost) +
+          checkForNull(IccCost?.NetCost) +
           (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(data?.AnyOtherCost) - checkForNull(tempData?.NetDiscountsCost)
         totalCost = checkForNull(OverAllCost) + (initialConfiguration?.IsAddNPVInNetCost ? checkForNull(data.totalNpvCost) : 0) + checkForNull(data.totalConditionCost)
 
@@ -417,6 +423,7 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
           checkForNull(tempData.ToolCost) +
+          checkForNull(tempData.NetICCCost) +
           (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(data?.AnyOtherCost) - checkForNull(tempData?.NetDiscountsCost)
 
         // data.AnyOtherCost
@@ -453,6 +460,8 @@ function CostingDetailStepTwo(props) {
           BasicRate: checkForNull(basicRate),
           // BasicRate: OverAllCost,
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
+          NetICCCost: IccCost?.NetCost,
+          NetPaymentTermCost: tempData.NetPaymentTermCost,
         }
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
@@ -605,6 +614,8 @@ function CostingDetailStepTwo(props) {
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight Cost`}</span></th>
                           {costingData?.TechnologyId !== TOOLING_ID && <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>}
+                          <th style={{ width: '160px' }}><span className="font-weight-500">{`ICC`}</span></th>
+                         {initialConfiguration?.IsShowPaymentTerm && <th style={{ width: '160px' }}><span className="font-weight-500">{`Payment Terms`}</span></th>}
                           <th style={{ width: '160px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`Discounts`}</span></th>
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <th style={{ width: '100px' }}><span className="font-weight-500">{`Basic Price`}</span></th>}
@@ -627,6 +638,8 @@ function CostingDetailStepTwo(props) {
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOverheadAndProfitCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     {costingData?.TechnologyId !== TOOLING_ID && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.ToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>}
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetICCCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
+                                    {initialConfiguration?.IsShowPaymentTerm && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetPaymentTermCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>}
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOtherCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetDiscountsCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.BasicRate, initialConfiguration?.NoOfDecimalForPrice)}</span></td>}
