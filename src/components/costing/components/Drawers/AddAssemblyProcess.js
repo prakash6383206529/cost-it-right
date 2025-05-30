@@ -145,24 +145,27 @@ function AddAssemblyProcess(props) {
           checkForNull(costPerPieceTotal) +
           checkForNull(CostPerAssemblyBOPTotal) +
           checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
-          checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost) +
+         
           checkForNull(NetProcessCost)
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
           checkForNull(costPerPieceTotal) +
           checkForNull(CostPerAssemblyBOPTotal) +
           checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
-          checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost) +
           checkForNull(NetProcessCost)
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingProcessCostResponse = processGrid.CostingProcessCostResponse
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetProcessCost = NetProcessCost
         // Update overhead and profit costs
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetProcessCostForOverhead = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.overheadProcessCost;
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetProcessCostForProfit = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.profitProcessCost;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.overheadProcessCost;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCostPerAssemblyForProfit = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.profitProcessCost;
 
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetCCForOtherTechnologyCostCost = NetCCForOtherTechnologyCost
         // Update overhead and profit costs
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetCCForOtherTechnologyCostForOverhead = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCostForOverhead;
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetCCForOtherTechnologyCostForProfit = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCostForProfit;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForOverhead = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCostForOverhead;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForProfit = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCostForProfit;
 
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 

@@ -383,7 +383,6 @@ function RejectionListing(props) {
     * @description confirm delete
     */
     const deleteItem = (Id) => {
-
         setShowPopup(true)
         setDeletedId(Id)
     }
@@ -396,7 +395,7 @@ function RejectionListing(props) {
         const loggedInUser = loggedInUserId();
         dispatch(deleteOverhead(ID, loggedInUser, (res) => {
             if (res?.data?.Result === true) {
-                Toaster.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_REJECTION_SUCCESS);
                 dispatch(setSelectedRowForPagination([]));
                 if (gridApi) {
                     gridApi?.deselectAll();
@@ -807,7 +806,7 @@ function RejectionListing(props) {
                                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
-                                            <AgGridColumn field="Applicability" headerName="Overhead Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="Applicability" headerName="Rejection Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                             <AgGridColumn field="OverheadId" width={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                         </AgGridReact>}
@@ -823,7 +822,7 @@ function RejectionListing(props) {
                         </Row>
                         {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Rejection`} isZBCVBCTemplate={true} messageLabel={`Rejection`} anchor={'right'} modelText={modelText} />}
                         {
-                            showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.OVERHEAD_DELETE_ALERT}`} />
+                            showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.REJECTION_DELETE_ALERT}`} />
                         }
 
                     </div >

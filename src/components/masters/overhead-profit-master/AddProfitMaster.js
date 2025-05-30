@@ -300,7 +300,7 @@ const AddProfitMaster = (props) => {
 
       if (JSON.stringify(DataToChange?.ApplicabilityDetails ?? []) === JSON.stringify(state?.ApplicabilityDetails ?? []) && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) &&
         DropdownNotChanged) {
-        Toaster.warning('Please change the data to save Interest Rate Details');
+        Toaster.warning('Please change the data to save Profit Details');
         return false;
       }
 
@@ -561,7 +561,7 @@ const AddProfitMaster = (props) => {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Profit Details
+                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Profit
                       {/* {!isViewMode && <TourWrapper
                         buttonSpecificProp={{ id: "Add_Overhead_Form" }}
                         stepsSpecificProp={{
@@ -663,7 +663,7 @@ const AddProfitMaster = (props) => {
                           }}
                           handleChange={handleMessageChange}
                           customClassName={'textAreaWithBorder'}
-                          errors={errors.remark}
+                          errors={errors.Remark}
                           disabled={isViewMode}
                           rowHeight={4.8}
                         />
