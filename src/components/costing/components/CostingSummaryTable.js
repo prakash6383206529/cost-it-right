@@ -3434,8 +3434,8 @@ const CostingSummaryTable = (props) => {
                               })
                             }
                           </tr >
-                          {!initialConfiguration?.IsShowTCO && < tr className='border-right' >
-                            <td>
+                          {!initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowPaymentTerm &&< tr className='border-right' >
+                             <td>
                               <span className={highlighter(["paymentTerms", "paymentValue"], "multiple-key")}>Payment Terms</span>
                             </td>
 
