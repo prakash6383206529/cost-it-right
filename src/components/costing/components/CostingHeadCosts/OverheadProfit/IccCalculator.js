@@ -208,7 +208,7 @@ function IccCalculator(props) {
             identifier: "text",
         },
         {
-            columnHead: "Applicabilty Cost",
+            columnHead: "Applicability Cost",
             key: "ApplicabilityCost",
             identifier: "cost",
             fieldKey: "ApplicabilityCost",
