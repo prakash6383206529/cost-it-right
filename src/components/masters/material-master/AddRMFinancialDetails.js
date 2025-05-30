@@ -1749,7 +1749,6 @@ function AddRMFinancialDetails(props) {
                                         {(!state.IsApplyHasDifferentUOM && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" width={'350px'}
                                             tooltipText={allFieldsInfoIcon('Scrap Rate')?.toolTipTextScrapCostPerOldUOMWithAutoCalculate}
                                         />}
-                                        { }
                                         <TextFieldHookForm
                                             label={labelWithUOMAndCurrency("Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                             name={"ScrapRate"}
@@ -1758,16 +1757,12 @@ function AddRMFinancialDetails(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            rules={!state.IsApplyHasDifferentUOM ? {
-                                                required: !state.IsCalculateScrapRate,
-                                                validate: { positiveAndDecimalNumber, decimalLengthsix, number },
-                                            } : {}}
-                                            mandatory={!state.IsApplyHasDifferentUOM ? !state.IsCalculateScrapRate : false}
-                                            className=""
+                                            rules={!state.IsApplyHasDifferentUOM && !state.IsCalculateScrapRate? {required: true,validate: {positiveAndDecimalNumber,decimalLengthsix,number}}: {required: false}}
+                                            mandatory={(!state.IsApplyHasDifferentUOM && !state.IsCalculateScrapRate) ? true : false}
                                             maxLength="15"
-                                            customClassName=" withBorder"
+                                            customClassName="withBorder"
                                             handleChange={() => { }}
-                                            disabled={isViewFlag || state.IsApplyHasDifferentUOM || state.IsCalculateScrapRate || (isEditFlag && isRMAssociated)}
+                                            disabled={isViewFlag ||state.IsApplyHasDifferentUOM ||state.IsCalculateScrapRate ||(isEditFlag && isRMAssociated)}
                                             errors={errors.ScrapRate}
                                         />
                                     </Col>
