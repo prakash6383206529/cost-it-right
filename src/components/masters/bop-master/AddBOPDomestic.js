@@ -47,7 +47,6 @@ import { subDays } from 'date-fns';
 import { getPlantUnitAPI } from '../actions/Plant';
 import AddOtherCostDrawer from '../material-master/AddOtherCostDrawer';
 import { getPartFamilySelectList } from '../actions/Part';
-import { AsyncDropdownHookForm } from '../../layout/HookFormInputs';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -142,6 +141,10 @@ class AddBOPDomestic extends Component {
       sourceInputLoader: false,
       sourceVendorFilterList: [],
       sourceVendorBOPId: null,
+      SourceVendorBoughtOutPartId: "",
+      sourceVendorTouched: false,
+      disableAll: false,
+      SourceVendorAssociatedAsBoughtOutPartVendors: ""
     }
     this.state = { ...this.initialState };
 
@@ -403,6 +406,7 @@ class AddBOPDomestic extends Component {
           this.props.change('plantCurrency', Data?.Currency)
           this.props.change('ExchangeSource', { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName })
           this.props.change("OtherCost", checkForDecimalAndNull(Data.OtherNetCost, initialConfiguration?.NoOfDecimalForPrice))
+          this.props.change("sourceVendorName", Data.VendorName !== undefined ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [])
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           setTimeout(() => {
             let plantObj;
@@ -416,6 +420,7 @@ class AddBOPDomestic extends Component {
               BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
               selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+              sourceVendor: Data.VendorName !== undefined ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [],
               sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
@@ -439,6 +444,9 @@ class AddBOPDomestic extends Component {
               totalOtherCost: Data?.OtherNetCost,
               otherCostTableData: Data?.BoughtOutPartOtherCostDetailsSchema,
               PartFamilySelected: Data?.PartFamilyId ? { label: Data?.PartFamily ?? "", value: Data?.PartFamilyId } : [],
+              SourceVendorAssociatedAsBoughtOutPartVendors: Data?.SourceVendorAssociatedAsBoughtOutPartVendors,
+              IsPartOutsourced: Data?.IsPartOutsourced,
+              SourceVendorBoughtOutPartId: Data?.BoughtOutPartId,
             }, () => {
               this.toolTipNetCost()
               this.setState({ isLoader: false })
@@ -1018,24 +1026,18 @@ class AddBOPDomestic extends Component {
         this.setState({ disableSendForApproval: false });
         if (res?.status === 200) {
           const Data = res?.data?.Data;
-          // this.setState({
-          //   isSourceVendorApiCalled: true,
-          //   sourceVendorBOPId: Data?.RawMaterialId,
-          //   DataToChange: Data,
-          //   disableAll: true,
-          //   isLoader: false,
-          //   commodityDetails: Data?.MaterialCommodityIndexRateDetails,
-          //   disableSendForApproval: false,
-          // });
-        } else {
-          // this.setState({
-          //   isSourceVendorApiCalled: true,
-          //   sourceVendorBOPId: null,
-          //   DataToChange: {},
-          //   disableAll: false,
-          //   isLoader: false,
-          //   commodityDetails: [],
-          // });
+          this.props.change('EffectiveDate', DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate) : '');
+          this.props.change('BasicRate', checkForDecimalAndNull(Data?.BasicRate, this.props?.initialConfiguration?.NoOfDecimalForPrice));
+          this.props.change("OtherCost", checkForDecimalAndNull(Data?.OtherNetCost, this.props?.initialConfiguration?.NoOfDecimalForPrice));
+          this.setState({
+            effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate) : '',
+            totalOtherCost: Data?.OtherNetCost,
+            otherCostTableData: Data?.BoughtOutPartOtherCostDetailsSchema,
+            SourceVendorAssociatedAsBoughtOutPartVendors: Data?.SourceVendorAssociatedAsBoughtOutPartVendors,
+            IsPartOutsourced: Data?.IsPartOutsourced,
+            SourceVendorBoughtOutPartId: Data?.BoughtOutPartId,
+            disableAll: true,
+          });
         }
        })
     }
@@ -1046,27 +1048,19 @@ class AddBOPDomestic extends Component {
         if (newValue?.value === this.state?.vendorName?.value) {
             Toaster.warning(`${VendorLabel} and Source ${VendorLabel} cannot be the same`);
             this.setState({ sourceVendor: [] });
-            // setState(prevState => ({ ...prevState, sourceVendor: [] }));
         } else {
-            // setState(prevState => ({ ...prevState, sourceVendor: newValue }));
             this.setState({ sourceVendor: newValue });
             this.props.change("sourceVendorName", { label: newValue?.label, value: newValue?.value })
-            // dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, SourceVendor: newValue }, () => { }));
-
             const data = {
-              // rawMaterialSpecificationId: currentRawMaterialSpec?.value,
-              sourceVendorId: newValue?.value,
-              technologyId: this.state?.Technology?.value,
-              // isIndexationDetails: showIndexCheckBox,
-              costingHeadId: this.state?.costingTypeId,
+              costingHeadId: ZBCTypeId,
+              bopNumber: this.props?.fieldsObj?.BoughtOutPartNumber,
               categoryId: this.state?.BOPCategory.value,
-              boughtOutPartChildId: ""
+              sourceVendorId: newValue?.value,
+              technologyId: this.state?.Technology?.value
             };
-
             this.handleSourceVendorDataFetch(data);
         }
     } else {
-        // dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, SourceVendor: [] }, () => { }));
         this.setState({ sourceVendor: [] });
     }
   };
@@ -1129,9 +1123,9 @@ class AddBOPDomestic extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
-      isClientVendorBOP, isTechnologyVisible, Technology, NetConditionCost, NetCostWithoutConditionCost, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost } = this.state;
+      isClientVendorBOP, isTechnologyVisible, Technology, NetConditionCost, NetCostWithoutConditionCost, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost,
+    SourceVendorAssociatedAsBoughtOutPartVendors, IsPartOutsourced, sourceVendor, SourceVendorBoughtOutPartId } = this.state;
     const { fieldsObj, isBOPAssociated } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
 
@@ -1208,6 +1202,11 @@ class AddBOPDomestic extends Component {
       LocalExchangeRateId: null,
       PartFamilyId: this?.state?.PartFamilySelected?.value || "",
       PartFamily: this?.state?.PartFamilySelected?.label || "",
+      SourceVendorAssociatedAsBoughtOutPartVendors: SourceVendorAssociatedAsBoughtOutPartVendors,
+      IsPartOutsourced: IsPartOutsourced,
+      SourceVendorId: sourceVendor?.value,
+      SourceVendorName: sourceVendor?.label,
+      SourceVendorBoughtOutPartId: SourceVendorBoughtOutPartId
     };
 
     // formData.BasicRate = FinalBasicRateBaseCurrency
@@ -1410,7 +1409,7 @@ class AddBOPDomestic extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration, t, fieldsObj } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, NetCostWithoutConditionCost, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle, hidePlantCurrency
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, NetCostWithoutConditionCost, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle, hidePlantCurrency, disableAll
     } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
     const BOPVendorLabel = LabelsClass(t, 'MasterLabels').BOPVendorLabel;
@@ -1655,7 +1654,7 @@ class AddBOPDomestic extends Component {
                                 required={true}
                                 handleChangeDescription={this.handlePartFamilyChange}
                                 valueDescription={this?.state?.PartFamilySelected}
-                                disabled={false}
+                                disabled={isEditFlag || isViewMode}
                               />
                             </Col>)
                           }
@@ -1866,26 +1865,28 @@ class AddBOPDomestic extends Component {
                             </>
                           )}
 
-                          <Col md="3" className="mt-4 pt-2">
-                              <div className=" flex-fills d-flex justify-content-between align-items-center">
-                                  <label id="AddRMDomestic_HasDifferentSource"
-                                      className={`custom-checkbox w-auto mb-0}`}
-                                      onChange={this.onPressIsPartOutsourced}
-                                  >
-                                      Is Part Outsourced?
-                                      <input
-                                          type="checkbox"
-                                          checked={this.state?.IsPartOutsourced}
-                                          // disabled={(states.costingTypeId === VBCTypeId) ? true : false}
-                                      />
-                                      <span
-                                          className=" before-box p-0"
-                                          checked={this.state?.IsPartOutsourced}
-                                          onChange={this.onPressIsPartOutsourced}
-                                      />
-                                  </label>
-                              </div>
-                          </Col>
+                          {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowPartOutsourcedInBoughtOutPart &&
+                            <Col md="3" className="mt-4 pt-2">
+                                <div className=" flex-fills d-flex justify-content-between align-items-center">
+                                    <label id="AddRMDomestic_HasDifferentSource"
+                                        className={`custom-checkbox w-auto mb-0 ${(this.state.isEditFlag || isViewMode) ? "disabled" : ""}`} 
+                                        onChange={this.onPressIsPartOutsourced}
+                                    >
+                                        Is Part Outsourced?
+                                        <input
+                                            type="checkbox"
+                                            checked={this.state?.IsPartOutsourced}
+                                            disabled={isViewMode || this.state.isEditFlag}
+                                        />
+                                        <span
+                                            className=" before-box p-0"
+                                            checked={this.state?.IsPartOutsourced}
+                                            onChange={this.onPressIsPartOutsourced}
+                                        />
+                                    </label>
+                                </div>
+                            </Col>
+                          }
 
                           {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowSourceVendorInBoughtOutPart && (
                             <>
@@ -1897,21 +1898,21 @@ class AddBOPDomestic extends Component {
                                     <AsyncSelect
                                       name="sourceVendorName"
                                       id="Source_vendor_name_form_vendor_based"
-                                      // ref={this.myRef}
+                                      ref={this.sourceRef}
                                       key={this.state.updateAsyncDropdown}
                                       loadOptions={sourceFilterList}
                                       onChange={(e) => this.handleSourceVendor(e, VendorLabel)}
                                       value={this.state.sourceVendor}
                                       noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                       isDisabled={(isEditFlag) ? true : false}
-                                      onFocus={() => onFocus(this)}
+                                      onFocus={() => this.setState({ sourceVendorTouched: true })}
                                       onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                       }}
                                     />
                                   </div>
                                 </div>
-                                {((this.state.showErrorOnFocus && this.state.sourceVendor.length === 0) || this.state.isSourceVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                                {((this.state.sourceVendorTouched && this.state.sourceVendor.length === 0) || this.state.isSourceVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                               </Col>
                             </>
                           )}
@@ -2021,7 +2022,7 @@ class AddBOPDomestic extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isViewMode}
-                                placeholder={isViewMode || !IsFinancialDataChanged ? '-' : 'Select Date'}
+                                placeholder={disableAll || isViewMode || !IsFinancialDataChanged ? '-' : 'Select Date'}
                               />
                             </div>
                           </Col>
@@ -2050,7 +2051,7 @@ class AddBOPDomestic extends Component {
                                 validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                 component={renderTextInputField}
                                 required={true}
-                                disabled={isViewMode}
+                                disabled={isViewMode || disableAll}
                                 className=" "
                                 customClassName=" withBorder"
                                 onChange={(e) => { this.state.isEditFlag && this.debouncedCompareRate() }}
@@ -2081,7 +2082,7 @@ class AddBOPDomestic extends Component {
                                 <Button
                                   id="addBOPDomestic_otherCost"
                                   onClick={this.otherCostToggle}
-                                  className={"right ml-1"}
+                                  className={"right ml-1 mt-0"}
                                   variant={
                                     isViewMode ? "view-icon-primary" : !this.props.fieldsObj?.BasicRate
                                       ? "blurPlus-icon-square"
@@ -2463,7 +2464,7 @@ class AddBOPDomestic extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate', 'Remark', 'BoughtOutPartName', 'SAPPartNumber', 'plantCurrency', 'NetCostPlantCurrency');
+  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate', 'Remark', 'BoughtOutPartName', 'BoughtOutPartNumber', 'SAPPartNumber', 'plantCurrency', 'NetCostPlantCurrency');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead, exchangeRateSourceList } = comman;

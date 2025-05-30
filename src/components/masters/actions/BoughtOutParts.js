@@ -186,8 +186,7 @@ export function getBOPImportById(bopId, callback) {
 export function getBOPDataBySourceVendor(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        // const request = axios.get(`${API.getBOPDataBySourceVendor}?loggedInUserId=${loggedInUserId()}&costingHeadId=${ZBCTypeId}&technologyId=${data.technologyId}&rawMaterialSpecificationId=${data.rawMaterialSpecificationId}&isIndexationDetails=${data.isIndexationDetails}&sourceVendorId=${data.sourceVendorId}`, config());
-        const request = axios.get(`${API.getBOPDataBySourceVendor}?costingHeadId=${data?.costingHeadId}&boughtOutPartChildId=${"1"}&categoryId=${data?.categoryId}&sourceVendorId=${data?.sourceVendorId}&loggedInUserId=${loggedInUserId()}&technologyId=${null}`, config());
+        const request = axios.get(`${API.getBOPDataBySourceVendor}?costingHeadId=${data?.costingHeadId}&bopNumber=${data?.bopNumber}&categoryId=${data?.categoryId}&sourceVendorId=${data?.sourceVendorId}&technologyId=${null}&loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response) {
                 callback(response);

@@ -182,6 +182,15 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
         if (getConfigurationKey().IsShowClientVendorBOP === false) {
             if (el.value === 'IsClientVendorBOP') return false;
         }
+        if (!getConfigurationKey().IsShowSourceVendorInBoughtOutPart) {
+            if (el.value === 'SourceVendorName') return false;
+        }else{
+            if (el.value === 'SourceVendorName') return false;
+            if (el.value === 'SourceVendorLocation') return false;
+        }
+        if (!getConfigurationKey().IsShowPartOutsourcedInBoughtOutPart) {
+            if (el.value === 'IsPartOutsourced') return false;
+        }
         if (isBop && getConfigurationKey().IsBoughtOutPartCostingConfigured === false) {
             if (el.value === 'IsBreakupBoughtOutPart') return false;
             if (el.value === 'TechnologyName') return false;

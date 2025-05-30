@@ -2947,6 +2947,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_DOMESTIC = [
+    { label: 'Note', value: 'Note', },
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
@@ -2958,6 +2959,8 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'ClientApprovedVendor', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'SourceVendorCode', value: 'SourceVendorCode', },
+    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
@@ -2979,6 +2982,7 @@ export const BOP_VBC_DOMESTIC = [
 
 export const BOP_VBC_DOMESTIC_TempData = [
     {
+        'Note': 'If you enter a SourceVendorCode, you must also provide the corresponding BOPNumber, BOPName, CategoryName, Effective Date,  of the Source Vendor Details',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -2990,6 +2994,8 @@ export const BOP_VBC_DOMESTIC_TempData = [
         "ExchangeRateSourceName": "SBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'VendorPlant': 'VPlant',
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
@@ -3010,6 +3016,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
+        'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3021,6 +3028,8 @@ export const BOP_VBC_DOMESTIC_TempData = [
         "ExchangeRateSourceName": "SBI",
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'VendorPlant': 'VPlant',
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
@@ -3041,6 +3050,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
+        'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3052,6 +3062,8 @@ export const BOP_VBC_DOMESTIC_TempData = [
         "ExchangeRateSourceName": "SBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'VendorPlant': 'VPlant',
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
@@ -3075,6 +3087,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
 ]
 
 export const BOP_DETAILED_DOMESTIC = [
+    { label: 'Note', value: 'Note', },
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
@@ -3085,6 +3098,8 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'SourceVendorCode', value: 'SourceVendorCode', },
+    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
     { label: "TechnologyName", value: 'TechnologyName' }, //NOUI
     { label: 'Source', value: 'Source', },
@@ -3095,6 +3110,7 @@ export const BOP_DETAILED_DOMESTIC = [
 
 export const BOP_DETAILED_DOMESTIC_TempData = [
     {
+        'Note': 'If you enter a SourceVendorCode, you must also provide the corresponding BOPNumber, BOPName, CategoryName, Effective Date,  of the Source Vendor Details',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3105,6 +3121,8 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'DestinationPlantCode': "1032",
         "ExchangeRateSourceName": "SBI",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'IsBreakupBoughtOutPart': 'Yes',
         'TechnologyName': 'Sheet Metal',
         'VendorPlant': 'VPlant',
@@ -3114,6 +3132,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
+        'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3124,6 +3143,8 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'DestinationPlantCode': "1032",
         "ExchangeRateSourceName": "SBI",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'IsBreakupBoughtOutPart': 'Yes',
         'TechnologyName': 'Sheet Metal',
         'VendorPlant': 'VPlant',
@@ -3133,6 +3154,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
+        'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3143,6 +3165,8 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'DestinationPlantCode': "1032",
         "ExchangeRateSourceName": "SBI",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'IsBreakupBoughtOutPart': 'Yes',
         'TechnologyName': 'Sheet Metal',
         'VendorPlant': 'VPlant',
@@ -3395,6 +3419,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_DETAILED_IMPORT = [
+    { label: 'Note', value: 'Note', },
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
@@ -3405,6 +3430,8 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'SourceVendorCode', value: 'SourceVendorCode', },
+    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
     { label: "TechnologyName", value: 'TechnologyName' }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
@@ -3421,6 +3448,7 @@ export const BOP_DETAILED_IMPORT = [
 
 export const BOP_DETAILED_IMPORT_TempData = [
     {
+        'Note': 'If you enter a SourceVendorCode, you must also provide the corresponding BOPNumber, BOPName, CategoryName, Effective Date,  of the Source Vendor Details',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3432,6 +3460,8 @@ export const BOP_DETAILED_IMPORT_TempData = [
         "ExchangeRateSourceName": "SBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'IsBreakupBoughtOutPart': 'Yes',
         'TechnologyName': 'Sheet Metal',
         'SourceVendorName': 'TATA Steel',
@@ -3443,6 +3473,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
+        'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3454,6 +3485,8 @@ export const BOP_DETAILED_IMPORT_TempData = [
         "ExchangeRateSourceName": "RBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'IsBreakupBoughtOutPart': 'Yes',
         'TechnologyName': 'Sheet Metal',
         'SourceVendorName': 'TATA Steel',
@@ -3465,6 +3498,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
+        'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3476,6 +3510,8 @@ export const BOP_DETAILED_IMPORT_TempData = [
         "ExchangeRateSourceName": "RBI",
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'IsBreakupBoughtOutPart': 'Yes',
         'TechnologyName': 'Sheet Metal',
         'SourceVendorName': 'TATA Steel',
@@ -3493,6 +3529,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_IMPORT = [
+    { label: 'Note', value: 'Note', },
     { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
@@ -3504,6 +3541,8 @@ export const BOP_VBC_IMPORT = [
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'ClientApprovedVendor', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'SourceVendorCode', value: 'SourceVendorCode', },
+    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
@@ -3530,6 +3569,7 @@ export const BOP_VBC_IMPORT = [
 
 export const BOP_VBC_IMPORT_TempData = [
     {
+        'Note': 'If you enter a SourceVendorCode, you must also provide the corresponding BOPNumber, BOPName, CategoryName, Effective Date,  of the Source Vendor Details',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3541,6 +3581,8 @@ export const BOP_VBC_IMPORT_TempData = [
         "ExchangeRateSourceName": "SBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
@@ -3562,6 +3604,7 @@ export const BOP_VBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
+        'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3573,6 +3616,8 @@ export const BOP_VBC_IMPORT_TempData = [
         "ExchangeRateSourceName": "RBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
@@ -3594,6 +3639,7 @@ export const BOP_VBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
+        'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
@@ -3605,6 +3651,8 @@ export const BOP_VBC_IMPORT_TempData = [
         "ExchangeRateSourceName": "RBI",
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
+        'SourceVendorCode': 'Sys02',
+        'IsPartOutsourced': 'NO',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
@@ -6641,6 +6689,8 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "SAP Code", value: "SAPPartNumber", },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor", },
+    { label: 'Sourced Vendor (Code)', value: 'SourceVendorName', },
+    { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', },
@@ -6689,6 +6739,8 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "SAP Code", value: "SAPPartNumber", },
     { label: "Plant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "Vendor" },
+    { label: 'Sourced Vendor (Code)', value: 'SourceVendorName', },
+    { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
