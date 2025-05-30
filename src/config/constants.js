@@ -18,7 +18,7 @@ export const config = () => {
 }
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.1.100:10511/api/v1`;
+// const BASE_URL = `http://10.10.1.102:6002/api/v1`;
 
 
 
@@ -1181,6 +1181,8 @@ export const API = {
   getNfrInsightsDetails: `${BASE_URL}/reports/get-nfr-insights-details`,
   getNfrInsightsStatusDetails: `${BASE_URL}/reports/get-nfr-insights-status-details`,
   getCostDeviationReport: `${BASE_URL}/reports/get-weight-comparison-report`,
+  getBusinessValueReportHeads: `${BASE_URL}/configuration/select-business-value-summary-report-heads`,
+  getBusinessValueReportData: `${BASE_URL}/reports/get-business-value-summary-report`,
 
 
   //RFQ
@@ -2158,6 +2160,9 @@ export const GET_DATA_FROM_REPORT = 'GET_DATA_FROM_REPORT'
 export const GET_PRODUCT_LIST = 'GET_PRODUCT_LIST'
 export const GET_PRODUCT_PART_DATA_LIST = 'GET_PRODUCT_PART_DATA_LIST'
 export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
+export const GET_BUSINESS_VALUE_REPORT_HEADS = 'GET_BUSINESS_VALUE_REPORT_HEADS'
+export const GET_BUSINESS_VALUE_REPORT_DATA = 'GET_BUSINESS_VALUE_REPORT_DATA'
+
 //MINDA
 export const GET_NFR_INSIGHT_DETAILS = 'GET_NFR_INSIGHT_DETAILS'
 export const GET_NFR_INSIGHT_STATUS_DETAILS = 'GET_NFR_INSIGHT_STATUS_DETAILS'
@@ -2362,6 +2367,7 @@ export const PURCHASE_PROVISION_FILE_NAME = 'Purchase Provision Report'
 export const SALES_PROVISION_REPORT = 'Sales Provision Report'
 export const COST_DEVIATION_REPORT = 'Cost Deviation'
 export const COST_VARIANCE_REPORT = 'Cost Variance'
+export const BUSINESS_VALUE_REPORT = 'Business Value Report'
 //RE
 // export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'          						//RE
 export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'

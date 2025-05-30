@@ -14,7 +14,9 @@ import {
     GET_STAGE_OF_PART_DETAILS,
     GET_NFR_INSIGHT_DETAILS,
     GET_NFR_INSIGHT_STATUS_DETAILS,
-    GET_COST_DEVIATION_REPORT
+    GET_COST_DEVIATION_REPORT,
+    GET_BUSINESS_VALUE_REPORT_HEADS,
+    GET_BUSINESS_VALUE_REPORT_DATA
 } from '../../../config/constants';
 import { apiErrors, loggedInUserId, userDetails } from '../../../helper';
 
@@ -692,3 +694,44 @@ export function getCostDeviationReport(data, callback) {
         })
     }
 }
+
+export function getBusinessValueReportHeads(callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getBusinessValueReportHeads}`, config());
+        request.then((response) => {
+            if (response?.data?.SelectList || response?.status === 204) {
+                dispatch({
+                    type: GET_BUSINESS_VALUE_REPORT_HEADS,
+                    payload: response.status === 204 ? [] : response?.data?.SelectList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error);
+        })
+    }
+}
+
+export function getBusinessValueReportData(loggedInUserId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getBusinessValueReportData}?loggedInUserId=${loggedInUserId}`, config());
+        request.then((response) => {
+            if (response?.data?.Data || response?.status === 204) {
+                dispatch({
+                    type: GET_BUSINESS_VALUE_REPORT_DATA,
+                    payload: response.status === 204 ? [] : response?.data?.Data
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error);
+        })
+    }
+}
+
