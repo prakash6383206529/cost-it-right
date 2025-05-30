@@ -43,17 +43,17 @@ function ViewOverheadProfit(props) {
     props.closeDrawer('')
   }
 
-  const overheadAndProfitTooltipText = 
-  `
+  const overheadAndProfitTooltipText =
+    `
     ${isRmCutOffApplicable ? `RM Cut Off Price ${checkForDecimalAndNull(rawMaterialCostWithCutOff, initialConfiguration?.NoOfDecimalForPrice)} is Applied` : ''}
     ${isIncludeToolCostWithOverheadAndProfit ? 'Tool Cost Included' : ''}
     ${isIncludeSurfaceTreatmentWithOverheadAndProfit ? 'Surface Treatment Cost Included' : ''}
   `.trim();
-  
+
 
   const iccToolTipText =
-  
- ` ${isIncludeToolCostInCCForICC ? 'Tool Cost Included' : ''}
+
+    ` ${isIncludeToolCostInCCForICC ? 'Tool Cost Included' : ''}
   ${isIncludeOverheadAndProfitInICC ? 'Overhead and Profit Included' : ''}`.trim()
   const modelShowData = () => {
     return <>
@@ -216,10 +216,10 @@ function ViewOverheadProfit(props) {
                     <tr key={index}>
                       <td>{item.Applicability || '-'}</td>
                       <td> {item?.Applicability !== 'Fixed'
-                          ?  item?.Percentage: '-'}
+                        ? item?.Percentage : '-'}
                       </td>
                       <td>
-                        {item?.Applicability === 'Fixed' ? '-':  checkForDecimalAndNull(item?.Cost, initialConfiguration?.NoOfDecimalForPrice)??'-'}
+                        {item?.Applicability === 'Fixed' ? '-' : checkForDecimalAndNull(item?.Cost, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}
                       </td>
                       <td>
                         {item?.TotalCost !== null && item?.TotalCost !== undefined
@@ -227,9 +227,9 @@ function ViewOverheadProfit(props) {
                           : '-'}
                       </td>
                       <td> {item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost !== null && item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost !== undefined
-                          ? checkForDecimalAndNull(item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice)
-                          : '-'}</td>
-                      <td> {item?.NetCost !== null && item?.NetCost !== undefined ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice): '-'}
+                        ? checkForDecimalAndNull(item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost, initialConfiguration?.NoOfDecimalForPrice)
+                        : '-'}</td>
+                      <td> {item?.NetCost !== null && item?.NetCost !== undefined ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
                       {initialConfiguration?.IsShowCRMHead && (
                         <td>{rejectData?.RejectionCRMHead || '-'}</td>
@@ -278,100 +278,7 @@ function ViewOverheadProfit(props) {
         </Col>
       </Row></>
   }
-  const iccTableData = () => {
-    return <>
-      <Row>
-        <Col md="12">
-          <div className="left-border">{"ICC:"}</div>
-        </Col>
-      </Row>
-      <Row>
-        {/*REJECTION RENDERING */}
-
-        <Col md="12">
-          <Table className="table cr-brdr-main add-min-width" size="sm">
-            <thead>
-              <tr>
-
-                <th>{`Applicability`}</th>
-                <th>{`Interest Rate ${iccPaymentData.ICCApplicabilityDetail.ICCApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th><div className='w-fit'>Cost (Applicability){showToolTipForICC.includes(true) && iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="icc-table" tooltipText={iccToolTipText} />}</div></th>
-                <th><div className='w-fit'>Net ICC  {!isPDFShow && getConfigurationKey().IsShowRmcAndNetWeightToggleForIcc && (iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight || iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('RM')) && <TooltipCustom customClass="mt-1 ml-1" id="icc-rm-applicable" tooltipText={iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight ? "ICC Calculation on Net Weight" : "ICC Calculation on RMC"} />}</div></th>
-                {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
-                <th>{`Remark`}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                (iccPaymentData.ICCApplicabilityDetail.ICCApplicability === null) ?
-                  <tr>
-                    <td colSpan={8}>
-                      <NoContentFound title={EMPTY_DATA} />
-                    </td>
-                  </tr> :
-                  <tr>
-                    <td>{iccPaymentData.ICCApplicabilityDetail ? iccPaymentData.ICCApplicabilityDetail.ICCApplicability : '-'}</td>
-                    <td>{iccPaymentData.ICCApplicabilityDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{iccPaymentData.ICCApplicabilityDetail.CostApplicability ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                    <td><div className='w-fit'>{iccPaymentData?.NetICC ? checkForDecimalAndNull(iccPaymentData?.NetICC, initialConfiguration?.NoOfDecimalForPrice) : '-'}</div></td>
-                    {initialConfiguration?.IsShowCRMHead && <td>{iccPaymentData?.ICCApplicabilityDetail?.ICCCRMHead}</td>}
-                    <td>{iccPaymentData.ICCApplicabilityDetail.Remark ? iccPaymentData.ICCApplicabilityDetail.Remark : '-'}</td>
-                  </tr>
-              }
-
-            </tbody>
-          </Table>
-        </Col>
-
-      </Row></>
-  }
-  const paymentTableData = () => {
-    return <>
-      <Row>
-        <Col md="12">
-          <div className="left-border">{"Payment Terms:"}</div>
-        </Col>
-      </Row>
-      <Row>
-        {/*REJECTION RENDERING */}
-
-        <Col md="12">
-          <Table className="table cr-brdr-main add-min-width" size="sm">
-            <thead>
-              <tr>
-
-                <th>{`Applicability`}</th>
-                <th>{`Repayment Period (No. of days)`}</th>
-                <th>{`Interest Rate ${iccPaymentData.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th>{`Cost`}</th>
-                {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
-                <th>{`Remark`}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                (iccPaymentData.PaymentTermDetail?.PaymentTermApplicability === null) ?
-                  <tr>
-                    <td colSpan={8}>
-                      <NoContentFound title={EMPTY_DATA} />
-                    </td>
-                  </tr> :
-                  <tr>
-                    <td>{iccPaymentData.PaymentTermDetail?.PaymentTermApplicability ? iccPaymentData.PaymentTermDetail?.PaymentTermApplicability : '-'}</td>
-                    <td>{iccPaymentData.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '-' : iccPaymentData.PaymentTermDetail.RepaymentPeriod ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.RepaymentPeriod, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{iccPaymentData.PaymentTermDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.InterestRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{iccPaymentData.PaymentTermDetail.NetCost ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                    {initialConfiguration?.IsShowCRMHead && <td>{iccPaymentData.PaymentTermDetail.PaymentTermCRMHead}</td>}
-                    <td>{iccPaymentData.PaymentTermDetail.Remark ? iccPaymentData.PaymentTermDetail.Remark : '-'}</td>
-                  </tr>
-              }
-
-            </tbody>
-          </Table>
-        </Col>
-      </Row></>
-  }
-
+ 
   return (
     <>
       {!isPDFShow ?
@@ -412,17 +319,6 @@ function ViewOverheadProfit(props) {
                 <div>
                   {viewRejectionRecovery && rejectRecoveryTableData()}
                 </div>
-                <br />
-                <div>
-                  {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
-                  {iccTableData()}
-                </div>
-
-                <br />
-                <div>
-                  {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
-                  {/* {paymentTableData()} */}
-                </div>
 
               </div>
             </div>
@@ -445,6 +341,7 @@ function ViewOverheadProfit(props) {
       }
     </>
   );
+  
 }
 
 export default React.memo(ViewOverheadProfit)

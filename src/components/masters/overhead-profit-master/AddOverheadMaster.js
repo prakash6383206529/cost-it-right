@@ -623,20 +623,21 @@ const AddOverheadMaster = (props) => {
                     </Col>
                   </Row>
 
-                  <AddOverheadMasterDetails
-                    costingTypeId={costingTypeId}
-                    state={state}
-                    setState={setState}
-                    setValue={setValue}
-                    register={register}
-                    trigger={trigger}
-                    clearErrors={clearErrors}
-                    control={control}
-                    getValues={getValues}
-                    errors={errors}
-                    isOverHeadMaster={true}
-                    isShowPartFamily={true}
-                    applicabilityLabel="Overhead"
+                  <AddOverheadMasterDetails 
+                      costingTypeId={costingTypeId}
+                      conditionTypeId={conditionTypeId}
+                      state={state}
+                      setState={setState}
+                      setValue={setValue}
+                      register={register}
+                      trigger={trigger}
+                      clearErrors={clearErrors}
+                      control={control}
+                      getValues={getValues}
+                      errors={errors}
+                      isOverHeadMaster={true}
+                      isShowPartFamily={true}
+                      applicabilityLabel="Overhead"
                   />
 
                   <Row>
