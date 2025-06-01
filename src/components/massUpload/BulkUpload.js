@@ -18,7 +18,7 @@ import { partComponentBulkUpload, partFamilyBulkUpload, productComponentBulkUplo
 import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
 import { volumeBulkUpload } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
-import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
+import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC, bulkUploadInterestRate, bulkUploadPaymentTerms } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showBopLabel, userDetails } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
@@ -38,12 +38,13 @@ import {
     FILE_URL,
     SAP_PUSH,
     REJECTIONBULKUPLOAD,
-    PARTFAMILYBULKUPLOAD
+    PARTFAMILYBULKUPLOAD,
+    PAYMENTTERMSBULKUPLOAD
 } from '../../config/constants';
 //MINDA
 // import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
 import {
-    AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm,
+    AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, MHRMoreVBC, MHRMoreCBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm,
     IndexCommodityListing, CommodityInIndexListing, StandardizedCommodityNameListing,
     IndexDataListing,
     OverheadVBC,
@@ -60,7 +61,9 @@ import {
     RejectionVBC,
     Rejection,
     RejectionCBC,
-    PartFamily
+    PartFamily,
+    VBCPaymentTerms,
+    CBCPaymentTerms
 } from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, RFQ_KEYS, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -98,7 +101,7 @@ class BulkUpload extends Component {
             uploadfileName: "",
             setDisable: false,
             bulkUploadLoader: false,
-            costingTypeId: props?.fileName === "Interest Rate" ? VBCTypeId : ZBCTypeId,
+            costingTypeId: (props?.fileName === "Interest Rate" || props?.fileName === "Payment Terms") ? VBCTypeId : ZBCTypeId,
             showPopup: false,
             bopType: '',
             isImport: false,
@@ -126,7 +129,7 @@ class BulkUpload extends Component {
     */
     componentDidMount() {
 
-        this.setState({ costingTypeId: this.props?.fileName === "Interest Rate" ? VBCTypeId : getCostingTypeIdByCostingPermission() })
+        this.setState({ costingTypeId: (this.props?.fileName === "Interest Rate" || this.props?.fileName === "Payment Terms") ? VBCTypeId : getCostingTypeIdByCostingPermission() })
         this.props.getAllMasterApprovalDepartment('', (res) => {
             const Data = res?.data?.SelectList
             const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
@@ -468,7 +471,7 @@ class BulkUpload extends Component {
                             masterDataArray = localizedProductComponent
                             checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(localizedProductComponent), fileHeads)
                             break;
-                        case String(MACHINEBULKUPLOAD):
+                        case String(MACHINEBULKUPLOAD):                            
                             if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedMachineZBC = this.localizeHeaders(MachineZBC);
                                 masterDataArray = localizedMachineZBC
@@ -484,10 +487,20 @@ class BulkUpload extends Component {
                                 masterDataArray = localizedMachineCBC
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedMachineCBC, ZBCTypeId), fileHeads)
                             }
-                            else {
+                            else if (this.state.costingTypeId === ZBCADDMORE) {
                                 const localizedMHRMoreZBC = this.localizeHeaders(MHRMoreZBC);
                                 masterDataArray = localizedMHRMoreZBC
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreZBC, ZBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreZBC, MHRMoreZBC), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === VBCADDMORE) {
+                                const localizedMHRMoreVBC = this.localizeHeaders(MHRMoreVBC);
+                                masterDataArray = localizedMHRMoreVBC                               
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreVBC, MHRMoreVBC), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCADDMORE) {
+                                const localizedMHRMoreCBC = this.localizeHeaders(MHRMoreCBC);
+                                masterDataArray = localizedMHRMoreCBC
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreCBC, MHRMoreCBC), fileHeads)
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
@@ -548,6 +561,19 @@ class BulkUpload extends Component {
                                 const localizedCBCInterestRate = this.localizeHeaders(CBCInterestRate);
                                 masterDataArray = localizedCBCInterestRate
                                 checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(localizedCBCInterestRate), fileHeads)
+                            }
+                            break;
+                        case String(PAYMENTTERMSBULKUPLOAD): 
+                            if (this.state.costingTypeId === VBCTypeId) {
+                                const localizedVBCPaymentTerms = this.localizeHeaders(VBCPaymentTerms);
+                                masterDataArray = localizedVBCPaymentTerms
+                                checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(localizedVBCPaymentTerms), fileHeads)
+
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                const localizedCBCPaymentTerms = this.localizeHeaders(CBCPaymentTerms);
+                                masterDataArray = localizedCBCPaymentTerms
+                                checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(localizedCBCPaymentTerms), fileHeads)
                             }
                             break;
                         case String(ACTUALVOLUMEBULKUPLOAD):
@@ -1142,17 +1168,18 @@ class BulkUpload extends Component {
                     this.responseHandler(res)
                 });
 
-            } else if (fileName === 'Interest Rate' && costingTypeId === VBCTypeId) {
-                this.props.bulkUploadInterestRateVBC(uploadData, (res) => {
+            } else if (fileName === 'Interest Rate' && (costingTypeId === VBCTypeId || costingTypeId === CBCTypeId)) {
+                uploadData.CostingTypeId = costingTypeId
+                this.props.bulkUploadInterestRate(uploadData, (res) => {
                     this.setState({ setDisable: false })
                     this.responseHandler(res)
                 });
-            } else if (fileName === 'Interest Rate' && costingTypeId === CBCTypeId) {
-                this.props.bulkUploadInterestRateCBC(uploadData, (res) => {
+            } else if (fileName === 'Payment Terms' && (costingTypeId === VBCTypeId || costingTypeId === CBCTypeId)) {
+                uploadData.CostingTypeId = costingTypeId
+                this.props.bulkUploadPaymentTerms(uploadData, (res) => {
                     this.setState({ setDisable: false })
                     this.responseHandler(res)
                 });
-
             } else if (fileName === 'Product Component') {
                 this.props.productComponentBulkUpload(uploadData, (res) => {
                     this.setState({ setDisable: false })
@@ -1330,7 +1357,7 @@ class BulkUpload extends Component {
                                 <Row className="pl-3">
                                     {isZBCVBCTemplate &&
                                         <Col md="12">
-                                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate') && (fileName !== ASSEMBLYORCOMPONENTSRFQ) && (fileName !== RAWMATERIALSRFQ) && (fileName !== BOUGHTOUTPARTSRFQ) &&
+                                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate' && fileName !== 'Payment Terms') && (fileName !== ASSEMBLYORCOMPONENTSRFQ) && (fileName !== RAWMATERIALSRFQ) && (fileName !== BOUGHTOUTPARTSRFQ) &&
                                                 <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -1347,7 +1374,7 @@ class BulkUpload extends Component {
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
-                                                    checked={costingTypeId === VBCTypeId ? true : fileName === 'Interest Rate' ? true : false}
+                                                    checked={costingTypeId === VBCTypeId ? true : (fileName === 'Interest Rate' || fileName === 'Payment Terms') ? true : false}
                                                     onClick={() => this.onPressHeads(VBCTypeId)}
                                                 />{' '}
                                                 <span>{VendorLabel} Based
@@ -1496,7 +1523,7 @@ class BulkUpload extends Component {
                     <Row className="pl-3">
                         {isZBCVBCTemplate &&
                             <Col md="12">
-                                {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate') && (fileName !== ASSEMBLYORCOMPONENTSRFQ) && (fileName !== RAWMATERIALSRFQ) && (fileName !== BOUGHTOUTPARTSRFQ) &&
+                                {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate' && fileName !== 'Payment Terms') && (fileName !== ASSEMBLYORCOMPONENTSRFQ) && (fileName !== RAWMATERIALSRFQ) && (fileName !== BOUGHTOUTPARTSRFQ) &&
                                     <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -1513,7 +1540,7 @@ class BulkUpload extends Component {
                                     <input
                                         type="radio"
                                         name="costingHead"
-                                        checked={costingTypeId === VBCTypeId ? true : fileName === 'Interest Rate' ? true : false}
+                                        checked={costingTypeId === VBCTypeId ? true : (fileName === 'Interest Rate' || fileName === 'Payment Terms') ? true : false}
                                         onClick={() => this.onPressHeads(VBCTypeId)}
                                     />{' '}
                                     <span>{VendorLabel} Based</span>
@@ -1659,6 +1686,8 @@ export default connect(mapStateToProps, {
     volumeBulkUpload,
     bulkUploadInterestRateZBC,
     bulkUploadInterestRateVBC,
+    bulkUploadInterestRate,
+    bulkUploadPaymentTerms,
     bulkUploadInterestRateCBC,
     bulkUploadBudgetMaster,
     checkRFQBulkUpload,

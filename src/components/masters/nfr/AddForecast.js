@@ -212,6 +212,7 @@ function AddForecast(props) {
         setValue('RMGrade', { label: row.RawMaterialGrade, value: row.RawMaterialGradeId });
         setValue('RMSpecification', { label: row.RawMaterialSpecification, value: row.RawMaterialSpecificationId });
         setValue('rmcode', { label: row.RawMaterialCode, value: row.RawMaterialCodeId });
+        setValue('partNumber',{label:row.PartNumber,value:row.PartId})
         setValue('editIndex', index);
         setValue('isEdit', true);
     };
@@ -373,6 +374,7 @@ function AddForecast(props) {
 
         setValue('RMName', '');
         setValue('RMGrade', '');
+        setValue('partNumber','')
         setValue('RMSpecification', '');
         setValue('Specification', '');
         setValue('Value', '');

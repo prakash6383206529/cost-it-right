@@ -267,7 +267,7 @@ const AddRejectionMaster = (props) => {
         (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged
         && (JSON.stringify(ApplicabilityDetails) === JSON.stringify(DataToChange.ApplicabilityDetails))
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
-        Toaster.warning('Please change the data to save Overhead Details')
+        Toaster.warning('Please change the data to save Rejection Details')
         return false
       }
 
@@ -524,7 +524,7 @@ const AddRejectionMaster = (props) => {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Rejection Details
+                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Rejection
                       {/* {!isViewMode && <TourWrapper
                         buttonSpecificProp={{ id: "Add_Overhead_Form" }}
                         stepsSpecificProp={{
@@ -587,6 +587,7 @@ const AddRejectionMaster = (props) => {
 
                   <AddOverheadMasterDetails
                     costingTypeId={costingTypeId}
+                    conditionTypeId={conditionTypeId}
                     state={state}
                     trigger={trigger}
                     clearErrors={clearErrors}
@@ -626,7 +627,7 @@ const AddRejectionMaster = (props) => {
                           handleChange={handleMessageChange}
                           customClassName={'textAreaWithBorder'}
                           className=""
-                          errors={errors.remark}
+                          errors={errors.Remark}
                           disabled={isViewMode}
                           rowHeight={4.8}
                         />

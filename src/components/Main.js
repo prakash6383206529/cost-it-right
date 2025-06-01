@@ -22,7 +22,7 @@ import FuelMaster from "./masters/fuel-master";
 import FreightMaster from "./masters/freight-master";
 import LabourListing from "./masters/labour-master/LabourListing";
 import OverheadProfit from "./masters/overhead-profit-master";
-import InterestRate from "./masters/interest-rate-master/InterestRateListing";
+import InterestRatePayment from "./masters/interest-rate-master";
 import MachineMaster from "./masters/machine-master";
 import ReasonListing from "./masters/reason-master/ReasonListing";
 import VolumeListing from "./masters/volume-master/VolumeListing";
@@ -503,7 +503,7 @@ class Main extends Component {
                     />
                     <Route
                       path="/interest-rate-master"
-                      component={AuthMiddleware(InterestRate, INTEREST_RATE)}
+                      component={AuthMiddleware(InterestRatePayment, INTEREST_RATE)}
                     />
 
                     <Route
