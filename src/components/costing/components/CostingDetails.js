@@ -296,7 +296,7 @@ function CostingDetails(props) {
         setTechnology({ label: partNumber.technologyName, value: partNumber.technologyId })
         setValue('Part', { label: partNumber.partNumber, value: partNumber.partId })
         setPartFamily({ label: partNumber.partFamily, value: partNumber.partFamilyId })
-        setValue('PartFamily', { label: partNumber.PartFamily, value: partNumber.PartFamilyId })
+        setValue('PartFamily', partNumber?.PartFamily || '')
         setIsTechnologySelected(true)
         setShowNextBtn(true)
 
@@ -312,7 +312,7 @@ function CostingDetails(props) {
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice))
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
-            setValue('PartFamily', Data?.PartFamily)
+            setValue('PartFamily', Data?.PartFamily ?? "")
 
           }),
         )
@@ -357,14 +357,7 @@ function CostingDetails(props) {
       })
       return temp
     }
-    if (label === 'PartFamily') {
-      partFamilySelectList && partFamilySelectList.map((item) => {
-        if (item.Value === '--0--') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
-    }
+
 
   }
 
@@ -1722,7 +1715,7 @@ function CostingDetails(props) {
         setValue("DrawingNumber", Data.DrawingNumber)
         setValue("RevisionNumber", Data.RevisionNumber)
         setValue("ShareOfBusiness", Data.Price)
-        setValue("PartFamily", Data?.PartFamily)
+        setValue("PartFamily", Data?.PartFamily || '')
         setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
       }))
       setCostingOptionsSelectedObject({})

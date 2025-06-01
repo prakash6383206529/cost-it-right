@@ -3249,6 +3249,22 @@ export const LANGUAGES = [
   { value: 'mr', label: 'मराठी - MR', },
 ]
 
+export const RM_PRESSURE_MAP = {
+  "VMQ": [400, 450],
+  "PVMQ": [400, 450],
+  "FVMQ": [400, 450],
+  "EPDM": [450, 500],
+  "NR": [450, 500],
+  "ACM": [500, 600],
+  "HNBR": [500, 600],
+  "NBR": [500, 600],
+  "98 AU 30500": [550, 650],
+  "FKM": [600, 700],
+  "FLUOROPRENE XP": [600, 700],
+  "FFKM": [700, 800]
+};
+
+
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
 export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])

@@ -11,6 +11,7 @@ import {
     Overhead, OverheadTempData, OverheadVBC, OverheadVBC_TempData, OverheadCBC, OverheadCBC_TempData, Profit, ProfitTempData, ProfitVBC, ProfitTempDataVBC, ProfitCBC, ProfitTempDataCBC,
     ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
     MachineZBC, MachineZBCTempData, MachineVBC, MachineVBCTempData, MHRMoreZBC, MHRMoreZBCTempData,
+    MHRMoreVBC, MHRMoreVBCTempData, MHRMoreCBCTempData, MHRMoreCBC,
     PartComponent, PartComponentTempData, ProductComponent, ProductComponentTempData, BOMUploadTempData, BOMUpload,
     BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, BOP_VBC_DOMESTIC, BOP_VBC_DOMESTIC_TempData,
     BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
@@ -402,11 +403,11 @@ class Downloadxls extends React.Component {
                 const localizedMHRMoreHeaders = this.localizeHeaders(MHRMoreZBC);
                 return this.returnExcelColumn(checkVendorPlantConfig(checkRM_Process_OperationConfigurable(localizedMHRMoreHeaders), ZBCADDMORE), MHRMoreZBCTempData);
             case VBCADDMORE:
-                const localizedMHRMoreHeadersVBC = this.localizeHeaders(MHRMoreZBC);
-                return this.returnExcelColumn(checkVendorPlantConfig(checkRM_Process_OperationConfigurable(localizedMHRMoreHeadersVBC), VBCADDMORE), MHRMoreZBCTempData);
+                const localizedMHRMoreHeadersVBC = this.localizeHeaders(MHRMoreVBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(checkRM_Process_OperationConfigurable(localizedMHRMoreHeadersVBC), VBCADDMORE), MHRMoreVBCTempData);
             case CBCADDMORE:
-                const localizedMHRMoreHeadersCBC = this.localizeHeaders(MHRMoreZBC);
-                return this.returnExcelColumn(checkVendorPlantConfig(checkRM_Process_OperationConfigurable(localizedMHRMoreHeadersCBC), CBCADDMORE), MHRMoreZBCTempData);
+                const localizedMHRMoreHeadersCBC = this.localizeHeaders(MHRMoreCBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(checkRM_Process_OperationConfigurable(localizedMHRMoreHeadersCBC), CBCADDMORE), MHRMoreCBCTempData);
             case `${showBopLabel()} Domestic`:
                 const localizedBOPHeaders = this.localizeHeaders(BOP_ZBC_DOMESTIC);
                 ({ updatedLabels } = updateBOPValues(localizedBOPHeaders, BOP_ZBC_DOMESTIC_TempData, bopMasterName, 'label'));
