@@ -48,7 +48,7 @@ function Icc(props) {
     const { CostingEffectiveDate, IsCalculatorExist } = useSelector(state => state.costing)
     const [state, setState] = useState({
         iccDetails: ICCApplicabilityDetail?.ICCCostingApplicabilityDetails,
-        modelType: { label: InventoryObj?.ICCModelType, value: InventoryObj?.ICCModelTypeId },
+        modelType: Object.keys(InventoryObj).length !== 0?{ label: InventoryObj?.ICCModelType, value: InventoryObj?.ICCModelTypeId } : '',
         isApplyInventoryDay: ICCApplicabilityDetail?.IsApplyInventoryDay,
         iccMethod: InventoryObj?.ICCMethod,
         openCalculatorIcc: false,
@@ -309,9 +309,7 @@ function Icc(props) {
                     iccMethod: data?.ICCMethod
                 }))
                 setICCInterestRateId(data?.InterestRateId)
-                if (!data?.IsApplyInventoryDay) {
                     checkInventoryApplicability(data?.ICCCostingApplicabilityDetails, data?.IsApplyInventoryDay)
-                }
             }))
         dispatch(isIccDataChange(true))
         } else {
@@ -374,7 +372,7 @@ function Icc(props) {
         ] : []),
         ...(state.iccDetails?.map(item => item.Applicability).includes('Fixed') ? [
             {
-                columnHead: "Applicabilty Cost",
+                columnHead: "Applicability Cost",
                 key: "Cost",
                 identifier: "cost",
                 fieldKey: "Cost",
@@ -385,7 +383,7 @@ function Icc(props) {
                 type: "textField",
             },
         ] : [{
-            columnHead: "Applicabilty Cost",
+            columnHead: "Applicability Cost",
             key: "Cost",
             identifier: "cost",
         }]),
@@ -471,7 +469,7 @@ function Icc(props) {
                             control={control}
                             rules={{ required: false }}
                             register={register}
-                            defaultValue={state.modelType?.length !== 0 ? state.modelType : ''}
+                            defaultValue={state.modelType && Object.keys(state.modelType).length !== 0 ? state.modelType : ''}
                             options={state.modelTypeList}
                             mandatory={false}
                             disabled={CostingViewMode ? true : false}
