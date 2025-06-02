@@ -470,6 +470,12 @@ function AddTool(props) {
     }
     setValue('ToolInterestRatePercent', 0)
     setValue('MaintenancePercentage', 0)
+    setValue('ToolMaintenanceCost', 0)
+    setValue('MaintananceCostApplicability',0)
+    setValue('ToolMaintenanceCostPerPc', 0)
+    setValue('ToolInterestCost', 0)
+    setValue('ToolInterestCostPerPc', 0)
+    setValue('TotalToolCost', 0)
     delete errors.MaintananceCostApplicability
     delete errors.MaintenancePercentage
     delete errors.ToolInterestRatePercent
