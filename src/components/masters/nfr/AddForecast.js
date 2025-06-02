@@ -368,13 +368,11 @@ function AddForecast(props) {
     }
 
     const resetFormAndDropdowns = () => {
-        // if (partType.value !== Component) {
-        //     setValue('partNumber', '');
-        // }
-
+        if (partType.value !== Component) {
+            setValue('partNumber', '');
+        }
         setValue('RMName', '');
         setValue('RMGrade', '');
-        setValue('partNumber','')
         setValue('RMSpecification', '');
         setValue('Specification', '');
         setValue('Value', '');

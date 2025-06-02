@@ -433,7 +433,7 @@ function NfrPartsListing(props) {
 
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
-        window.screen.width >= 1921 && gridApi.sizeColumnsToFit();
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
         getDataList()
     }
     return (
@@ -461,7 +461,7 @@ function NfrPartsListing(props) {
                                             <div className={`d-flex align-items-center simulation-label-container mr-2`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>Customer RFQ Ref. Number : </label>
-                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrRefNumber ? rowData[0]?.NfrRefNumber : ''}</p>
+                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrNumber ? rowData[0]?.NfrNumber : ''}</p>
                                                 </div>
                                             </div>
                                             <button type="button" id="backNFR_listing" className={"apply ml-1"} onClick={props?.closeDrawer}> <div id="backNFR_listing" className={'back-icon'}></div>Back</button>

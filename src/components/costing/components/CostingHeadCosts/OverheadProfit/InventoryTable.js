@@ -111,7 +111,7 @@ useEffect(()=>{
             identifier: "inputOutput",
         },
         {
-            columnHead: "Applicabilty Cost",
+            columnHead: "Applicability Cost",
             key: "ApplicabilityCost",
             identifier: "cost",
             fieldKey: "ApplicabilityCostForInventory",

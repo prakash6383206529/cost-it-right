@@ -369,7 +369,7 @@ const AddInterestRate = (props) => {
         if (label === 'InventoryDayType') {
             const existingTypes = state?.selectedInventoryDayType?.map(item => item.InventoryType);
             inventoryDayTypeSelectList && inventoryDayTypeSelectList.map((item) => {
-                if (item.Value === '0') return false;
+                if ((item.Value === '0') || (item.Value === '5')) return false;
                 if (!existingTypes.includes(item.Text)) {
                     temp.push({ label: item.Text, value: item.Value });
                 }
