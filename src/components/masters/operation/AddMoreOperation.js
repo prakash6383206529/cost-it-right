@@ -224,13 +224,13 @@ function AddMoreOperation(props) {
                         callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
                             setState(prevState => ({
                                 ...prevState,
-                                plantCurrency: rate1,
-                                settlementCurrency: rate2,
+                                plantCurrency: rate1!==0 ? rate1 : 1,
+                                settlementCurrency: rate2!==0 ? rate2 : 1,
                                 plantExchangeRateId: exchangeRateId1,
                                 settlementExchangeRateId: exchangeRateId2
                             }));
-                            plantCurrencyRef.current = rate1
-                            settlementCurrencyRef.current = rate2
+                            plantCurrencyRef.current = rate1!==0 ? rate1 : 1
+                            settlementCurrencyRef.current = rate2!==0 ? rate2 : 1
                             if (isWelding) {
                                 obj = { ...setMaterialCostWelding(), ...setPowerCostWelding(), ...setLabourCostWelding() }
                                 setDataToSend(prevState => ({ ...prevState, ...obj }))
