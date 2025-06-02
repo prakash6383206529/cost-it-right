@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
 import { checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
-import { getVendorNameByVendorSelectList, getPlantSelectListByType, getCurrencySelectList, getExchangeRateSource } from "../../../actions/Common";
+import { getVendorNameByVendorSelectList, getPlantSelectListByType, getCurrencySelectList, getExchangeRateSource, setListToggle } from "../../../actions/Common";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
   getTruckDimensionsSelectList,
@@ -1153,6 +1153,7 @@ const AddFreight = (props) => {
     setState(prev => ({ ...prev, isShowTruckDimensions: !prev.isShowTruckDimensions }));
   };
   const importToggle = () => {
+    dispatch(setListToggle({ Freight: !state.isImport }));
     setState(prev => ({ ...prev, isImport: !prev.isImport }));
   };
   const handleExchangeRate = (newValue) => {
