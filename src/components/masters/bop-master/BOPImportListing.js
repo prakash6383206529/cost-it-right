@@ -861,6 +861,12 @@ const BOPImportListing = (props) => {
     if (!getConfigurationKey().IsSAPCodeRequired) {
       tempData = hideColumnFromExcel(tempData, 'SAPPartNumber')
     }
+    if (!getConfigurationKey().IsShowSourceVendorInBoughtOutPart) {
+      tempData = hideColumnFromExcel(tempData, "SourceVendorName")
+    }
+    if (!getConfigurationKey().IsShowPartOutsourcedInBoughtOutPart) {
+      tempData = hideColumnFromExcel(tempData, "IsPartOutsourced")
+    }
     temp =
       TempData && TempData.map((item) => {
         if (item.Plants === "-") {
@@ -1192,6 +1198,8 @@ const BOPImportListing = (props) => {
                         <AgGridColumn field="Plants" cellRenderer={"hyphenFormatter"} headerName="Plant (Code)"></AgGridColumn>
                         <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                         {reactLocalStorage.getObject('CostingTypePermission').cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
+                        {getConfigurationKey()?.IsShowSourceVendorInBoughtOutPart && <AgGridColumn field="SourceVendorName" headerName={`Sourced ${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn> }
+                        {getConfigurationKey()?.IsShowPartOutsourcedInBoughtOutPart && <AgGridColumn field="IsPartOutsourced" headerName={`Outsourced ${showBopLabel()}`}></AgGridColumn>}
                         {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                         <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms"></AgGridColumn>
                         {getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn>}

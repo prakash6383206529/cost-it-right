@@ -136,6 +136,7 @@ export default function BOPReducer(state = initialState, action) {
                 el.IncoSummary = `${el.IncoTermDescription ? `${el.IncoTermDescription}` : ''} ${el.IncoTerm ? `(${el.IncoTerm})` : '-'}`
                 el.PaymentSummary = `${el.PaymentTermDescription ? `${el.PaymentTermDescription}` : ''} ${el.PaymentTerm ? `(${el.PaymentTerm})` : '-'}`          //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID
                 el.IsBreakupBoughtOutPart = el.IsBreakupBoughtOutPart ? 'Yes' : 'No'
+                el.IsPartOutsourced = el.IsPartOutsourced ? 'Yes' : 'No'
                 return el
             })
             return {
@@ -151,6 +152,7 @@ export default function BOPReducer(state = initialState, action) {
                 el.IncoTermDescriptionAndInfoTerm = `${el.IncoTermDescription ? `${el.IncoTermDescription}` : ''} ${el.IncoTerm ? ` (${el.IncoTerm})` : '-'}`
                 el.PaymentTermDescriptionAndPaymentTerm = `${el.PaymentTermDescription ? `${el.PaymentTermDescription}` : ''} ${el.PaymentTerm ? ` (${el.PaymentTerm})` : '-'}`
                 el.IsBreakupBoughtOutPart = el.IsBreakupBoughtOutPart ? 'Yes' : 'No'
+                el.IsPartOutsourced = el.IsPartOutsourced ? 'Yes' : 'No'
                 return true
             })
             return {
@@ -170,6 +172,7 @@ export default function BOPReducer(state = initialState, action) {
                 el.IncoTermDescriptionAndInfoTerm = `${el.IncoTermDescription ? `${el.IncoTermDescription}` : ''} ${el.IncoTerm ? `(${el.IncoTerm})` : '-'}`
                 el.PaymentTermDescriptionAndPaymentTerm = `${el.PaymentTermDescription ? `${el.PaymentTermDescription}` : ''} ${el.PaymentTerm ? `(${el.PaymentTerm})` : '-'}`                              //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID
                 el.IsBreakupBoughtOutPart = el.IsBreakupBoughtOutPart ? 'Yes' : 'No'
+                el.IsPartOutsourced = el.IsPartOutsourced ? 'Yes' : 'No'
                 return el
             })
 
