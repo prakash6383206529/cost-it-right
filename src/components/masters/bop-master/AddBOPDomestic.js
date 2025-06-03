@@ -78,7 +78,6 @@ class AddBOPDomestic extends Component {
       approveDrawer: false,
       effectiveDate: '',
       minEffectiveDate: '',
-
       isDateChange: false,
       files: [],
       isFinalApprovar: false,
@@ -147,7 +146,6 @@ class AddBOPDomestic extends Component {
       SourceVendorAssociatedAsBoughtOutPartVendors: ""
     }
     this.state = { ...this.initialState };
-
   }
 
   // NOTE :: ALL COST KEYS ARE OF BASE CURRENCY IRRESPECTIVE OF THEIR NAME IN DOMESTIC
@@ -178,10 +176,8 @@ class AddBOPDomestic extends Component {
           ? `Basic Rate + Other Cost  / Minimum Order Quantity`
           : `Basic Rate + Other Cost `
     };
-
     return obj;
   }
-
 
   /**
    * @method componentDidMount
@@ -279,12 +275,10 @@ class AddBOPDomestic extends Component {
       })
     }
     this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
-
   }
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
-
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.toolTipNetCost()
       this.handleCalculation()
@@ -375,7 +369,6 @@ class AddBOPDomestic extends Component {
   };
 
   closeApprovalDrawer = (e = '', type) => {
-
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
       this.cancel('submit')
@@ -410,9 +403,8 @@ class AddBOPDomestic extends Component {
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           setTimeout(() => {
             let plantObj;
-            plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
-
-            this.finalUserCheckAndMasterLevelCheckFunction(plantObj.value)
+            plantObj = Data && Data?.Plant?.length > 0 ? { label: Data?.Plant[0]?.PlantName, value: Data?.Plant[0]?.PlantId } : []
+            this.finalUserCheckAndMasterLevelCheckFunction(plantObj?.value)
             // this.commonFunction(plantObj && plantObj.value)
             this.setState({
               IsFinancialDataChanged: false,
@@ -420,7 +412,7 @@ class AddBOPDomestic extends Component {
               BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
               selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-              sourceVendor: Data.VendorName !== undefined ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [],
+              sourceVendor: Data.SourceVendorName !== undefined ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [],
               sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
@@ -720,11 +712,8 @@ class AddBOPDomestic extends Component {
 
 
   handleSource = (newValue, actionMeta) => {
-
     if (newValue && newValue !== '') {
-
       this.setState({ source: newValue, isSourceChange: true })
-
     }
   }
   /**
@@ -763,11 +752,9 @@ class AddBOPDomestic extends Component {
 
   handleApplicability = (value, basicPriceBaseCurrency, arr) => {
     const selectedApplicabilities = value?.split(' + ');
-
     // Calculate total cost currency for selected applicabilities
     const total = selectedApplicabilities.reduce((acc, Applicability) => {
       // Skip checking for "Basic Rate" in tableData
-
       const item = arr?.find(item => item?.Description.trim() === Applicability.trim());
       if (item) {
         let totalConditionCost = acc + item?.ConditionCost
@@ -775,13 +762,9 @@ class AddBOPDomestic extends Component {
       } else {
         return basicPriceBaseCurrency
       }
-
     }, 0);
-
     return total
   }
-
-
 
   handleCalculation = (totalBase = "") => {
     const { fieldsObj, initialConfiguration } = this.props
@@ -815,7 +798,6 @@ class AddBOPDomestic extends Component {
 
     if (this.state.isEditFlag && checkForNull(basicPriceBaseCurrency) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) &&
       checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces) && checkForNull(netLandedCostPlantCurrency) === checkForNull(this.state.DataToCheck?.NetLandedCost)) {
-
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '' });
       this.props.change('EffectiveDate', DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '')
     } else {
@@ -851,17 +833,14 @@ class AddBOPDomestic extends Component {
     * @description used SapCode handler
     */
   handleChangeSapCode = (e) => {
-
     const isInputNotEmpty = e.target.value.trim() !== '';
     this.setState({
       SapCode: e.target.value,
       IsSAPCodeHandle: isInputNotEmpty ? true : false
     }, () => {
 
-
     });
   }
-
 
   /**
   * @method setDisableFalseFunction
@@ -879,7 +858,6 @@ class AddBOPDomestic extends Component {
     const { files, } = this.state;
     const fileName = file.name
     this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
-
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -1016,7 +994,6 @@ class AddBOPDomestic extends Component {
 
   onPressIsPartOutsourced = () => {
     this.setState({ IsPartOutsourced: !this.state.IsPartOutsourced })
-    // dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, HasDifferentSource: state.HasDifferentSource }, () => { }))
   }
 
   handleSourceVendorDataFetch(data) {
@@ -1209,19 +1186,10 @@ class AddBOPDomestic extends Component {
       SourceVendorBoughtOutPartId: SourceVendorBoughtOutPartId
     };
 
-    // formData.BasicRate = FinalBasicRateBaseCurrency
-    // formData.NetLandedCost = FinalNetLandedCostBaseCurrency
-
-    // if (costingTypeId === ZBCTypeId) {
-    //   formData.NetCostWithoutConditionCost = FinalBasicPriceBaseCurrency
-    //   formData.NetConditionCost = FinalConditionCostBaseCurrency
-    // }
-
     formData.BoughtOutPartConditionsDetails = conditionTableData
     let isOnlySAPCodeChanged = false
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     let financialDataNotChanged = checkForNull(fieldsObj?.NetCostPlantCurrency) === checkForNull(DataToCheck?.NetLandedCostLocalConversion)
-
     let nonFinancialDataNotChanged = ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) &&
       ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
       ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
@@ -1229,7 +1197,6 @@ class AddBOPDomestic extends Component {
       ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
       DropdownChanged &&
       ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))
-
     if (isEditFlag) {
       if (!isBOPAssociated) {
         if (financialDataNotChanged && nonFinancialDataNotChanged) {
@@ -1306,21 +1273,17 @@ class AddBOPDomestic extends Component {
 
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
-
     const { initialConfiguration } = this.props
     if (type === 'save') {
       this.setState({ IsFinancialDataChanged: true })
     }
     const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
-
     let netLandedCost = checkForNull(sum) + checkForNull(this.state.NetCostWithoutConditionCost)
     const netCostConversion = this.convertIntoBase(netLandedCost, this?.state?.currencyValue)
-
     this.props.change('ConditionCost', checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCost, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetCostPlantCurrency', checkForDecimalAndNull(netLandedCost, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetCostBaseCurrency', checkForDecimalAndNull(netCostConversion, initialConfiguration?.NoOfDecimalForPrice))
-
     this.setState({
       isOpenConditionDrawer: false,
       conditionTableData: data,
@@ -1382,10 +1345,8 @@ class AddBOPDomestic extends Component {
     const result = updateCostValue(isConditionCost, this.state, this.props.fieldsObj?.BasicRate);
     // Update state
     this.setState(result.updatedState);
-
     // Update form value using this.props.change() instead of setValue()
     this.props.change(result.formValue.field, result.formValue.value);
-
     // Handle any additional actions based on isConditionCost
     if (isConditionCost) {
       // Update condition cost related data
@@ -1489,7 +1450,6 @@ class AddBOPDomestic extends Component {
     return (
       <>
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
-
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -1699,12 +1659,9 @@ class AddBOPDomestic extends Component {
                                 label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
                                 name="Plant"
                                 placeholder={"Select"}
-                                //   selection={ this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} 
                                 options={this.renderListing("plant")}
                                 handleChangeDescription={this.handlePlant}
                                 validate={this.state.selectedPlants == null || this.state.selectedPlants?.length === 0 ? [required] : []}
-                                // optionValue={(option) => option.Value}
-                                // optionLabel={(option) => option.Text}
                                 component={searchableSelect}
                                 valueDescription={this.state?.selectedPlants}
                                 mendatory={true}
@@ -1868,7 +1825,7 @@ class AddBOPDomestic extends Component {
                           {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowPartOutsourcedInBoughtOutPart &&
                             <Col md="3" className="mt-4 pt-2">
                                 <div className=" flex-fills d-flex justify-content-between align-items-center">
-                                    <label id="AddRMDomestic_HasDifferentSource"
+                                    <label id="AddBOPDomestic_IsPartOutsourced"
                                         className={`custom-checkbox w-auto mb-0 ${(this.state.isEditFlag || isViewMode) ? "disabled" : ""}`} 
                                         onChange={this.onPressIsPartOutsourced}
                                     >
