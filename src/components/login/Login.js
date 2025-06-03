@@ -3,7 +3,7 @@ import { Field, formValueSelector, reduxForm } from "redux-form";
 import { renderPasswordInputField, renderEmailInputField, focusOnError, renderText, validateForm } from "../layout/FormInputs";
 import { connect } from "react-redux";
 import { loginUserAPI, getMenuByUser, TokenAPI, forgetPassword } from "../../actions/auth/AuthActions";
-import { maxLength70, maxLength25, required, email } from "../../helper/validation";
+import { maxLength70, maxLength25, required, email, validateEmail } from "../../helper/validation";
 import "./Login.scss";
 import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -142,8 +142,7 @@ class Login extends Component {
       this.props.touch('Login', 'username');
       return;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(fieldsObj) && this.props?.initialConfiguration?.IsLoginEmailConfigure) {
+    if (validateEmail(fieldsObj) && this.props?.initialConfiguration?.IsLoginEmailConfigure) {
       return false;
     }
     
