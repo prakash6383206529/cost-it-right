@@ -313,6 +313,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
           InjectDiscountAPICall()
           let arrTemp = [...OverheadProfitTabData]
           arrTemp[0].IsOpen = false
+          console.log(arrTemp,'arrTempfgfg')
           dispatch(setOverheadProfitData(arrTemp, () => { }))
         }))
       }
@@ -489,7 +490,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
     if (hasNegativeValue) {
       return false;
     }
-    if (false && isNFR && !CostingViewMode && (CostingDataList[0].NetRMCost === 0 || CostingDataList[0].NetRMCost === null || CostingDataList[0].NetRMCost === undefined) && (tab === '2' || tab === '3' || tab === '4' || tab === '5' || tab === '6')) {
+    if (isNFR && !CostingViewMode && (CostingDataList[0].NetRMCost === 0 || CostingDataList[0].NetRMCost === null || CostingDataList[0].NetRMCost === undefined) && (tab === '2' || tab === '3' || tab === '4' || tab === '5' || tab === '6')) {
       Toaster.warning("Please add RM detail before adding the data in this tab.")
       return false
     }
@@ -577,7 +578,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
   }
 
   useEffect(() => {
-    if (isNFR && effectiveDate && false) {
+    if (isNFR && effectiveDate) {
       let obj = {
         nfrId: nfrDetailsForDiscount?.objectFordisc?.NfrMasterId,
         partId: costData?.PartId,
@@ -588,7 +589,6 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
         technologyId: costData?.TechnologyId
       }
       dispatch(getRMFromNFR(obj, (res) => {
-
         if (res?.data?.Result && res?.status === 200) {
           if (res?.data?.Identity === res?.data?.DataList?.length) {
             dispatch(setOpenAllTabs(true))

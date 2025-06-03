@@ -81,7 +81,12 @@ import {
   GET_PAINT_COAT_LIST,
   GET_TOOL_TAB_DATA,
   SET_BOP_REMARK,
-  SET_OVERALL_APPLICABILITY_TOOL_DATA
+  SET_OVERALL_APPLICABILITY_TOOL_DATA,
+  SET_IS_CALCULATOR_EXIST,
+  GET_COSTING_DETAIL_FOR_ICC,
+  SET_ICC_COST,
+  CHECK_IS_ICC_DATA_CHANGE,
+  SET_COMPONENT_ICC_DATA,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -3330,6 +3335,71 @@ export function getRejectionDataByModelType(data, callback) {
   }
 }
 
+/**
+ * @method getIccDataByModelType
+ * @description GET ICC DATA BY MODEL TYPE
+ */
+export function getIccDataByModelType(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&methodTypeId=${data.MethodTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${null}&rawMaterialChildId=${null}&technologyId=${data.technologyId}&partFamilyId=${data.partFamilyId}`
+    const request = axios.get(`${API.getIccDataByModelType}?${queryParams}`, config(),)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        callback(error)
+        apiErrors(error)
+      })
+  }
+}
+
+
+/**
+ * @method getIccCalculation
+ * @description Get ICC calculator data
+*/
+export function getIccCalculation(interestRateId,costingId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&interestRateId=${interestRateId}&costingId=${costingId}`
+    const request = axios.get(`${API.getIccCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method saveIccCalculation
+ * @description save ICC calculator data
+*/
+export function saveIccCalculation(data, callback) {
+  return (dispatch) => {
+    const request = axiosInstance.post(API.saveIccCalculation, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
 export function setOverallApplicabilityToolData(data) {
   return (dispatch) => {
     dispatch({
@@ -3339,3 +3409,105 @@ export function setOverallApplicabilityToolData(data) {
   }
 }
 
+
+/**
+ * @method setIsCalculatorExist
+ * @description SET OVERHEAD PROFIT TAB DATA  
+ */
+export function setIsCalculatorExist(isExist) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_IS_CALCULATOR_EXIST,
+      payload: isExist,
+    });
+  }
+};
+/**
+ * @method saveCostingDetailForIcc
+ * @description save-costing-detail-for-icc
+*/
+export function saveCostingDetailForIcc(data, callback) {
+  return (dispatch) => {
+    const request = axiosInstance.post(API.saveCostingDetailForIcc, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
+/**
+ * @method getCostingDetailForIcc
+ * @description get-costing-detail-for-icc
+*/
+export function getCostingDetailForIcc(costingId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
+  return (dispatch) => {
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&costingId=${costingId}`
+    const request = axios.get(`${API.getCostingDetailForIcc}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data?.Data || response?.status === 204) {
+        console.log(response.data?.Data,'response.data?.Data');
+        const netCost = response.data?.Data?.NetICC;
+        //const applicabilityCost = response.data?.Data?.ApplicabilityCost;
+        dispatch({
+          type: GET_COSTING_DETAIL_FOR_ICC,
+          payload: response?.data?.Data || {},
+        });
+        dispatch({
+          type: SET_ICC_COST,
+          payload: { NetCost: netCost/* , ApplicabilityCost: applicabilityCost  */ } || {},
+        });
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+
+    });
+  };
+}
+/**
+ * @method setIccCost
+ * @description set-costing-detail-for-icc
+*/
+export function setIccCost(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_ICC_COST,
+      payload: data,
+    });
+  };
+}
+
+/**
+ * @method isIccDataChange
+ * @description THIS METHOD IS FOR CALLING ICC API IF CHNAGES HAVE BEEN MADE 
+*/
+export function isIccDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_ICC_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+/**
+ * @method setIccDataInDiscountOtherTab
+ * @description SET COMPONENT ICC DATA IN DISCOUNT OTHER ITEM DATA  
+ */
+export function setIccDataInDiscountOtherTab(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_ICC_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};

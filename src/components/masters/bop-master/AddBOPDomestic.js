@@ -30,7 +30,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, compareRateCommon, checkEffectiveDate,convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue, getEffectiveDateMaxDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, compareRateCommon, checkEffectiveDate, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue, getEffectiveDateMaxDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser, getExchangeRateByCurrency } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -57,7 +57,7 @@ class AddBOPDomestic extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
-    this.debouncedCompareRate = debounce(() => { compareRateCommon(this.props.bopData?.BoughtOutPartOtherCostDetailsSchema, this.props.bopData?.BoughtOutPartConditionsDetails)}, 1000);
+    this.debouncedCompareRate = debounce(() => { compareRateCommon(this.props.bopData?.BoughtOutPartOtherCostDetailsSchema, this.props.bopData?.BoughtOutPartConditionsDetails) }, 1000);
     this.initialState = {
       BOPID: EMPTY_GUID,
       isEditFlag: this.props?.data?.isEditFlag ? true : false,
@@ -510,7 +510,7 @@ class AddBOPDomestic extends Component {
       UOMSelectList, exchangeRateSourceList, partSelectList, clientSelectList, costingSpecifiTechnology, partFamilySelectList } = this.props;
     const temp = [];
 
-    if(label === 'PartFamily') {
+    if (label === 'PartFamily') {
       partFamilySelectList && partFamilySelectList.map((item) => {
         if (item.Value === '--0--') return false
         temp.push({ label: item.Text, value: item.Value })
@@ -1106,6 +1106,11 @@ class AddBOPDomestic extends Component {
     const { fieldsObj, isBOPAssociated } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
 
+    if (costingTypeId === VBCTypeId && (values?.Source === null || values?.Source === undefined || values?.Source === '')) {
+      Toaster.warning("Source is required")
+      return false
+    }
+
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -1601,7 +1606,7 @@ class AddBOPDomestic extends Component {
                             />
                           </Col>
 
-                          {initialConfiguration?.PartAdditionalMasterFields?.IsShowPartFamily && 
+                          {initialConfiguration?.PartAdditionalMasterFields?.IsShowPartFamily &&
                             (<Col md="3">
                               <Field
                                 name="partFamily"
@@ -1889,6 +1894,7 @@ class AddBOPDomestic extends Component {
                                   disabled={isViewMode}
                                   className=" "
                                   customClassName=" withBorder"
+                                  required={true}
                                 />
                               </Col>
                               {/* <Col md="3">
@@ -2274,7 +2280,7 @@ class AddBOPDomestic extends Component {
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-                          {this.state.showWarning &&<WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
+                          {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
                           <Button
                             id="AddBOPDomestic_cancel"
                             onClick={this.cancelHandler}

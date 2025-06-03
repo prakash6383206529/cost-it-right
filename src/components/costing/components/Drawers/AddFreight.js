@@ -514,7 +514,7 @@ function AddFreight(props) {
     switch (obj.FreightType) {
       case 'Fixed':
         // Check if any existing entry has FreightType as 'Fixed'
-        return array.some(item => item.FreightType === 'Fixed');
+        return array.some(item => item.FreightType === 'Fixed' && (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true));
 
       case 'Percentage':
         // Check if any existing entry matches the applicability for 'Percentage'
@@ -582,7 +582,7 @@ function AddFreight(props) {
     }
 
     if (doesObjectExist(gridData, formData)) {
-      Toaster.warning("Data already exists in the grid.")
+      isEditFlag ? Toaster.warning("Please change the data to update Freight.") : Toaster.warning("Data already exists in the grid.")
       return false;
     }
     toggleDrawer('', formData)
