@@ -634,7 +634,7 @@ const CostingSummaryTable = (props) => {
     let profitData = viewCostingData[index]?.netProfitCostView
     let rejectData = viewCostingData[index]?.netRejectionCostView
     let modelType = viewCostingData[index]?.modelType
-    let IccPaymentData = viewCostingData[index]?.netPaymentIccCostView
+    let IccPaymentData = viewCostingData[index]?.netPaymentIccCostView    
     let isRmCutOffApplicable = viewCostingData[index]?.isRmCutOffApplicable
     let rawMaterialCostWithCutOff = viewCostingData[index]?.rawMaterialCostWithCutOff
     let isIncludeToolCostWithOverheadAndProfit = viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit
@@ -689,6 +689,8 @@ const CostingSummaryTable = (props) => {
   }
 
   const viewNpvData = (index) => {
+    let IccPaymentData = viewCostingData[index]?.netPaymentIccCostView    
+    setIccPaymentData(IccPaymentData)
     setNpvDrawer(true)
     setNpvIndex(index)
     setPaymentTermsData(viewCostingData[index]?.CostingPartDetails?.CostingPaymentTermDetails)

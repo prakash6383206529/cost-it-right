@@ -90,7 +90,7 @@ function TabDiscountOther(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType,IccDataDiscountTab, checkIsIccDataChange,costingDetailForIcc,IccCost,includeOverHeadProfitIcc, includeToolCostIcc, } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType,IccDataDiscountTab, checkIsIccDataChange,costingDetailForIcc,IccCost,includeOverHeadProfitIcc, includeToolCostIcc, disableIccCheckBox } = useSelector(state => state.costing)
   
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
@@ -142,6 +142,8 @@ function TabDiscountOther(props) {
   const [count, setCount] = useState(0)
   const [icc, setIcc] = useState(false)
   const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC??false)
+  
+  
   const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(costingDetailForIcc?.IsIncludeToolCostInCCForICC??false)
   const npvDrawerCondition = (
     ((IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
@@ -2182,7 +2184,7 @@ let iccObj={
                           <input
                             type="checkbox"
                             checked={IncludeOverheadProfitInIcc}
-                            disabled={(CostingViewMode )}
+                            disabled={(CostingViewMode || disableIccCheckBox)}
                           />
                           <span
                             className=" before-box"
@@ -2200,7 +2202,7 @@ let iccObj={
                           <input
                             type="checkbox"
                             checked={IsIncludeToolCostInCCForICC}
-                            disabled={(CostingViewMode )}
+                            disabled={(CostingViewMode || disableIccCheckBox)}
                           />
                           <span
                             className=" before-box"
