@@ -433,7 +433,7 @@ function AddBudget(props) {
     const costHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Net Cost<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"cost-tooltip"}></i> </span>
+                <span className='ag-header-cell-text'>Net Cost<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ms-2 mt2`} id={"cost-tooltip"}></i> </span>
             </div>
         );
     };
@@ -1340,11 +1340,11 @@ function AddBudget(props) {
                                                                         placeholder={"Select"}
                                                                         Controller={Controller}
                                                                         control={control}
-                                                                        rules={{ required: true }}
+                                                                        rules={{ required: false }}
                                                                         register={register}
                                                                         defaultValue={partType.length !== 0 ? partType : ""}
                                                                         options={renderListing('ExchangeSource')}
-                                                                        mandatory={true}
+                                                                        mandatory={false}
                                                                         handleChange={handleExchangeRateSource}
                                                                         errors={errors.ExchangeSource}
                                                                         disabled={isViewMode ? true : false || isEditFlag ? true : false}
