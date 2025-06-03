@@ -626,7 +626,7 @@ function ExtraCost(props) {
                                         </>
                                         }
                                         <Col md={3} className={'px-2'}>
-                                            <TooltipCustom
+                                            {type?.label!=="Fixed" && <TooltipCustom
                                                 id="NetCost"
                                                 disabledIcon
                                                 tooltipText={
@@ -636,7 +636,7 @@ function ExtraCost(props) {
                                                         • For Hanger Overhead: (Rate ÷ Quantity)
                                                     </div>
                                                 }
-                                            />
+                                            />}
                                             <TextFieldHookForm
                                                 label={`Cost`}
                                                 name={'NetCost'}

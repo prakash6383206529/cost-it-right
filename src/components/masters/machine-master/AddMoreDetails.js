@@ -4421,7 +4421,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                               }
                             </div>)}
                           {/* {this.state?.entryType &&  */}<Row>
-                            <Col md="4" className="switch mt-4 mr-3">
+                            <Col md="4" className="switch mr-3 ml-3">
                               <label className="switch-level mb-0">
                                 <div className="left-title">Domestic</div>
                                 <Switch
