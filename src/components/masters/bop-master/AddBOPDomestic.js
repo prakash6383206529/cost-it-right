@@ -9,7 +9,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction, getExchangeRateSource } from '../../../actions/Common';
-import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
+import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo, getBOPDataBySourceVendor } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
@@ -78,7 +78,6 @@ class AddBOPDomestic extends Component {
       approveDrawer: false,
       effectiveDate: '',
       minEffectiveDate: '',
-
       isDateChange: false,
       files: [],
       isFinalApprovar: false,
@@ -134,11 +133,19 @@ class AddBOPDomestic extends Component {
       totalOtherCost: 0,
       OtherNetCostConversion: 0,
       isSAPCodeDisabled: false,
-      sourceLocationInputLoader: false // Add new state for source location loader
-
+      sourceLocationInputLoader: false, // Add new state for source location loader
+      IsPartOutsourced: false,
+      sourceVendor: [],
+      isSourceVendorNameNotSelected: false,
+      sourceInputLoader: false,
+      sourceVendorFilterList: [],
+      sourceVendorBOPId: null,
+      SourceVendorBoughtOutPartId: "",
+      sourceVendorTouched: false,
+      disableAll: false,
+      SourceVendorAssociatedAsBoughtOutPartVendors: ""
     }
     this.state = { ...this.initialState };
-
   }
 
   // NOTE :: ALL COST KEYS ARE OF BASE CURRENCY IRRESPECTIVE OF THEIR NAME IN DOMESTIC
@@ -169,10 +176,8 @@ class AddBOPDomestic extends Component {
           ? `Basic Rate + Other Cost  / Minimum Order Quantity`
           : `Basic Rate + Other Cost `
     };
-
     return obj;
   }
-
 
   /**
    * @method componentDidMount
@@ -270,12 +275,10 @@ class AddBOPDomestic extends Component {
       })
     }
     this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
-
   }
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
-
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.toolTipNetCost()
       this.handleCalculation()
@@ -284,6 +287,7 @@ class AddBOPDomestic extends Component {
       this.commonFunction(this.state?.selectedPlants && this.state?.selectedPlants?.value)
     }
   }
+
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
   }
@@ -365,7 +369,6 @@ class AddBOPDomestic extends Component {
   };
 
   closeApprovalDrawer = (e = '', type) => {
-
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
       this.cancel('submit')
@@ -396,12 +399,12 @@ class AddBOPDomestic extends Component {
           this.props.change('plantCurrency', Data?.Currency)
           this.props.change('ExchangeSource', { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName })
           this.props.change("OtherCost", checkForDecimalAndNull(Data.OtherNetCost, initialConfiguration?.NoOfDecimalForPrice))
+          this.props.change("sourceVendorName", Data.VendorName !== undefined ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [])
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           setTimeout(() => {
             let plantObj;
-            plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
-
-            this.finalUserCheckAndMasterLevelCheckFunction(plantObj.value)
+            plantObj = Data && Data?.Plant?.length > 0 ? { label: Data?.Plant[0]?.PlantName, value: Data?.Plant[0]?.PlantId } : []
+            this.finalUserCheckAndMasterLevelCheckFunction(plantObj?.value)
             // this.commonFunction(plantObj && plantObj.value)
             this.setState({
               IsFinancialDataChanged: false,
@@ -409,6 +412,7 @@ class AddBOPDomestic extends Component {
               BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
               selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+              sourceVendor: Data.SourceVendorName !== undefined ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [],
               sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
@@ -432,6 +436,9 @@ class AddBOPDomestic extends Component {
               totalOtherCost: Data?.OtherNetCost,
               otherCostTableData: Data?.BoughtOutPartOtherCostDetailsSchema,
               PartFamilySelected: Data?.PartFamilyId ? { label: Data?.PartFamily ?? "", value: Data?.PartFamilyId } : [],
+              SourceVendorAssociatedAsBoughtOutPartVendors: Data?.SourceVendorAssociatedAsBoughtOutPartVendors,
+              IsPartOutsourced: Data?.IsPartOutsourced,
+              SourceVendorBoughtOutPartId: Data?.BoughtOutPartId,
             }, () => {
               this.toolTipNetCost()
               this.setState({ isLoader: false })
@@ -705,11 +712,8 @@ class AddBOPDomestic extends Component {
 
 
   handleSource = (newValue, actionMeta) => {
-
     if (newValue && newValue !== '') {
-
       this.setState({ source: newValue, isSourceChange: true })
-
     }
   }
   /**
@@ -748,11 +752,9 @@ class AddBOPDomestic extends Component {
 
   handleApplicability = (value, basicPriceBaseCurrency, arr) => {
     const selectedApplicabilities = value?.split(' + ');
-
     // Calculate total cost currency for selected applicabilities
     const total = selectedApplicabilities.reduce((acc, Applicability) => {
       // Skip checking for "Basic Rate" in tableData
-
       const item = arr?.find(item => item?.Description.trim() === Applicability.trim());
       if (item) {
         let totalConditionCost = acc + item?.ConditionCost
@@ -760,13 +762,9 @@ class AddBOPDomestic extends Component {
       } else {
         return basicPriceBaseCurrency
       }
-
     }, 0);
-
     return total
   }
-
-
 
   handleCalculation = (totalBase = "") => {
     const { fieldsObj, initialConfiguration } = this.props
@@ -800,7 +798,6 @@ class AddBOPDomestic extends Component {
 
     if (this.state.isEditFlag && checkForNull(basicPriceBaseCurrency) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) &&
       checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces) && checkForNull(netLandedCostPlantCurrency) === checkForNull(this.state.DataToCheck?.NetLandedCost)) {
-
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '' });
       this.props.change('EffectiveDate', DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '')
     } else {
@@ -836,17 +833,14 @@ class AddBOPDomestic extends Component {
     * @description used SapCode handler
     */
   handleChangeSapCode = (e) => {
-
     const isInputNotEmpty = e.target.value.trim() !== '';
     this.setState({
       SapCode: e.target.value,
       IsSAPCodeHandle: isInputNotEmpty ? true : false
     }, () => {
 
-
     });
   }
-
 
   /**
   * @method setDisableFalseFunction
@@ -864,7 +858,6 @@ class AddBOPDomestic extends Component {
     const { files, } = this.state;
     const fileName = file.name
     this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
-
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -999,6 +992,56 @@ class AddBOPDomestic extends Component {
     this.setState({ showPopup: false })
   }
 
+  onPressIsPartOutsourced = () => {
+    this.setState({ IsPartOutsourced: !this.state.IsPartOutsourced })
+  }
+
+  handleSourceVendorDataFetch(data) {
+    if (data?.sourceVendorId && data?.costingHeadId) {
+      this.setState({ disableSendForApproval: true });
+      this.props.getBOPDataBySourceVendor(data, res => {
+        this.setState({ disableSendForApproval: false });
+        if (res?.status === 200) {
+          const Data = res?.data?.Data;
+          this.props.change('EffectiveDate', DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate) : '');
+          this.props.change('BasicRate', checkForDecimalAndNull(Data?.BasicRate, this.props?.initialConfiguration?.NoOfDecimalForPrice));
+          this.props.change("OtherCost", checkForDecimalAndNull(Data?.OtherNetCost, this.props?.initialConfiguration?.NoOfDecimalForPrice));
+          this.setState({
+            effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate) : '',
+            totalOtherCost: Data?.OtherNetCost,
+            otherCostTableData: Data?.BoughtOutPartOtherCostDetailsSchema,
+            SourceVendorAssociatedAsBoughtOutPartVendors: Data?.SourceVendorAssociatedAsBoughtOutPartVendors,
+            IsPartOutsourced: Data?.IsPartOutsourced,
+            SourceVendorBoughtOutPartId: Data?.BoughtOutPartId,
+            disableAll: true,
+          });
+        }
+       })
+    }
+  }
+
+  handleSourceVendor = (newValue, VendorLabel) => {
+    if (newValue && newValue !== '') {
+        if (newValue?.value === this.state?.vendorName?.value) {
+            Toaster.warning(`${VendorLabel} and Source ${VendorLabel} cannot be the same`);
+            this.setState({ sourceVendor: [] });
+        } else {
+            this.setState({ sourceVendor: newValue });
+            this.props.change("sourceVendorName", { label: newValue?.label, value: newValue?.value })
+            const data = {
+              costingHeadId: ZBCTypeId,
+              bopNumber: this.props?.fieldsObj?.BoughtOutPartNumber,
+              categoryId: this.state?.BOPCategory.value,
+              sourceVendorId: newValue?.value,
+              technologyId: this.state?.Technology?.value
+            };
+            this.handleSourceVendorDataFetch(data);
+        }
+    } else {
+        this.setState({ sourceVendor: [] });
+    }
+  };
+
   /**
    * @method handleSubmitOfSapCode
    * @description used to update sapcode 
@@ -1057,9 +1100,9 @@ class AddBOPDomestic extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
-      isClientVendorBOP, isTechnologyVisible, Technology, NetConditionCost, NetCostWithoutConditionCost, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost } = this.state;
+      isClientVendorBOP, isTechnologyVisible, Technology, NetConditionCost, NetCostWithoutConditionCost, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost,
+    SourceVendorAssociatedAsBoughtOutPartVendors, IsPartOutsourced, sourceVendor, SourceVendorBoughtOutPartId } = this.state;
     const { fieldsObj, isBOPAssociated } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
 
@@ -1136,21 +1179,17 @@ class AddBOPDomestic extends Component {
       LocalExchangeRateId: null,
       PartFamilyId: this?.state?.PartFamilySelected?.value || "",
       PartFamily: this?.state?.PartFamilySelected?.label || "",
+      SourceVendorAssociatedAsBoughtOutPartVendors: SourceVendorAssociatedAsBoughtOutPartVendors,
+      IsPartOutsourced: IsPartOutsourced,
+      SourceVendorId: sourceVendor?.value,
+      SourceVendorName: sourceVendor?.label,
+      SourceVendorBoughtOutPartId: SourceVendorBoughtOutPartId
     };
-
-    // formData.BasicRate = FinalBasicRateBaseCurrency
-    // formData.NetLandedCost = FinalNetLandedCostBaseCurrency
-
-    // if (costingTypeId === ZBCTypeId) {
-    //   formData.NetCostWithoutConditionCost = FinalBasicPriceBaseCurrency
-    //   formData.NetConditionCost = FinalConditionCostBaseCurrency
-    // }
 
     formData.BoughtOutPartConditionsDetails = conditionTableData
     let isOnlySAPCodeChanged = false
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     let financialDataNotChanged = checkForNull(fieldsObj?.NetCostPlantCurrency) === checkForNull(DataToCheck?.NetLandedCostLocalConversion)
-
     let nonFinancialDataNotChanged = ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) &&
       ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
       ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
@@ -1158,7 +1197,6 @@ class AddBOPDomestic extends Component {
       ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
       DropdownChanged &&
       ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))
-
     if (isEditFlag) {
       if (!isBOPAssociated) {
         if (financialDataNotChanged && nonFinancialDataNotChanged) {
@@ -1235,21 +1273,17 @@ class AddBOPDomestic extends Component {
 
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
-
     const { initialConfiguration } = this.props
     if (type === 'save') {
       this.setState({ IsFinancialDataChanged: true })
     }
     const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
-
     let netLandedCost = checkForNull(sum) + checkForNull(this.state.NetCostWithoutConditionCost)
     const netCostConversion = this.convertIntoBase(netLandedCost, this?.state?.currencyValue)
-
     this.props.change('ConditionCost', checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCost, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetCostPlantCurrency', checkForDecimalAndNull(netLandedCost, initialConfiguration?.NoOfDecimalForPrice))
     this.props.change('NetCostBaseCurrency', checkForDecimalAndNull(netCostConversion, initialConfiguration?.NoOfDecimalForPrice))
-
     this.setState({
       isOpenConditionDrawer: false,
       conditionTableData: data,
@@ -1311,10 +1345,8 @@ class AddBOPDomestic extends Component {
     const result = updateCostValue(isConditionCost, this.state, this.props.fieldsObj?.BasicRate);
     // Update state
     this.setState(result.updatedState);
-
     // Update form value using this.props.change() instead of setValue()
     this.props.change(result.formValue.field, result.formValue.value);
-
     // Handle any additional actions based on isConditionCost
     if (isConditionCost) {
       // Update condition cost related data
@@ -1338,7 +1370,7 @@ class AddBOPDomestic extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration, t, fieldsObj } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, NetCostWithoutConditionCost, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle, hidePlantCurrency
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, NetCostWithoutConditionCost, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle, hidePlantCurrency, disableAll
     } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
     const BOPVendorLabel = LabelsClass(t, 'MasterLabels').BOPVendorLabel;
@@ -1378,10 +1410,46 @@ class AddBOPDomestic extends Component {
         }
       }
     };
+
+    const sourceFilterList = async (inputValue) => {
+      const { sourceVendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
+      const resultInput = inputValue.slice(0, searchCount)
+      if (inputValue?.length >= searchCount && sourceVendorFilterList !== resultInput) {
+        this.setState({ sourceInputLoader: true })
+        let res
+        if (costingTypeId === VBCTypeId) {
+          res = await getVendorNameByVendorSelectList(BOP_VENDOR_TYPE, resultInput)
+        }
+        else {
+          res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+        }
+        this.setState({ sourceInputLoader: false })
+        this.setState({ sourceVendorFilterList: resultInput })
+        let vendorDataAPI = res?.data?.SelectList
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+        } else {
+          return vendorDataAPI
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('Data')
+          if (inputValue) {
+            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+          } else {
+            return VendorData
+          }
+        }
+      }
+    };
     return (
       <>
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
-
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -1546,7 +1614,7 @@ class AddBOPDomestic extends Component {
                                 required={true}
                                 handleChangeDescription={this.handlePartFamilyChange}
                                 valueDescription={this?.state?.PartFamilySelected}
-                                disabled={false}
+                                disabled={isEditFlag || isViewMode}
                               />
                             </Col>)
                           }
@@ -1591,12 +1659,9 @@ class AddBOPDomestic extends Component {
                                 label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
                                 name="Plant"
                                 placeholder={"Select"}
-                                //   selection={ this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} 
                                 options={this.renderListing("plant")}
                                 handleChangeDescription={this.handlePlant}
                                 validate={this.state.selectedPlants == null || this.state.selectedPlants?.length === 0 ? [required] : []}
-                                // optionValue={(option) => option.Value}
-                                // optionLabel={(option) => option.Text}
                                 component={searchableSelect}
                                 valueDescription={this.state?.selectedPlants}
                                 mendatory={true}
@@ -1756,7 +1821,60 @@ class AddBOPDomestic extends Component {
                               </Col>
                             </>
                           )}
-                          {costingTypeId === VBCTypeId && (
+
+                          {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowPartOutsourcedInBoughtOutPart &&
+                            <Col md="3" className="mt-4 pt-2">
+                                <div className=" flex-fills d-flex justify-content-between align-items-center">
+                                    <label id="AddBOPDomestic_IsPartOutsourced"
+                                        className={`custom-checkbox w-auto mb-0 ${(this.state.isEditFlag || isViewMode) ? "disabled" : ""}`} 
+                                        onChange={this.onPressIsPartOutsourced}
+                                    >
+                                        Is Part Outsourced?
+                                        <input
+                                            type="checkbox"
+                                            checked={this.state?.IsPartOutsourced}
+                                            disabled={isViewMode || this.state.isEditFlag}
+                                        />
+                                        <span
+                                            className=" before-box p-0"
+                                            checked={this.state?.IsPartOutsourced}
+                                            onChange={this.onPressIsPartOutsourced}
+                                        />
+                                    </label>
+                                </div>
+                            </Col>
+                          }
+
+                          {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowSourceVendorInBoughtOutPart && (
+                            <>
+                              <Col md="3" className='mb-4'>
+                                <label>Source {VendorLabel} Code<span className="asterisk-required">*</span></label>
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div className="fullinput-icon p-relative">
+                                    {this.state.sourceInputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                    <AsyncSelect
+                                      name="sourceVendorName"
+                                      id="Source_vendor_name_form_vendor_based"
+                                      ref={this.sourceRef}
+                                      key={this.state.updateAsyncDropdown}
+                                      loadOptions={sourceFilterList}
+                                      onChange={(e) => this.handleSourceVendor(e, VendorLabel)}
+                                      value={this.state.sourceVendor}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                      isDisabled={(isEditFlag) ? true : false}
+                                      onFocus={() => this.setState({ sourceVendorTouched: true })}
+                                      onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                                {((this.state.sourceVendorTouched && this.state.sourceVendor.length === 0) || this.state.isSourceVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                              </Col>
+                            </>
+                          )}
+
+                          {costingTypeId === VBCTypeId && !getConfigurationKey()?.IsShowSourceVendorInBoughtOutPart && (
                             <>
                               <Col md="3">
                                 <Field
@@ -1861,7 +1979,7 @@ class AddBOPDomestic extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isViewMode}
-                                placeholder={isViewMode || !IsFinancialDataChanged ? '-' : 'Select Date'}
+                                placeholder={disableAll || isViewMode || !IsFinancialDataChanged ? '-' : 'Select Date'}
                               />
                             </div>
                           </Col>
@@ -1890,7 +2008,7 @@ class AddBOPDomestic extends Component {
                                 validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                 component={renderTextInputField}
                                 required={true}
-                                disabled={isViewMode}
+                                disabled={isViewMode || disableAll}
                                 className=" "
                                 customClassName=" withBorder"
                                 onChange={(e) => { this.state.isEditFlag && this.debouncedCompareRate() }}
@@ -1921,7 +2039,7 @@ class AddBOPDomestic extends Component {
                                 <Button
                                   id="addBOPDomestic_otherCost"
                                   onClick={this.otherCostToggle}
-                                  className={"right ml-1"}
+                                  className={"right ml-1 mt-0"}
                                   variant={
                                     isViewMode ? "view-icon-primary" : !this.props.fieldsObj?.BasicRate
                                       ? "blurPlus-icon-square"
@@ -2303,7 +2421,7 @@ class AddBOPDomestic extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate', 'Remark', 'BoughtOutPartName', 'SAPPartNumber', 'plantCurrency', 'NetCostPlantCurrency');
+  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate', 'Remark', 'BoughtOutPartName', 'BoughtOutPartNumber', 'SAPPartNumber', 'plantCurrency', 'NetCostPlantCurrency');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead, exchangeRateSourceList } = comman;
@@ -2367,6 +2485,7 @@ export default connect(mapStateToProps, {
   checkAndGetBopPartNo,
   getExchangeRateSource,
   getPlantUnitAPI,
+  getBOPDataBySourceVendor,
   getExchangeRateByCurrency
 })(reduxForm({
   form: 'AddBOPDomestic',

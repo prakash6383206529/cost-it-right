@@ -357,6 +357,7 @@ export const API = {
   //BOP DOMESTIC
   createBOP: `${BASE_URL}/masters-bought-out-part/create-bought-out-part`,
   getBOPDomesticById: `${BASE_URL}/masters-bought-out-part/get-domestic-bought-out-part-by-id`,
+  getBOPDataBySourceVendor: `${BASE_URL}/masters-bought-out-part/get-source-vendor-bought-out-part-by-id`,
   getBOPDataList: `${BASE_URL}/masters-bought-out-part/get-all-bought-out-part-by-filter`,
   updateBOP: `${BASE_URL}/masters-bought-out-part/update-bought-out-part`,
   deleteBOP: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part`,
