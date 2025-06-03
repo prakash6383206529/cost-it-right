@@ -120,7 +120,7 @@ function IccCalculator(props) {
                         return NetRawMaterialsCost
                     case 'BOP':
                         return headerCosts.NetBoughtOutPartCost
-                    case 'Paint':
+                    case 'Total Paint Cost':
                         return SurfaceTabData[0]?.CostingPartDetails?.TotalPaintCost;
                     case 'Packaging':
                         return PackageAndFreightTabData[0]?.CostingPartDetails?.PackagingNetCost;
