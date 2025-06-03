@@ -1,3 +1,4 @@
+
 import React, { Component } from "react";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import { renderPasswordInputField, renderEmailInputField, focusOnError, renderText, validateForm } from "../layout/FormInputs";
@@ -138,15 +139,6 @@ class Login extends Component {
 
   forgotConfirm = () => {
     const { fieldsObj } = this.props;
-    if (!fieldsObj) {
-      this.props.touch('Login', 'username');
-      return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(fieldsObj) && this.props?.initialConfiguration?.IsLoginEmailConfigure) {
-      return false;
-    }
-    
     if (!this.state.forgetIsCalled) {
       this.setState({ forgetIsCalled: true });
       this.props.forgetPassword(fieldsObj, (res) => {
