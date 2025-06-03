@@ -700,10 +700,10 @@ export function getBusinessValueReportHeads(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getBusinessValueReportHeads}`, config());
         request.then((response) => {
-            if (response?.data?.SelectList || response?.status === 204) {
+            if (response?.data?.DataList || response?.status === 204) {
                 dispatch({
                     type: GET_BUSINESS_VALUE_REPORT_HEADS,
-                    payload: response.status === 204 ? [] : response?.data?.SelectList
+                    payload: response.status === 204 ? [] : response?.data?.DataList
                 })
                 callback(response);
             }
@@ -715,10 +715,33 @@ export function getBusinessValueReportHeads(callback) {
     }
 }
 
-export function getBusinessValueReportData(loggedInUserId, callback) {
-
+export function getBusinessValueReportData(data, callback) {
+    const params = new URLSearchParams()
+    // Function to add params only if they have a valid value
+    const addParam = (key, value) => {
+        if (value !== null && value !== undefined && value !== '') {
+            params.append(key, value);
+        }
+    }
+    addParam("loggedInUserId", loggedInUserId())
+    addParam("fromDate", data?.fromDate)
+    addParam("toDate", data?.toDate)
+    addParam("FinancialQuarter", data?.FinancialQuarter)
+    addParam("FinancialYear", data?.FinancialYear)
+    addParam("IsRequestedForBudgeting", data?.IsRequestedForBudgeting)
+    addParam("TechnologyName", data?.TechnologyName)
+    addParam("PartType", data?.PartType)
+    addParam("PartGroup", data?.PartGroup)
+    addParam("PartFamilyCode", data?.PartFamilyCode)
+    addParam("PartNepNumber", data?.PartNepNumber)
+    addParam("PlantCode", data?.PlantCode)
+    addParam("VendorCode", data?.VendorCode)
+    addParam("CustomerCode", data?.CustomerCode)
+    addParam("PartModelName", data?.PartModelName)
+    addParam("PartNumber", data?.PartNumber)
+    
     return (dispatch) => {
-        const request = axios.get(`${API.getBusinessValueReportData}?loggedInUserId=${loggedInUserId}`, config());
+        const request = axios.get(`${API.getBusinessValueReportData}?${params.toString()}`, config());
         request.then((response) => {
             if (response?.data?.Data || response?.status === 204) {
                 dispatch({

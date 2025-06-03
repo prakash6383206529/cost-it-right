@@ -1,82 +1,100 @@
 import React, { useEffect, useState } from "react";
-import { Field, clearFields, reduxForm } from 'redux-form'
+import { Field, reduxForm } from 'redux-form'
 import { searchableSelect } from "../../../layout/FormInputs";
 import { Row, Col } from "reactstrap";
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, DatePickerHookForm } from "../../../layout/HookFormInputs";
-import { useForm, Controller, useWatch } from "react-hook-form";
-import { useLabels } from "../../../../helper/core";
-import DatePicker from "react-datepicker";
+import { useForm, Controller } from "react-hook-form";
 import "react-datepicker/dist/react-datepicker.css";
-import { formViewData, getConfigurationKey, loggedInUserId } from "../../../../helper";
-import { checkPartWithTechnology, getCostingSpecificTechnology, getExistingCosting, getPartInfo, getPartSelectListByTechnology, getSingleCostingDetails, setCostingViewData } from "../../../costing/actions/Costing";
+import { loggedInUserId } from "../../../../helper";
+import { getCostingSpecificTechnology, getPartSelectListByTechnology } from "../../../costing/actions/Costing";
 import { getFinancialYearSelectList } from "../../../masters/actions/Volume";
-import { getAllProductLevels } from "../../../masters/actions/Part";
+import { getAllProductLevels, getPartFamilySelectList, getModelList, getProductDataList, getNepNumberList } from "../../../masters/actions/Part";
+import { fetchPlantDataAPI, getVendorNameByVendorSelectList } from '../../../../actions/Common';
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectListPartType } from "../../../masters/actions/Part";
-import { ApprovedCostingStatus, EMPTY_DATA, searchCount, defaultPageSize } from "../../../../config/constants";
+import { EMPTY_DATA, searchCount, defaultPageSize } from "../../../../config/constants";
 import { autoCompleteDropdown } from "../../../common/CommonFunctions";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../../../config/message";
-import { BarChartComparison } from "../../../costing/components/BarChartComparison";
-import CostingSummaryTable from "../../../costing/components/CostingSummaryTable";
-import { getMultipleCostingDetails } from "../../../rfq/actions/rfq";
 import LoaderCustom from "../../../common/LoaderCustom";
 import NoContentFound from "../../../common/NoContentFound";
-import { useLocation, useHistory } from "react-router-dom/cjs/react-router-dom";
-import Button from "../../../layout/Button";
 import { getBusinessValueReportHeads, getBusinessValueReportData } from '../../actions/ReportListing';
 import { getProductGroupSelectList } from "../../../masters/actions/Part"
 import { FinancialQuarterOptions } from "../../../../config/masterData";
 import { getClientSelectList } from '../../../masters/actions/Client';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import _ from "lodash"
+import moment from "moment";
+import { Costratiograph } from "../../../dashboard/CostRatioGraph";
+import { colorArray } from "../../../dashboard/ChartsDashboard";
 
 const BusinessValueReport = ({ }) => {
   const gridOptions = {}
   const { control, register, getValues, setValue, handleSubmit, formState: { errors } } = useForm();
   const [partTypeList, setPartTypeList] = useState([])
   const [isLoader, setIsLoader] = useState(false);
+  const [vendorName, setVendorName] = useState('')
+  const [partName, setPartName] = useState('')
   const [isTechnologySelected, setIsTechnologySelected] = useState(false)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [noData, setNoData] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [filterAccordian, setFilterAccordian] = useState(true)
+  const [detailAccordian, setDetailAccordian] = useState(true)
+  const [graphAccordian, setGraphAccordian] = useState(true)
   const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
+  const [partModelOptions, setModelOptions] = useState([])
+  const [IsRequestedForBudgeting, setIsRequestedForBudgeting] = useState(false)
+  const [financialYear, setFinancialYear] = useState('')
+  const [fromAndToDate, setFromAndToDate] = useState(false)
+  const [financialQuarterAndYear, setFinancialQuarterAndYear] = useState(false)
+  const [pieChartLabelArray, setPieChartLabelArray] = useState([])
+  const [pieChartDataArray, setPieChartDataArray] = useState([])
+  const [reportDetailsByGroup, setReportDetailsByGroup] = useState([])
+  // const [partTypeList, setPartTypeList] = useState([])
   const { businessValueReportHeads, businessValueReportData } = useSelector(state => state.report);
   const productGroupSelectList = useSelector(state => state.part.productGroupSelectList)
   const clientSelectList = useSelector((state) => state.client.clientSelectList)
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
   const financialYearSelectList = useSelector(state => state.volume.financialYearSelectList)
-  const productHierarchyData = useSelector((state) => state.part);
-
-  console.log(productHierarchyData, "productHierarchyData");
+  const { productHierarchyData, productDataList, nepNumberSelectList } = useSelector((state) => state.part)
+  const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
+  const plantSelectList = useSelector(state => state.comman.plantSelectList)
 
   useEffect(() => {
     if (businessValueReportData) {
-      // console.log(businessValueReportData, "businessValueReportData");
-
-      setTableData(businessValueReportData.ReportDetails);
+      setTableData(businessValueReportData.ReportDetails)
       setTableHeaderColumnDefs(businessValueReportData.TableHeads)
+      setReportDetailsByGroup(businessValueReportData.ReportDetailsByGroup)
     }
-  }, [businessValueReportData]); // Runs only when businessValueReportData changes
+  }, [businessValueReportData])
 
-  // console.log(tableData, "tableData");
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
+
   useEffect(() => {
-    dispatch(getBusinessValueReportHeads((res) => { }))
-    dispatch(getBusinessValueReportData(loggedInUserId(), (res) => { }))
-    dispatch(getProductGroupSelectList((res) => { }))
-    dispatch(getClientSelectList((res) => { }))
+    dispatch(fetchPlantDataAPI(() => { }))
+    dispatch(getBusinessValueReportHeads(() => { }))
+    dispatch(getBusinessValueReportData({}, () => { }))
+    dispatch(getProductGroupSelectList(() => { }))
+    dispatch(getClientSelectList(() => { }))
     dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
     dispatch(getFinancialYearSelectList(() => {}, false))
-    dispatch(getAllProductLevels((res) => { }))
-  }, [])
+    dispatch(getAllProductLevels(() => { }))
+    dispatch(getPartFamilySelectList(() => { }))
+    dispatch(getProductDataList(() => { }))
+    dispatch(getNepNumberList(() => { }))
+    dispatch(getSelectListPartType((res) => {
+      setPartTypeList(_.get(res, 'data.SelectList', []))
+    }))
+    dispatch(getModelList((res) => {
+      setModelOptions(_.get(res, 'data.SelectList', []))
+    }))
+ }, [])
 
-  const renderListing = (label) => {
-    // console.log(label);
+  const renderListing = (label, text = '', IsProductHierarchy = false) => {
     const temp = []
     if (label === 'PartGroup') {
       productGroupSelectList && productGroupSelectList.map(item => {
@@ -110,37 +128,146 @@ const BusinessValueReport = ({ }) => {
       return temp;
     }
     if (label === 'FinancialYear') {
-      financialYearSelectList &&
-        financialYearSelectList.map((item) => {
+      financialYearSelectList && financialYearSelectList.map((item) => {
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
           return null
         })
       return temp
     }
+    if (label === 'PartFamilyCode') {
+      partFamilySelectList && partFamilySelectList.map((item) => {
+        if (item.Value === '--0--') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
+    if (label === 'PartModelName') {
+      partModelOptions && partModelOptions.map((item) => {
+        if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
+    if (label === 'PartType') {
+      partTypeList && partTypeList.map((item) => {
+        if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
+    if (label === 'PlantCode') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+          temp.push({ label: item.PlantNameCode, value: item.PlantId })
+          return null
+        })
+      return temp
+    }
+    if (label === 'PartNepNumber') {
+      nepNumberSelectList && nepNumberSelectList.map((item) => {
+        if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
+    if (IsProductHierarchy) {
+      const associatedHierarchy = _.find(productHierarchyData, hierarchyData => {
+        return String(text) === String(_.get(hierarchyData, 'ProductHierarchyName', 0))
+      })
+      if (_.size(_.get(associatedHierarchy, 'ProductHierarchyValueDetail', []))) {
+        _.map(_.get(associatedHierarchy, 'ProductHierarchyValueDetail', []), item => {        
+          temp.push({ label: item.ProductHierarchyValue, value: item.ProductHierarchyValueDetailsId })
+            return null
+        })
+      } else {
+        productDataList && productDataList.map((item) => {
+          temp.push({ label: item.ProductName, value: item.ProductId })
+          return null
+        })
+      }
+      return temp
+    }
   }
-  const handleSelectFieldChange = (data, e) => {
+
+  const handleSelectFieldChange = async (data, e) => {
     if (data === 'FinancialYear') {
-      setValue('FinancialYear', _.get(e, 'label', ''))
+      setFinancialYear({label: _.get(e, 'label', '')})
+      setFinancialQuarterAndYear(true)
     }
     if (data === 'IsRequestedForBudgeting') {
-      setValue('IsRequestedForBudgeting',  _.get(e, 'target.checked', false))
+      setIsRequestedForBudgeting(_.get(e, 'target.checked', false))
     }
     if (data === 'TechnologyName') {
       setIsTechnologySelected(true)
     }
-    console.log("handleChange", getValues())
+    if (data === 'fromDate' || data === 'toDate') {
+      setFromAndToDate(true)
+    }
+    if (data === 'FinancialQuarter') {
+      setFinancialQuarterAndYear(true)
+    }
   }
 
-
-  const handleFinancialYear = (newValue, actionMeta) => {
-    // if (newValue && newValue !== '') {
-    //   this.setState({ year: newValue })
-    // } else {
-    //   this.setState({ year: [] })
-    // }
+  const filterList = async (inputValue) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
+    const resultInput = inputValue.slice(0, searchCount)
+    if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      let res
+      res = await getVendorNameByVendorSelectList(null, resultInput)
+      setVendorName(resultInput)
+      let vendorDataAPI = res?.data?.SelectList
+      if (inputValue) {
+        return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+      } else {
+        return vendorDataAPI
+      }
+    } else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let VendorData = reactLocalStorage?.getObject('Data')
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+        } else {
+          return VendorData
+        }
+      }
+    }
   }
-  
+
+  const partNumberfilterList = async (inputValue) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
+    const resultInput = inputValue.slice(0, searchCount)
+    if (inputValue?.length >= searchCount && partName !== resultInput) {
+      const res = await getPartSelectListByTechnology(null, resultInput, null, null);
+      setPartName(resultInput)
+      let partDataAPI = res?.data?.SelectList
+      if (inputValue) {
+        return autoCompleteDropdown(inputValue, partDataAPI, false, [], true, true)
+      } else {
+        return partDataAPI
+      }
+    }
+    else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let partData = reactLocalStorage.getObject('PartDataOptions')
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, partData, false, [], false, true)
+        } else {
+          return partData
+        }
+      }
+    }
+  }  
 
   const frameworkComponents = {
     customLoadingOverlay: LoaderCustom,
@@ -148,7 +275,6 @@ const BusinessValueReport = ({ }) => {
   };
 
   const onGridReady = (params) => {
-    params.api.sizeColumnsToFit();
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
     params.api.paginationGoToPage(0);
@@ -160,6 +286,97 @@ const BusinessValueReport = ({ }) => {
     sortable: false,
     floatingFilter: true
   };
+
+  const runReport = () => {
+    setIsLoader(true)
+    const values = getValues()
+    
+    const data = {
+      ...values,
+      fromDate: _.get(values, 'fromDate', '') ? moment(_.get(values, 'fromDate', '')).format('YYYY-MM-DD') : _.get(values, 'fromDate', ''),
+      toDate: _.get(values, 'toDate', '') ? moment(_.get(values, 'toDate', '')).format('YYYY-MM-DD') : _.get(values, 'toDate', ''),
+      FinancialQuarter: _.get(values, 'FinancialQuarter.label', ''),
+      FinancialYear: _.get(values, 'financialYear.label', ''),
+      IsRequestedForBudgeting: IsRequestedForBudgeting,
+      TechnologyName: _.get(values, 'TechnologyName.label', ''),
+      PartType: _.get(values, 'PartType.label', ''),
+      PartGroup: _.get(values, 'PartGroup.label', ''),
+      PartFamilyCode: _.get(values, 'PartFamilyCode.label', ''),
+      PartNepNumber: _.get(values, 'PartNepNumber.label', ''),
+      PlantCode: _.get(values, 'PlantCode.label', ''),
+      VendorCode: _.get(values, 'VendorCode.label', ''),
+      CustomerCode: _.get(values, 'CustomerCode.label', ''),
+      PartModelName: _.get(values, 'PartModelName.label', ''),
+      PartNumber : _.get(values, 'PartNumber.label', ''),
+    }
+    dispatch(getBusinessValueReportData(data, (res) => {
+      if (res?.status === 200) {
+        setIsLoader(false)
+      }
+     }))  
+  }
+
+  const reset = () => {
+    setValue('fromDate', '')
+    setValue('toDate', '')
+    setValue('FinancialQuarter', '')
+    setValue('TechnologyName', '')
+    setValue('PartType', '')
+    setValue('PartGroup', '')
+    setValue('PartFamilyCode', '')
+    setValue('PartNepNumber', '')
+    setValue('PlantCode', '')
+    setValue('VendorCode', '')
+    setValue('CustomerCode', '')
+    setValue('PartModelName', '')
+    setValue('PartNumber', '')
+    setFinancialYear({ label: ''})
+    setIsRequestedForBudgeting('')
+    setFinancialQuarterAndYear(false)
+    setFromAndToDate(false)
+  }
+
+  const viewPieData = _.debounce(() => {
+    let dataArray = []
+    let labelArray = []
+    console.log(reportDetailsByGroup, "reportDetailsByGroup");
+    
+      setPieChartDataArray(dataArray)
+      setPieChartLabelArray(labelArray)
+    }, [100])
+
+  const pieChartData = {
+    labels: pieChartLabelArray,
+    datasets: [
+      {
+        label: '',
+        data: pieChartDataArray,
+        backgroundColor: colorArray,
+        borderWidth: 0.5,
+        hoverOffset: 10
+      },
+    ],
+  }
+
+  const pieChartOption = {
+    plugins: {
+      legend: {
+        position: 'bottom',
+        align: 'start',
+        labels: {
+          boxWidth: 16,
+          borderWidth: 0,
+          padding: 8,
+          color: '#000'
+        }
+      },
+    },
+    layout: {
+      padding: {
+        top: 30
+      }
+    }
+  }
 
   return (
     <>
@@ -196,7 +413,7 @@ const BusinessValueReport = ({ }) => {
                     autoComplete={"off"}
                     disabledKeyboardNavigation
                     onChangeRaw={(e) => e.preventDefault()}
-                    disabled={false}
+                    disabled={financialQuarterAndYear}
                     mandatory={false}
                     errors={false}
                   />
@@ -223,7 +440,7 @@ const BusinessValueReport = ({ }) => {
                     autoComplete={"off"}
                     disabledKeyboardNavigation
                     onChangeRaw={(e) => e.preventDefault()}
-                    disabled={false}
+                    disabled={financialQuarterAndYear}
                     mandatory={false}
                     errors={false}
                   />
@@ -242,12 +459,12 @@ const BusinessValueReport = ({ }) => {
                             {_.get(reportFields, 'Text', '')}
                             <input
                               type="checkbox"
-                              checked={_.get(getValues('IsRequestedForBudgeting'), false)}
+                              checked={IsRequestedForBudgeting}
                               disabled={false}
                             />
                             <span
                               className="before-box"
-                              checked={_.get(getValues('IsRequestedForBudgeting'), false)}
+                              checked={IsRequestedForBudgeting}
                               onChange={(e) => handleSelectFieldChange(`${_.get(reportFields, 'Value', '')}`, e)}
                             />
                           </label>
@@ -255,7 +472,7 @@ const BusinessValueReport = ({ }) => {
                       </div>
                     </Col>
                   )
-                } else if (_.get(reportFields, 'Value', '') === 'FinancialYear') {
+                } else if (_.get(reportFields, 'Value', '') === 'FinancialYear') {                  
                   return (
                     <Col md="3">
                       <Field
@@ -267,13 +484,12 @@ const BusinessValueReport = ({ }) => {
                         options={renderListing(`${_.get(reportFields, 'Value', '')}`)}
                         required={false}
                         handleChangeDescription={(e) => handleSelectFieldChange(`${_.get(reportFields, 'Value', '')}`, e)}
-                        valueDescription={_.get(getValues('FinancialYear'), '')}
-                        disabled={false}
+                        valueDescription={financialYear}
+                        disabled={fromAndToDate}
                       />
                     </Col>
                   )
-                } else {
-                  const fieldDisabled = ((_.get(reportFields, 'Value', '') === 'PartNumber' || _.get(reportFields, 'Value', '') === 'PartModelName') && !isTechnologySelected)
+                } else if (_.get(reportFields, 'Value', '') === 'FinancialQuarter') {
                   return (
                     <Col md="3">
                       <SearchableSelectHookForm
@@ -285,7 +501,73 @@ const BusinessValueReport = ({ }) => {
                         rules={{ required: true }}
                         register={register}
                         defaultValue={''}
+                        options={renderListing(_.get(reportFields, 'Value', ''), _.get(reportFields, 'Text', ''), _.get(reportFields, 'IsProductHierarchy', false))}
+                        mandatory={false}
+                        handleChange={(e) => handleSelectFieldChange(`${_.get(reportFields, 'Value', '')}`, e)}
+                        errors={`${errors}.${_.get(reportFields, 'Value', '')}`}
+                        // buttonCross={resetData('Masters')}   
+                        disabled={fromAndToDate}
+                      />
+                    </Col>
+                  )
+                } else if (_.get(reportFields, 'Value', '') === 'VendorCode') {
+                  return (
+                    <Col md="3">
+                      <AsyncSearchableSelectHookForm
+                        label={_.get(reportFields, 'Text', '')}
+                        name={_.get(reportFields, 'Value', '')}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
                         options={renderListing(`${_.get(reportFields, 'Value', '')}`)}
+                        mandatory={false}
+                        handleChange={(e) => handleSelectFieldChange(`${_.get(reportFields, 'Value', '')}`, e)}
+                        asyncOptions={filterList}
+                        errors={false}
+                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                      />
+                    </Col>
+                  )
+                } else if (_.get(reportFields, 'Value', '') === 'PartNumber') {
+                  const fieldDisabled = _.get(reportFields, 'Value', '') === 'PartNumber' && !isTechnologySelected
+                  return (
+                    <Col md="3">
+                      <AsyncSearchableSelectHookForm
+                        label={_.get(reportFields, 'Text', '')}
+                        name={_.get(reportFields, 'Value', '')}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={renderListing(`${_.get(reportFields, 'Value', '')}`)}
+                        mandatory={false}
+                        handleChange={(e) => handleSelectFieldChange(`${_.get(reportFields, 'Value', '')}`, e)}
+                        asyncOptions={partNumberfilterList}
+                        errors={false}
+                        disabled={fieldDisabled ? true : false}
+                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                      />
+                    </Col>
+                  )
+                } else {
+                  const fieldDisabled = _.get(reportFields, 'Value', '') === 'PartModelName' && !isTechnologySelected
+                  return (
+                    <Col md="3">
+                      <SearchableSelectHookForm
+                        label={`${_.get(reportFields, 'Text', '')}`}
+                        name={`${_.get(reportFields, 'Value', '')}`}
+                        placeholder={`${_.get(reportFields, 'Text', '')}`}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={''}
+                        options={renderListing(_.get(reportFields, 'Value', ''), _.get(reportFields, 'Text', ''), _.get(reportFields, 'IsProductHierarchy', false))}
                         mandatory={false}
                         handleChange={(e) => handleSelectFieldChange(`${_.get(reportFields, 'Value', '')}`, e)}
                         errors={`${errors}.${_.get(reportFields, 'Value', '')}`}
@@ -296,6 +578,12 @@ const BusinessValueReport = ({ }) => {
                   )
                 }
               })}
+              {
+                <Col md="3" className="mt-4">
+                  <button type="button" className={"user-btn mr5 save-btn"} onClick={reset} disabled={false}> <div className={"Run-icon"}></div>reset</button>
+                  <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport} disabled={false}> <div className={"Run-icon"}></div>RUN REPORT</button>
+                </Col>
+              }
             </Row>
             }
           </div>
@@ -303,7 +591,34 @@ const BusinessValueReport = ({ }) => {
 
       </form>
       {
-        <div className="container-fluid custom-pagination report-listing-page ag-grid-react">
+        <Row className="m-0">
+        <div className="graph-box w-100">
+          <Row>
+            <Col md="8"><h3 className={`mb-${graphAccordian ? 3 : 0}`}>Graph View</h3></Col>
+            <Col md="4" className="text-right">
+              <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setGraphAccordian(!graphAccordian) }}>
+                {graphAccordian ? (<i className="fa fa-minus" ></i>) : (<i className="fa fa-plus"></i>)}
+              </button>
+            </Col>
+          </Row>
+         { graphAccordian && 
+         <div className='column-data'><button className='view-pie-button btn-hyper-link ml-0' onMouseOver={() => viewPieData()}><span className='tooltiptext graph-tooltip'><div className='mb-2'><strong>All value is showing in Percentage</strong></div><Costratiograph data={pieChartData} options={pieChartOption} /></span>View Graph</button></div>
+       }
+        </div>
+        </Row>
+      }
+      {
+        <Row className="m-0">
+        <div className="graph-box w-100">
+          <Row>
+            <Col md="8"><h3 className={`mb-${detailAccordian ? 3 : 0}`}>Detail View</h3></Col>
+            <Col md="4" className="text-right">
+              <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setDetailAccordian(!detailAccordian) }}>
+                {detailAccordian ? (<i className="fa fa-minus" ></i>) : (<i className="fa fa-plus"></i>)}
+              </button>
+            </Col>
+          </Row>
+         { detailAccordian && <div className="container-fluid custom-pagination report-listing-page ag-grid-react">
           <div className={`ag-grid-wrapper height-width-wrapper  ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className={`ag-theme-material grid-parent-wrapper mt-2 ${isLoader && "max-loader-height"}`}>
               {isLoader ? <LoaderCustom customClass="loader-center" /> :
@@ -332,6 +647,9 @@ const BusinessValueReport = ({ }) => {
             </div>
           </div>
         </div>
+       }
+        </div>
+        </Row>
       }
     </>
   )

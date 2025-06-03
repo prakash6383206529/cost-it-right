@@ -166,6 +166,7 @@ export const API = {
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
   productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   checkRFQBulkUpload: `${BASE_URL}/rfq-quotation/check-valid-part-via-bulk-upload`,
+  getNepNumberDataList: `${BASE_URL}/masters-part/select-list-part-nep-number`,
 
   CreatComponentBySap: `${BASE_URL}/sap-sync/create-component-by-sap`,
   updateMultiplecomponentTechnology: `${BASE_URL}/masters-part/update-technology-for-multiple-component`,
@@ -1441,6 +1442,7 @@ export const GET_ALL_PARTS_FAILURE = 'GET_ALL_PARTS_FAILURE'
 export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS'
 export const GET_DRAWER_CHILD_PART_DATA = 'GET_DRAWER_CHILD_PART_DATA'
 export const SET_ACTUAL_BOM_DATA = 'SET_ACTUAL_BOM_DATA'
+export const GET_NEP_NUMBER_LIST = 'GET_NEP_NUMBER_LIST'
 
 //PRODUCT MASTER
 export const GET_PRODUCT_DATA_LIST = 'GET_PRODUCT_DATA_LIST'
