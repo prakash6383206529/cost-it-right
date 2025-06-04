@@ -9864,6 +9864,7 @@ export const DUMMYCONDITIONCOSTDATA = [
 ]
 
 export const FinancialQuarterOptions = [
+    { Text: 'All', Value: 'All' },
     { Text: 'Q1', Value: 'Q1' },
     { Text: 'Q2', Value: 'Q2' },
     { Text: 'Q3', Value: 'Q3' },
