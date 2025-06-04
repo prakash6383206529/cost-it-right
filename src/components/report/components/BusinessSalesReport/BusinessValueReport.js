@@ -7,7 +7,7 @@ import { loggedInUserId } from "../../../../helper";
 import { getCostingSpecificTechnology, getPartSelectListByTechnology } from "../../../costing/actions/Costing";
 import { getFinancialYearSelectList } from "../../../masters/actions/Volume";
 import { getAllProductLevels, getPartFamilySelectList, getModelList, getProductDataList, getNepNumberList } from "../../../masters/actions/Part";
-import { fetchPlantDataAPI, getVendorNameByVendorSelectList } from '../../../../actions/Common';
+import { getVendorNameByVendorSelectList, getPlantSelectListByType } from '../../../../actions/Common';
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectListPartType } from "../../../masters/actions/Part";
 import { EMPTY_DATA, searchCount, defaultPageSize } from "../../../../config/constants";
@@ -27,6 +27,7 @@ import _ from "lodash"
 import moment from "moment";
 import { Costratiograph } from "../../../dashboard/CostRatioGraph";
 import { colorArray } from "../../../dashboard/ChartsDashboard";
+import { PaginationWrapper } from "../../../common/commonPagination";
 
 const BusinessValueReport = ({ }) => {
   const gridOptions = {}
@@ -51,6 +52,7 @@ const BusinessValueReport = ({ }) => {
   const [pieChartLabelArray, setPieChartLabelArray] = useState([])
   const [pieChartDataArray, setPieChartDataArray] = useState([])
   const [reportDetailsByGroup, setReportDetailsByGroup] = useState([])
+  const [globalTake, setGlobalTake] = useState(defaultPageSize)
   // const [partTypeList, setPartTypeList] = useState([])
   const { businessValueReportHeads, businessValueReportData } = useSelector(state => state.report);
   const productGroupSelectList = useSelector(state => state.part.productGroupSelectList)
@@ -72,7 +74,7 @@ const BusinessValueReport = ({ }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchPlantDataAPI(() => { }))
+    dispatch(getPlantSelectListByType('', '', '', () => { }))
     dispatch(getBusinessValueReportHeads(() => { }))
     dispatch(getBusinessValueReportData({}, () => { }))
     dispatch(getProductGroupSelectList(() => { }))
@@ -160,6 +162,7 @@ const BusinessValueReport = ({ }) => {
         })
       return temp
     }
+    
     if (label === 'PlantCode') {
       plantSelectList && plantSelectList.map((item) => {
         if (item.PlantId === '0') return false
@@ -288,6 +291,11 @@ const BusinessValueReport = ({ }) => {
     params.api.paginationGoToPage(0);
   };
 
+  const onPageSizeChanged = (newPageSize) => {
+    gridApi.paginationSetPageSize(Number(newPageSize));
+    setGlobalTake(newPageSize);
+  };
+
   const defaultColDef = {
     resizable: true,
     filter: true,
@@ -315,7 +323,7 @@ const BusinessValueReport = ({ }) => {
       CustomerCode: _.get(values, 'CustomerCode.label', ''),
       PartModelName: _.get(values, 'PartModelName.label', ''),
       PartNumber : _.get(values, 'PartNumber.label', ''),
-      GroupBy : _.get(values, 'PartNumber.value', ''),
+      GroupBy : _.get(values, 'GroupBy.value', ''),
       SegmentId :''
     }
     const keys = _.keys(data);
@@ -660,8 +668,8 @@ const BusinessValueReport = ({ }) => {
               </button>
             </Col>
           </Row>
-         { detailAccordian && <div className="container-fluid custom-pagination report-listing-page ag-grid-react">
-          <div className={`ag-grid-wrapper height-width-wrapper  ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+         { detailAccordian && 
+          <div className={`ag-grid-react ag-grid-wrapper height-width-wrapper  ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className={`ag-theme-material grid-parent-wrapper mt-2 ${isLoader && "max-loader-height"}`}>
               {isLoader ? <LoaderCustom customClass="loader-center" /> :
                 <AgGridReact
@@ -684,11 +692,11 @@ const BusinessValueReport = ({ }) => {
                   // onSelectionChanged={onRowSelect}
                   frameworkComponents={frameworkComponents}
                 >
-                </AgGridReact>
-              }
+                </AgGridReact>}
+                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
             </div>
           </div>
-        </div>
+       
        }
         </div>
         </Row>
