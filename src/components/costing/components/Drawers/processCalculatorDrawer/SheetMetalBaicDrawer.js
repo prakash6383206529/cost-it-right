@@ -12,7 +12,7 @@ import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { findProcessCost } from '../../../CostingUtil';
 import { debounce } from 'lodash';
-import { maxLength8, nonZero } from '../../../../../helper/validation'
+import { decimalNumberLimit6, maxLength8, nonZero } from '../../../../../helper/validation'
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit } from "../../../../../helper/validation";
 
@@ -422,6 +422,7 @@ function SheetMetalBaicDrawer(props) {
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
+                          validate: { nonZero,decimalNumberLimit6 }
                         }}
                         id={'cycle-time'}
                         handleChange={() => { }}
