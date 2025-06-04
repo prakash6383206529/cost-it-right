@@ -352,23 +352,23 @@ const BusinessValueReport = ({ }) => {
   }
 
   const viewPieData = _.debounce(() => {
-    const truncateToThreeDecimals = (value) => {
-      return Math.floor(value * 1000) / 1000;
-    }    
+    const truncateToTwoDecimals = (value) => {
+      return Math.floor(value * 100) / 100;
+    }
+  
     const labelArray = []
     const dataArray = reportDetailsByGroup
-    .filter(item => item.TotalCostPercentage > 0)
-    .map(item => {
-      const name = _.get(item, 'GroupByValue', '')
-      labelArray.push(name)
-      return {
-        value: truncateToThreeDecimals(item.TotalCostPercentage),
-        Totalcost: truncateToThreeDecimals(item.TotalCost),
-      }
-    })
-      setPieChartDataArray(dataArray)
-      setPieChartLabelArray(labelArray)
-    }, [100])
+      .filter(item => item.TotalCostPercentage > 0)
+      .map(item => {
+          const name = _.get(item, 'GroupByValue', '')
+          const truncatedPercentage = truncateToTwoDecimals(item.TotalCostPercentage)
+          const totalCost = truncateToTwoDecimals(item.TotalCost)
+          labelArray.push(`${name}: ${truncatedPercentage} (${totalCost})`)
+        return truncatedPercentage
+      })
+    setPieChartDataArray(dataArray)
+    setPieChartLabelArray(labelArray) 
+  }, [100])
 
   const pieChartData = {
     labels: pieChartLabelArray,
@@ -649,7 +649,7 @@ const BusinessValueReport = ({ }) => {
           {graphAccordian && (
             <div className='column-data'>
               <div className='mb-2'>
-                <h6>{_.size(reportDetailsByGroup) ? 'All value is showing in Percentage' : 'No data to show'}</h6>
+                <h6>{_.size(reportDetailsByGroup) ? 'All value is showing in Percentage (Total Cost)' : 'No data to show'}</h6>
               </div>
               {_.size(reportDetailsByGroup) > 0 && <Costratiograph data={pieChartData} options={pieChartOption} />}
             </div>
