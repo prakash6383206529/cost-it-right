@@ -836,7 +836,7 @@ function CreateManualNFR(props) {
                     <div className="row">
                         <div className="col-md-6">
                             <h1>
-                                {isViewFlag ? 'View Customer RFQ' : 'Add Customer RFQ'}  <TourWrapper
+                                {isViewFlag ? 'View Customer RFQ' : isEditFlag ? 'Edit Customer RFQ' : 'Add Customer RFQ'}  <TourWrapper
                                     buttonSpecificProp={{ id: "Create_Manual_Nfr_Form" }}
                                     stepsSpecificProp={{
                                         steps: Steps(t).ADD_NFR

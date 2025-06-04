@@ -70,6 +70,7 @@ const PartFamilyListing = (props) => {
     showPopupToggle2: false,
     isOpen: false,
     isEditFlag: false,
+    isViewFlag: false
   });
   const [searchText, setSearchText] = useState('');
   const { partFamilyList, allPartFamilyList } = useSelector((state) => state.part);
@@ -240,7 +241,7 @@ const PartFamilyListing = (props) => {
 
   const onSearch = () => {
     setState((prevState) => ({
-      ...prevState, warningMessage: false,
+      ...prevState, warningMessage: false, noData: false, isFilterButtonClicked: true
     }));
     dispatch(updatePageNumber(1));
     dispatch(updateCurrentRowIndex(0));
@@ -361,7 +362,7 @@ const PartFamilyListing = (props) => {
             onClick={() => viewOrEditItemDetails(cellValue, true)}
           />
         )}
-        {isAssociated && (
+        {!isAssociated && (
           <>
             {permissions.Edit && (
               <button
@@ -598,7 +599,7 @@ const PartFamilyListing = (props) => {
   return (
     <>
       <div
-        className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`}
+        className={`ag-grid-react custom-pagination ${permissions.Download ? "show-table-btn" : ""}`}
       >
         {state.isLoader && <LoaderCustom />}
         {state.disableDownload && (
@@ -724,7 +725,7 @@ const PartFamilyListing = (props) => {
 
 
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
-              {(state.noData && partFamilyList && partFamilyList.length !== 0) ? (
+              {state.noData ? (
                 <NoContentFound
                   title={EMPTY_DATA}
                   customClassName="no-content-found"
@@ -793,6 +794,7 @@ const PartFamilyListing = (props) => {
             anchor="right"
             onClose={() => setState((prev) => ({ ...prev, isOpen: false }))}
             isEditFlag={state.isEditFlag}
+            isViewFlag={state.isViewFlag}
             ID={state.ID}
             refreshFamilyList={() => getTableListData(skipRecord, globalTakes, state.floatingFilterData, true)}
             partFamilyList={partFamilyList}

@@ -785,7 +785,7 @@ function ViewConversionCost(props) {
 
                 {renderTransportationRows(normalizedTransportCost)}
 
-                {
+                {/* {
                   transportCost && transportCost?.TransportationDetails && transportCost?.TransportationDetails?.length === 0 && (
                     <tr>
                       <td colSpan="12">
@@ -793,7 +793,7 @@ function ViewConversionCost(props) {
                       </td>
                     </tr>
                   )
-                }
+                } */}
 
                 {!isPDFShow && <tr className='table-footer'>
                   <td colSpan={7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
@@ -1077,11 +1077,9 @@ function ViewConversionCost(props) {
                     </>
                   }
 
-
-                  {showLabourData && !props.viewConversionCostData.labourHide && // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
-                    <>
-                      {labourTableData()}
-                    </>
+                  {(labourTable?.length > 0 && showLabourData && !props.viewConversionCostData?.labourHide && props.viewConversionCostData?.IsAssemblyCosting && !props.viewConversionCostData?.isSurfaceTreatmentCost) && <>
+                    {labourTableData()}
+                  </>
                   }
                 </TabPane>
               </TabContent>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -127,7 +126,7 @@ function CostingSummary(props) {
           setValue('DrawingNumber', Data.DrawingNumber)
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice))
-          setValue('PartFamily', Data?.PartFamily)
+          setValue('PartFamily', Data?.PartFamily || '')
           setTechnologyId(Data?.TechnologyId)
           setPartType({ label: Data.PartType, value: Data.PartTypeId })
           setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
@@ -137,8 +136,8 @@ function CostingSummary(props) {
           newValue.partName = Data.PartName
           newValue.partNumber = costingData.PartNumber
           newValue.partId = costingData.PartId
-          newValue.partFamily = costingData.PartFamily
-          newValue.partFamilyId = costingData.PartFamilyId
+          newValue.partFamily = costingData?.PartFamily
+          newValue.partFamilyId = costingData?.PartFamilyId
 
           dispatch(storePartNumber(newValue))
           dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
@@ -248,14 +247,7 @@ function CostingSummary(props) {
       })
       return temp
     }
-    if (label === 'PartFamily') {
-      partFamilySelectList && partFamilySelectList.map((item) => {
-        if (item.Value === '--0--') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
-    }
+    
   }
 
   /**
