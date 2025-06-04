@@ -22,8 +22,7 @@ import { getAssemblyChildpart } from '../../rfq/actions/rfq';
 
 function AddForecast(props) {
     const dispatch = useDispatch();
-    const { isOpen, closeDrawer, anchor, isViewFlag, sopDate, handleSOPDateChange, gridOptionsPart, onGridReady, EditableCallback, AssemblyPartNumber, isEditFlag, sopQuantityList, setSopQuantityList, partType, type,
-        partTypeInPartList, rmDetails } = props;
+    const { isOpen, closeDrawer, anchor, isViewFlag, gridOptionsPart, onGridReady, EditableCallback,sopQuantityList, AssemblyPartNumber, isEditFlag, partType,         partTypeInPartList, rmDetails } = props;
 
     const { register, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -43,6 +42,8 @@ function AddForecast(props) {
     const [tableData, setTableData] = useState([]);
     const [childPartsData, setChildPartsData] = useState([]);
     const [activeTab, setActiveTab] = useState("1");
+    const [quantityList, setQuantityList] = useState([])
+    const [sopDate, setSopDate] = useState(props.sopDate || '')
 
     // Redux selectors
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
@@ -76,7 +77,10 @@ function AddForecast(props) {
         if (rmDetails && rmDetails.length > 0) {
             setTableData(rmDetails)
         }
-    }, [rmDetails]);
+        if (sopQuantityList && sopQuantityList.length > 0) {
+            setQuantityList(sopQuantityList)
+        }
+    }, [rmDetails,sopQuantityList]);
 
     const partNumberFormatter = (params) => {
         let partNumber = AssemblyPartNumber?.label || (typeof AssemblyPartNumber === 'string' ? AssemblyPartNumber : '') || params.value || '-';
@@ -108,7 +112,7 @@ function AddForecast(props) {
 
         if (props?.node?.data) {
             props.node.data.Quantity = validatedValue
-            setSopQuantityList(final)
+            setQuantityList(final)
         }
 
         let isEnable = isEditFlag ? true : isViewFlag ? false : true
@@ -132,17 +136,17 @@ function AddForecast(props) {
 
     // Event handlers
     const handleSave = (isSave) => {
-        if (tableData.length === 0) {
+        if (tableData.length === 0 && isSave) {
             Toaster.warning("Please fill the RM Details.");
             return;
         }
-        if (sopDate && sopQuantityList[0].Quantity === 0) {
+        if (sopDate && quantityList[0].Quantity === 0 && isSave) {
             Toaster.warning("Please enter at least one quantity in the forecast.");
             return;
         }
         if (isSave) {
             setTableData([])
-            closeDrawer(true, sopQuantityList, tableData);
+            closeDrawer(true, quantityList, tableData,sopDate);
         }
         else {
             closeDrawer(false, sopQuantityList, tableData);
@@ -457,12 +461,45 @@ function AddForecast(props) {
     }
 
     const toggleDrawer = () => {
-        props.closeDrawer(false)
+        props.closeDrawer(false,sopQuantityList,[],props.sopDate)
     }
 
     // Function to handle tab switching
     const handleTabChange = (tabId) => {
         setActiveTab(tabId);
+    };
+
+    const handleSOPDateChange = (date) => {
+        const newDate = DayTime(date).isValid() ? DayTime(date) : '';
+
+        // Validate that SOP date is not before ZBC date
+        if (props.zbcDate && newDate && new Date(newDate) <= new Date(props.zbcDate)) {
+            Toaster.warning("SOP Date cannot be before or equal to ZBC Last Submission Date");
+            return;
+        }
+
+        // Validate that SOP date is not before CBC date
+        if (props.cbcDate && newDate && new Date(newDate) <= new Date(props.cbcDate)) {
+            Toaster.warning("SOP Date cannot be before or equal to Quotation Last Submission Date");
+            return;
+        }
+        setSopDate(newDate);
+        let year = new Date(date).getFullYear();
+        const years = [];
+        for (let i = 0; i < 5; i++) {
+            years.push(year + i);
+        }
+
+        if (newDate) {
+            const partNumber = AssemblyPartNumber?.label || '';
+            const newSopQuantityList = years.map(yearItem => ({
+                PartNumber: partNumber,
+                YearName: yearItem.toString(),
+                Quantity: 0,
+                SOPDate: newDate
+            }));
+            setQuantityList(newSopQuantityList);
+        }
     };
 
     return (
@@ -627,14 +664,14 @@ function AddForecast(props) {
                                                                             type="button"
                                                                             className="user-btn mt30 pull-left"
                                                                             onClick={() => addRow(0)}
-                                                                            disabled={isViewFlag || (!isEditFlag ? (type === Component && getValues('activeTab') === "1" ? false : false) : false)}
+                                                                            disabled={isViewFlag}
                                                                         >
                                                                             <div className="plus"></div>ADD
                                                                         </button>
                                                                         <button
                                                                             type="button"
                                                                             className="mr15 ml-2 mt30 reset-btn"
-                                                                            disabled={isViewFlag || (!isEditFlag ? (type === Component && getValues('activeTab') === "1" ? false : false) : false)}
+                                                                            disabled={isViewFlag}
                                                                             onClick={resetFormAndDropdowns}
                                                                         >
                                                                             Reset
@@ -738,13 +775,13 @@ function AddForecast(props) {
                                             <div className="tab-pane fade active show" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                                                 <Row>
                                                     <Col md="12" className='ag-grid-react'>
-                                                        <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${sopQuantityList && sopQuantityList.length === 0 ? "overlay-contain" : ""} `}>
+                                                        <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${quantityList && quantityList.length === 0 ? "overlay-contain" : ""} `}>
                                                             <div className={`ag-theme-material`}>
                                                                 <AgGridReact
                                                                     // defaultColDef={state.gridOptions.defaultColDef}
                                                                     floatingFilter={false}
                                                                     domLayout='autoHeight'
-                                                                    rowData={sopQuantityList}
+                                                                    rowData={quantityList}
                                                                     onGridReady={onGridReady}
                                                                     gridOptions={gridOptionsPart}
                                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -793,7 +830,7 @@ function AddForecast(props) {
                             <button
                                 type={'button'}
                                 className="reset cancel-btn mr15"
-                                onClick={toggleDrawer}
+                                onClick={()=>handleSave(false)}
                             >
                                 <div className={'cancel-icon'}></div> {'Cancel'}
                             </button>

@@ -887,7 +887,7 @@ function Rejection(props) {
                 </Row>}
 
                 <Col md="11">
-                    <Table className="table mb-0 forging-cal-table" size="sm">
+                    <Table className="table mb-0 forging-cal-table mt-2" size="sm">
                         <thead>
                             <tr>
                                 <th>Applicability</th>

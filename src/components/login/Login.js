@@ -1,10 +1,9 @@
-
 import React, { Component } from "react";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import { renderPasswordInputField, renderEmailInputField, focusOnError, renderText, validateForm } from "../layout/FormInputs";
 import { connect } from "react-redux";
 import { loginUserAPI, getMenuByUser, TokenAPI, forgetPassword } from "../../actions/auth/AuthActions";
-import { maxLength70, maxLength25, required, email } from "../../helper/validation";
+import { maxLength70, maxLength25, required, email, validateEmail } from "../../helper/validation";
 import "./Login.scss";
 import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -139,7 +138,14 @@ class Login extends Component {
 
   forgotConfirm = () => {
     const { fieldsObj } = this.props;
-    console.log(fieldsObj,'fieldsObj')
+    if (!fieldsObj) {
+      this.props.touch('Login', 'username');
+      return;
+    }
+    if (validateEmail(fieldsObj) && this.props?.initialConfiguration?.IsLoginEmailConfigure) {
+      return false;
+    }
+    
     if (!this.state.forgetIsCalled) {
       this.setState({ forgetIsCalled: true });
       this.props.forgetPassword(fieldsObj, (res) => {

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
-import { getIccDataByModelType, gridDataAdded, isIccDataChange, isOverheadProfitDataChange, setIccCost, setIsCalculatorExist, setOverheadProfitErrors, } from '../../../actions/Costing';
+import { getIccDataByModelType, gridDataAdded, isIccDataChange, isOverheadProfitDataChange, setDisableIccCheckBox, setIccCost, setIsCalculatorExist, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { CBCTypeId, CRMHeads, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
@@ -159,13 +159,13 @@ function Icc(props) {
                     let cost = 0;
                     switch (item.Applicability) {
                         case 'RM':
-                            cost = NetRawMaterialsCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
+                            cost = NetRawMaterialsCost ;
                             break;
                         case 'BOP':
-                            cost = headerCosts.NetBoughtOutPartCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
+                            cost = headerCosts.NetBoughtOutPartCost ;
                             break;
                         case 'CC':
-                            cost = ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
+                            cost = ConversionCostForCalculation;
                             break;
                         case 'Overhead':
                             cost = checkForNull(includeOverHeadProfitIcc ? TopHeaderValues.OverheadCost : 0)
@@ -308,6 +308,11 @@ function Icc(props) {
                     isApplyInventoryDay: data?.IsApplyInventoryDay,
                     iccMethod: data?.ICCMethod
                 }))
+                if(data?.ICCMethod==='Credit Based'){
+                    dispatch(setDisableIccCheckBox(true))
+                }else{
+                    dispatch(setDisableIccCheckBox(false))
+                }
                 setICCInterestRateId(data?.InterestRateId)
                     checkInventoryApplicability(data?.ICCCostingApplicabilityDetails, data?.IsApplyInventoryDay)
             }))
