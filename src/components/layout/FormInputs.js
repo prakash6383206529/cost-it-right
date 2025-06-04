@@ -636,7 +636,7 @@ export function renderText(field) {
     ...others
   } = field;
 
-  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""
+  const className = `${field.id==="plantCurrency" ? "" : "form-group inputbox"}   ${field.customClassName ? field.customClassName : ""
     } ${touched && error ? "has-danger" : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""
     }`;
