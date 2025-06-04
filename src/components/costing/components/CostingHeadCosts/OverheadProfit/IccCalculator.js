@@ -302,6 +302,7 @@ function IccCalculator(props) {
                                             setValue={setValue}
                                             isWipInventory={true}
                                             totalIccReceivable={state?.totalIccReceivable}
+                                          isCreditBased={true}
                                         />
                                     </Col>
                                 </Row>
@@ -327,10 +328,12 @@ function IccCalculator(props) {
                             </div >
                             <Row>
                                 <Col md="3">
+                                <TooltipCustom disabledIcon={true} id={'inventory-cost'} tooltipText={'Inventory Carrying Cost = ICC Payable to Supplier - ICC Receivable from Supplier'} />
                                     <TextFieldHookForm
                                         name="InventoryCarryingCost"
                                         label="Inventory Carrying Cost"
                                         Controller={Controller}
+                                        id={'inventory-cost'}
                                         control={control}
                                         register={register}
                                         placeholder="-"

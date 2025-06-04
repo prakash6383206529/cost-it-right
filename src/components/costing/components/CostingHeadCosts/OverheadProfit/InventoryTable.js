@@ -167,6 +167,7 @@ useEffect(()=>{
                         setValue={setValue}
                         isInventory={true}
                         totalIccPayable={state?.totalIccPayable}
+                        isCreditBased={true}
                     />
                 </Col>
             </Row>
