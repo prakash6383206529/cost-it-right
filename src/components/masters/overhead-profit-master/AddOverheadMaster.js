@@ -131,25 +131,25 @@ const AddOverheadMaster = (props) => {
 
   useEffect(() => {
     if (!(props?.data?.isEditFlag || state.isViewMode)) {
-      const hasRequiredFields = (
+      const hasRequiredFields = !!(
         (state.costingTypeId === ZBCTypeId) ||
         (state.costingTypeId === CBCTypeId && state?.client) ||
         (state.costingTypeId === VBCTypeId && state?.vendorName)
       );
-      if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
-        const { plantArray, cbcPlantArray } = getPlants();
-        let data = {
-          overheadId: state?.OverheadID ?? null,
-          modelTypeId: state?.ModelType?.value,
-          costingHeadId: state?.costingTypeId,
-          // plantId: state?.selectedPlants[0]?.value ?? null,
-          plantId: state?.costingTypeId === CBCTypeId ? cbcPlantArray[0]?.PlantId : plantArray[0]?.PlantId,
-          vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
-          customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
-          effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-          technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
-          partFamilyId: state?.selectedPartFamily?.value
-        }
+      const { plantArray, cbcPlantArray } = getPlants();
+      let data = {
+        overheadId: state?.OverheadID ?? null,
+        modelTypeId: state?.ModelType?.value,
+        costingHeadId: state?.costingTypeId,
+        plantId: state?.costingTypeId === CBCTypeId ? cbcPlantArray[0]?.PlantId : plantArray[0]?.PlantId,
+        vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
+        customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
+        effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
+        partFamilyId: state?.selectedPartFamily?.value
+      }
+      let showPartFamily = getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily
+      if(hasRequiredFields && data?.modelTypeId && data?.plantId && (!showPartFamily || data?.partFamilyId) && data?.effectiveDate){
         dispatch(getOverheadDataCheck(data, (res) => {
           if (res?.status === 200) {
             let Data = res?.data?.Data;
@@ -623,20 +623,21 @@ const AddOverheadMaster = (props) => {
                     </Col>
                   </Row>
 
-                  <AddOverheadMasterDetails
-                    costingTypeId={costingTypeId}
-                    state={state}
-                    setState={setState}
-                    setValue={setValue}
-                    register={register}
-                    trigger={trigger}
-                    clearErrors={clearErrors}
-                    control={control}
-                    getValues={getValues}
-                    errors={errors}
-                    isOverHeadMaster={true}
-                    isShowPartFamily={true}
-                    applicabilityLabel="Overhead"
+                  <AddOverheadMasterDetails 
+                      costingTypeId={costingTypeId}
+                      conditionTypeId={conditionTypeId}
+                      state={state}
+                      setState={setState}
+                      setValue={setValue}
+                      register={register}
+                      trigger={trigger}
+                      clearErrors={clearErrors}
+                      control={control}
+                      getValues={getValues}
+                      errors={errors}
+                      isOverHeadMaster={true}
+                      isShowPartFamily={true}
+                      applicabilityLabel="Overhead"
                   />
 
                   <Row>

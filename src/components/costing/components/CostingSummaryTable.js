@@ -634,7 +634,7 @@ const CostingSummaryTable = (props) => {
     let profitData = viewCostingData[index]?.netProfitCostView
     let rejectData = viewCostingData[index]?.netRejectionCostView
     let modelType = viewCostingData[index]?.modelType
-    let IccPaymentData = viewCostingData[index]?.netPaymentIccCostView
+    let IccPaymentData = viewCostingData[index]?.netPaymentIccCostView    
     let isRmCutOffApplicable = viewCostingData[index]?.isRmCutOffApplicable
     let rawMaterialCostWithCutOff = viewCostingData[index]?.rawMaterialCostWithCutOff
     let isIncludeToolCostWithOverheadAndProfit = viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit
@@ -689,6 +689,8 @@ const CostingSummaryTable = (props) => {
   }
 
   const viewNpvData = (index) => {
+    let IccPaymentData = viewCostingData[index]?.netPaymentIccCostView    
+    setIccPaymentData(IccPaymentData)
     setNpvDrawer(true)
     setNpvIndex(index)
     setPaymentTermsData(viewCostingData[index]?.CostingPartDetails?.CostingPaymentTermDetails)
@@ -3166,7 +3168,6 @@ const CostingSummaryTable = (props) => {
                                 <span className={highlighter("sTreatment")}>Net Overhead Cost</span>
                                 <span className={highlighter("tCost")}> Net Profit Cost</span>
                                 <span className={highlighter("HangerCostPerPart")}> Net Rejection Cost </span>
-                                <span className={highlighter("TotalPaintCost")}> Net ICC Cost </span>
                               </td>
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
@@ -3183,11 +3184,6 @@ const CostingSummaryTable = (props) => {
                                       <span className={highlighter("HangerCostPerPart")}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
                                           (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
-                                          : '')}
-                                      </span>
-                                      <span className={highlighter("TotalPaintCost")}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
-                                          (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetICCCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetICCCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
                                           : '')}
                                       </span>
                                     </td>
@@ -3362,7 +3358,27 @@ const CostingSummaryTable = (props) => {
                               </>
                             )
                           }
+< tr className='border-right' >
+                            <td>
+                              <span className="d-block small-grey-text"> Net ICC Cost</span>
+                            </td>
+                            {
+                              viewCostingData &&
+                              viewCostingData?.map((data, index) => {
+                                return (
 
+                                  (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
+                                    <td className={tableDataClass(data)}>
+                                      <div className={`${highlighter("anyOtherCostTotal")}`}>
+                                        <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetICCCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetICCCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''}</span>
+                                      </div>
+                                    </td>
+                                    : ""
+
+                                )
+                              })
+                            }
+                          </tr >
 
                           <tr className='border-right'>
                             <td>
@@ -3420,8 +3436,8 @@ const CostingSummaryTable = (props) => {
                               })
                             }
                           </tr >
-                          {!initialConfiguration?.IsShowTCO && < tr className='border-right' >
-                            <td>
+                          {!initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowPaymentTerm &&< tr className='border-right' >
+                             <td>
                               <span className={highlighter(["paymentTerms", "paymentValue"], "multiple-key")}>Payment Terms</span>
                             </td>
 
@@ -3550,9 +3566,11 @@ const CostingSummaryTable = (props) => {
                           }
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("netConditionCost", "main-row")} netPo-row`}>
+
                               <td>
                                 <span className={`d-block small-grey-text`}>Net Condition Cost</span>
                               </td>
+
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
                                   return (
@@ -3579,6 +3597,8 @@ const CostingSummaryTable = (props) => {
                                 isPDFShow={true}
                                 CostingPaymentTermDetails={paymentTermsData}
                                 npvCostData={npvData}
+                                iccPaymentData={iccPaymentData}
+                                rejectAndModelType={viewRejectAndModelType}
                               />
                             </th></tr>
                           }
@@ -4095,7 +4115,7 @@ const CostingSummaryTable = (props) => {
           tableData={[]}
           npvIndex={npvIndex}
           costingIndex={npvIndex}
-
+          iccPaymentData={iccPaymentData}
           closeDrawer={closeNpvDrawer}
           anchor={'right'}
           partId={viewCostingData[npvIndex]?.partId}
@@ -4103,6 +4123,7 @@ const CostingSummaryTable = (props) => {
           isRfqCosting={viewCostingData[npvIndex]?.IsRfqCosting}
           CostingPaymentTermDetails={paymentTermsData}
           npvCostData={npvData}
+          rejectAndModelType={viewRejectAndModelType} 
 
         />
       }

@@ -13,7 +13,7 @@ import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../conf
 import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
-import { INTERESTRATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { INTERESTRATE_DOWNLOAD_EXCEl, PAYMENTTERMS_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -42,7 +42,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
-const InterestRateListing = (props) => {
+const PaymentTermsListing = (props) => {
   const dispatch = useDispatch();
   const [state, setState] = useState({
     tableData: [],
@@ -78,12 +78,7 @@ const InterestRateListing = (props) => {
   const { statusColumnData } = useSelector((state) => state.comman);
   const { costingHeadFilter } = useSelector((state) => state?.comman);
   const { globalTakes } = useSelector((state) => state.pagination);
-
-  const { t } = useTranslation("common")
-  const { topAndLeftMenuData } = useSelector((state) => state.auth);
-  const { interestRateDataList } = useSelector((state) => state.interestRate);
-  const floatingFilterIcc = { maxValue: 3, suppressFilterButton: true, component: "InterestRate" }
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", VendorName: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "", PartFamily: "", ICCApplicability: "", ICCModelType: "", ICCMethod: "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", VendorName: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "", PartFamily: "", PaymentTermApplicability: "", ICCModelType: "" })
   const [filterModel, setFilterModel] = useState({});
   const [warningMessage, setWarningMessage] = useState(false);
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
@@ -91,6 +86,10 @@ const InterestRateListing = (props) => {
   const [disableFilter, setDisableFilter] = useState(true)
   const [disableDownload, setDisableDownload] = useState(false);
 
+  const { t } = useTranslation("common")
+  const { topAndLeftMenuData } = useSelector((state) => state.auth);
+  const { interestRateDataList } = useSelector((state) => state.interestRate);
+  const floatingFilterIcc = { maxValue: 3, suppressFilterButton: true, component: "InterestRate" }
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
     setState((prevState) => ({ ...prevState, isLoader: true }))
@@ -99,15 +98,13 @@ const InterestRateListing = (props) => {
     dispatch(resetStatePagination());
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
-        // setState((prevState) => ({ ...prevState, isLoader: true }))
-        getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
+          getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
       }
     }, 500);
-      return () => {
-        dispatch(setResetCostingHead(true, "costingHead"))
-      }
+    return () => {
+      dispatch(setResetCostingHead(true, "costingHead"))
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
   }, []);
   useEffect(() => {
     if (statusColumnData) {
@@ -123,14 +120,6 @@ const InterestRateListing = (props) => {
   }, [statusColumnData, costingHeadFilter]);
 
   useEffect(() => {
-    if (topAndLeftMenuData) {
-      applyPermission(topAndLeftMenuData);
-      setTimeout(() => {
-      }, 200);
-    }
-  }, [topAndLeftMenuData,]);
-
-  useEffect(() => {
     if (statusColumnData?.id) {
         setDisableFilter(false)
         setWarningMessage(true)
@@ -144,8 +133,16 @@ const InterestRateListing = (props) => {
     else {
         setState((prevState) => ({ ...prevState, noData: false }));
     }
-    dispatch(getGridHeight({ value: interestRateDataList?.length, component: 'interestRate' }))
+    dispatch(getGridHeight({ value: interestRateDataList?.length, component: 'paymentTerms' }))
   }, [interestRateDataList])
+
+  useEffect(() => {
+    if (topAndLeftMenuData) {
+      applyPermission(topAndLeftMenuData);
+      setTimeout(() => {
+      }, 200);
+    }
+  }, [topAndLeftMenuData,]);
 
   const applyPermission = (topAndLeftMenuData) => {
     if (topAndLeftMenuData !== undefined) {
@@ -168,18 +165,13 @@ const InterestRateListing = (props) => {
     }
   }
 
-  /**
-   * @method getDataList
-   * @description Get list data with pagination and filters
-   */
-  const getDataList = (costingHead = null, vendorName = null, payment_term_applicability = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
+  const getDataList = (costingHead = null, vendorName = null, iccApplicability = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
     setPageRecord(skip);
     const filterData = {
       costing_head: costingHead,
       vendor_id: vendorName,
       model_type_id: modelType,
     }
-
     const cleanedDataObj = {
       ...dataObj,
       // OverheadApplicabilityType: dataObj?.OverheadApplicabilityType
@@ -193,14 +185,14 @@ const InterestRateListing = (props) => {
         }));
     }
 
-    dispatch(getInterestRateDataList(filterData, skip, take, isPagination, cleanedDataObj, false, (res) =>{
+    dispatch(getInterestRateDataList(filterData, skip, take, isPagination, cleanedDataObj, true, (res) =>{
       setState((prevState) => ({ 
           ...prevState, 
           isLoader: false
         }));
       if (res && res.status === 204) {
-          setState((prevState) => ({ ...prevState, totalRecordCount: 0 }))
-          dispatch(updatePageNumber(0))
+        setState((prevState) => ({ ...prevState, totalRecordCount: 0 }))
+        dispatch(updatePageNumber(0))
       }
 
       if (res && isPagination === false) {
@@ -242,7 +234,6 @@ const InterestRateListing = (props) => {
     }))
   };
 
-  
   /**
    * @method toggleExtraData
    * @description Handle specific module tour state to display lorem data
@@ -255,12 +246,15 @@ const InterestRateListing = (props) => {
     setTimeout(() => {
       setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
     }, 100);
-
   }
   /**
     * @method viewOrEditItemDetails
     * @description confirm edit oor view item
-  */
+    */
+  // const viewOrEditItemDetails = (Id, isViewMode, IsAssociatedData) => {
+  //   setState((prevState) => ({ ...prevState, data: { isEditFlag: true, ID: Id, isViewMode: isViewMode, IsAssociatedData: IsAssociatedData }, toggleForm: true, }))
+  // }
+
   const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
       let data = {
           isEditFlag: true,
@@ -271,6 +265,7 @@ const InterestRateListing = (props) => {
       }
       props.getDetails(data, rowData?.IsAssociated);
   }
+
 
   /**
   * @method deleteItem
@@ -290,6 +285,7 @@ const InterestRateListing = (props) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
         setState((prevState) => ({ ...prevState, dataCount: 0 }))
+        // getTableListData()
         getDataList(null, null, null, null, pageRecord, globalTakes, true, floatingFilterData);
       }
     }));
@@ -316,8 +312,11 @@ const InterestRateListing = (props) => {
 
   const buttonFormatter = (props) => {
     const IsAssociatedData = props?.data?.IsAssociated
+    // const cellValue = props?.value;
+
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
@@ -332,9 +331,11 @@ const InterestRateListing = (props) => {
   const combinedCostingHeadRenderer = (props) => {
     // Call the existing checkBoxRenderer
     costingHeadFormatter(props);
+
     // Get and localize the cell value
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
     // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
     return localizedValue;
   };
@@ -352,6 +353,12 @@ const InterestRateListing = (props) => {
    * @method onFloatingFilterChanged
    * @description Filter data when user type in searching input
    */
+  // const onFloatingFilterChanged = (value) => {
+  //   setTimeout(() => {
+  //     interestRateDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }))
+  //   }, 500);
+  // }
+
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       if (interestRateDataList.length !== 0) {
@@ -416,28 +423,40 @@ const InterestRateListing = (props) => {
   const closeBulkUploadDrawer = (event, type) => {
     setState((prevState) => ({ ...prevState, isBulkUpload: false }))
     if (type !== 'cancel') {
+      // getTableListData()
       resetState();
     }
   }
 
   const onGridReady = (params) => {
-    setGridApi(params.api)
-    state.gridColumnApi = params.columnApi
-    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }));
-    params.api.paginationGoToPage(0);
-
+      setGridApi(params.api)
+      state.gridColumnApi = params.columnApi
+      setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }));
+      params.api.paginationGoToPage(0);
+      // params.api.sizeColumnsToFit();
   };
+
+  const onSearch = () => {
+    setState((prevState) => ({ ...prevState, noData: false }));
+    setWarningMessage(false)
+    setIsFilterButtonClicked(true)
+    dispatch(updatePageNumber(1))
+    dispatch(updateCurrentRowIndex(0))
+    gridOptions?.columnApi?.resetColumnState();
+    getDataList(null, null, null, null, 0, globalTakes, true, floatingFilterData)
+  }
 
   const onRowSelect = () => {
     const selectedRows = gridApi?.getSelectedRows()
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
   }
-  const INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(INTERESTRATE_DOWNLOAD_EXCEl, "MasterLabels")
+  const PAYMENTTERMS_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(PAYMENTTERMS_DOWNLOAD_EXCEl, "MasterLabels")
+  
   const onBtExport = () => {
     let tempArr = []
     tempArr = gridApi && gridApi?.getSelectedRows()
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (interestRateDataList ? interestRateDataList : [])
-    return returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+    return returnExcelColumn(PAYMENTTERMS_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -469,16 +488,6 @@ const InterestRateListing = (props) => {
     gridApi.setQuickFilter(e.target.value);
   }
 
-  const onSearch = () => {
-    setState((prevState) => ({ ...prevState, noData: false }));
-    setWarningMessage(false)
-    setIsFilterButtonClicked(true)
-    dispatch(updatePageNumber(1))
-    dispatch(updateCurrentRowIndex(0))
-    gridOptions?.columnApi?.resetColumnState();
-    getDataList(null, null, null, null, 0, globalTakes, true, floatingFilterData)
-  }
-
   const resetState = () => {
     setState((prevState) => ({ ...prevState, noData: false }));
     dispatch(agGridStatus("", ""))
@@ -497,9 +506,11 @@ const InterestRateListing = (props) => {
     dispatch(setSelectedRowForPagination([]))
     dispatch(resetStatePagination())
     setState((prevState) => ({ ...prevState, dataCount: 0 }))
-}
+  }
+
   const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, dataCount } = state;
   const ExcelFile = ReactExport.ExcelFile;
+
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -552,15 +563,14 @@ const InterestRateListing = (props) => {
                   </div>
                   <div>
                     {AddAccessibility && (<Button id="interestRateListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
-                    {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+                    {BulkUploadAccessibility && (<Button id="paymentTermsListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&
                       <>
                         <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
-                          <Button id={"Excel-Downloads-interestRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
+                          <Button id={"Excel-Downloads-paymentTermsListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
                           {state?.totalRecordCount !== 0 ? onBtExport() : null}
                         </ExcelFile>
                       </>
-
                     }
                     <Button id={"interestRateListing_refresh"} className={"Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                   </div>
@@ -585,8 +595,8 @@ const InterestRateListing = (props) => {
                 domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={state.showExtraData ? [...setLoremIpsum(interestRateDataList[0]), ...interestRateDataList] : interestRateDataList}
-                // paginationPageSize={defaultPageSize}
-                paginationPageSize={globalTakes}
+                // pagination={true}
+                paginationPageSize={defaultPageSize}
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
                 // loadingOverlayComponent={'customLoadingOverlay'}
@@ -606,24 +616,24 @@ const InterestRateListing = (props) => {
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                {/* <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn> */}
-                <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
-                {/* <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
-                <AgGridColumn width={140} field="CreditBasedAnnualICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                {/* <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+                {/* <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+                <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period (Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>}
-               <div className='button-wrapper'>
-                    {<PaginationWrappers gridApi={gridApi} totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="interestRate" />}
-                    {<PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="interestRate" />
-                    }
-                </div>
+              {/* {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />} */}
+              <div className='button-wrapper'>
+                  {<PaginationWrappers gridApi={gridApi} totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="interestRate" />}
+                  {<PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="interestRate" />
+                  }
+              </div>
             </div>
           </div>
 
-          {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Interest Rate'} isZBCVBCTemplate={true} messageLabel={'Interest Rate'} anchor={'right'} />}
+          {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Payment Terms'} isZBCVBCTemplate={true} messageLabel={'Payment Terms'} anchor={'right'} />}
           {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />}
         </div >
       </div >
@@ -632,4 +642,4 @@ const InterestRateListing = (props) => {
 }
 
 
-export default InterestRateListing
+export default PaymentTermsListing

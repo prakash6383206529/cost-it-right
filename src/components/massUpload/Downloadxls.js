@@ -41,7 +41,13 @@ import {
     Rejection,
     RejectionVBC,
     PartFamily,
-    PartFamilyTempData
+    PartFamilyTempData,
+    VBCPaymentTerms,
+    VBCPaymentTermsTempData,
+    CBCPaymentTerms,
+    CBCPaymentTermsTempData,
+    ZBCPaymentTerms,
+    ZBCPaymentTermsTempData
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey, RFQ_KEYS, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
@@ -127,6 +133,9 @@ export const checkInterestRateConfigure = (excelData) => {
         if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC === false) {
             if (el.value === 'RawMaterialName') return false;
             if (el.value === 'RawMaterialGrade') return false;
+        }
+        if (!(getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily)) {
+            if (el.value === 'PartFamilyCode') return false;
         }
         return true;
     })
@@ -426,6 +435,9 @@ class Downloadxls extends React.Component {
             case 'Interest Rate':
                 const localizedInterestRateHeaders = this.localizeHeaders(ZBCInterestRate);
                 return this.returnExcelColumn(localizedInterestRateHeaders, ZBCInterestRateTempData);
+            case 'Payment Terms':
+                const localizedPaymentTermsHeaders = this.localizeHeaders(ZBCPaymentTerms);
+                return this.returnExcelColumn(localizedPaymentTermsHeaders, ZBCPaymentTermsTempData);
             case 'Budget':
                 const localizedBudgetHeaders = this.localizeHeaders(BUDGET_ZBC);
                 return this.returnExcelColumn(localizedBudgetHeaders, BUDGET_ZBC_TEMPDATA);
@@ -503,6 +515,9 @@ class Downloadxls extends React.Component {
             case 'Interest Rate':
                 const localizedInterestRateHeaders = this.localizeHeaders(VBCInterestRate);
                 return this.returnExcelColumn(checkInterestRateConfigure(localizedInterestRateHeaders), VBCInterestRateTempData);
+            case 'Payment Terms':
+                const localizedPaymentTermsHeaders = this.localizeHeaders(VBCPaymentTerms);
+                return this.returnExcelColumn(checkInterestRateConfigure(localizedPaymentTermsHeaders), VBCPaymentTermsTempData);
             case 'Budget':
                 const localizedBudgetHeaders = this.localizeHeaders(BUDGET_VBC);
                 return this.returnExcelColumn(localizedBudgetHeaders, BUDGET_VBC_TEMPDATA);
@@ -565,6 +580,9 @@ class Downloadxls extends React.Component {
             case 'Interest Rate':
                 const localizedInterestRateHeaders = this.localizeHeaders(CBCInterestRate);
                 return this.returnExcelColumn(checkInterestRateConfigure(localizedInterestRateHeaders), CBCInterestRateTempData);
+            case 'Payment Terms':
+                const localizedPaymentTermsHeaders = this.localizeHeaders(CBCPaymentTerms);
+                return this.returnExcelColumn(checkInterestRateConfigure(localizedPaymentTermsHeaders), CBCPaymentTermsTempData);
             case 'Budget':
                 const localizedBudgetHeaders = this.localizeHeaders(BUDGET_CBC);
                 return this.returnExcelColumn(localizedBudgetHeaders, BUDGET_CBC_TEMPDATA);
@@ -624,7 +642,7 @@ class Downloadxls extends React.Component {
             : fileName;
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
-        if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit')) {
+        if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit' || fileName === 'Payment Terms' )) {
             return (
                 <ExcelFile hideElement={true} filename={`${downloadFileName} ZBC`} fileExtension={'.xls'} >
                     {isMachineMoreTemplate || costingTypeId === ZBCADDMOREOPERATION ? this.renderZBCSwitch(costingTypeId) : this.renderZBCSwitch(fileName)}
@@ -641,7 +659,7 @@ class Downloadxls extends React.Component {
         }
 
         // DOWNLOAD FILE:- CALLED WHEN VBC FILE FAILED
-        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION || bopType === DETAILED_BOP) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Rejection' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit')) {
+        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION || bopType === DETAILED_BOP) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Rejection' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit' || fileName === 'Payment Terms' )) {
 
             return (
                 <ExcelFile hideElement={true} filename={`${downloadFileName}VBC`} fileExtension={'.xls'} >
@@ -650,7 +668,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN CBC FILE FAILED
-        if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Rejection' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit')) {
+        if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Rejection' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Overhead' || fileName === 'Profit' || fileName === 'Payment Terms' )) {
 
             return (
                 <ExcelFile hideElement={true} filename={`${downloadFileName} CBC`} fileExtension={'.xls'} >

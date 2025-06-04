@@ -6,7 +6,7 @@ import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, decimalNumberLimit8And7, positiveAndDecimalNumber, loggedInUserId, innerVsOuterValidation } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
-import { KG, EMPTY_DATA, DEFAULTRMPRESSURE } from '../../../../../config/constants'
+import { KG, EMPTY_DATA, DEFAULTRMPRESSURE, RM_PRESSURE_MAP } from '../../../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -65,14 +65,13 @@ function StandardRub(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'ScrapPercentage', 'NumberOfBends', 'BendTolerance', ...(!isVolumeAutoCalculate ? ['Volume'] : []), ...(!getConfigurationKey()?.IsCalculateVolumeForPartInRubber && isVolumeAutoCalculate ? ['FinishWeight'] : [])],
+        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'ScrapPercentage', 'NumberOfBends', 'FinishWeight', 'BendTolerance', ...(!isVolumeAutoCalculate ? ['Volume'] : []), ...(!getConfigurationKey()?.IsCalculateVolumeForPartInRubber && isVolumeAutoCalculate ? ['FinishWeight'] : [])],
     })
 
     useEffect(() => {
-
         calculateTotalLength()
         calculateVolume()
-
+        calculateScrapWeight()
     }, [fieldValues, isVolumeAutoCalculate])
 
 
@@ -164,23 +163,15 @@ function StandardRub(props) {
     }, 500)
 
 
-    const calculateScrapWeight = (scrapWeight) => {
-        const FinishWeight = getConfigurationKey()?.IsCalculateVolumeForPartInRubber ? dataToSend?.FinishWeight : Number(getValues('GrossWeight'))
-
-        const GrossWeight = checkForNull(dataToSend?.GrossWeight)
-        if (Number(getValues('GrossWeight')) || checkForNull(scrapWeight)) {
-            const updatedScrapRate = checkForNull(scrapWeight) ? checkForNull(scrapWeight) : checkForNull(dataToSend.GrossWeight)
-
-            let ScrapWeight = checkForNull(updatedScrapRate) - checkForNull(FinishWeight)
-
+    const calculateScrapWeight = () => {
+        const FinishWeight = Number(getValues('FinishWeight'))
+        if (Number(getValues('GrossWeight'))) {
+            let ScrapWeight = checkForNull(dataToSend.GrossWeight) - checkForNull(FinishWeight)
             setDataToSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
             setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
             setDataToSend(prevState => ({ ...prevState, NetRMCost: NetRmCost }))
             setValue('NetRMCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
-        } else if (GrossWeight === 0 && FinishWeight === 0) {
-            setDataToSend(prevState => ({ ...prevState, ScrapWeight: 0 }))
-            setValue('ScrapWeight', checkForDecimalAndNull(0, getConfigurationKey().NoOfDecimalForInputOutput))
         }
     }
 
@@ -191,13 +182,14 @@ function StandardRub(props) {
         return Area;
     }
 
-    const calculateTonnage = () => {
-        const Area = calculateArea();
-        const Tonnage = (Area * DEFAULTRMPRESSURE) / 1000;
-        if (Tonnage) {
-            return Tonnage;
-        }
-    }
+    const calculateTonnage = (type) => {
+        const rmName = (rmRowDataState?.RMName?.split(" - ")[0]?.trim())?.toUpperCase();
+        const pressureArr = RM_PRESSURE_MAP[rmName] ? RM_PRESSURE_MAP[rmName] : [DEFAULTRMPRESSURE, DEFAULTRMPRESSURE];
+        const pressure = type === "MinTonnage" ? pressureArr[0] : pressureArr[1];
+        const area = calculateArea();
+        const tonnage = (area * pressure) / 1000;
+        return tonnage
+    };
 
 
     const handleRMDropDownChange = (e) => {
@@ -391,12 +383,10 @@ function StandardRub(props) {
             RawMaterialId: rmRowDataState.RawMaterialId,
             IsVolumeAutoCalculate: isVolumeAutoCalculate,
             Area: calculateArea(),
-            Tonnage: calculateTonnage()
+            Tonnage: calculateTonnage("Tonnage"),
+            MinimumTonnage: calculateTonnage("MinTonnage"),
         }
-        console.log(obj, "obj")
-
         const lastRow = tableData[tableData.length - 1]
-        console.log(lastRow, "lastRow")
         const validationFields = [
             ...(isVolumeAutoCalculate ? ["OuterDiameter"] : ["Volume"]),
             "FinishWeight",
@@ -405,7 +395,6 @@ function StandardRub(props) {
             ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.Length === 0) ? ["Length"] : []),
             // ...((getConfigurationKey()?.IsCalculateVolumeForPartInRubber && !isVolumeAutoCalculate) && (!(tableData.length > 0) || (!isVolumeAutoCalculate && lastRow?.ScrapPercentage === 0) ? ['ScrapPercentage'] : []))
         ];
-        console.log(validationFields, "validationFields")
         const isValid = await trigger(validationFields);
         if (!isValid) {
             return false;
@@ -531,9 +520,7 @@ function StandardRub(props) {
         obj.BaseCostingId = item?.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialRubberStandardWeightCalculator = tableData
-        obj.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? tableData?.reduce((max, item) => {
-            return Math.max(max, item.Tonnage);
-        }, 0) : null;
+        obj.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? Math.min(...tableData.map(item => item.MinimumTonnage)) : null;
         obj.usedRmData = usedRmData
 
         if (unUsedRmData.length > 0) {

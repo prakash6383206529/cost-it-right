@@ -317,7 +317,7 @@ function ExtraCost(props) {
         // Check if Applicability already exists in tableData (regardless of description)
         // During edit mode, exclude the current row being edited from duplicate check
         const existingCondition = tableData?.find((item, index) =>
-            item.CostingConditionMasterId === data?.Applicability?.value &&
+            item.CostingConditionMasterId === data?.Applicability?.value && item.Description === data?.CostDescription &&
             (isEditMode ? index !== editIndex : true)
         );
 
@@ -626,7 +626,7 @@ function ExtraCost(props) {
                                         </>
                                         }
                                         <Col md={3} className={'px-2'}>
-                                            <TooltipCustom
+                                            {type?.label!=="Fixed" && <TooltipCustom
                                                 id="NetCost"
                                                 disabledIcon
                                                 tooltipText={
@@ -636,7 +636,7 @@ function ExtraCost(props) {
                                                         • For Hanger Overhead: (Rate ÷ Quantity)
                                                     </div>
                                                 }
-                                            />
+                                            />}
                                             <TextFieldHookForm
                                                 label={`Cost`}
                                                 name={'NetCost'}

@@ -1,1189 +1,1167 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, propTypes, clearFields } from "redux-form";
-import { Row, Col, Label, } from 'reactstrap';
-import { required, postiveNumber, maxLength10, nonZero, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, } from "../../../helper/validation";
-import { renderDatePicker, renderMultiSelectField, renderText, renderTextInputField, searchableSelect, validateForm, } from "../../layout/FormInputs";
-import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
-import { fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import React, { useEffect, useState } from 'react';
+import { Row, Col, Label, Table, FormGroup, Input } from 'reactstrap';
+import { Controller, useWatch, useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { LabelsClass } from '../../../helper/core';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import DayTime from '../../common/DayTimeWrapper'
-import "react-datepicker/dist/react-datepicker.css";
-import LoaderCustom from '../../common/LoaderCustom';
-import Toaster from '../../common/Toaster'
-import { debounce } from 'lodash';
-import AsyncSelect from 'react-select/async';
-import { CBCTypeId, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
-import { onFocus, showDataOnHover } from '../../../helper';
-import { getClientSelectList, } from '../actions/Client';
+import NoContentFound from '../../common/NoContentFound';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import DayTime from '../../common/DayTimeWrapper';
+import { useTranslation } from 'react-i18next';
+// import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull } from "../../../helper";
+import { CBCTypeId, EMPTY_DATA, ICCMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { fetchApplicabilityList, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { autoCompleteDropdown, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material';
+import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, getWipCompositionMethodList, getInventoryDayTypeSelectList, getInterestRateDataList, getICCMethodSelectList, getInterestRateDataCheck } from '../actions/InterestRateMaster';
+import { getClientSelectList } from '../actions/Client';
+import { getPartFamilySelectList } from '../actions/Part';
+import { fetchModelTypeAPI, getPlantSelectListByType } from '../../../actions/Common';
+import { ASSEMBLY } from '../../../config/masterData';
+import WarningMessage from '../../common/WarningMessage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
+import LoaderCustom from '../../common/LoaderCustom';
+import Toaster from '../../common/Toaster';
+import { debounce } from 'lodash';
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
+import { checkEffectiveDate } from '../masterUtil';
+import { ICC_METHODS } from '../../../config/constants';
+import { required, postiveNumber, maxLength10, nonZero, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, checkForNull, maxLength7 } from "../../../helper/validation";
+import { fetchSpecificationDataAPI } from '../../../actions/Common';
+import AddOverheadMasterDetails from '../overhead-profit-master/AddOverheadMasterDetails';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
-import { withTranslation } from 'react-i18next';
-import WarningMessage from '../../common/WarningMessage';
-import TooltipCustom from '../../common/Tooltip';
-import { subDays } from 'date-fns';
-import { labels, LabelsClass } from '../../../helper/core';
-import { checkEffectiveDate } from '../masterUtil';
-import { ASSEMBLY } from '../../../config/masterData';
+import TableRenderer from '../../common/TableRenderer';
 
-const selector = formValueSelector('AddInterestRate');
 
-class AddInterestRate extends Component {
-  static propTypes = { ...propTypes }
-  constructor(props) {
-    super(props);
-    this.state = {
-      vendorName: [],
-      ICCApplicability: [],
-      PaymentTermsApplicability: [],
-      singlePlantSelected: [],
-      isEditFlag: false,
-      isViewMode: this.props?.data?.isViewMode ? true : false,
-      isVendorNameNotSelected: false,
-      InterestRateId: '',
-      effectiveDate: '',
-      Data: [],
-      DropdownNotChanged: true,
-      updatedObj: {},
-      setDisable: false,
-      inputLoader: false,
-      isDataChanged: this.props.data.isEditFlag,
-      minEffectiveDate: '',
-      showErrorOnFocus: false,
-      costingTypeId: ZBCTypeId,
-      client: [],
-      showPopup: false,
-      vendorFilterList: [],
-      RawMaterial: [],
-      RMGrade: [],
-      isRawMaterialSelected: false,
-      isGradeSelected: false,
-      isEitherSectionFilled: false,
-      isWarningVisible: true,
-      IsFinancialDataChanged: true,
-      ICCSectionFilled: {
-        ICCApplicability: false,
-        ICCPercent: false
-      },
-      PaymentSectionFilled: {
-        PaymentTermsApplicability: false,
-        RepaymentPeriod: false,
-        // PaymentTermPercent: false,
-      },
-      isAssemblyCheckboxIcc: false,
-      iccApplicability: [],
-      paymentTermsApplicability: [],
-    }
-  }
-  /**
-  * @method componentWillMount
-  * @description called before render the component
-  */
-  UNSAFE_componentWillMount() {
-    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
-      // this.props.getVendorListByVendorType(true, this.state.vendorName, (res) => {
-      // })
-    }
-  }
-  /**
-   * @method componentDidMount
-   * @description called after render the component
-  */
-  componentDidMount() {
-    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
-    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
-      this.props.getClientSelectList(() => { })
-    }
-    this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.getDetail()
-    this.props.getICCAppliSelectList(() => { })
-    this.props.fetchCostingHeadsAPI('payment terms', false, false, res => {
-      const temp = [];
-      res?.data?.SelectList?.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      this.setState({ paymentTermsApplicability: temp })
-      this.props.fetchCostingHeadsAPI('ICC', false, false, res => {
-        const temp = [];
-        res?.data?.SelectList?.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
+
+
+const AddInterestRate = (props) => {
+    const dispatch = useDispatch();
+    const { t } = useTranslation("MasterLabels");
+
+    const { register, handleSubmit, control, setValue, getValues, reset, trigger, clearErrors, formState: { errors }, } = useForm({
+                mode: 'onChange',
+                reValidateMode: 'onChange',
+                // defaultValues: defaultValues,
         })
-        this.setState({ iccApplicability: temp })
-      });
-    });
-    if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
-      this.props.getRawMaterialNameChild(() => { })
-    }
-    if (this.state.Data.length !== 0) {
-      this.checkFilledSections()
-    }
-  }
-
-  componentWillUnmount() {
-    reactLocalStorage?.setObject('vendorData', [])
-  }
-  /**
-   * @method renderListing
-   * @description Used show listing of unit of measurement
-  */
-  renderListing = (label) => {
-    const { plantSelectList, costingHead, iccApplicabilitySelectList, clientSelectList, rawMaterialNameSelectList, gradeSelectList } = this.props;
-    const temp = [];
-    if (label === 'material') {
-      rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
-    }
-
-    if (label === 'grade') {
-      gradeSelectList && gradeSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
-    }
-    if (label === 'ICC') {
-      const temp = [];
-      let modifiedArray = iccApplicabilitySelectList;
-
-      // Check if the conditions are met to filter out items starting with "Part"
-      if (this.state.isRawMaterialSelected || this.state.isGradeSelected) {
-        modifiedArray = iccApplicabilitySelectList.filter(item => {
-          return !(item.Text.startsWith("Part"));
-        });
-      }
-      let isPartSelected = false;
-
-      // Iterate over the modifiedArray
-      modifiedArray?.map((item) => {
-        // Check conditions to exclude certain items
-        if (item.Value !== '0' && item.Text !== 'Net Cost' && item.Text !== 'Total Cost + Other Cost - Discount') {
-          temp.push({ label: item.Text, value: item.Value });
-        }
-      });
-      //if the selected data starts with part 
-
-      return temp;
-    }
-
-
-    if (label === 'PaymentTerms') {
-      costingHead && costingHead.map(item => {
-        if (item.Value === '0' || item.Text === 'Net Cost') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      });
-      return temp;
-    }
-    if (label === 'plant') {
-      plantSelectList && plantSelectList.map((item) => {
-        if (item.PlantId === '0') return false
-        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
-        return null
-      })
-      return temp
-    }
-    if (label === 'singlePlant') {
-      plantSelectList && plantSelectList.map((item) => {
-        if (item.PlantId === '0') return false
-        temp.push({ label: item.PlantNameCode, value: item.PlantId })
-        return null
-      })
-      return temp
-    }
-    if (label === 'ClientList') {
-      clientSelectList && clientSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-  }
-
-
-  /**
-  * @method onPressVendor
-  * @description Used for Vendor checked
-  */
-  onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = [
-      'Mode',
-      'vendorName',
-      'Plant',
-      'DestinationPlant',
-      'clientName',
-      'ICCPercent',
-      'ICCApplicability',
-      'PaymentTermsApplicability',
-      'EffectiveDate',
-      'RawMaterialGradeId',
-      'RawMaterialId',
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddInterestRate', false, false, fieldName));
-    });
-    this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag
-    });
-    if (costingHeadFlag === CBCTypeId) {
-      this.props.getClientSelectList(() => { })
-    }
-  }
-  /**
-  * @method handleVendorName
-  * @description called
-  */
-  handleVendorName = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false });
-    } else {
-      this.setState({ vendorName: [], })
-    }
-  };
-  /**
-  * @method handleICCApplicability
-  * @description called
-  */
-  handleICCApplicability = (newValue, actionMeta) => {
-    const ICCSectionFilled = { ...this.state.ICCSectionFilled };
-    ICCSectionFilled.ICCApplicability = newValue ? true : false;
-    this.props.change("ICCPercent", '')
-
-    if (newValue && newValue !== '') {
-      this.setState(prevState => ({ ICCApplicability: newValue, ICCSectionFilled }), () => { this.checkFilledSections(); });
-    } else {
-      this.setState({ ICCApplicability: [], ICCSectionFilled })
-    }
-    if (this.state.ICCApplicability.value === newValue.value) {
-      this.setState({ isDataChanged: true, DropdownNotChanged: true, ICCFilled: true, ICCSectionFilled })
-    }
-    else {
-      this.setState({ isDataChanged: false, DropdownNotChanged: false, ICCFilled: false, ICCSectionFilled })
-    }
-  };
-
-
-  // /**
-  // * @method handlePaymentApplicability
-  // * @description called
-  // */
-  handlePaymentApplicability = (newValue, actionMeta) => {
-    const PaymentSectionFilled = { ...this.state.PaymentSectionFilled };
-    PaymentSectionFilled.PaymentTermsApplicability = newValue ? true : false;
-
-    this.props.change("RepaymentPeriod", '')
-    this.props.change("PaymentTermPercent", '')
-    if (newValue && newValue !== '') {
-      this.setState(prevState => ({
-        PaymentTermsApplicability: newValue,
-        PaymentSectionFilled
-      }), () => {
-        this.checkFilledSections();
-      });
-    } else {
-      this.setState({ PaymentTermsApplicability: [], PaymentSectionFilled })
-    }
-    if (this.state.PaymentTermsApplicability.value === newValue.value) {
-      this.setState({ isDataChanged: true, DropdownNotChanged: true, PaymentSectionFilled })
-    }
-    else {
-      this.setState({ isDataChanged: false, DropdownNotChanged: false, PaymentSectionFilled })
-    }
-  };
-
-  /**
-  * @method handleChangeAnnualIccPercentage
-  * @description called
-  */
-  handleChangeAnnualIccPercentage = (newValue) => {
-    const ICCSectionFilled = { ...this.state.ICCSectionFilled };
-    ICCSectionFilled.ICCPercent = newValue ? true : false;
-
-    if (this.state.isEditFlag) {
-      if (String(newValue) === String(this.state.Data.ICCPercent) &&
-        String(this.state.ICCApplicability.label) === String(this.state.Data.ICCApplicability)) {
-        this.setState(prevState => ({ isDataChanged: true, ICCSectionFilled }), () => { this.checkFilledSections(); });
-      } else {
-        this.setState(prevState => ({ isDataChanged: false, ICCSectionFilled }), () => { this.checkFilledSections(); });
-      }
-    } else {
-      this.setState(prevState => ({ ICCSectionFilled }), () => { this.checkFilledSections(); });
-    }
-  };
-
-  /**
-  * @method handleChangeRepaymentPeriod
-  * @description called
-  */
-  handleChangeRepaymentPeriod = (newValue) => {
-    const PaymentSectionFilled = { ...this.state.PaymentSectionFilled };
-    PaymentSectionFilled.RepaymentPeriod = newValue ? true : false;
-    if (this.state.isEditFlag) {
-      if (String(newValue) === String(this.state.Data.RepaymentPeriod) && String(this.state.PaymentTermsApplicability.label) === String(this.state.Data.PaymentTermApplicability)) {
-        this.setState(prevState => ({ isDataChanged: true, PaymentSectionFilled }), () => { this.checkFilledSections(); });
-      } else {
-        this.setState(prevState => ({ isDataChanged: false, PaymentSectionFilled }), () => { this.checkFilledSections(); });
-      }
-    } else {
-      this.setState(prevState => ({ PaymentSectionFilled }), () => { this.checkFilledSections(); });
-    }
-  };
-
-  /**
-  * @method handleChangePaymentTermPercentage
-  * @description called
-  */
-  handleChangePaymentTermPercentage = (newValue) => {
-    if (this.state.isEditFlag) {
-      if (String(newValue) === String(this.state.Data.PaymentTermPercent) && String(this.state.PaymentTermsApplicability.label) === String(this.state.Data.PaymentTermApplicability)) {
-        this.setState(prevState => ({ isDataChanged: true, }));
-      } else {
-        this.setState(prevState => ({ isDataChanged: false }));
-      }
-    }
-  };
-  /**
-  * @method checkFilledSections
-  * @description check each filed is filled or not
-  */
-  checkFilledSections = () => {
-    const { ICCSectionFilled, PaymentSectionFilled, ICCApplicability, PaymentTermsApplicability } = this.state;
-    let isICCFilled, isPaymentFilled
-    if ((ICCApplicability && ICCApplicability.value !== "Fixed" && ICCApplicability.value !== undefined) ||
-      (PaymentTermsApplicability && PaymentTermsApplicability.value !== "Fixed" && PaymentTermsApplicability.value !== undefined)) {
-      isICCFilled = Object.values(ICCSectionFilled).some(value => value === false);
-      isPaymentFilled = Object.values(PaymentSectionFilled).some(value => value === false);
-    } else {
-      isICCFilled = ICCSectionFilled.ICCApplicability === false; // Check only ICCApplicability key
-      isPaymentFilled = PaymentSectionFilled.PaymentTermsApplicability === false; // Check only PaymentTermsApplicability key
-    }
-    const isWarningVisible = isICCFilled && isPaymentFilled;
-    this.setState({ isWarningVisible: isWarningVisible });
-  };
-
-
-
-  /**
-  * @method handleChange
-  * @description Handle Effective Date
-  */
-  handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
-    this.setState({ DropdownNotChanged: false })
-  };
-  /** 
-   * @method handlePlant
-   * @description Used handle plants
-   */
-  handlePlant = (e) => {
-    this.setState({ selectedPlants: e })
-    this.setState({ DropdownNotChanged: false })
-  }
-  handleSinglePlant = (newValue) => {
-    this.setState({ singlePlantSelected: newValue })
-  }
-  /**
-  * @method handleClient
-  * @description called
-  */
-  handleClient = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
-    } else {
-      this.setState({ client: [] })
-    }
-  };
-  /**
-  * @method handleRMChange
-  * @description  used to handle row material selection
-  */
-  handleRMChange = (newValue, actionMeta) => {
-    this.setState({ isRawMaterialSelected: true });
-
-    if (newValue && newValue !== '') {
-      this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
-        const { RawMaterial } = this.state
-        this.props.getRMGradeSelectListByRawMaterial(
-          RawMaterial.value,
-          false,
-          (res) => { },
-        )
-      })
-    } else {
-      this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [] })
-      this.props.getRMGradeSelectListByRawMaterial('', false, (res) => { })
-      this.props.fetchSpecificationDataAPI(0, () => { })
-    }
-  }
-
-  /**
-   * @method handleGradeChange
-   * @description  used to handle row material grade selection
-   */
-  handleGradeChange = (newValue, actionMeta) => {
-    this.setState({ isGradeSelected: true });
-
-    if (newValue && newValue !== '') {
-      this.setState({ RMGrade: newValue })
-    } else {
-      this.setState({
+    
+    // State management
+    const [state, setState] = useState({
+        vendorName: [],
+        ICCApplicability: [],
+        PaymentTermsApplicability: [],
+        singlePlantSelected: [],
+        selectedPlants: [],
+        isEditFlag: false,
+        isViewMode: props?.data?.isViewMode ? true : false,
+        isVendorNameNotSelected: false,
+        InterestRateId: '',
+        EffectiveDate: '',
+        Data: [],
+        selectedPartFamily: [],
+        selectedICCMethod: [],
+        InventoryDayType: [],
+        ModelType: [],
+        DropdownNotChanged: true,
+        updatedObj: {},
+        setDisable: false,
+        inputLoader: false,
+        isDataChanged: props.data.isEditFlag,
+        minEffectiveDate: '',
+        showErrorOnFocus: false,
+        costingTypeId: ZBCTypeId,
+        // client: [],
+        clientName: [],
+        showPopup: false,
+        vendorFilterList: [],
+        RawMaterial: [],
         RMGrade: [],
-      })
-    }
-  }
-  /**
-  * @method getDetail
-  * @description used to get user detail
-  */
-  getDetail = () => {
-    const { data } = this.props;
-    if (data && data.isEditFlag) {
-      this.setState({
-        isLoader: true,
-        isEditFlag: true,
-        InterestRateId: data.ID,
-      })
-      this.props.getInterestRateData(data.ID, (res) => {
-        if (res && res.data && res.data.Data) {
-          let Data = res.data.Data;
-          this.setState({
-            Data: Data, ICCSectionFilled: {
-              ICCApplicability: Data?.ICCApplicability != null,
-              ICCPercent: Data?.ICCPercent != null,
-            },
-            PaymentSectionFilled: {
-              PaymentTermsApplicability: Data.PaymentTermApplicability != null,
-              RepaymentPeriod: Data?.RepaymentPeriod != null,
-              // PaymentTermPercent: Data?.PaymentTermPercent != null,
-            }
-          });
-
-
-          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
-          setTimeout(() => {
-            const { costingHead, iccApplicabilitySelectList, } = this.props;
-            const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
-            const paymentObj = costingHead && costingHead.find(item => item.Text === Data.PaymentTermApplicability)
-           this.setState({
-              isEditFlag: true,
-              costingTypeId: Data.CostingTypeId,
-              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
-              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
-              selectedPlants: Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0]?.PlantId }] : [],
-              singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0].PlantId ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : {},
-              ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
-              PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
-              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
-              RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
-              isAssemblyCheckboxIcc: Data?.TechnologyId === ASSEMBLY ? true : false
-            }, () => this.setState({ isLoader: false }))
-          }, 500)
-
-        }
-      })
-    } else {
-      this.setState({
-        isLoader: false,
-      })
-      this.props.getInterestRateData('', () => { })
-    }
-  }
-
-
-  /**
-  * @method cancel
-  * @description used to Reset form
-  */
-  cancel = (type) => {
-    const { reset } = this.props;
-    reset();
-    this.setState({
-      vendorName: [],
-      isEditFlag: false,
-    })
-    this.props.getInterestRateData('', () => { })
-    this.props.hideForm(type)
-  }
-  cancelHandler = () => {
-    if (this.state.isViewMode) {
-      this.cancel('cancel')
-    } else {
-      this.setState({ showPopup: true })
-    }
-  }
-  onPopupConfirm = () => {
-    this.cancel('cancel')
-    this.setState({ showPopup: false })
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
-  }
-  handleKeyDown = function (e) {
-    if (e.key === 'Enter' && e.shiftKey === false) {
-      e.preventDefault();
-    }
-  };
-
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-
-  onSubmit = debounce((values) => {
-    const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownNotChanged, RMGrade, RawMaterial } = this.state;
-    const { data } = this.props
-    const userDetail = userDetails()
-    const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'))
-    let plantArray = []
-    if (costingTypeId === VBCTypeId) {
-      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
-    } else {
-      selectedPlants && selectedPlants.map((item) => {
-        plantArray.push({ PlantName: item.Text, PlantId: item.Value })
-        return plantArray
-      })
-    }
-    let cbcPlantArray = []
-    if (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) {
-      cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
-    }
-    else {
-      userDetailsInterest?.Plants.map((item) => {
-        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
-        return cbcPlantArray
-      })
-    }
-
-
-    if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
-
-      if (costingTypeId === VBCTypeId) {
-        this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
-        return false
-      }
-    }
-    this.setState({ isVendorNameNotSelected: false })
-
-    /** Update existing detail of supplier master **/
-    let formData = {
-      "VendorInterestRateId": this.state.isEditFlag ? InterestRateId : null,
-      "ModifiedBy": this.state.isEditFlag ? loggedInUserId() : null,
-      "VendorName": this.state.isEditFlag ? costingTypeId === VBCTypeId ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName : null,
-      "ICCApplicability": ICCApplicability.label,
-      "PaymentTermApplicability": PaymentTermsApplicability.label,
-      "CostingTypeId": costingTypeId,
-      "VendorIdRef": costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-      "ICCPercent": values.ICCPercent,
-      "PaymentTermPercent": values.PaymentTermPercent,
-      "RepaymentPeriod": values.RepaymentPeriod,
-      "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-      "IsActive": true,
-      "CreatedDate": '',
-      "CreatedBy": loggedInUserId(),
-      "Plants": costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-      "CustomerId": costingTypeId === CBCTypeId ? client.value : '',
-      "RawMaterialChildId": RawMaterial?.value,
-      "RawMaterialName": RawMaterial?.label,
-      "RawMaterialGradeId": RMGrade?.value,
-      "RawMaterialGrade": RMGrade?.label,
-    }
-    if (this.state.isEditFlag) {
-
-      if (Data.ICCApplicability === ICCApplicability.label && Data.ICCPercent === values.ICCPercent &&
-        Data.PaymentTermApplicability === PaymentTermsApplicability.label &&
-        Data.PaymentTermPercent === values.PaymentTermPercent &&
-        Data.RepaymentPeriod === values.RepaymentPeriod && DropdownNotChanged) {
-
-        Toaster.warning('Please change the data to save Interest Rate Details');
-        return false;
-      }
-      // this.setState({ setDisable: true })
-      let financialDataChanged = (Number(Data?.ICCPercent) !== Number(values?.ICCPercent)) || (Number(Data?.PaymentTermPercent) !== Number(values?.PaymentTermPercent)) || (Number(Data?.RepaymentPeriod) !== Number(values?.RepaymentPeriod)) ||
-      ((Data?.ICCApplicability) !== (ICCApplicability.label)) || ((Data?.PaymentTermApplicability) !== (PaymentTermsApplicability.label))
-        if (financialDataChanged && checkEffectiveDate(effectiveDate, Data?.EffectiveDate) && this.props?.IsAssociatedData) {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the Effective date.')
-          return false
-        }
-        formData.IsFinancialDataChanged = financialDataChanged ? true : false
-
-      if (this.state.isEditFlag) {
-        this.props.updateInterestRate(formData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
-            this.cancel('submit')
-          }
-        });
-      }
-
-
-    } else {/** Add new detail for creating operation master **/
-
-      this.setState({ setDisable: true })
-      this.props.createInterestRate(formData, (res) => {
-        this.setState({ setDisable: false })
-        if (res?.data?.Result) {
-          // toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
-          Toaster.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS)
-          this.cancel('submit');
-
-        }
-      });
-    }
-
-  }, 500)
-  /**
-  * @method onPressAssemblyCheckbox
-  * @description Used for Surface Treatment
-  */
-  onPressAssemblyCheckboxIcc = () => {
-    let isRequestForMultiTechnology = !this.state.isAssemblyCheckboxIcc ? true : false
-    this.props.fetchCostingHeadsAPI('payment terms', false, isRequestForMultiTechnology, res => {
-      this.props.fetchCostingHeadsAPI('ICC', false, isRequestForMultiTechnology, res => { });
-    });
-    this.setState({
-      isAssemblyCheckboxIcc: !this.state.isAssemblyCheckboxIcc,
-      ICCApplicability: [],
-      isHideRM: false
+        isRawMaterialSelected: false,
+        isGradeSelected: false,
+        isEitherSectionFilled: false,
+        // isWarningVisible: true,
+        isWarningVisible: false,
+        IsFinancialDataChanged: true,
+        isAssemblyCheckboxIcc: false,
+        isAssemblyCheckbox: false,
+        isApplyInventoryDays: false,
+        iccApplicability: [],
+        inventoryDayType: [],
+        ApplicabilityBasedInventoryDayType: "",
+        paymentTermsApplicability: [],
+        Applicability: [],
+        applicabilityPercent: "",
+        editItemId: "",
+        ApplicabilityDetails: [],
+        selectedApplicabilities: [],
+        selectedInventoryDayType: [],
+        selectedWIPMethods: [],
+        WIPMethod: [],
+        ICCMethods: [],
+        isShowApplicabilitySection: true,
+        CreditBasedAnnualICCPercent: 0
     });
 
-    this.props.change('ICCApplicability', '');
-    this.props.change('PaymentTermApplicability', '');
-  };
-
-  /**
-  * @method render
-  * @description Renders the component
-  */
-  render() {
-    const { isWarningVisible } = this.state;
-    let pos_drop_down = "auto"
-    if (window.screen.width > 1366) {
-      pos_drop_down = "auto";
-    }
-    else {
-      pos_drop_down = "top";
-    }
-    const { handleSubmit, t } = this.props;
-    const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged, IsFinancialDataChanged} = this.state;
+    // Selectors
+    const clientSelectList = useSelector((state) => state.client.clientSelectList);
+    const plantSelectList = useSelector((state) => state.comman.plantSelectList);
+    const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList);
+    const modelTypes = useSelector((state) => state.comman.modelTypes);
+    const costingHead = useSelector((state) => state.comman.costingHead);
+    const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
+    const { iccApplicabilitySelectList, interestRateData, iccMethodSelectList, inventoryDayTypeSelectList, wipCompositionMethodSelectList } = useSelector((state) => state.interestRate);
+    const { applicabilityList } = useSelector((state) => state.comman);
+    const vendorSelectList = useSelector((state) => state.comman.vendorSelectList);
+    const conditionTypeId = getCostingConditionTypes(ICCMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
-    const filterList = async (inputValue) => {
-      const { vendorFilterList } = this.state
-      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
-        inputValue = inputValue.trim();
-      }
-      const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
-        this.setState({ inputLoader: true })
-        let res
-        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
-        this.setState({ inputLoader: false })
-        this.setState({ vendorFilterList: resultInput })
-        let vendorDataAPI = res?.data?.SelectList
-        if (inputValue) {
-          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+    const columns = [
+      { columnHead: "WIP Head", key: "InventoryType" },
+      {
+        columnHead: "Inventory Days",
+        key: "NumberOfDays",
+        type: "textField",
+        fieldKey: "inventoryDay",
+        valueKey: "NumberOfDays",
+        mandatory: true,
+        validate: {number, checkWhiteSpaces, maxLength7},
+        handleChangeFn: handleWipInventoryDayChange
+      },
+      {
+        columnHead: "Supplier Credit Days",
+        key: "CreditDays",
+        type: "textField",
+        fieldKey: "SupplierCreditDays",
+        valueKey: "CreditDays",
+        mandatory: true,
+        validate: {number, checkWhiteSpaces, maxLength7},
+        handleChangeFn: handleSupplierDayChange
+      },
+      { columnHead: "Interest Days", key: "InterestDays" },
+      { columnHead: "Action", key: "action" }
+  ];
+
+
+  const Inventory_Day_Columns = [
+    {
+      columnHead: "Inventory Day Types",
+      key: "InventoryType"
+    },
+    {
+      columnHead: "No. Of Days",
+      key: "NumberOfDays",
+      type: "textField",
+      fieldKey: "InventoryDays",
+      valueKey: "NumberOfDays",
+      mandatory: true,
+      validate: { number, checkWhiteSpaces, maxLength7 },
+      handleChangeFn: handleInventoryDayChange
+    },
+    {
+      columnHead: "Action",
+      key: "action"
+    }
+  ];
+
+    // Effects
+    useEffect(() => {
+        if (!(props.data.isEditFlag || state.isViewMode)) {
+            dispatch(getClientSelectList(() => {}));
+            dispatch(getPartFamilySelectList(() => {}));
+            dispatch(fetchModelTypeAPI('--Model Types--', (res) => {}));
+        }
+        dispatch(getWipCompositionMethodList(() => {}));
+        dispatch(getInventoryDayTypeSelectList(() => {}));
+        dispatch(getICCMethodSelectList(() => {}));
+        // const isRequestForMultiTechnology = !state.isAssemblyCheckboxIcc ? true : false;
+        const isRequestForMultiTechnology = state.isAssemblyCheckbox;
+        dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, () => {}));
+        dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => {}));
+        getDetail();
+        dispatch(getICCAppliSelectList(() => {}));
+        if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
+            dispatch(getRawMaterialNameChild(() => {}));
+        }
+    }, []);
+
+    function getPlants() {
+        const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'));
+
+        let plantArray = [];
+        if (state?.costingTypeId === VBCTypeId) {
+            plantArray.push({ PlantName: state?.singlePlantSelected?.label, PlantId: state?.singlePlantSelected?.value });
         } else {
-          return vendorDataAPI
+            state?.selectedPlants && state?.selectedPlants?.map((item) => {
+                plantArray.push({ PlantName: item.label, PlantId: item.value });
+                return plantArray;
+            });
         }
-      }
-      else {
-        if (inputValue?.length < searchCount) return false
-        else {
-          let VendorData = reactLocalStorage?.getObject('Data')
-          if (inputValue) {
-            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
-          } else {
-            return VendorData
-          }
+
+        let cbcPlantArray = [];
+        if (state?.costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) {
+            cbcPlantArray.push({ PlantName: state?.singlePlantSelected.label, PlantId: state?.singlePlantSelected?.value });
+        } else {
+            userDetailsInterest?.Plants.map((item) => {
+                cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode });
+                return cbcPlantArray;
+            });
         }
-      }
+        return {plantArray, cbcPlantArray}
+    }
+
+
+    useEffect(() => {
+        if (!(props?.data?.isEditFlag || state.isViewMode)) {
+            const hasRequiredFields = (
+            (state.costingTypeId === ZBCTypeId) ||
+            (state.costingTypeId === CBCTypeId && state?.client) ||
+            (state.costingTypeId === VBCTypeId && state?.vendorName)
+            );
+            if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
+            const { plantArray, cbcPlantArray } = getPlants();
+            let data = {
+                vendorInterestRateId: state?.InterestRateId,
+                costingHeadId: state?.costingTypeId,
+                // plantId: state?.selectedPlants[0]?.value ?? null,
+                plantId: state?.costingTypeId === CBCTypeId ? cbcPlantArray[0]?.PlantId : plantArray[0]?.PlantId,
+                vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
+                customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
+                isPaymentTermsRecord: false,
+                partFamilyId: state?.selectedPartFamily?.value,
+                modelTypeId: state?.ModelType?.value,
+                iccMethodId: state.selectedICCMethod?.value,
+                effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+                technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null
+            }
+            dispatch(getInterestRateDataCheck(data, (res) => {
+                if (res?.status === 200) {
+                let Data = res?.data?.Data;
+                if(Object.keys(Data).length > 0){
+                    setValue("Remark", Data.Remark)
+                    setValue("costingTypeId", Data.CostingTypeId);
+                    setValue("CreditBasedAnnualICCPercent", Data?.CreditBasedAnnualICCPercent);
+                    setValue("ApplicabilityBasedInventoryDayType", Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : []);
+                    setValue("ICCMethod", Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethod } : []);
+                    setState(prev => ({ ...prev, 
+                    IsFinancialDataChanged: false,
+                    isEditFlag: true,
+                    remarks: Data.Remark,
+                    files: Data.Attachements,
+                    RawMaterial: Data.RawMaterialName !== undefined ? { label: Data?.RawMaterialName, value: Data?.RawMaterialChildId } : [],
+                    RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data?.RawMaterialGrade, value: Data?.RawMaterialGradeId } : [],
+                    ApplicabilityDetails: Data?.ICCApplicabilityDetails !== undefined ? Data?.ICCApplicabilityDetails : [],
+                    selectedInventoryDayType: Data?.InterestRateInventoryTypeDetails ? Data?.InterestRateInventoryTypeDetails : [],
+                    selectedWIPMethods: Data?.InterestRateWIPCompositionMethodDetails ? Data?.InterestRateWIPCompositionMethodDetails : [],
+                    ApplicabilityBasedInventoryDayType: Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : [],
+                    CreditBasedAnnualICCPercent: Data?.CreditBasedAnnualICCPercent,
+                    selectedICCMethod: Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethodId } : [],
+                    isApplyInventoryDays: Data?.IsApplyInventoryDay,
+                    isShowApplicabilitySection: Data?.ICCMethodId == ICC_METHODS.CreditBased ? false : true,
+                    minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
+                    InterestRateId: Data?.VendorInterestRateId,
+                    }));
+                }
+                } else {
+                setState(prev => ({
+                    ...prev,
+                    isEditFlag: false,
+                    ApplicabilityDetails: [],
+                    files: [],
+                    IsFinancialDataChanged: true,
+                    minEffectiveDate: '',
+                    InterestRateId: "",
+                }));
+                }
+            }));
+            }
+        }
+    }, [state?.ModelType, state?.selectedPlants, state?.vendorName, state?.client, state?.EffectiveDate, state.isAssemblyCheckbox]);
+
+
+    // Helper functions
+    const renderListing = (label) => {
+        const temp = [];
+        if (label === 'material') {
+            rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'vendor') {
+            vendorSelectList && vendorSelectList.map((item) => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'ICCApplicability') {
+            if (!applicabilityList) return [];
+            let excludeFixed = false;
+            let includeOnlyFixed = false;
+            if ((state?.ApplicabilityDetails && state?.ApplicabilityDetails.length > 0) || (state?.selectedApplicabilities && state?.selectedApplicabilities.length > 0)) {
+                const hasFixedInApplicabilityDetails = state?.ApplicabilityDetails.some(
+                    ap => ap.Applicability?.toLowerCase() === "fixed"
+                );
+                const hasFixedInSelectedApplicabilities = state?.selectedApplicabilities?.some(
+                    ap => ap.Applicability?.toLowerCase() === "fixed" || ap.label?.toLowerCase() === "fixed"
+                );
+                const fixedExists = hasFixedInApplicabilityDetails || hasFixedInSelectedApplicabilities;
+                includeOnlyFixed = fixedExists;
+                excludeFixed = !fixedExists;
+            }
+            const filtered = applicabilityList.filter(item => {
+                const isFixed = item.Text?.toLowerCase() === "fixed";
+                const isAlreadyUsed = state?.ApplicabilityDetails?.some(
+                    ap => ap.ApplicabilityId == item.Value
+                );
+                if (Number(item.Value) === 0) return false;
+                if (includeOnlyFixed && !isFixed) return false;
+                if (excludeFixed && isFixed) return false;
+                return !isAlreadyUsed;
+            });
+            return filtered.map(item => ({
+                label: item.Text,
+                value: item.Value
+            }));
+        }
+        if (label === 'PartFamily') {
+            partFamilySelectList && partFamilySelectList.map((item) => {
+                if (item.Value === '--0--') return false;
+                temp.push({ label: item.Text, value: item.Value });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'ModelType') {
+            modelTypes && modelTypes.map(item => {
+                if (item.Value === '0') return false;
+                // temp.push({ label: item.Text, value: item.Value });
+                temp.push({ label: item.Text, value: item.Text });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'RMGrade' || label === 'grade') {
+            gradeSelectList && gradeSelectList.map((item) => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'ICCMethod') {
+            iccMethodSelectList && iccMethodSelectList.map((item) => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'InventoryDayType') {
+            const existingTypes = state?.selectedInventoryDayType?.map(item => item.InventoryType);
+            inventoryDayTypeSelectList && inventoryDayTypeSelectList.map((item) => {
+                if ((item.Value === '0') || (item.Value === '5')) return false;
+                if (!existingTypes.includes(item.Text)) {
+                    temp.push({ label: item.Text, value: item.Value });
+                }
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'ApplicabilityBasedInventoryDayType') {
+            inventoryDayTypeSelectList && inventoryDayTypeSelectList.map((item) => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Text });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'WIPMethod') {
+            const existingWipMethods = state?.selectedWIPMethods?.map(item => item.InventoryType);
+            wipCompositionMethodSelectList && wipCompositionMethodSelectList.map((item) => {
+                if (item.Value === '0') return false;
+                if (!existingWipMethods.includes(item.Text)) {
+                    temp.push({ label: item.Text, value: item.Value });
+                }
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'ICC') {
+            let modifiedArray = iccApplicabilitySelectList;
+            if (state.isRawMaterialSelected || state.isGradeSelected) {
+                modifiedArray = iccApplicabilitySelectList.filter(item => {
+                    return !(item.Text.startsWith("Part"));
+                });
+            }
+            modifiedArray?.map((item) => {
+                if (item.Value !== '0' && item.Text !== 'Net Cost' && item.Text !== 'Total Cost + Other Cost - Discount') {
+                    temp.push({ label: item.Text, value: item.Value });
+                }
+            });
+            return temp;
+        }
+        if (label === 'PaymentTerms') {
+            costingHead && costingHead.map(item => {
+                if (item.Value === '0' || item.Text === 'Net Cost') return false;
+                temp.push({ label: item.Text, value: item.Value });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map((item) => {
+                if (item.PlantId === '0') return false;
+                temp.push({ Text: item.PlantNameCode, Value: item.PlantId });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'singlePlant') {
+            plantSelectList && plantSelectList.map((item) => {
+                if (item.PlantId === '0') return false;
+                temp.push({ label: item.PlantNameCode, value: item.PlantId });
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'ClientList') {
+            clientSelectList && clientSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value });
+                return null;
+            });
+            return temp;
+        }
+    };
+
+    const handleRMChange = (newValue) => {
+        setState(prev => ({ ...prev, isRawMaterialSelected: true }));
+        if (newValue && newValue !== '') {
+            setState(prev => ({ ...prev, RawMaterial: newValue, RMGrade: [] }), () => {
+                dispatch(getRMGradeSelectListByRawMaterial(
+                    newValue.value,
+                    false,
+                    (res) => { },
+                ));
+            });
+        } else {
+            setState(prev => ({ ...prev, RMGrade: [], RMSpec: [], RawMaterial: [] }));
+            dispatch(getRMGradeSelectListByRawMaterial('', false, (res) => { }));
+            dispatch(fetchSpecificationDataAPI(0, () => { }));
+        }
+    };
+
+    const getDetail = () => {
+        const { data } = props;
+        if (data && data.isEditFlag) {
+            setState(prev => ({
+                ...prev,
+                isLoader: true,
+                isEditFlag: true,
+                InterestRateId: data.Id,
+            }));
+
+            dispatch(getInterestRateData(data.Id, (res) => {
+                if (res && res.data && res.data.Data) {
+                    let Data = res.data.Data;
+                    setState(prev => ({
+                        ...prev,
+                        Data: Data
+                    }));
+                    // setValue("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '');
+                    setValue("EffectiveDate", DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '')
+                    setState(prev => ({ ...prev, minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' }));
+                    setValue("ModelType", Data.ICCModelType !== undefined ? { label: Data?.ICCModelType, value: Data?.ICCModelTypeId } : [])
+                    setValue("costingTypeId", Data?.CostingTypeId)
+                    setValue("clientName", Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [])
+                    setValue("vendorName", Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [])
+                    setValue("PartFamily", Data.PartFamily !== undefined ? { label: Data.PartFamily, value: Data.PartFamilyId } : []);
+                    setValue("Plant", Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId }] : [])
+                    setValue("DestinationPlant", Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {})
+                    setValue("ICCMethod", Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethod } : [])
+                    setValue("CreditBasedAnnualICCPercent", Data?.CreditBasedAnnualICCPercent)
+                    setValue("ApplicabilityBasedInventoryDayType", Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : [])
+
+                    setTimeout(() => {
+                        setState(prev => ({
+                            ...prev,
+                            isEditFlag: true,
+                            costingTypeId: Data.CostingTypeId,
+                            client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
+                            vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
+                            selectedPlants: Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId }] : [],
+                            singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {},
+                            EffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+                            RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
+                            RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
+                            isAssemblyCheckboxIcc: Data?.TechnologyId === ASSEMBLY ? true : false,
+                            isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false ,
+                            selectedPartFamily: Data.PartFamily !== undefined ? { label: Data.PartFamily, value: Data.PartFamilyId } : [],
+                            ApplicabilityDetails: Data?.ICCApplicabilityDetails !== undefined ? Data.ICCApplicabilityDetails : [],
+                            selectedInventoryDayType: Data?.InterestRateInventoryTypeDetails ? Data?.InterestRateInventoryTypeDetails : [],
+                            selectedWIPMethods: Data?.InterestRateWIPCompositionMethodDetails ? Data?.InterestRateWIPCompositionMethodDetails : [],
+                            ModelType: Data.ICCModelType !== undefined ? { label: Data?.ICCModelType, value: Data?.ICCModelTypeId } : [],
+                            ApplicabilityBasedInventoryDayType: Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : [],
+                            CreditBasedAnnualICCPercent: Data?.CreditBasedAnnualICCPercent,
+                            selectedICCMethod: Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethodId } : [],
+                            isApplyInventoryDays: Data?.IsApplyInventoryDay,
+                            isShowApplicabilitySection: Data?.ICCMethodId == ICC_METHODS.CreditBased ? false : true,
+                            isLoader: false
+                        }));
+                    }, 500);
+                }
+            }));
+        } else {
+            setState(prev => ({ ...prev, isLoader: false }));
+            dispatch(getInterestRateData('', () => { }));
+        }
+    };
+
+    const cancel = (type) => {
+        reset();
+        setState(prev => ({
+            ...prev,
+            vendorName: [],
+            isEditFlag: false,
+        }));
+        dispatch(getInterestRateData('', () => { }));
+        props.hideForm(type);
+    };
+
+    const cancelHandler = () => {
+        if (state.isViewMode) {
+            cancel('cancel');
+        } else {
+            setState(prev => ({ ...prev, showPopup: true }));
+        }
+    };
+
+    const onPopupConfirm = () => {
+        cancel('cancel');
+        setState(prev => ({ ...prev, showPopup: false }));
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
+
+    // Form submission
+    const onSubmit = debounce((values) => {
+        const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, EffectiveDate, DropdownNotChanged, RMGrade, RawMaterial, selectedPartFamily } = state;
+        const { data } = props;
+        const userDetail = userDetails();
+        const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'));
+
+        let plantArray = [];
+        if (costingTypeId === VBCTypeId) {
+            plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value });
+        } else {
+            selectedPlants && selectedPlants.map((item) => {
+                plantArray.push({ PlantName: item.label, PlantId: item.value });
+                return plantArray;
+            });
+        }
+
+        let cbcPlantArray = [];
+        if (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) {
+            cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value });
+        } else {
+            userDetailsInterest?.Plants.map((item) => {
+                cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode });
+                return cbcPlantArray;
+            });
+        }
+
+        if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
+            if (costingTypeId === VBCTypeId) {
+                setState(prev => ({ ...prev, isVendorNameNotSelected: true, setDisable: false }));
+                return false;
+            }
+        }
+        setState(prev => ({ ...prev, isVendorNameNotSelected: false }));
+
+        let formData = {
+            "VendorInterestRateId": state.isEditFlag ? InterestRateId : null,
+            "ModifiedBy": state.isEditFlag ? loggedInUserId() : null,
+            "VendorName": state.isEditFlag ? costingTypeId === VBCTypeId ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName : null,
+            "ICCApplicability": ICCApplicability.label,
+            "PaymentTermApplicability": PaymentTermsApplicability.label,
+            "CostingTypeId": costingTypeId,
+            "VendorIdRef": costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+            "ICCPercent": values.ICCPercent,
+            "PaymentTermPercent": values.PaymentTermPercent,
+            "RepaymentPeriod": values.RepaymentPeriod,
+            "EffectiveDate": DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+            "IsActive": true,
+            "CreatedDate": '',
+            "CreatedBy": loggedInUserId(),
+            "Plants": costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+            "CustomerId": costingTypeId === CBCTypeId ? client.value : '',
+            "RawMaterialChildId": RawMaterial?.value,
+            "RawMaterialName": RawMaterial?.label,
+            "RawMaterialGradeId": RMGrade?.value,
+            "RawMaterialGrade": RMGrade?.label,
+            "PartFamilyId": selectedPartFamily?.value,
+            "PartFamily": selectedPartFamily?.label,
+            "ICCApplicabilityDetails": state?.ApplicabilityDetails,
+            "InterestRateInventoryTypeDetails": state.selectedInventoryDayType,
+            "InterestRateWIPCompositionMethodDetails": state.selectedWIPMethods,
+            "PaymentTermsApplicabilityDetails": null,
+            "IsPaymentTermsRecord": false,
+            "ICCModelType": state?.ModelType?.label,
+            "ICCModelTypeId": state?.ModelType?.value,
+            "ICCMethod": state?.selectedICCMethod?.label,
+            "ICCMethodId": state?.selectedICCMethod?.value,
+            "ApplicabilityBasedInventoryDayType": state?.ApplicabilityBasedInventoryDayType?.value,
+            "CreditBasedAnnualICCPercent": state?.CreditBasedAnnualICCPercent,
+            "IsApplyInventoryDay": state?.isApplyInventoryDays,
+            "TechnologyId": state.isAssemblyCheckbox ? ASSEMBLY : null,
+        };
+
+        if (state.isEditFlag) {
+            if(JSON.stringify(state?.ApplicabilityDetails ?? []) === JSON.stringify(Data?.ICCApplicabilityDetails ?? []) &&
+                (JSON.stringify(state?.selectedInventoryDayType ?? []) === JSON.stringify(Data?.InterestRateInventoryTypeDetails ?? [])) &&
+                JSON.stringify(state?.selectedWIPMethods ?? []) === JSON.stringify(Data?.InterestRateWIPCompositionMethodDetails ?? []) &&
+                checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && DropdownNotChanged
+            ){
+                Toaster.warning('Please change the data to save Interest Rate Details');
+                return false;
+            }
+            let financialDataChanged =  JSON.stringify(state?.ApplicabilityDetails ?? []) !== JSON.stringify(Data?.ICCApplicabilityDetails ?? []) ||
+                (JSON.stringify(state?.selectedInventoryDayType ?? []) !== JSON.stringify(Data?.InterestRateInventoryTypeDetails ?? [])) ||
+                JSON.stringify(state?.selectedWIPMethods ?? []) !== JSON.stringify(Data?.InterestRateWIPCompositionMethodDetails ?? [])
+
+            if (financialDataChanged && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && props?.IsInterestRateAssociated) {
+                setState(prev => ({ ...prev, setDisable: false }));
+                Toaster.warning('Please update the Effective date.');
+                return false;
+            }
+            formData.IsFinancialDataChanged = financialDataChanged ? true : false;
+            dispatch(updateInterestRate(formData, (res) => {
+                setState(prev => ({ ...prev, setDisable: false }));
+                if (res?.data?.Result) {
+                    Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+                    cancel('submit');
+                }
+            }));
+        } else {
+            setState(prev => ({ ...prev, setDisable: true }));
+            dispatch(createInterestRate(formData, (res) => {
+                setState(prev => ({ ...prev, setDisable: false }));
+                if (res?.data?.Result) {
+                    Toaster.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
+                    cancel('submit');
+                }
+            }));
+        }
+    }, 500);
+
+
+    const ICCMethodChange = (newValue) => {
+        let updatedState = {
+            selectedICCMethod: newValue,
+            // InventoryDayType: [],
+            ApplicabilityBasedInventoryDayType: [],            
+            selectedInventoryDayType: [],
+            isShowApplicabilitySection: false,
+            isApplyInventoryDays: false
+        };
+        if (newValue?.value === ICC_METHODS.CreditBased) {
+            updatedState.isApplyInventoryDays = true;
+        } else if (newValue?.value === ICC_METHODS.ApplicabilityBased) {
+            updatedState.isShowApplicabilitySection = true;
+            if (state?.isApplyInventoryDays) {
+                // If inventory days already applying, set default InventoryDayType
+                const obj = inventoryDayTypeSelectList?.find(item => item.Value === "5");
+                if (obj) {
+                    updatedState.ApplicabilityBasedInventoryDayType = { label: obj.Text, value: obj.Text };
+                    updatedState.isApplyInventoryDays = true;
+                    setValue("ApplicabilityBasedInventoryDayType", { label: obj.Text, value: obj.Text })
+                }
+            } else {
+                updatedState.isApplyInventoryDays = false;
+            }
+        }
+        setState(prev => ({
+            ...prev,
+            ...updatedState
+        }));
+    };
+
+    const inventoryDayTypeChange = (newValue) => {
+        setState(prev => ({ ...prev, InventoryDayType: newValue }));
+    };
+
+    const applicabilityInventoryDayTypeChange = (newValue) => {
+        setState(prev => ({ ...prev, ApplicabilityBasedInventoryDayType: newValue }));
+    };
+    const handleChangeCreditBasePercentage = (e) => {
+        const val = Number(e.target.value);
+        setState(prev => ({ ...prev, CreditBasedAnnualICCPercent: val }));
+    };
+
+    function handleInventoryDayChange(e, data, ind, col){
+        let val = Number(e.target.value);
+        const updatedInventoryDayType = state.selectedInventoryDayType.map(item => {
+            if (item.InventoryType === data?.InventoryType) {
+                return { ...item, NumberOfDays: val };
+            }
+            return item;
+        });
+        setState(prev => ({ ...prev, selectedInventoryDayType: updatedInventoryDayType }));
+    };
+
+    const handleAddInventory = async () => {
+        const isInventoryDayTypeValid = await trigger("InventoryDayType");
+        if (!isInventoryDayTypeValid) {
+            return;
+        }
+        const newInventoryDayType = state.InventoryDayType.map(item => ({
+            InventoryType: item.label,
+            InventoryTypeId: item.value,
+            NumberOfDays: '',
+        }));
+
+        setState(prev => ({
+            ...prev,
+            selectedInventoryDayType: [...prev.selectedInventoryDayType, ...newInventoryDayType],
+            InventoryDayType: []
+        }));
+        setValue("InventoryDayType", []);
+        clearErrors("InventoryDayType");
+        await trigger("InventoryDayType");
+    };
+
+    const deleteInventory = (data) => {
+        const updatedInventoryDayType = state.selectedInventoryDayType.filter(
+            item => item.InventoryType !== data?.InventoryType
+        );
+        setState(prev => ({ ...prev, selectedInventoryDayType: updatedInventoryDayType }));
+    };
+
+    const onPressInventoryDays = () => {
+        const isApplicabilityBased = state?.selectedICCMethod?.value === ICC_METHODS.ApplicabilityBased;
+        const isInventoryChecked = !state.isApplyInventoryDays;
+        let newInventoryDayType = [];
+        if (isApplicabilityBased) {
+            if(isInventoryChecked){
+                const obj = inventoryDayTypeSelectList?.find(item => item.Value === "5");
+                if (obj) {
+                    newInventoryDayType = { label: obj.Text, value: obj.Text };
+                    setValue("ApplicabilityBasedInventoryDayType", { label: obj.Text, value: obj.Text })
+                }
+            }else{
+                newInventoryDayType = [];
+                setValue("ApplicabilityBasedInventoryDayType", [])
+            }
+        }
+        setState(prev => ({
+            ...prev,
+            isApplyInventoryDays: isInventoryChecked,
+            ApplicabilityBasedInventoryDayType: newInventoryDayType
+        }));
+    };
+
+    const onPressVendor = (costingHeadFlag) => {
+        setState(prev => ({
+            ...prev,
+            vendorName: [],
+            costingTypeId: costingHeadFlag
+        }));
+        if (costingHeadFlag === CBCTypeId) {
+            dispatch(getClientSelectList(() => {}));
+        }
+    };
+
+    const wipMethodChange = (e) => {
+        setState(prev => ({ ...prev, WIPMethod: e }));
+    };
+
+    const handleAddWipMethod = () => {
+        let arr = [];
+        state.WIPMethod.forEach((item) => {
+            let obj = { InventoryType: item.label, InventoryTypeId: item?.value, NumberOfDays: 0, CreditDays: 0, InterestDays: 0 };
+            arr.push(obj);
+        });
+        setState(prev => ({
+            ...prev,
+            selectedWIPMethods: [...prev.selectedWIPMethods, ...arr],
+            WIPMethod: []
+        }));
+        setValue("WIPMethod", [])
+    };
+    function handleWipInventoryDayChange(e, data, ind, col) {
+        let val = Number(e.target.value)
+        let prevArray = [...state.selectedWIPMethods];
+        let obj = prevArray.find((item) => item.InventoryType === data?.InventoryType);
+        let index = prevArray.findIndex((item) => item.InventoryType === data?.InventoryType);
+        obj.NumberOfDays = val;
+        obj.InterestDays = checkForNull(val) - checkForNull(obj.CreditDays);
+        prevArray[index] = obj;
+        setState(prev => ({ ...prev, selectedWIPMethods: prevArray }));
+    };
+
+    function handleSupplierDayChange(e, data, ind, col) {
+        let val = Number(e.target.value)
+        let prevArray = [...state.selectedWIPMethods];
+        let obj = prevArray.find((item) => item.InventoryType === data?.InventoryType);
+        let index = prevArray.findIndex((item) => item.InventoryType === data?.InventoryType);
+        obj.CreditDays = val;
+        obj.InterestDays = checkForNull(obj.NumberOfDays) - checkForNull(val);
+        prevArray[index] = obj;
+        setState(prev => ({ ...prev, selectedWIPMethods: prevArray }));
+    };
+
+    const deleteWIPMethod = (data) => {
+        const filteredWIPMethods = state.selectedWIPMethods.filter((item) => item.InventoryType !== data?.InventoryType);
+        setState(prev => ({ ...prev, selectedWIPMethods: filteredWIPMethods }));
     };
 
     return (
-      <div className="container-fluid">
-        {this.state.isLoader && <LoaderCustom />}
-        <div className="login-container signup-form">
-          <div className="row">
-            <div className="col-md-12">
-              <div className="shadow-lgg login-formg">
+        <>
+        <div className="container-fluid">
+            {state.isLoader && <LoaderCustom />}
+            <div className="login-container signup-form">
                 <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-heading mb-0">
-                      <h1>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Interest Rate
-                        {!isViewMode && <TourWrapper
-                          buttonSpecificProp={{ id: "Add_Interest_Rate_Form" }}
-                          stepsSpecificProp={{
-                            steps: Steps(t, {
-                              PaymentTermsApplicability: this.state.PaymentTermsApplicability,
-                              ICCApplicability: this.state.ICCApplicability,
-                              isEditFlag: isEditFlag,
-                              vendorField: (costingTypeId === VBCTypeId),
-                              customerField: (costingTypeId === CBCTypeId),
-                              plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate),
-                              destinationPlant: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant))
-                            }).ADD_INTEREST_RATE
-                          }} />}</h1>
-                    </div>
-                  </div>
-                </div>
-                <form
-                  noValidate
-                  className="form"
-                  onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                  onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                >
-                  <div className="add-min-height">
-                    <Row>
-                      <Col md="12">
-                        {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label id='AddInterestRate_ZeroBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
-                          <input
-                            type="radio"
-                            name="costingHead"
-                            checked={
-                              costingTypeId === ZBCTypeId ? true : false
-                            }
-                            onClick={() =>
-                              this.onPressVendor(ZBCTypeId)
-                            }
-                            disabled={isEditFlag ? true : false}
-                          />{" "}
-                          <span>Zero Based</span>
-                        </Label>}
-                        {reactLocalStorage.getObject('CostingTypePermission').vbc && <Label id='AddInterestRate_VendorBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
-                          <input
-                            type="radio"
-                            name="costingHead"
-                            checked={
-                              costingTypeId === VBCTypeId ? true : false
-                            }
-                            onClick={() =>
-                              this.onPressVendor(VBCTypeId)
-                            }
-                            disabled={isEditFlag ? true : false}
-                          />{" "}
-                          <span>{VendorLabel} Based</span>
-                        </Label>}
-                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddInterestRate_CustomerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
-                          <input
-                            type="radio"
-                            name="costingHead"
-                            checked={
-                              costingTypeId === CBCTypeId ? true : false
-                            }
-                            onClick={() =>
-                              this.onPressVendor(CBCTypeId)
-                            }
-                            disabled={isEditFlag ? true : false}
-                          />{" "}
-                          <span>Customer Based</span>
-                        </Label>}
-                      </Col>
-                    </Row>
-                    <Row>
-                      {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC &&
-                        <>                        <Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
-                              <Field
-                                name="RawMaterialId"
-                                type="text"
-                                label="Raw Material Name"
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing("material")}
-                                validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
-                                required={!this.state.isPartSelected}
-                                handleChangeDescription={this.handleRMChange}
-                                valueDescription={this.state.RawMaterial}
-                                className="fullinput-icon"
-                                disabled={isEditFlag || isViewMode || this.state.isPartSelected}
-                              />
+                    <div className="col-md-12">
+                        <div className="shadow-lgg login-formg">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <div className="form-heading mb-0">
+                                        <h1>
+                                            {state.isViewMode ? "View" : state.isEditFlag ? "Update" : "Add"} Interest Rate
+                                        </h1>
+                                    </div>
+                                </div>
                             </div>
-                          </div>
-                        </Col>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="RawMaterialGradeId"
-                                  type="text"
-                                  label="Raw Material Grade"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("grade")}
-                                  validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
-                                  required={!this.state.isPartSelected}
-                                  handleChangeDescription={this.handleGradeChange}
-                                  valueDescription={this.state.RMGrade}
-                                  disabled={isEditFlag || isViewMode || this.state.isPartSelected}
-                                />
-                              </div>
-                            </div>
-                          </Col>
-                        </>
-                      }
-                      {/* {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && ( */}
-                      {((costingTypeId === ZBCTypeId) && (
-                        <Col md="3">
-                          <Field
-                            label="Plant (Code)"
-                            name="Plant"
-                            placeholder={"Select"}
-                            title={showDataOnHover(this.state.selectedPlants)}
-                            selection={
-                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                            options={this.renderListing("plant")}
-                            selectionChanged={this.handlePlant}
-                            validate={
-                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                            required={true}
-                            optionValue={(option) => option.Value}
-                            optionLabel={(option) => option.Text}
-                            component={renderMultiSelectField}
-                            mendatory={true}
-                            disabled={isEditFlag || isViewMode}
-                            className="multiselect-with-border"
-                          />
-                        </Col>)
-                      )}
+                            <form
+                                noValidate
+                                // className="form"
+                                onSubmit={handleSubmit(onSubmit)}
+                                onKeyDown={handleKeyDown}
+                            >
+                                <div className="add-min-height">
+                                    <Row>
+                                        <Col md="12">
+                                            {reactLocalStorage.getObject('CostingTypePermission').zbc && (
+                                                <Label id='AddInterestRate_ZeroBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={state.costingTypeId === ZBCTypeId}
+                                                        onClick={() => onPressVendor(ZBCTypeId)}
+                                                        disabled={state.isEditFlag}
+                                                    />
+                                                    <span>Zero Based</span>
+                                                </Label>
+                                            )}
+                                            {reactLocalStorage.getObject('CostingTypePermission').vbc && (
+                                                <Label id='AddInterestRate_VendorBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={state.costingTypeId === VBCTypeId}
+                                                        onClick={() => onPressVendor(VBCTypeId)}
+                                                        disabled={state.isEditFlag}
+                                                    />
+                                                    <span>{VendorLabel} Based</span>
+                                                </Label>
+                                            )}
+                                            {reactLocalStorage.getObject('CostingTypePermission').cbc && (
+                                                <Label id="AddInterestRate_CustomerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={state.costingTypeId === CBCTypeId}
+                                                        onClick={() => onPressVendor(CBCTypeId)}
+                                                        disabled={state.isEditFlag}
+                                                    />
+                                                    <span>Customer Based</span>
+                                                </Label>
+                                            )}
+                                        </Col>
+                                    </Row>
 
-                      {costingTypeId === VBCTypeId && (
-                        <Col md="3" className='mb-4'>
+                                    <AddOverheadMasterDetails 
+                                        costingTypeId={state.costingTypeId}
+                                        conditionTypeId={conditionTypeId}
+                                        state={state}
+                                        setState={setState}
+                                        setValue={setValue}
+                                        register={register}
+                                        trigger={trigger}
+                                        clearErrors={clearErrors}
+                                        control={control}
+                                        getValues={getValues}
+                                        errors={errors}
+                                        isOverHeadMaster={false}
+                                        isShowPartFamily={true}
+                                        applicabilityLabel="ICC"
+                                        isShowApplicabilitySection= {state.isShowApplicabilitySection}
+                                    >
+                                        <Row>
+                                            <Col md="12">
+                                                <div className="left-border">{"ICC:"}</div>
+                                            </Col>
+                                            <Col md="3">
+                                                <SearchableSelectHookForm
+                                                    name="ICCMethod"
+                                                    label="ICC Method"
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    placeholder="Select"
+                                                    options={renderListing("ICCMethod")}
+                                                    rules={state.selectedICCMethod == null || state.selectedICCMethod.length === 0 ? { required: true } : {}}
+                                                    mandatory={true}
+                                                    handleChange={ICCMethodChange}
+                                                    errors={errors.ICCMethod}
+                                                    disabled={(state?.selectedInventoryDayType?.length > 0 || state?.selectedWIPMethods?.length > 0)
+                                                            ? (state.isEditFlag || state.isViewMode)
+                                                            : false
+                                                        }
+                                                    // disabled={(state?.selectedInventoryDayType?.length > 0 || state?.selectedWIPMethods?.length > 0)}
+                                                    value={state.selectedICCMethod}
+                                                />
+                                            </Col>
 
-                          <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
-                          <div className='p-relative'>
-                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                            <AsyncSelect
-                              id="AddInterestRate_VendorName_container"
-                              name="vendorName"
-                              ref={this.myRef}
-                              key={this.state.updateAsyncDropdown}
-                              loadOptions={filterList}
-                              onChange={(e) => this.handleVendorName(e)}
-                              noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                              value={this.state.vendorName} isDisabled={(isEditFlag) ? true : false}
-                              onKeyDown={(onKeyDown) => {
-                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                              }}
-                              onFocus={() => onFocus(this)}
-                            />
-                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                          </div>
-                        </Col>
-                      )}
-                      {costingTypeId === CBCTypeId && (
-                        <Col md="3">
-                          <Field
-                            name="clientName"
-                            type="text"
-                            label={"Customer (Code)"}
-                            component={searchableSelect}
-                            placeholder={isEditFlag ? '-' : "Select"}
-                            options={this.renderListing("ClientList")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={
-                              this.state.client == null ||
-                                this.state.client.length === 0
-                                ? [required]
-                                : []
-                            }
-                            required={true}
-                            handleChangeDescription={this.handleClient}
-                            valueDescription={this.state.client}
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </Col>
-                      )}
-                      {
-                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
-                        <Col md="3">
-                          <Field
-                            label={'Plant (Code)'}
-                            name="DestinationPlant"
-                            placeholder={"Select"}
-                            options={this.renderListing("singlePlant")}
-                            handleChangeDescription={this.handleSinglePlant}
-                            validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
-                            required={true}
-                            component={searchableSelect}
-                            valueDescription={this.state.singlePlantSelected}
-                            mendatory={true}
-                            className="multiselect-with-border"
-                            disabled={isEditFlag || isViewMode}
-                          />
-                        </Col>
-                      }
-                       <Col md="2" className="st-operation mt-4 pt-2">
-                          <label id="AddInterestRate_ApplyPartCheckbox"
-                            className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
-                              }`}
-                            onChange={this.onPressAssemblyCheckboxIcc}
-                          >
-                            Apply for Part Type
-                            <input
-                              type="checkbox"
-                              checked={this.state.isAssemblyCheckboxIcc}
-                              disabled={isEditFlag ? true : false}
-                            />
-                            <span
-                              className=" before-box"
-                              checked={this.state.isAssemblyCheckboxIcc}
-                              onChange={this.onPressAssemblyCheckboxIcc}
-                            />
-                          </label>
-                        </Col>
-                    </Row >
-                    <Row>
-                      <Col md="12">
-                        <div className="left-border">{"ICC:"}</div>
-                      </Col>
-                     
-                      <Col md="3">
-                        <Field
-                          name="ICCApplicability"
-                          type="text"
-                          label="ICC Applicability"
-                          component={searchableSelect}
-                          placeholder={isViewMode ? '-' : "Select"}
-                          options={this.renderListing("ICC")}
-                          handleChangeDescription={
-                            this.handleICCApplicability
-                          }
-                          valueDescription={this.state.ICCApplicability}
-                          disabled={isViewMode}
-                        />
-                      </Col>
-                      {
-                        this.state.ICCApplicability.label !== 'Fixed' &&
+                                            <Col md="2" className="st-operation mt-4 pt-2">
+                                                <label id="AddInterestRate_ApplyPartCheckbox"
+                                                    className={`custom-checkbox ${(state.isEditFlag || state?.selectedICCMethod?.value === ICC_METHODS.CreditBased) ? "disabled" : ""}`}
+                                                    onChange={onPressInventoryDays}
+                                                >
+                                                    Apply Inventory Days
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={state.isApplyInventoryDays}
+                                                        disabled={(state.isEditFlag || state?.selectedICCMethod?.value === ICC_METHODS.CreditBased)}
+                                                    />
+                                                    <span className="before-box" checked={state.isApplyInventoryDays} />
+                                                </label>
+                                            </Col>
 
-                        <Col md="3">
-                          <Field
-                            id='AddInterestRate_AnnualICC'
-                            label={`Annual ICC (%)`}
-                            name={"ICCPercent"}
-                            type="text"
-                            placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, nonZero]}
-                            component={renderText}
-                            onChange={(event) => this.handleChangeAnnualIccPercentage(event.target.value)}
-                            disabled={isViewMode}
-                            className=" "
-                            customClassName=" withBorder"
-                          />
-                        </Col>
-                      }
+                                            {state.selectedICCMethod?.value == ICC_METHODS.CreditBased &&
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        label={`Credit Based Annual ICC (%)`}
+                                                        name={'CreditBasedAnnualICCPercent'}
+                                                        Controller={Controller}
+                                                        id={'credit-icc-percentage'}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{
+                                                            required: state.selectedICCMethod?.value == ICC_METHODS.CreditBased,
+                                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                            max: {
+                                                                value: 100,
+                                                                message: 'Percentage cannot be greater than 100'
+                                                            },
+                                                        }}
+                                                        mandatory={state.selectedICCMethod?.value == ICC_METHODS.CreditBased}
+                                                        handleChange={handleChangeCreditBasePercentage}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.CreditBasedAnnualICCPercent}
+                                                        disabled={state?.isViewMode}
+                                                    />
+                                                </Col>
+                                            }
 
-                    </Row>
+                                            {state.selectedICCMethod?.value == ICC_METHODS.ApplicabilityBased && state.isApplyInventoryDays && (
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="ApplicabilityBasedInventoryDayType"
+                                                        label="Inventory Day Type"
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        placeholder="Select"
+                                                        options={renderListing("ApplicabilityBasedInventoryDayType")}
+                                                        handleChange={applicabilityInventoryDayTypeChange}
+                                                        errors={errors.ApplicabilityBasedInventoryDayType}
+                                                        disabled={state.isEditFlag || state.isViewMode || (state?.selectedICCMethod?.value === ICC_METHODS.ApplicabilityBased && state?.isApplyInventoryDays)}
+                                                        value={state.ApplicabilityBasedInventoryDayType}
+                                                    />
+                                                </Col>
+                                            )}
+                                        </Row>
 
-                    <Row>
-                      <Col md="12">
-                        <div className="left-border">{"Payment Terms:"}</div>
-                      </Col>
-                      <Col md="3">
-                        <Field
-                          name="PaymentTermsApplicability"
-                          menuPlacement={pos_drop_down}
-                          type="text"
-                          label="Payment Terms Applicability"
-                          component={searchableSelect}
-                          placeholder={isViewMode ? '-' : "Select"}
-                          options={this.renderListing("PaymentTerms")}
-                          validate={
-                            this.state.PaymentTermsApplicability == null ||
-                              this.state.PaymentTermsApplicability.length === 0
-                              ? []
-                              : []
-                          }
-                          required={false}
-                          handleChangeDescription={
-                            this.handlePaymentApplicability
-                          }
-                          valueDescription={
-                            this.state.PaymentTermsApplicability
-                          }
-                          disabled={isViewMode}
-                        />
-                      </Col>
-                      {
-                        this.state.PaymentTermsApplicability.label !== 'Fixed' &&
-                        <>
+                                        {state?.selectedICCMethod?.value == ICC_METHODS.CreditBased && (
+                                            <>
+                                                <Row>
+                                                    <Col md="12" className="filter-block">
+                                                        <div className="flex-fills mb-2 pl-0">
+                                                            <h5>{"Credit Base Inventory Head:"}</h5>
+                                                        </div>
+                                                    </Col>
 
-                          <Col md="3">
-                            <Field
-                              id="AddInterestRate_RepaymentPeriod"
-                              label={`Repayment Period (Days)`}
-                              name={"RepaymentPeriod"}
-                              type="text"
-                              placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[postiveNumber, maxLength10, nonZero, number]}
-                              component={renderTextInputField}
-                              required={false}
-                              onChange={(event) => this.handleChangeRepaymentPeriod(event.target.value)}
-                              disabled={isViewMode}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>
-                          <Col md="3">
-                            <TooltipCustom id="PaymentTermPercent" width="350px" tooltipText="Manage payment term percentages here or in costing as needed." />
-                            <Field
-                              id="AddInterestRate_PaymentTermPercent"
-                              label={`Payment Term (%)`}
-                              name={"PaymentTermPercent"}
-                              type="text"
-                              placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, nonZero]}
-                              component={renderText}
-                              required={false}
-                              onChange={(event) => this.handleChangePaymentTermPercentage(event.target.value)}
-                              disabled={isViewMode}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>
-                        </>
-                      }
-                      <Col md="3">
-                        <div className="form-group">
+                                                    <Col md="3">
+                                                        <SearchableSelectHookForm
+                                                            name="InventoryDayType"
+                                                            label="Inventory Day Types"
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            placeholder="Select"
+                                                            options={renderListing("InventoryDayType")}
+                                                            // rules={(!(state?.selectedInventoryDayType?.length > 0) && !state?.InventoryDayType?.length) ? { required: true } : {}}
+                                                            rules={{ required: !(state?.selectedInventoryDayType?.length > 0) }}
+                                                            mandatory={!(state?.selectedInventoryDayType?.length > 0)}
+                                                            handleChange={inventoryDayTypeChange}
+                                                            errors={errors.InventoryDayType}
+                                                            // disabled={state.isEditFlag || state.isViewMode || state.editItemId}
+                                                            disabled={state.isViewMode || state.editItemId}
+                                                            value={state.InventoryDayType}
+                                                            isMulti={true}
+                                                        />
+                                                    </Col>
 
-                          <div className="inputbox date-section">
+                                                    <Col md="3">
+                                                        <div className={`pt-2 mt-4 pr-0 mb-3`}>
+                                                            <button id="AddFuel_AddData" type="button" className="user-btn pull-left mr10"
+                                                                disabled={state.isViewMode}
+                                                                onClick={handleAddInventory}>
+                                                                <div className="plus"></div>ADD
+                                                            </button>
+                                                        </div>
+                                                    </Col>
+                                                </Row>
 
-                            <Field
-                              label="Effective Date"
-                              name="EffectiveDate"
-                              placeholder={isViewMode ? '-' : "Select Date"}
-                              selected={this.state.effectiveDate}
-                              onChange={this.handleEffectiveDateChange}
-                              type="text"
-                              minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
-                              maxDate={getEffectiveDateMaxDate()}
-                              validate={[required]}
-                              autoComplete={'off'}
-                              required={true}
-                              changeHandler={(e) => {
+                                                <Row>
+                                                    <Col md="12">
+                                                      <TableRenderer
+                                                        data={state.selectedInventoryDayType}
+                                                        columns={Inventory_Day_Columns}
+                                                        register={register}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        errors={errors}
+                                                        isViewMode={state.isViewMode}
+                                                        handleDelete={deleteInventory}
+                                                        setValue={setValue}
+                                                      />
+                                                    </Col>
+                                                </Row>
 
-                              }}
-                              component={renderDatePicker}
-                              disabled={isViewMode}
-                              className="form-control"
-                            />
-                          </div>
+                                                <Row>
+                                                    <Col md="12" className="filter-block">
+                                                        <div className="flex-fills mb-2 pl-0">
+                                                            <h5>{"Configure Days & Credit Terms (for WIP Heads):"}</h5>
+                                                        </div>
+                                                    </Col>
+
+                                                    <Col md="3">
+                                                        <SearchableSelectHookForm
+                                                            name="WIPMethod"
+                                                            label="WIP Composition Method"
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            placeholder="Select"
+                                                            options={renderListing("WIPMethod")}
+                                                            // rules={(!(state?.selectedWIPMethods?.length > 0) && !state?.WIPMethod?.length) ? { required: true } : {}}
+                                                            rules={{ required: !(state?.selectedWIPMethods?.length > 0) }}
+                                                            mandatory={!(state?.selectedWIPMethods?.length > 0)}
+                                                            handleChange={wipMethodChange}
+                                                            errors={errors.WIPMethod}
+                                                            // disabled={state.isEditFlag || state.isViewMode || state.editItemId}
+                                                            disabled={state.isViewMode || state.editItemId}
+                                                            value={state.WIPMethod}
+                                                            isMulti={true}
+                                                        />
+                                                    </Col>
+
+                                                    <Col md="3">
+                                                        <div className={`pt-2 mt-4 pr-0 mb-3`}>
+                                                            <button id="AddFuel_AddData" type="button" className="user-btn pull-left mr10"
+                                                                disabled={state.isViewMode}
+                                                                onClick={handleAddWipMethod}>
+                                                                <div className="plus"></div>ADD
+                                                            </button>
+                                                        </div>
+                                                    </Col>
+                                                </Row>
+
+                                                <Row>
+                                                    <Col md="12">
+                                                      <TableRenderer
+                                                        data={state.selectedWIPMethods}
+                                                        columns={columns}
+                                                        register={register}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        errors={errors}
+                                                        isViewMode={state.isViewMode}
+                                                        handleDelete={deleteWIPMethod}
+                                                        setValue={setValue}
+                                                      />
+                                                    </Col>
+                                                </Row>
+                                            </>
+                                        )}
+
+                                    </AddOverheadMasterDetails>
+                                </div>
+
+                                <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                        {(!state.isViewMode && !state.isEditFlag && state.isWarningVisible) && (
+                                            <WarningMessage
+                                                dClass="col-md-12 pr-0 justify-content-end"
+                                                message="Either ICC or Payment Term should be filled!"
+                                            />
+                                        )}
+                                        <button
+                                            id='AddInterestRate_Cancel'
+                                            type="button"
+                                            className="mr15 cancel-btn"
+                                            onClick={cancelHandler}
+                                            disabled={state.setDisable}
+                                        >
+                                            <div className="cancel-icon"></div>
+                                            Cancel
+                                        </button>
+                                        {!state.isViewMode && (
+                                            <button
+                                                type="submit"
+                                                id='AddInterestRate_Save'
+                                                disabled={state.isViewMode || state.setDisable || (state.isWarningVisible && !state.isEditFlag)}
+                                                className="user-btn mr5 save-btn"
+                                            >
+                                                <div className="save-icon"></div>
+                                                {state.isEditFlag ? "Update" : "Save"}
+                                            </button>
+                                        )}
+                                    </div>
+                                </Row>
+                            </form>
                         </div>
-                      </Col>
-                    </Row>
-                  </div >
-
-                  <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                    <div className="col-sm-12 text-right bluefooter-butn">
-                      {(!isViewMode && !isEditFlag && isWarningVisible) && (
-                        <WarningMessage
-                          dClass="col-md-12 pr-0 justify-content-end"
-                          message="Either ICC or Payment Term should be filled!"
-                        />
-                      )}
-                      <button
-                        id='AddInterestRate_Cancel'
-                        type={"button"}
-                        className=" mr15 cancel-btn"
-                        onClick={this.cancelHandler}
-                        disabled={setDisable}
-                      >
-                        <div className={"cancel-icon"}></div>
-                        {"Cancel"}
-                      </button>
-                      {!isViewMode && <button
-                        type="submit"
-                        id='AddInterestRate_Save'
-                        disabled={isViewMode || setDisable || (isWarningVisible && !isEditFlag)}
-                        className="user-btn mr5 save-btn"
-                      >
-                        <div className={"save-icon"}></div>
-                        {isEditFlag ? "Update" : "Save"}
-                      </button>}
                     </div>
-                  </Row>
-                </form>
-              </div>
+                </div>
             </div>
-          </div>
         </div>
-        {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
-        }
-      </div>
+        {state.showPopup && (
+            <PopupMsgWrapper
+                isOpen={state.showPopup}
+                closePopUp={() => setState(prev => ({ ...prev, showPopup: false }))}
+                confirmPopup={onPopupConfirm}
+                message={MESSAGES.CANCEL_MASTER_ALERT}
+            />
+        )}
+    </>
+   
     );
-  }
-}
+};
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps(state) {
-  const { interestRate, comman, client, material } = state;
-
-  const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent','ICCApplicability','PaymentTermsApplicability');
-  const { iccApplicabilitySelectList, interestRateData } = interestRate;
-  const { vendorWithVendorCodeSelectList, plantSelectList,costingHead } = comman;
-  const { clientSelectList } = client;
-  const { rawMaterialNameSelectList, gradeSelectList } = material
-  let initialValues = {};
-  if (interestRateData && interestRateData !== undefined) {
-    initialValues = {
-      ICCPercent: interestRateData.ICCPercent,
-      RepaymentPeriod: interestRateData.RepaymentPeriod,
-      PaymentTermPercent: interestRateData.PaymentTermPercent,
-
-    }
-  }
-
-  return {
-    costingHead, iccApplicabilitySelectList, plantSelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj, clientSelectList, rawMaterialNameSelectList, gradeSelectList
-  }
-}
-
-/**
- * @method connect
- * @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-  updateInterestRate,
-  getPlantSelectListByType,
-  createInterestRate,
-  getInterestRateData,
-  getPaymentTermsAppliSelectList,
-  fetchCostingHeadsAPI ,
-  getICCAppliSelectList,
-  getClientSelectList,
-  getRawMaterialNameChild,
-  getRMGradeSelectListByRawMaterial
-})(reduxForm({
-  form: 'AddInterestRate',
-  validate: validateForm,
-  enableReinitialize: true,
-  touchOnChange: true
-})(withTranslation(['InterestRate'])(AddInterestRate)));
+export default AddInterestRate; 
 
 

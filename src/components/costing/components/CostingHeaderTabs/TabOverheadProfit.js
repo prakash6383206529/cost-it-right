@@ -35,7 +35,7 @@ function TabOverheadProfit(props) {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
       }
-      
+
       dispatch(getOverheadProfitTabData(data, true, (res) => { }))
     }
   }, [costData]);
@@ -97,7 +97,7 @@ function TabOverheadProfit(props) {
     return calculateNetCost(topHeaderValues);
   }, [topHeaderValues]);
 
- 
+
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
@@ -277,7 +277,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
-         
+
           formatData(data, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
@@ -391,14 +391,15 @@ function TabOverheadProfit(props) {
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
             checkForNull(RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0)) +
             checkForNull(i?.CostingPartDetails?.ICCCost)
-
+            i.CostingPartDetails.RejectionModelTypeId = modelType?.value
+            i.CostingPartDetails.RejectionModelType = modelType?.label
 
           formatData(RejectionObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
           i.CostingPartDetails.CostingRejectionDetail = RejectionObj;
           i.CostingPartDetails.RejectionModelTypeId = modelType?.value
-          i.CostingPartDetails.RejectionModelType= modelType?.label
+          i.CostingPartDetails.RejectionModelType = modelType?.label
           i.CostingPartDetails.RejectionCost = RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0);
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
@@ -438,33 +439,38 @@ function TabOverheadProfit(props) {
 
         if (i.IsAssemblyPart === true) {
 
-          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0;
+          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.ICCCostingApplicabilityDetails ?
+            checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0)) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i?.CostingPartDetails?.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
-            IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
-            NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
+            IsInventoryCarringCost: ICCObj && ICCObj.ICCCostingApplicabilityDetails &&
+              ICCObj.ICCCostingApplicabilityDetails.some(item => item.TotalCost !== null && item.TotalCost !== undefined),
+            NetICC: ICCObj && ICCObj.ICCCostingApplicabilityDetails ?
+              checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0)) : 0,
           };
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
             checkForNull(i?.CostingPartDetails?.RejectionCost) +
-            checkForNull(ICCObj.NetCost)
+            checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0))
 
           formatData(ICCObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
-          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0;
+          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.ICCCostingApplicabilityDetails ?
+            checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0)) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i?.CostingPartDetails?.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
-            IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
-            NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
+            IsInventoryCarringCost: ICCObj && ICCObj.ICCCostingApplicabilityDetails ?
+              ICCObj.ICCCostingApplicabilityDetails.some(item => item.TotalCost !== null && item.TotalCost !== undefined) : false,
+            NetICC: ICCObj && ICCObj.ICCCostingApplicabilityDetails ?
+              checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0)) : 0
           };
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
             checkForNull(i?.CostingPartDetails?.RejectionCost) +
-            checkForNull(ICCObj.NetCost)
+            checkForNull(ICCObj.ICCCostingApplicabilityDetails.reduce((total, item) => total + checkForNull(item.TotalCost), 0))
 
         } else {
           i.IsOpen = false;
@@ -569,7 +575,9 @@ function TabOverheadProfit(props) {
   }
 
   const onPressIncludeToolCost = () => {
-    if ((ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed') || (overallApplicabilityToolData && overallApplicabilityToolData?.label !== 'Fixed')) {
+    if ((ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Fixed' &&
+      ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Tool Rate') ||
+      (overallApplicabilityToolData?.label && overallApplicabilityToolData?.label !== 'Fixed' && overallApplicabilityToolData?.label !== 'Tool Rate')) {
       Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in overhead & profit.')
       return false
     } else {
@@ -579,26 +587,6 @@ function TabOverheadProfit(props) {
       dispatch(isOverheadProfitDataChange(true))
     }
   }
-
-  const onPressIncludeOverheadProfitInIcc = () => {
-
-    dispatch(setIncludeOverheadProfitIcc(!IncludeOverheadProfitInIcc, () => { }))
-    setIsPressedOverHeadAndProfit(true)
-    setIncludeOverheadProfitInIcc(!IncludeOverheadProfitInIcc)
-    dispatch(isOverheadProfitDataChange(true))
-  }
-  const onPressIsIncludeToolCostInCCForICC = () => {
-    if (ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed' || (overallApplicabilityToolData && overallApplicabilityToolData?.label !== 'Fixed')) {
-      Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in ICC.')
-      return false
-    } else {
-      dispatch(setIncludeToolCostIcc(!IsIncludeToolCostInCCForICC, () => { }))
-      setIsPressedToolCostICC(true)
-      setIsIncludeToolCostInCCForICC(!IsIncludeToolCostInCCForICC)
-      dispatch(isOverheadProfitDataChange(true))
-    }
-  }
-
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -696,43 +684,6 @@ function TabOverheadProfit(props) {
                       onChange={onPressIncludeToolCost}
                     />
                   </label>
-
-                  <label
-                    id="Overhead_profit_checkbox4"
-                    className={`custom-checkbox mb-0 w-fit-content`}
-                    onChange={onPressIncludeOverheadProfitInIcc}
-                  >
-                    Include Overhead & Profit in ICC
-                    <input
-                      type="checkbox"
-                      checked={IncludeOverheadProfitInIcc}
-                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
-                    />
-                    <span
-                      className=" before-box"
-                      checked={IncludeOverheadProfitInIcc}
-                      onChange={onPressIncludeOverheadProfitInIcc}
-                    />
-                  </label>
-
-                  <label
-                    id="Overhead_profit_checkbox5"
-                    className={`custom-checkbox mb-0 w-fit-content`}
-                    onChange={onPressIsIncludeToolCostInCCForICC}
-                  >
-                    Include Tool Cost in CC for ICC
-                    <input
-                      type="checkbox"
-                      checked={IsIncludeToolCostInCCForICC}
-                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
-                    />
-                    <span
-                      className=" before-box"
-                      checked={IsIncludeToolCostInCCForICC}
-                      onChange={onPressIsIncludeToolCostInCCForICC}
-                    />
-                  </label>
-
                 </Col>
               </Row>
 
@@ -747,7 +698,6 @@ function TabOverheadProfit(props) {
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Net Overhead`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Profit`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Rejection`}</th>
-                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net ICC`}</th>
                         </tr>
                       </thead>
                       <tbody>

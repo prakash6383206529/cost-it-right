@@ -301,7 +301,7 @@ function CreateManualNFR(props) {
 
     const handlePartChange = (newValue) => {
         if (getValues("Part")?.value !== newValue?.value) {
-            setState(prevState => ({ ...prevState, rmDetails: [], sopQuantityList: [], groupCodeList: [] }));
+            setState(prevState => ({ ...prevState, rmDetails: [], sopQuantityList: [], groupCodeList: [],sopDate:'' }));
         }
         setValue("Part", newValue);
 
@@ -370,44 +370,6 @@ function CreateManualNFR(props) {
     const handleGroupCodeChange = (newValue) => {
         setValue("GroupCode", newValue);
     }
-
-    const handleSOPDateChange = (date) => {
-        const newDate = DayTime(date).isValid() ? DayTime(date) : '';
-
-        // Validate that SOP date is not before ZBC date
-        if (state.zbcDate && newDate && new Date(newDate) <= new Date(state.zbcDate)) {
-            Toaster.warning("SOP Date cannot be before or equal to ZBC Last Submission Date");
-            return;
-        }
-
-        // Validate that SOP date is not before CBC date
-        if (state.cbcDate && newDate && new Date(newDate) <= new Date(state.cbcDate)) {
-            Toaster.warning("SOP Date cannot be before or equal to Quotation Last Submission Date");
-            return;
-        }
-
-        setState(prevState => ({ ...prevState, sopDate: newDate }));
-
-        let year = new Date(date).getFullYear();
-        const years = [];
-        for (let i = 0; i < 5; i++) {
-            years.push(year + i);
-        }
-        setState(prevState => ({ ...prevState, fiveyearList: years }));
-
-        if (date) {
-            const partNumber = getValues('Part')?.label || '';
-
-            const newSopQuantityList = years.map(yearItem => ({
-                PartNumber: partNumber,
-                YearName: yearItem.toString(),
-                Quantity: 0,
-                SOPDate: state.sopDate
-            }));
-
-            setState(prevState => ({ ...prevState, sopQuantityList: newSopQuantityList }));
-        }
-    };
 
     const addTableHandler = debounce(() => {
         // Check if required fields are filled
@@ -759,10 +721,10 @@ function CreateManualNFR(props) {
         );
     }
 
-    const openAndCloseDrawer = (isSave, dataList = [], rmDetails = []) => {
+    const openAndCloseDrawer = (isSave, dataList = [], rmDetails = [],sopDate='') => {
         if (isSave === true && ((dataList && dataList.length > 0) || (rmDetails && rmDetails.length > 0))) {
             let result = groupRawMaterialsByPartId(rmDetails)
-            setState(prevState => ({ ...prevState, rmDetails: rmDetails, partDetails: result,sopQuantityList: [...dataList]  }));
+            setState(prevState => ({ ...prevState, rmDetails: rmDetails, partDetails: result,sopQuantityList: [...dataList],sopDate:sopDate }));
             Toaster.success("RM details saved successfully");
         }
         setState(prevState => ({ ...prevState, openAddForecast: false }));
@@ -836,7 +798,7 @@ function CreateManualNFR(props) {
                     <div className="row">
                         <div className="col-md-6">
                             <h1>
-                                {isViewFlag ? 'View Customer RFQ' : 'Add Customer RFQ'}  <TourWrapper
+                                {isViewFlag ? 'View Customer RFQ' : isEditFlag ? 'Edit Customer RFQ' : 'Add Customer RFQ'}  <TourWrapper
                                     buttonSpecificProp={{ id: "Create_Manual_Nfr_Form" }}
                                     stepsSpecificProp={{
                                         steps: Steps(t).ADD_NFR
@@ -1359,15 +1321,14 @@ function CreateManualNFR(props) {
                     rmDetails={state.rmDetails}
                     setRMDetails={(details) => setState(prevState => ({ ...prevState, rmDetails: details }))}
                     sopDate={state.sopDate}
-                    handleSOPDateChange={handleSOPDateChange}
                     zbcDate={state.zbcDate}
+                    cbcDate={state.cbcDate}
                     errors={errors}
                     onGridReady={onGridReady}
                     EditableCallback={ !state.isViewMode}
                     partType={getValues("PartType")}
                     AssemblyPartNumber={getValues("Part")}
                     sopQuantityList={state.sopQuantityList}
-                    setSopQuantityList={(list) => setState(prevState => ({ ...prevState, sopQuantityList: list }))}
                 />
             }
 
