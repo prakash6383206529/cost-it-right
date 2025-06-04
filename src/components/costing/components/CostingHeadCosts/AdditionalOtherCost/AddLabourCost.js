@@ -4,7 +4,7 @@ import { Drawer } from '@material-ui/core'
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
-import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull, noDecimal, blockInvalidNumberKeys } from "../../../../../helper/validation";
 import Toaster from '../../../../common/Toaster'
 import LabourCost from './LabourCost'
 import { getCostingLabourDetails, getLabourDetailsByFilter } from '../../../actions/Costing'
@@ -225,7 +225,11 @@ function AddLabourCost(props) {
 
 
     // This function is called when the user clicks a button to add data to a table.
-    const addData = () => {
+    const addData = () => {       
+        if (Object.keys(errors).length > 0) {
+            return false
+        }
+        
         let table = [...tableData]
         let indirectLabourCost = indirectLabourCostState
 
@@ -563,6 +567,9 @@ function AddLabourCost(props) {
                                             control={control}
                                             register={register}
                                             mandatory={false}
+                                            rules={{
+                                                maxLength: 80
+                                            }}
                                             handleChange={() => { }}
                                             defaultValue={''}
                                             className=""
@@ -582,8 +589,9 @@ function AddLabourCost(props) {
                                             mandatory={true}
                                             rules={{
                                                 required: true,
-                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                validate: { number, checkWhiteSpaces, noDecimal },
                                             }}
+                                            onKeyDown={blockInvalidNumberKeys}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
@@ -605,6 +613,7 @@ function AddLabourCost(props) {
                                                 required: false,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
+                                            onKeyDown={blockInvalidNumberKeys}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
@@ -750,6 +759,7 @@ function AddLabourCost(props) {
                                                 required: true,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
+                                            onKeyDown={blockInvalidNumberKeys}
                                             handleChange={handleCycleTime}
                                             defaultValue={''}
                                             className=""
