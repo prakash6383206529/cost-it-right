@@ -939,6 +939,11 @@ function AddBudget(props) {
     };
 
     const getCostingPrice = () => {
+        // If currentPrice already has a value, don't make the API call
+        if (currentPrice) {
+            return false;
+        }
+
         let obj = {}
         obj.costingHeadId = costingTypeId
         obj.partId = part.value
