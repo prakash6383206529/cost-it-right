@@ -1103,7 +1103,7 @@ function AddBudget(props) {
     
 
     const getTooltipTextForCurrency = () => {
-        const plantCurrencyLabel = (getValues("plantCurrency")==null || getValues("plantCurrency")==='') ? 'Plant Currency' : getValues("plantCurrency");
+        const plantCurrencyLabel = (getValues("plantCurrency")===null || getValues("plantCurrency")===undefined || getValues("plantCurrency")==='') ? 'Plant Currency' : getValues("plantCurrency");
         const baseCurrency = reactLocalStorage.getObject("baseCurrency");
         const currencyLabel = currency?.label ?? 'Currency';
 
