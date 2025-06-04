@@ -1105,12 +1105,6 @@ class AddBOPDomestic extends Component {
     SourceVendorAssociatedAsBoughtOutPartVendors, IsPartOutsourced, sourceVendor, SourceVendorBoughtOutPartId } = this.state;
     const { fieldsObj, isBOPAssociated } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
-
-    if (costingTypeId === VBCTypeId && (values?.Source === null || values?.Source === undefined || values?.Source === '')) {
-      Toaster.warning("Source is required")
-      return false
-    }
-
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -1827,29 +1821,6 @@ class AddBOPDomestic extends Component {
                             </>
                           )}
 
-                          {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowPartOutsourcedInBoughtOutPart &&
-                            <Col md="3" className="mt-4 pt-2">
-                                <div className=" flex-fills d-flex justify-content-between align-items-center">
-                                    <label id="AddBOPDomestic_IsPartOutsourced"
-                                        className={`custom-checkbox w-auto mb-0 ${(this.state.isEditFlag || isViewMode) ? "disabled" : ""}`} 
-                                        onChange={this.onPressIsPartOutsourced}
-                                    >
-                                        Is Part Outsourced?
-                                        <input
-                                            type="checkbox"
-                                            checked={this.state?.IsPartOutsourced}
-                                            disabled={isViewMode || this.state.isEditFlag}
-                                        />
-                                        <span
-                                            className=" before-box p-0"
-                                            checked={this.state?.IsPartOutsourced}
-                                            onChange={this.onPressIsPartOutsourced}
-                                        />
-                                    </label>
-                                </div>
-                            </Col>
-                          }
-
                           {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowSourceVendorInBoughtOutPart && (
                             <>
                               <Col md="3" className='mb-4'>
@@ -1894,7 +1865,7 @@ class AddBOPDomestic extends Component {
                                   disabled={isViewMode}
                                   className=" "
                                   customClassName=" withBorder"
-                                  required={true}
+                                  required={false}
                                 />
                               </Col>
                               {/* <Col md="3">
@@ -1942,6 +1913,29 @@ class AddBOPDomestic extends Component {
                               </Col>
                             </>
                           )}
+
+                          {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowPartOutsourcedInBoughtOutPart &&
+                            <Col md="3" className="mt-4 pt-2">
+                                <div className=" flex-fills d-flex justify-content-between align-items-center">
+                                    <label id="AddBOPDomestic_IsPartOutsourced"
+                                        className={`custom-checkbox w-auto mb-0 ${(this.state.isEditFlag || isViewMode) ? "disabled" : ""}`} 
+                                        onChange={this.onPressIsPartOutsourced}
+                                    >
+                                        Is Part Outsourced?
+                                        <input
+                                            type="checkbox"
+                                            checked={this.state?.IsPartOutsourced}
+                                            disabled={isViewMode || this.state.isEditFlag}
+                                        />
+                                        <span
+                                            className=" before-box p-0"
+                                            checked={this.state?.IsPartOutsourced}
+                                            onChange={this.onPressIsPartOutsourced}
+                                        />
+                                    </label>
+                                </div>
+                            </Col>
+                          }
                         </Row>
 
                         <Row className='UOM-label-container'>
@@ -1984,7 +1978,7 @@ class AddBOPDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode}
+                                disabled={disableAll || isViewMode || !IsFinancialDataChanged}
                                 placeholder={disableAll || isViewMode || !IsFinancialDataChanged ? '-' : 'Select Date'}
                               />
                             </div>
