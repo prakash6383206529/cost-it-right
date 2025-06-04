@@ -589,7 +589,7 @@ const AddOverheadMasterDetails = (props) => {
                                 isMulti={false}
                                 handleChange={handleApplicabilityChange}
                                 errors={errors.OverheadApplicability}
-                                disabled={state?.isViewMode}
+                                disabled={state?.isViewMode || !!editItemId}
                             />
                         </Col>
 
@@ -703,7 +703,7 @@ const AddOverheadMasterDetails = (props) => {
                             </tr>
                         </thead>
                         <tbody>
-                        {state?.ApplicabilityDetails && state?.ApplicabilityDetails.length > 0 &&
+                        {state?.ApplicabilityDetails && state?.ApplicabilityDetails?.length > 0 &&
                             state.ApplicabilityDetails.map((item, index) => {
                             return (
                                 <tr key={index}>

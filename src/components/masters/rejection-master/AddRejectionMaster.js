@@ -107,24 +107,25 @@ const AddRejectionMaster = (props) => {
 
   useEffect(() => {
     if (!(props?.data?.isEditFlag || state.isViewMode)) {
-      const hasRequiredFields = (
+      const hasRequiredFields = !!(
         (state.costingTypeId === ZBCTypeId) ||
         (state.costingTypeId === CBCTypeId && state?.client) ||
         (state.costingTypeId === VBCTypeId && state?.vendorName)
       );
-      if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
-        let data = {
-          overheadId: state?.OverheadID ?? null,
-          modelTypeId: state?.ModelType?.value,
-          costingHeadId: state?.costingTypeId,
-          plantId: state?.singlePlantSelected?.value ?? null,
-          vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
-          customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
-          effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-          technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
-          isRejection: true,
-          partFamilyId: state?.selectedPartFamily?.value
-        }
+      let data = {
+        overheadId: state?.OverheadID ?? null,
+        modelTypeId: state?.ModelType?.value,
+        costingHeadId: state?.costingTypeId,
+        plantId: state?.singlePlantSelected?.value ?? null,
+        vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
+        customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
+        effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
+        isRejection: true,
+        partFamilyId: state?.selectedPartFamily?.value
+      }
+      let showPartFamily = getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily
+      if(hasRequiredFields && data?.modelTypeId && data?.plantId && (!showPartFamily || data?.partFamilyId) && data?.effectiveDate){ 
         dispatch(getOverheadDataCheck(data, (res) => {
           if (res?.status === 200) {
             let Data = res?.data?.Data;
