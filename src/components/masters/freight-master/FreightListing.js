@@ -449,6 +449,9 @@ const FreightListing = (props) => {
                   {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                  <AgGridColumn field="DimensionsName" headerName="Truck Dimensions" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn field="FreightLoadType" headerName="Load Type"></AgGridColumn>
+
                   <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                   {/* <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
