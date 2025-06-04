@@ -38,7 +38,8 @@ import {
   GET_COSTING_DETAIL_FOR_ICC,
   SET_ICC_COST,
   CHECK_IS_ICC_DATA_CHANGE,
-  SET_COMPONENT_ICC_DATA
+  SET_COMPONENT_ICC_DATA,
+  SET_DISABLE_ICC_CHECKBOX
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -983,6 +984,12 @@ export default function costingReducer(state = initialState, action) {
           loading: false,
           IccDataDiscountTab: action.payload
         }
+        case SET_DISABLE_ICC_CHECKBOX:
+          return {
+            ...state,
+            loading: false,
+            disableIccCheckBox: action.payload
+          }
     default:
       return state
   }
