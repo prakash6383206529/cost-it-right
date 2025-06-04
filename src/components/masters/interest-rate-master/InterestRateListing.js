@@ -66,7 +66,8 @@ const InterestRateListing = (props) => {
     dataCount: 0,
     showExtraData: false,
     totalRecordCount: 0,
-    globalTake: defaultPageSize
+    globalTake: defaultPageSize,
+    disableDownload: false,
   })
   const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
@@ -167,11 +168,12 @@ const InterestRateListing = (props) => {
           dispatch(updatePageNumber(0))
       }
 
+      // CODE FOR DOWNLOAD BUTTON LOGIC
       if (res && isPagination === false) {
           setDisableDownload(false)
           dispatch(disabledClass(false))
           setTimeout(() => {
-              let button = document.getElementById('Excel-Downloads-interestRateListing');
+              let button = document.getElementById('Excel-Downloads-Interest-Master');
               button && button.click()
           }, 500);
       }
@@ -394,6 +396,23 @@ const InterestRateListing = (props) => {
     const selectedRows = gridApi?.getSelectedRows()
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
   }
+
+  const onExcelDownload = () => {
+    setState(prevState => ({ ...prevState, disableDownload: true }))
+    dispatch(disabledClass(true))
+    let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+    if (tempArr?.length > 0) {
+        setTimeout(() => {
+            setState(prevState => ({ ...prevState, disableDownload: false }))
+            dispatch(disabledClass(false))
+            let button = document.getElementById('Excel-Downloads-Interest-Master')
+            button && button.click()
+        }, 400);
+    } else {
+        getDataList(null, null, null, null, 0, globalTakes, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+    }
+  }
+
   const INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(INTERESTRATE_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = []
@@ -459,7 +478,7 @@ const InterestRateListing = (props) => {
     dispatch(setSelectedRowForPagination([]))
     dispatch(resetStatePagination())
     setState((prevState) => ({ ...prevState, dataCount: 0 }))
-}
+  }
   const { toggleForm, data, isBulkUpload, noData, dataCount } = state;
   const ExcelFile = ReactExport.ExcelFile;
   const isFirstColumn = (params) => {
@@ -517,12 +536,15 @@ const InterestRateListing = (props) => {
                     {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&
                       <>
+                        <Button className="user-btn mr5 Tour_List_Download" id={"interestRateListing_excel_download"} onClick={onExcelDownload} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                            icon={"download mr-1"}
+                            buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                        />
                         <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
-                          <Button id={"Excel-Downloads-interestRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
-                          {state?.totalRecordCount !== 0 ? onBtExport() : null}
+                            <Button id={"Excel-Downloads-Interest-Master"} className="p-absolute" />}>
+                            {onBtExport()}
                         </ExcelFile>
                       </>
-
                     }
                     <Button id={"interestRateListing_refresh"} className={"Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                   </div>

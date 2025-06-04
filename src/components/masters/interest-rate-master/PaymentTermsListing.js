@@ -7,13 +7,12 @@ import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getInterestRateDataList, deleteInterestRate } from '../actions/InterestRateMaster';
 import DayTime from '../../common/DayTimeWrapper'
-import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
-import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
+import { InterestMaster } from '../../../config/constants';
+import { getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
-import { INTERESTRATE_DOWNLOAD_EXCEl, PAYMENTTERMS_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { PAYMENTTERMS_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -65,7 +64,8 @@ const PaymentTermsListing = (props) => {
     dataCount: 0,
     showExtraData: false,
     totalRecordCount: 0,
-    globalTake: defaultPageSize
+    globalTake: defaultPageSize,
+    disableDownload: false
   })
   const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
@@ -157,6 +157,7 @@ const PaymentTermsListing = (props) => {
         dispatch(updatePageNumber(0))
       }
 
+      // CODE FOR DOWNLOAD BUTTON LOGIC
       if (res && isPagination === false) {
           setDisableDownload(false)
           dispatch(disabledClass(false))
@@ -378,7 +379,6 @@ const PaymentTermsListing = (props) => {
       state.gridColumnApi = params.columnApi
       setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }));
       params.api.paginationGoToPage(0);
-      // params.api.sizeColumnsToFit();
   };
 
   const onSearch = () => {
@@ -403,6 +403,22 @@ const PaymentTermsListing = (props) => {
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (interestRateDataList ? interestRateDataList : [])
     return returnExcelColumn(PAYMENTTERMS_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
+
+  const onExcelDownload = () => {
+    setState(prevState => ({ ...prevState, disableDownload: true }))
+    dispatch(disabledClass(true))
+    let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+    if (tempArr?.length > 0) {
+        setTimeout(() => {
+            setState(prevState => ({ ...prevState, disableDownload: false }))
+            dispatch(disabledClass(false))
+            let button = document.getElementById('Excel-Downloads-Payment-Terms')
+            button && button.click()
+        }, 400);
+    } else {
+        getDataList(null, null, null, null, 0, globalTakes, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+    }
+  }
 
   const returnExcelColumn = (data = [], TempData) => {
     let excelData = hideCustomerFromExcel(data, "CustomerName")
@@ -511,9 +527,13 @@ const PaymentTermsListing = (props) => {
                     {BulkUploadAccessibility && (<Button id="paymentTermsListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&
                       <>
-                        <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
-                          <Button id={"Excel-Downloads-paymentTermsListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
-                          {state?.totalRecordCount !== 0 ? onBtExport() : null}
+                        <Button className="user-btn mr5 Tour_List_Download" id={"paymentTermsListing_excel_download"} onClick={onExcelDownload} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                            icon={"download mr-1"}
+                            buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                        />
+                        <ExcelFile filename={'Payment Terms'} fileExtension={'.xls'} element={
+                            <Button id={"Excel-Downloads-Payment-Terms"} className="p-absolute" />}>
+                            {onBtExport()}
                         </ExcelFile>
                       </>
                     }
