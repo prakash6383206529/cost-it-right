@@ -185,19 +185,6 @@ function ReportListing(props) {
 
     }, [statusColumnData])
 
-    useEffect(() => {
-        dispatch(fetchCostingHeadsAPI('master', false,false, res => {
-            if (res) {
-                let temp = []
-                res?.data?.SelectList && res?.data?.SelectList.map((item) => {
-                    if (item.Value === '0' || item.Text === 'Net Cost') return false;
-                    temp.push({ label: item.Text, value: item.Value })
-                    return null;
-                })
-                setApplicabilityDropdown(temp)
-            }
-        }))
-    }, [])
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         //return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
@@ -1125,18 +1112,10 @@ function ReportListing(props) {
                             <AgGridColumn field='TransportationCost' headerName='Extra Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetSurfaceTreatmentCost' headerName='Net Surface Treatment Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='ModelTypeForOverheadAndProfit' headerName='Model Type' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='OverheadApplicability' headerName='Overhead Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead} ></AgGridColumn>
-                            <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage (Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
-                            <AgGridColumn field='OverheadCombinedCost' headerName='Overhead Combined Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                            <AgGridColumn field='ProfitApplicability' headerName='Profit Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit} ></AgGridColumn>
-                            <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage (Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                            <AgGridColumn field='OverheadCombinedCost' headerName='Overhead Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                            <AgGridColumn field='RejectionApplicability' cellClass={"customDropdown"} headerName='Rejection Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRejection}></AgGridColumn>
-                            <AgGridColumn field='RejectionPercentage' headerName='Rejection Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='RejectionCost' headerName='Rejection Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                            <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn>
-                            <AgGridColumn field='ICCInterestRate' headerName='ICC Interest Rate' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetICCCost' headerName='Net ICC Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='PackagingCostPercentage' headerName='Packaging Cost Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='PackagingCost' headerName='Packaging Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
