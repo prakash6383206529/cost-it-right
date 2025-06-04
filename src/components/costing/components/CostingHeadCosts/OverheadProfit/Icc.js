@@ -24,14 +24,15 @@ let counter = 0;
 function Icc(props) {
 
     const { Controller, control, register, data, setValue, getValues, errors, useWatch } = props
-    
+
     const headerCosts = useContext(netHeadCostContext);
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
 
-    
+
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-    const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData,costingDetailForIcc } = useSelector(state => state.costing)
+    const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData, costingDetailForIcc } = useSelector(state => state.costing)
+
     const ICCApplicabilityDetail = costingDetailForIcc && costingDetailForIcc.ICCApplicabilityDetail !== null ? costingDetailForIcc.ICCApplicabilityDetail : {}
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
     const [tempInventoryObj, setTempInventoryObj] = useState(ICCApplicabilityDetail)
@@ -48,7 +49,7 @@ function Icc(props) {
     const { CostingEffectiveDate, IsCalculatorExist } = useSelector(state => state.costing)
     const [state, setState] = useState({
         iccDetails: ICCApplicabilityDetail?.ICCCostingApplicabilityDetails,
-        modelType: Object.keys(InventoryObj).length !== 0?{ label: InventoryObj?.ICCModelType, value: InventoryObj?.ICCModelTypeId } : '',
+        modelType: Object.keys(InventoryObj).length !== 0 ? { label: InventoryObj?.ICCModelType, value: InventoryObj?.ICCModelTypeId } : '',
         isApplyInventoryDay: ICCApplicabilityDetail?.IsApplyInventoryDay,
         iccMethod: InventoryObj?.ICCMethod,
         openCalculatorIcc: false,
@@ -57,7 +58,7 @@ function Icc(props) {
         totalIccNetCost: costingDetailForIcc?.NetICC,
         markUpFactor: ICCApplicabilityDetail?.MarkupFactor
     })
-    
+
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData?.CostingTypeId === WACTypeId)
 
@@ -88,7 +89,8 @@ function Icc(props) {
         }))
     }, [])
     useEffect(() => {
-        dispatch(setIccCost({ NetCost:costingDetailForIcc?.NetICC}))
+        dispatch(setIccCost({ NetCost: costingDetailForIcc?.NetICC }))
+        callModelTypeApi(state.modelType)
     }, [costingDetailForIcc])
 
     /**
@@ -159,10 +161,10 @@ function Icc(props) {
                     let cost = 0;
                     switch (item.Applicability) {
                         case 'RM':
-                            cost = NetRawMaterialsCost ;
+                            cost = NetRawMaterialsCost;
                             break;
                         case 'BOP':
-                            cost = headerCosts.NetBoughtOutPartCost ;
+                            cost = headerCosts.NetBoughtOutPartCost;
                             break;
                         case 'CC':
                             cost = ConversionCostForCalculation;
@@ -186,6 +188,7 @@ function Icc(props) {
                         totalCost = item.TotalCost;
                     } else if (IsApplyInventoryDay) {
                         totalCost = (cost * item.Percentage * item?.NoOfDays) / (365 * 100);
+
                     } else {
                         totalCost = (cost * item.Percentage) / (100);
                     }
@@ -200,7 +203,7 @@ function Icc(props) {
                     iccDetails: updatedData,
                     totalIccCost: updatedData.reduce((sum, item) => sum + item.TotalCost, 0)
                 }));
-                dispatch(setIccCost({ NetCost:updatedData.reduce((sum, item) => sum + item?.TotalCost, 0)}))
+                dispatch(setIccCost({ NetCost: updatedData.reduce((sum, item) => sum + item?.TotalCost, 0) }))
                 return;
             }
             dispatch(isIccDataChange(true))
@@ -209,19 +212,33 @@ function Icc(props) {
 
 
     useEffect(() => {
-        if(state?.iccDetails?.length > 0){
+        if (state?.iccDetails?.length > 0) {
             checkInventoryApplicability(state?.iccDetails, state?.isApplyInventoryDay)
         }
     }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight, includeOverHeadProfitIcc, totalOverHeadAndProfit, includeToolCostIcc]);
 
     useEffect(() => {
+        
+        if(state.iccDetails && state.iccDetails?.length>0){
+            const totalIccNetCost = state.iccDetails.reduce((sum, item) => {
+                return sum + (item.TotalCost || 0);
+            }, 0);
+            
+            // Now set it in state
+            setState(prev => ({
+                ...prev,
+                totalIccNetCost: totalIccNetCost
+            }));
+            setValue('totalIccNetCost',checkForDecimalAndNull(totalIccNetCost, getConfigurationKey()?.NoOfDecimalForPrice))
+        }
         // Only update if either InventoryObj or iccDetails have meaningful changes
         const hasChanges = JSON.stringify(InventoryObj) !== JSON.stringify(tempInventoryObj) ||
             JSON.stringify(state.iccDetails) !== JSON.stringify(tempInventoryObj?.ICCCostingApplicabilityDetails);
         if (hasChanges && !CostingViewMode) {
             const tempObj = {
                 ...InventoryObj,
-                ICCCostingApplicabilityDetails: state.iccDetails
+                Remark: getValues('iccRemark'),
+                ICCCostingApplicabilityDetails: includeOverHeadProfitIcc ? state.iccDetails : state.iccDetails.filter(item => item.Applicability !== 'Overhead' && item.Applicability !== 'Profit')
             }
             props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
         }
@@ -266,24 +283,7 @@ function Icc(props) {
         }
         button.click()
     }
-    const handleModelTypeChange = (ModelTypeValues, IsDropdownClicked) => {
-        setState(prev => ({
-            ...prev,
-            IsDropdownClicked: IsDropdownClicked,
-            iccDetails: [],
-            isApplyInventoryDay: false,
-            modelType: ModelTypeValues,
-            totalIccPayable: 0,
-            totalIccReceivable: 0,
-            totalIccNetCost: 0
-        }))
-        setValue('ICCMethod', '')
-        setValue('InventoryDayType', '')
-        setValue('totalIccPayable', 0)
-        setValue('totalIccReceivable', 0)
-        setValue('totalIccNetCost', 0)
-        dispatch(setIsCalculatorExist(false))
-        dispatch(setIccCost({ NetCost:0}))
+    const callModelTypeApi = (ModelTypeValues) => {
         if (ModelTypeValues && ModelTypeValues !== '' && ModelTypeValues.value !== undefined) {
             const reqParams = {
                 ModelTypeId: ModelTypeValues.value,
@@ -308,15 +308,37 @@ function Icc(props) {
                     isApplyInventoryDay: data?.IsApplyInventoryDay,
                     iccMethod: data?.ICCMethod
                 }))
-                if(data?.ICCMethod==='Credit Based'){
+                if (data?.ICCMethod === 'Credit Based') {
                     dispatch(setDisableIccCheckBox(true))
-                }else{
+                } else {
                     dispatch(setDisableIccCheckBox(false))
                 }
                 setICCInterestRateId(data?.InterestRateId)
-                    checkInventoryApplicability(data?.ICCCostingApplicabilityDetails, data?.IsApplyInventoryDay)
+                checkInventoryApplicability(data?.ICCCostingApplicabilityDetails, data?.IsApplyInventoryDay)
             }))
-        dispatch(isIccDataChange(true))
+            dispatch(isIccDataChange(true))
+        }
+    }
+    const handleModelTypeChange = (ModelTypeValues, IsDropdownClicked) => {
+        setState(prev => ({
+            ...prev,
+            IsDropdownClicked: IsDropdownClicked,
+            iccDetails: [],
+            isApplyInventoryDay: false,
+            modelType: ModelTypeValues,
+            totalIccPayable: 0,
+            totalIccReceivable: 0,
+            totalIccNetCost: 0
+        }))
+        setValue('ICCMethod', '')
+        setValue('InventoryDayType', '')
+        setValue('totalIccPayable', 0)
+        setValue('totalIccReceivable', 0)
+        setValue('totalIccNetCost', 0)
+        dispatch(setIsCalculatorExist(false))
+        dispatch(setIccCost({ NetCost: 0 }))
+        if (ModelTypeValues && ModelTypeValues !== '' && ModelTypeValues.value !== undefined) {
+            callModelTypeApi(ModelTypeValues)
         } else {
             setState(prev => ({
                 ...prev,
@@ -415,7 +437,7 @@ function Icc(props) {
                 totalIccNetCost: formData?.NetICC,
                 markUpFactor: formData?.MarkupFactor
             }))
-            dispatch(setIccCost({ NetCost:formData?.NetICC}))
+            dispatch(setIccCost({ NetCost: formData?.NetICC }))
             setValue('totalIccPayable', checkForDecimalAndNull(formData?.ICCPayableToSupplierCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('totalIccReceivable', checkForDecimalAndNull(formData?.ICCReceivableFromSupplierCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('totalIccNetCost', checkForDecimalAndNull(formData?.NetICC, getConfigurationKey()?.NoOfDecimalForPrice))
@@ -428,7 +450,7 @@ function Icc(props) {
             })
             dispatch(setIsCalculatorExist(true))
             dispatch(isIccDataChange(true))
-            
+
         } else {
             dispatch(setIsCalculatorExist(false))
         }
@@ -442,7 +464,7 @@ function Icc(props) {
         <>
             {/* <Row className="mt-15 pt-15 here">
                 <Col md="12" className="switch mb-2"> */}
-                    {/* <label className="switch-level" id="Inventory_Carrying_Cost_switch">
+            {/* <label className="switch-level" id="Inventory_Carrying_Cost_switch">
                         <Switch
                             onChange={onPressInventory}
                             checked={IsInventoryApplicable}
@@ -459,55 +481,55 @@ function Icc(props) {
                         />
                         <div className={'right-title'}>Inventory Carrying Cost</div>
                     </label> */}
-                {/* </Col>
+            {/* </Col>
             </Row> */}
 
             {
                 <>
-                <Row>
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            label={'Model Type for Icc'}
-                            name={'ModelTypeIcc'}
-                            placeholder={'Select'}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: false }}
-                            register={register}
-                            defaultValue={state.modelType && Object.keys(state.modelType).length !== 0 ? state.modelType : ''}
-                            options={state.modelTypeList}
-                            mandatory={false}
-                            disabled={CostingViewMode ? true : false}
-                            handleChange={(ModelTypeValues) => {
-                                handleModelTypeChange(ModelTypeValues, true)
-                            }}
-                            errors={errors.ModelTypeIcc}
-                            isClearable={true}
-                        />
-                    </Col>
-                    {initialConfiguration?.IsShowCRMHead && 
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            name={`crmHeadIcc`}
-                            type="text"
-                            label="CRM Head"
-                            errors={errors.crmHeadIcc}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            rules={{
-                                required: false,
-                            }}
-                            placeholder={'Select'}
-                            options={CRMHeads}
-                            required={false}
-                            handleChange={handleCrmHeadChange}
-                            disabled={CostingViewMode}
-                        />
-                    </Col>
-                    }
-                </Row>
+                    <Row>
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={'Model Type for Icc'}
+                                name={'ModelTypeIcc'}
+                                placeholder={'Select'}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                defaultValue={state.modelType && Object.keys(state.modelType).length !== 0 ? state.modelType : ''}
+                                options={state.modelTypeList}
+                                mandatory={false}
+                                disabled={CostingViewMode ? true : false}
+                                handleChange={(ModelTypeValues) => {
+                                    handleModelTypeChange(ModelTypeValues, true)
+                                }}
+                                errors={errors.ModelTypeIcc}
+                                isClearable={true}
+                            />
+                        </Col>
+                        {initialConfiguration?.IsShowCRMHead &&
+                            <Col md="3">
+                                <SearchableSelectHookForm
+                                    name={`crmHeadIcc`}
+                                    type="text"
+                                    label="CRM Head"
+                                    errors={errors.crmHeadIcc}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                        required: false,
+                                    }}
+                                    placeholder={'Select'}
+                                    options={CRMHeads}
+                                    required={false}
+                                    handleChange={handleCrmHeadChange}
+                                    disabled={CostingViewMode}
+                                />
+                            </Col>
+                        }
+                    </Row>
                     <Row>
                         <Col md="3">
                             <TextFieldHookForm
@@ -572,11 +594,27 @@ function Icc(props) {
                                         customClassName={"withBorder"}
                                         defaultValue={InventoryObj?.CreditBasedAnnualICCPercent}
                                     />
-                                </Col>)}
+                                </Col>)
+                        }
+                       {state.iccMethod !== 'Credit Based' &&  <Col md="3">
+                            <TextFieldHookForm
+                                name="totalIccNetCost"
+                                label="ICC Net Cost"
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                placeholder="-"
+                                mandatory={false}
+                                handleChange={() => { }}
+                                disabled={true}
+                                customClassName={"withBorder"}
+                                defaultValue={checkForDecimalAndNull(state.totalIccNetCost, getConfigurationKey()?.NoOfDecimalForPrice)}
+                            />
+                        </Col>}
                         {state.iccMethod === 'Credit Based' &&
                             <>
                                 <Col md="3">
-                                    <label>Calculator ICC</label>
+                                    <label>ICC Calculator</label>
                                     <div>
                                         <button
                                             id={`calculatorIcc`}
@@ -599,7 +637,7 @@ function Icc(props) {
                                         handleChange={() => { }}
                                         disabled={true}
                                         customClassName={"withBorder"}
-                                        defaultValue={checkForDecimalAndNull(state.totalIccPayable,getConfigurationKey()?.NoOfDecimalForPrice)}
+                                        defaultValue={checkForDecimalAndNull(state.totalIccPayable, getConfigurationKey()?.NoOfDecimalForPrice)}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -614,7 +652,7 @@ function Icc(props) {
                                         handleChange={() => { }}
                                         disabled={true}
                                         customClassName={"withBorder"}
-                                        defaultValue={checkForDecimalAndNull(state.totalIccReceivable,getConfigurationKey()?.NoOfDecimalForPrice)}
+                                        defaultValue={checkForDecimalAndNull(state.totalIccReceivable, getConfigurationKey()?.NoOfDecimalForPrice)}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -629,12 +667,12 @@ function Icc(props) {
                                         handleChange={() => { }}
                                         disabled={true}
                                         customClassName={"withBorder"}
-                                        defaultValue={checkForDecimalAndNull(state.totalIccNetCost,getConfigurationKey()?.NoOfDecimalForPrice)}
+                                        defaultValue={checkForDecimalAndNull(state.totalIccNetCost, getConfigurationKey()?.NoOfDecimalForPrice)}
                                     />
                                 </Col>
                                 <Col md="3">
-                                <label>Remark</label>
-                                <Popup trigger={<button id={`popUpTriggerIcc`} title="Remark" className="Comment-box mt10" type={'button'} />}
+                                    <label>Remark</label>
+                                    <Popup trigger={<button id={`popUpTriggerIcc`} title="Remark" className="Comment-box mt10" type={'button'} />}
                                         position="top center">
                                         <TextAreaHookForm
                                             label="Remark:"
@@ -678,39 +716,40 @@ function Icc(props) {
                                 isViewMode={CostingViewMode}
                                 setValue={setValue}
                                 includeOverHeadProfitIcc={includeOverHeadProfitIcc}
+                                isCreditBased={state.iccMethod === 'Credit Based'}
                             />
                         </Col>
                         <Col md="1" className='second-section mb-3'>
-                                <div className='costing-border-inner-section'>
+                            <div className='costing-border-inner-section'>
                                 <Col md="12" className='text-center pb-2 text-black'>Remark</Col>
                                 <Col md="12">
-                                <Popup trigger={<button id={`popUpTriggerIcc`} title="Remark" className="Comment-box mt10" type={'button'} />}
-                                    position="top center">
-                                    <TextAreaHookForm
-                                        label="Remark:"
-                                        name={`iccRemark`}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            maxLength: REMARKMAXLENGTH
-                                        }}
-                                        handleChange={() => { }}
-                                        className=""
-                                        customClassName={"withBorder"}
-                                        errors={errors.iccRemark}
-                                        disabled={CostingViewMode}
-                                        hidden={false}
-                                        validateWithRemarkValidation={true}
-                                    />
-                                    <Row>
-                                        <Col md="12" className='remark-btn-container'>
-                                            <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickIcc()} > <div className='save-icon'></div> </button>
-                                            <button className='reset' onClick={() => onRemarkPopUpCloseIcc()} > <div className='cancel-icon'></div></button>
-                                        </Col>
-                                    </Row>
-                                </Popup>
+                                    <Popup trigger={<button id={`popUpTriggerIcc`} title="Remark" className="Comment-box mt10" type={'button'} />}
+                                        position="top center">
+                                        <TextAreaHookForm
+                                            label="Remark:"
+                                            name={`iccRemark`}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{
+                                                maxLength: REMARKMAXLENGTH
+                                            }}
+                                            handleChange={() => { }}
+                                            className=""
+                                            customClassName={"withBorder"}
+                                            errors={errors.iccRemark}
+                                            disabled={CostingViewMode}
+                                            hidden={false}
+                                            validateWithRemarkValidation={true}
+                                        />
+                                        <Row>
+                                            <Col md="12" className='remark-btn-container'>
+                                                <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickIcc()} > <div className='save-icon'></div> </button>
+                                                <button className='reset' onClick={() => onRemarkPopUpCloseIcc()} > <div className='cancel-icon'></div></button>
+                                            </Col>
+                                        </Row>
+                                    </Popup>
                                 </Col>
                             </div>
                         </Col>
