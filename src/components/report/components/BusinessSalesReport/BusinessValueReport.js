@@ -363,7 +363,7 @@ const BusinessValueReport = ({ }) => {
           const name = _.get(item, 'GroupByValue', '')
           const truncatedPercentage = truncateToTwoDecimals(item.TotalCostPercentage)
           const totalCost = truncateToTwoDecimals(item.TotalCost)
-          labelArray.push(`${name}: ${truncatedPercentage} (${totalCost})`)
+          labelArray.push(`${name} (${totalCost})`)
         return truncatedPercentage
       })
     setPieChartDataArray(dataArray)
@@ -649,7 +649,7 @@ const BusinessValueReport = ({ }) => {
           {graphAccordian && (
             <div className='column-data'>
               <div className='mb-2'>
-                <h6>{_.size(reportDetailsByGroup) ? 'All value is showing in Percentage (Total Cost)' : 'No data to show'}</h6>
+                <h6>{_.size(reportDetailsByGroup) ? 'All value is showing in (Total Cost): Percentage' : 'No data to show'}</h6>
               </div>
               {_.size(reportDetailsByGroup) > 0 && <Costratiograph data={pieChartData} options={pieChartOption} />}
             </div>
