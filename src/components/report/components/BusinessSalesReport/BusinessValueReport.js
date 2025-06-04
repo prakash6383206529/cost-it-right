@@ -29,11 +29,13 @@ import { Costratiograph } from "../../../dashboard/CostRatioGraph";
 import { colorArray } from "../../../dashboard/ChartsDashboard";
 import { PaginationWrapper } from "../../../common/commonPagination";
 
-const BusinessValueReport = ({ }) => {
+const BusinessValueReport = ({ }) => { 
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const gridOptions = {}
   const { control, register, getValues, setValue, handleSubmit, formState: { errors } } = useForm();
   const [partTypeList, setPartTypeList] = useState([])
   const [isLoader, setIsLoader] = useState(false);
+  const [groupBy, setGroupBy] = useState({});
   const [vendorName, setVendorName] = useState('')
   const [partName, setPartName] = useState('')
   const [isTechnologySelected, setIsTechnologySelected] = useState(false)
@@ -62,7 +64,8 @@ const BusinessValueReport = ({ }) => {
   const { productHierarchyData, productDataList, nepNumberSelectList } = useSelector((state) => state.part)
   const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
-
+  const group = initialConfiguration?.BusinessValueSummaryHeadDefault
+  
   useEffect(() => {
     if (businessValueReportData) {
       setTableData(businessValueReportData.ReportDetails)
@@ -70,6 +73,14 @@ const BusinessValueReport = ({ }) => {
       setReportDetailsByGroup(businessValueReportData.ReportDetailsByGroup)
     }
   }, [businessValueReportData])
+
+  useEffect(() => {
+    if (!businessValueReportHeads || !group) return;
+    const matchedItem = businessValueReportHeads.find(item => item.Value === group);
+    if (matchedItem) {
+      setValue('GroupBy', { label: matchedItem.Text, value: group });
+    }
+  }, [businessValueReportHeads, group, setValue]);
 
   const dispatch = useDispatch()
 
@@ -146,7 +157,7 @@ const BusinessValueReport = ({ }) => {
         })
       return temp
     }
-    if (label === 'PartModelName') {
+    if (label === 'PartModelName') {      
       partModelOptions && partModelOptions.map((item) => {
         if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
@@ -615,7 +626,7 @@ const BusinessValueReport = ({ }) => {
                   control={control}
                   rules={{ required: false }}
                   register={register}
-                  defaultValue={''}
+                  defaultValue={groupBy}
                   options={renderListing('GroupBy')}
                   mandatory={false}
                   handleChange={(e) => handleSelectFieldChange('GroupBy', e)}
