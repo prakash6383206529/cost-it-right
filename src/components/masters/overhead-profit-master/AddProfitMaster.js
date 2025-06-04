@@ -130,25 +130,25 @@ const AddProfitMaster = (props) => {
 
   useEffect(() => {
     if (!(props?.data?.isEditFlag || state.isViewMode)) {
-      const hasRequiredFields = (
+      const hasRequiredFields = !!(
         (state.costingTypeId === ZBCTypeId) ||
         (state.costingTypeId === CBCTypeId && state?.client) ||
         (state.costingTypeId === VBCTypeId && state?.vendorName)
       );
-      if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
-        const { plantArray, cbcPlantArray } = getPlants();
-
-        let data = {
-          profitId: state?.ProfitID ?? null,
-          modelTypeId: state?.ModelType?.value,
-          costingHeadId: state?.costingTypeId,
-          plantId: state?.costingTypeId === CBCTypeId ? cbcPlantArray[0]?.PlantId : plantArray[0]?.PlantId,
-          vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
-          customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
-          effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-          technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
-          partFamilyId: state?.selectedPartFamily?.value
-        }
+      const { plantArray, cbcPlantArray } = getPlants();
+      let data = {
+        profitId: state?.ProfitID ?? null,
+        modelTypeId: state?.ModelType?.value,
+        costingHeadId: state?.costingTypeId,
+        plantId: state?.costingTypeId === CBCTypeId ? cbcPlantArray[0]?.PlantId : plantArray[0]?.PlantId,
+        vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
+        customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
+        effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null,
+        partFamilyId: state?.selectedPartFamily?.value
+      }
+      let showPartFamily = getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily
+      if(hasRequiredFields && data?.modelTypeId && data?.plantId && (!showPartFamily || data?.partFamilyId) && data?.effectiveDate){
         dispatch(getProfitDataCheck(data, (res) => {
           if (res?.status === 200) {
             let Data = res?.data?.Data;
