@@ -28,7 +28,7 @@ function CostingHeadDropdownFilter(props) {
     const { vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
     const getLocalizedOptions = () => {
-        const localizedOptions = CostingHeadOptions.map(option => {
+        const localizedOptions = CostingHeadOptions.length > 0 && CostingHeadOptions?.map(option => {
             switch (option.value) {
                 case '2':
                     return { ...option, label: vendorBasedLabel };
