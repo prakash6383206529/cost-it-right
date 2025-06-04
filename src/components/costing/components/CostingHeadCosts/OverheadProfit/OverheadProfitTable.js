@@ -1,6 +1,6 @@
 import React from 'react';
 import { Col, Row } from 'reactstrap';
-import { checkForDecimalAndNull } from '../../../../../helper';
+import { checkForDecimalAndNull, number, checkWhiteSpaces, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from '../../../../../helper';
 import { TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import Popup from 'reactjs-popup';
 import { REMARKMAXLENGTH } from '../../../../../config/masterData';
@@ -80,6 +80,10 @@ const OverheadProfitTable = ({
             Controller={Controller}
             control={control}
             register={register}
+            rules={{
+              required: false,
+              validate: { number, checkWhiteSpaces, positiveAndDecimalNumber, maxLength10, decimalLengthsix },
+            }}
             mandatory={false}
             handleChange={(e) => onCostChange(e, item)}
             defaultValue={item.Cost !== null ? checkForDecimalAndNull(item.Cost, initialConfiguration?.NoOfDecimalForPrice) : ''}
