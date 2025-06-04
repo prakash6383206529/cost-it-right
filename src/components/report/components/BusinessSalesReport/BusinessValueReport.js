@@ -35,7 +35,6 @@ const BusinessValueReport = ({ }) => {
   const { control, register, getValues, setValue, handleSubmit, formState: { errors } } = useForm();
   const [partTypeList, setPartTypeList] = useState([])
   const [isLoader, setIsLoader] = useState(false);
-  const [groupBy, setGroupBy] = useState({});
   const [vendorName, setVendorName] = useState('')
   const [partName, setPartName] = useState('')
   const [isTechnologySelected, setIsTechnologySelected] = useState(false)
@@ -626,7 +625,7 @@ const BusinessValueReport = ({ }) => {
                   control={control}
                   rules={{ required: false }}
                   register={register}
-                  defaultValue={groupBy}
+                  defaultValue={''}
                   options={renderListing('GroupBy')}
                   mandatory={false}
                   handleChange={(e) => handleSelectFieldChange('GroupBy', e)}
