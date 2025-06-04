@@ -911,7 +911,7 @@ function OverheadProfit(props) {
               setRejectionDetail={props.setRejectionDetail}
             />
 
-            <Icc
+            {/* <Icc
               Controller={Controller}
               control={control}
               //  rules={rules}
@@ -924,7 +924,7 @@ function OverheadProfit(props) {
               CostingInterestRateDetail={CostingInterestRateDetail}
               data={data}
               setICCDetail={props.setICCDetail}
-            />
+            /> */}
             <Row className=" no-gutters justify-content-between btn-sticky-container overhead-profit-save-btn">
               <div className="col-sm-12 text-right bluefooter-butn ">
             <WarningMessage  message={'When you make any changes in RM + CC, Surface Treatment, or Tool Cost, you need to save the updated values.'} />

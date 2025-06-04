@@ -697,7 +697,53 @@ class AddLabour extends Component {
    */
   updateGrid = () => {
     const { machineType, labourType, gridTable, effectiveDate, gridEditIndex, efficiency, workingHours } = this.state
-    const { fieldsObj } = this.props
+    const { fieldsObj, initialConfiguration } = this.props
+    let count = 0
+    const errorObj = { ...this.state.errorObj }    
+    const isInvalid = (val) => val === '' || val === 0 || val === null || val === undefined
+
+    if (machineType.length === 0) {
+      errorObj.machineType = true
+      count++
+    }
+    if (labourType.length === 0) {
+      errorObj.labourType = true
+      count++
+    }
+    if (isInvalid(fieldsObj?.LabourRateConversion) || isInvalid(fieldsObj?.LabourRate)) {
+      errorObj.labourRate = true
+      count++
+    }
+    if (isInvalid(fieldsObj?.LabourRatePerMonthConversion) || isInvalid(fieldsObj?.LabourRatePerMonth)) {
+      errorObj.labourRatePerMonth = true
+      errorObj.labourRatePerMonthConversion = true
+      count++
+    }
+    if (isInvalid(fieldsObj?.LabourRatePerShiftConversion) || isInvalid(fieldsObj?.LabourRatePerShift)) {
+      errorObj.labourRatePerShift = true
+      errorObj.labourRatePerShiftConversion = true
+      count++
+    }
+    if (isInvalid(fieldsObj?.NoOfDays)) {
+      errorObj.NoOfDays = true
+      count++
+    }
+    if (isInvalid(effectiveDate)) {
+      errorObj.effectiveDate = true
+      count++
+    }
+    if (initialConfiguration?.IsLabourEfficiencyFieldRequired && (isInvalid(efficiency))) {
+      errorObj.efficiency = initialConfiguration?.IsLabourEfficiencyFieldRequired
+      count++
+    }
+    if (isInvalid(workingHours)) {
+      errorObj.workingHours = true
+      count++
+    }
+    this.setState({ errorObj })
+    if (count > 0) {
+      return false
+    }
     const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj?.LabourRate) : 0
     const LabourRateConversion = this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") ? checkForNull(fieldsObj?.LabourRateConversion) : checkForNull(fieldsObj?.LabourRate)
     const LabourRatePerMonth = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj?.LabourRatePerMonth) : 0

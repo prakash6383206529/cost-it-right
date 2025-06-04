@@ -6,7 +6,7 @@ import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation, decimalNumberLimit8And7, positiveAndDecimalNumber, loggedInUserId, innerVsOuterValidation } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
-import { KG, EMPTY_DATA, DEFAULTRMPRESSURE } from '../../../../../config/constants'
+import { KG, EMPTY_DATA, DEFAULTRMPRESSURE, RM_PRESSURE_MAP } from '../../../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -191,13 +191,14 @@ function StandardRub(props) {
         return Area;
     }
 
-    const calculateTonnage = () => {
-        const Area = calculateArea();
-        const Tonnage = (Area * DEFAULTRMPRESSURE) / 1000;
-        if (Tonnage) {
-            return Tonnage;
-        }
-    }
+    const calculateTonnage = (type) => {
+        const rmName = (rmRowDataState?.RMName?.split(" - ")[0]?.trim())?.toUpperCase();
+        const pressureArr = RM_PRESSURE_MAP[rmName] ? RM_PRESSURE_MAP[rmName] : [DEFAULTRMPRESSURE, DEFAULTRMPRESSURE];
+        const pressure = type === "MinTonnage" ? pressureArr[0] : pressureArr[1];
+        const area = calculateArea();
+        const tonnage = (area * pressure) / 1000;
+        return tonnage
+    };
 
 
     const handleRMDropDownChange = (e) => {
@@ -391,12 +392,11 @@ function StandardRub(props) {
             RawMaterialId: rmRowDataState.RawMaterialId,
             IsVolumeAutoCalculate: isVolumeAutoCalculate,
             Area: calculateArea(),
-            Tonnage: calculateTonnage()
+            Tonnage: calculateTonnage("Tonnage"),
+            MinimumTonnage: calculateTonnage("MinTonnage"),
         }
-        console.log(obj, "obj")
-
+        console.log("Obj",obj)
         const lastRow = tableData[tableData.length - 1]
-        console.log(lastRow, "lastRow")
         const validationFields = [
             ...(isVolumeAutoCalculate ? ["OuterDiameter"] : ["Volume"]),
             "FinishWeight",
@@ -405,7 +405,6 @@ function StandardRub(props) {
             ...(isVolumeAutoCalculate && (!(tableData.length > 0) || lastRow?.Length === 0) ? ["Length"] : []),
             // ...((getConfigurationKey()?.IsCalculateVolumeForPartInRubber && !isVolumeAutoCalculate) && (!(tableData.length > 0) || (!isVolumeAutoCalculate && lastRow?.ScrapPercentage === 0) ? ['ScrapPercentage'] : []))
         ];
-        console.log(validationFields, "validationFields")
         const isValid = await trigger(validationFields);
         if (!isValid) {
             return false;
@@ -531,9 +530,7 @@ function StandardRub(props) {
         obj.BaseCostingId = item?.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialRubberStandardWeightCalculator = tableData
-        obj.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? tableData?.reduce((max, item) => {
-            return Math.max(max, item.Tonnage);
-        }, 0) : null;
+        obj.MinimumMachineTonnageRequired = getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting ? Math.min(...tableData.map(item => item.MinimumTonnage)) : null;
         obj.usedRmData = usedRmData
 
         if (unUsedRmData.length > 0) {

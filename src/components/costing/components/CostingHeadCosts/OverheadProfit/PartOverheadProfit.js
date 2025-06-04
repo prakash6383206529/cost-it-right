@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import {
   getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
-  saveDiscountOtherCostTab, isOverheadProfitDataChange, openCloseStatus, setOverheadProfitData, saveCostingPaymentTermDetail
+  saveDiscountOtherCostTab, isOverheadProfitDataChange, openCloseStatus, setOverheadProfitData, saveCostingPaymentTermDetail,
+  setIsCalculatorExist
 } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
@@ -48,6 +49,7 @@ function PartOverheadProfit(props) {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0]?.CostingPartDetails;
             props.setPartDetails(Params, Data)
+            dispatch(setIsCalculatorExist(Data?.CostingInterestRateDetail?.IsCalculatorExist))
           }
         }))
       }
@@ -149,7 +151,6 @@ function PartOverheadProfit(props) {
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.OverheadCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.OverheadCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ProfitCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ProfitCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.RejectionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.RejectionCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ICCCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ICCCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={8} className="cr-innerwrap-td overhead-profit-container">

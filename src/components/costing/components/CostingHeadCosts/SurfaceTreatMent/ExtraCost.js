@@ -317,7 +317,7 @@ function ExtraCost(props) {
         // Check if Applicability already exists in tableData (regardless of description)
         // During edit mode, exclude the current row being edited from duplicate check
         const existingCondition = tableData?.find((item, index) =>
-            item.CostingConditionMasterId === data?.Applicability?.value &&
+            item.CostingConditionMasterId === data?.Applicability?.value && item.Description === data?.CostDescription &&
             (isEditMode ? index !== editIndex : true)
         );
 

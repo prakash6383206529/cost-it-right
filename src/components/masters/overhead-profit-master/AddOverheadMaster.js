@@ -298,7 +298,7 @@ const AddOverheadMaster = (props) => {
 
       if (JSON.stringify(DataToChange?.ApplicabilityDetails) === JSON.stringify(state?.ApplicabilityDetails) && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) &&
         DropdownNotChanged) {
-        Toaster.warning('Please change the data to save Interest Rate Details');
+        Toaster.warning('Please change the data to save Overhead Details');
         return false;
       }
 
@@ -562,7 +562,7 @@ const AddOverheadMaster = (props) => {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Overhead Details
+                    <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Overhead
                       {/* {!isViewMode && <TourWrapper
                         buttonSpecificProp={{ id: "Add_Overhead_Form" }}
                         stepsSpecificProp={{
@@ -623,20 +623,21 @@ const AddOverheadMaster = (props) => {
                     </Col>
                   </Row>
 
-                  <AddOverheadMasterDetails
-                    costingTypeId={costingTypeId}
-                    state={state}
-                    setState={setState}
-                    setValue={setValue}
-                    register={register}
-                    trigger={trigger}
-                    clearErrors={clearErrors}
-                    control={control}
-                    getValues={getValues}
-                    errors={errors}
-                    isOverHeadMaster={true}
-                    isShowPartFamily={true}
-                    applicabilityLabel="Overhead"
+                  <AddOverheadMasterDetails 
+                      costingTypeId={costingTypeId}
+                      conditionTypeId={conditionTypeId}
+                      state={state}
+                      setState={setState}
+                      setValue={setValue}
+                      register={register}
+                      trigger={trigger}
+                      clearErrors={clearErrors}
+                      control={control}
+                      getValues={getValues}
+                      errors={errors}
+                      isOverHeadMaster={true}
+                      isShowPartFamily={true}
+                      applicabilityLabel="Overhead"
                   />
 
                   <Row>
@@ -665,7 +666,7 @@ const AddOverheadMaster = (props) => {
                           handleChange={handleMessageChange}
                           customClassName={'textAreaWithBorder'}
                           className=""
-                          errors={errors.remark}
+                          errors={errors.Remark}
                           disabled={isViewMode}
                           rowHeight={4.8}
                         />
