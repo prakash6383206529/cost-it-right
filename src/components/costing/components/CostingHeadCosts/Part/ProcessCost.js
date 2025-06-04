@@ -7,7 +7,7 @@ import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '.
 import AddProcess from '../../Drawers/AddProcess';
 import { calculateNetCosts, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, getOverheadAndProfitCostTotal } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL, COSTAPPLICABILITYBASIS, CRMHeads, DISPLAY_HOURS, DISPLAY_MICROSECONDS, DISPLAY_MILISECONDS, DISPLAY_MINUTES, DISPLAY_SECONDS, EMPTY_DATA, EMPTY_GUID, HOUR, MASS, MHRBASIS, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS, TIME, defaultPageSize } from '../../../../../config/constants';
+import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL, COSTAPPLICABILITYBASIS, CRMHeads, DISPLAY_HOURS, DISPLAY_MICROSECONDS, DISPLAY_MILISECONDS, DISPLAY_MINUTES, DISPLAY_SECONDS, EMPTY_DATA, EMPTY_GUID, FASTNERS, HOUR, MASS, MHRBASIS, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS, TIME, defaultPageSize } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
@@ -74,7 +74,7 @@ function ProcessCost(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource, exchangeRateData,RMCCTabData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource, exchangeRateData, RMCCTabData } = useSelector(state => state.costing)
   const { rmFinishWeight, rmGrossWeight } = props
   const [openMachineForm, setOpenMachineForm] = useState(false)
   const { processApplicabilitySelect } = useSelector(state => state.costing);
@@ -359,6 +359,7 @@ function ProcessCost(props) {
       // PROCESS UNDER THE GROUP IS UPDATING
       let tempArr = []
       let processTempData = gridData[parentCalciIndex]
+
       let tempData = listData[calciIndex]
 
       // const netCosts = calculateNetCosts(weightData?.ProcessCost, tempData?.CostingConditionNumber, "Process", weightData?.ProcessCostWithOutInterestAndDepreciation, tempData?.IsDetailed, tempData?.UOMType);
@@ -546,8 +547,8 @@ function ProcessCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = []) => {
-    console.log(rowData,"rowData")
-    const {NetRawMaterialsCost = 0, NetBoughtOutPartCost = 0} = item?.CostingPartDetails || {}
+
+    const { NetRawMaterialsCost = 0, NetBoughtOutPartCost = 0 } = item?.CostingPartDetails || {}
 
     // TO CALCULATE SUM OF ALL PROCESS'S PROCESS COST OF A PARTICULAR GROUP
     const calculateRowProcessCost = (arr) => {
@@ -577,7 +578,7 @@ function ProcessCost(props) {
         // el.CostingConditionNumber = processApplicabilitySelect?.find(type => type?.value === el?.Applicability?.value)?.label || null
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el?.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el?.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue(`${ProcessGridFields}.${index}.Applicability`, el?.CostingConditionNumber ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
+        setValue(`${ProcessGridFields}.${index}.CostingConditionNumber`, el?.CostingConditionNumber ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
         setValue(`${ProcessGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
         return null
       })
@@ -609,13 +610,13 @@ function ProcessCost(props) {
 
     if (groupNameIndex === '') {
       if (rowData.length > 0) {
-        console.log(rowData,"rowData")
+
         let rowArr = []
         rowArr = rowData && rowData.map((item) => {
-          console.log(item,"item")
+
           let processQuantityMain = 1
           if (item.UOMType === MASS) {
-            processQuantityMain = item?.Type=== MHRBASIS? rmGrossWeight ? rmGrossWeight : 1:'-'
+            processQuantityMain = item?.Type === MHRBASIS ? rmGrossWeight ? rmGrossWeight : 1 : '-'
 
           }
           // THIS IS FOR GROUP PROCESS
@@ -625,17 +626,17 @@ function ProcessCost(props) {
             let processCostResult
 
             if (el.UOMType === MASS) {
-              processQuantity = item?.Type=== MHRBASIS? rmGrossWeight ? rmGrossWeight : 1:'-'
+              processQuantity = el?.Type === MHRBASIS ? rmGrossWeight ? rmGrossWeight : 1 : '-'
             }
-            productionPerHour = item?.Type=== MHRBASIS? el.UOMType !== TIME ? '-' : findProductionPerHour(processQuantity):'-'
+            productionPerHour = el?.Type === MHRBASIS ? el.UOMType !== TIME ? '-' : findProductionPerHour(processQuantity) : '-'
             if (el.UOMType !== TIME) {
               processCostResult = {
-                processCost: item?.Type=== MHRBASIS?   el.MachineRate * processQuantity:calculateProcessCostUsingCostApplicabilityBasis(el,NetRawMaterialsCost,NetBoughtOutPartCost),
-                ProcessCostWithOutInterestAndDepreciation:  el?.MachineRateWithOutInterestAndDepreciation * processQuantity
+                processCost: el?.Type === MHRBASIS ? el.MachineRate * processQuantity : calculateProcessCostUsingCostApplicabilityBasis(el, NetRawMaterialsCost, NetBoughtOutPartCost),
+                ProcessCostWithOutInterestAndDepreciation: el?.MachineRateWithOutInterestAndDepreciation * processQuantity
               }
             } else {
-              console.log(el,'el in else')
-              processCostResult = item?.Type === MHRBASIS? findProcessCost(el.UOM, el.MachineRate, productionPerHour, el?.MachineRateWithOutInterestAndDepreciation):calculateProcessCostUsingCostApplicabilityBasis(el,NetRawMaterialsCost,NetBoughtOutPartCost)
+
+              processCostResult = el?.Type === MHRBASIS ? findProcessCost(el.UOM, el.MachineRate, productionPerHour, el?.MachineRateWithOutInterestAndDepreciation) : calculateProcessCostUsingCostApplicabilityBasis(el, NetRawMaterialsCost, NetBoughtOutPartCost)
             }
 
             return {
@@ -643,20 +644,20 @@ function ProcessCost(props) {
               ProcessDetailId: '',
               MachineId: el?.MachineId,
               MachineRateId: el?.MachineRateId,
-              MHR: item?.Type === MHRBASIS? el?.MachineRate:findApplicabilityCost(el,NetRawMaterialsCost,NetBoughtOutPartCost),
-              MHRWithOutInterestAndDepreciation:item?.Type === MHRBASIS? el?.MachineRateWithOutInterestAndDepreciation:'-',
+              MHR: el?.Type === MHRBASIS ? el?.MachineRate : findApplicabilityCost(el, NetRawMaterialsCost, NetBoughtOutPartCost),
+              MHRWithOutInterestAndDepreciation: el?.Type === MHRBASIS ? el?.MachineRateWithOutInterestAndDepreciation : '-',
               ProcessName: el?.ProcessName,
               ProcessDescription: el?.Description,
               MachineName: el?.MachineName,
-              UOM:item?.Type === MHRBASIS? el?.UOM:'-',
+              UOM: el?.Type === MHRBASIS ? el?.UOM : '-',
               UnitOfMeasurementId: el?.UnitOfMeasurementId,
               Tonnage: el?.Tonnage,
-              Quantity: item?.Type === MHRBASIS?processQuantity:'-',
+              Quantity: el?.Type === MHRBASIS ? processQuantity : '-',
               ProcessCost: processCostResult?.processCost,
               ProcessCostWithOutInterestAndDepreciation: processCostResult?.processCostWithoutInterestAndDepreciation,
-              UOMType:item?.Type === MHRBASIS? el?.UOMType:'-',
+              UOMType: el?.Type === MHRBASIS ? el?.UOMType : '-',
               UOMTypeId: el?.UnitTypeId,
-              ProductionPerHour: item?.Type === MHRBASIS? productionPerHour:'-',
+              ProductionPerHour: el?.Type === MHRBASIS ? productionPerHour : '-',
               ProcessTechnologyId: el?.ProcessTechnologyId,
               Technologies: el?.Technologies,
               ConvertedExchangeRateId: el?.ConvertedExchangeRateId === EMPTY_GUID ? null : el?.ConvertedExchangeRateId,
@@ -665,9 +666,9 @@ function ProcessCost(props) {
               CostingConditionNumber: el?.CostingConditionNumber,
               CostingConditionMasterAndTypeLinkingId: el?.CostingConditionMasterAndTypeLinkingId,
               Type: el?.Type,
-              Percentage:el?.Type === COSTAPPLICABILITYBASIS ? el?.Percentage:'-',
-              Applicability:el?.Type === COSTAPPLICABILITYBASIS ? el?.Applicability:'-',
-          }
+              Percentage: el?.Type === COSTAPPLICABILITYBASIS ? el?.Percentage : '-',
+              Applicability: el?.Type === COSTAPPLICABILITYBASIS ? el?.Applicability : '-',
+            }
           })
 
           let mainProcessCostResult;
@@ -678,16 +679,16 @@ function ProcessCost(props) {
             }
           } else {
             if (item.UOMType !== TIME) {
-              console.log(item,"item in else")
+
               mainProcessCostResult = {
-                
-                processCost:  item?.Type === MHRBASIS? item.MachineRate * processQuantityMain:calculateProcessCostUsingCostApplicabilityBasis(item,NetRawMaterialsCost,NetBoughtOutPartCost),
+
+                processCost: item?.Type === MHRBASIS ? item.MachineRate * processQuantityMain : calculateProcessCostUsingCostApplicabilityBasis(item, NetRawMaterialsCost, NetBoughtOutPartCost),
                 ProcessCostWithOutInterestAndDepreciation: item?.MachineRateWithOutInterestAndDepreciation * processQuantityMain
               }
-              console.log(mainProcessCostResult,"mainProcessCostResult")
+
             } else {
-              console.log(item,"item in else")
-              mainProcessCostResult =  item?.Type === MHRBASIS? findProcessCost(item.UOM, item.MachineRate, productionPerHrs(rowArray, item?.UOMType, processQuantityMain), item?.MachineRateWithOutInterestAndDepreciation):calculateProcessCostUsingCostApplicabilityBasis(item,NetRawMaterialsCost,NetBoughtOutPartCost)
+
+              mainProcessCostResult = item?.Type === MHRBASIS ? findProcessCost(item.UOM, item.MachineRate, productionPerHrs(rowArray, item?.UOMType, processQuantityMain), item?.MachineRateWithOutInterestAndDepreciation) : calculateProcessCostUsingCostApplicabilityBasis(item, NetRawMaterialsCost, NetBoughtOutPartCost)
             }
           }
 
@@ -697,20 +698,20 @@ function ProcessCost(props) {
             ProcessDetailId: '',
             MachineId: item.MachineId,
             MachineRateId: item.MachineRateId,
-            MHR: item?.Type === MHRBASIS? item.MachineRate:findApplicabilityCost(item,NetRawMaterialsCost,NetBoughtOutPartCost),
-            MHRWithOutInterestAndDepreciation: item?.Type === MHRBASIS? item?.MachineRateWithOutInterestAndDepreciation:'-',
+            MHR: item?.Type === MHRBASIS ? item.MachineRate : findApplicabilityCost(item, NetRawMaterialsCost, NetBoughtOutPartCost),
+            MHRWithOutInterestAndDepreciation: item?.Type === MHRBASIS ? item?.MachineRateWithOutInterestAndDepreciation : '-',
             ProcessName: item.ProcessName,
             ProcessDescription: item.Description,
             MachineName: item.MachineName,
-            UOM: item?.Type === MHRBASIS? item.UOM:'-',
+            UOM: item?.Type === MHRBASIS ? item.UOM : '-',
             UnitOfMeasurementId: item.UnitOfMeasurementId,
             Tonnage: item.Tonnage,
-            Quantity: item?.Type === MHRBASIS? rowArray?.length > 0 ? calculateRowQuantity(rowArray) : processQuantityMain:'-',
+            Quantity: item?.Type === MHRBASIS ? rowArray?.length > 0 ? calculateRowQuantity(rowArray) : processQuantityMain : '-',
             ProcessCost: mainProcessCostResult.processCost,
             ProcessCostWithOutInterestAndDepreciation: mainProcessCostResult?.processCostWithoutInterestAndDepreciation,
-            UOMType: item?.Type === MHRBASIS? item.UOMType:'-',
+            UOMType: item?.Type === MHRBASIS ? item.UOMType : '-',
             UOMTypeId: item.UnitTypeId,
-            ProductionPerHour: item?.Type === MHRBASIS? productionPerHrs(rowArray, rowArray?.length > 0 ? rowArray[0].UOMType : item.UOMType, processQuantityMain):'-',
+            ProductionPerHour: item?.Type === MHRBASIS ? productionPerHrs(rowArray, rowArray?.length > 0 ? rowArray[0].UOMType : item.UOMType, processQuantityMain) : '-',
             ProcessTechnologyId: item.ProcessTechnologyId,
             Technologies: item.Technologies,
             ProcessList: rowArray,
@@ -720,8 +721,8 @@ function ProcessCost(props) {
             CostingConditionNumber: item?.CostingConditionNumber,
             CostingConditionMasterAndTypeLinkingId: item?.CostingConditionMasterAndTypeLinkingId,
             Type: item?.Type,
-            Percentage:item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage:'-',
-            Applicability:item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability:'-',
+            Percentage: item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-',
+            Applicability: item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-',
           }
         })
 
@@ -731,7 +732,7 @@ function ProcessCost(props) {
       }
     } else {
       if (rowData.length > 0) {
-        console.log(rowData,"rowData in else")
+
         let parentTempData = processGroupGrid[groupNameIndex]
         let parentProcessList = parentTempData.ProcessList
         let rowArr = []
@@ -739,19 +740,19 @@ function ProcessCost(props) {
           let processQuantityMain = 1
           let productionPerHourMain = ''
           if (item?.UOMType === MASS) {
-            processQuantityMain = el?.Type === MHRBASIS? rmGrossWeight ? rmGrossWeight : 1:'-'
+            processQuantityMain = el?.Type === MHRBASIS ? rmGrossWeight ? rmGrossWeight : 1 : '-'
           }
-          productionPerHourMain = el?.Type === MHRBASIS? el.UOMType !== TIME ? '-' : findProductionPerHour(processQuantityMain):'-'
+          productionPerHourMain = el?.Type === MHRBASIS ? el.UOMType !== TIME ? '-' : findProductionPerHour(processQuantityMain) : '-'
           let processCostResult;
-          console.log(el,'el in else')
+
           if (el.UOMType !== TIME) {
             processCostResult = {
-              processCost: el?.Type === MHRBASIS? el?.MachineRate * processQuantityMain:calculateProcessCostUsingCostApplicabilityBasis(item,NetRawMaterialsCost,NetBoughtOutPartCost),
+              processCost: el?.Type === MHRBASIS ? el?.MachineRate * processQuantityMain : calculateProcessCostUsingCostApplicabilityBasis(item, NetRawMaterialsCost, NetBoughtOutPartCost),
               ProcessCostWithOutInterestAndDepreciation: el?.MachineRateWithOutInterestAndDepreciation * processQuantityMain
             }
           } else {
-            console.log(el,'el')
-            processCostResult = el?.Type === MHRBASIS? findProcessCost(el.UOM, el.MachineRate, productionPerHourMain, el?.MachineRateWithOutInterestAndDepreciation):calculateProcessCostUsingCostApplicabilityBasis(item,NetRawMaterialsCost,NetBoughtOutPartCost)
+
+            processCostResult = el?.Type === MHRBASIS ? findProcessCost(el.UOM, el.MachineRate, productionPerHourMain, el?.MachineRateWithOutInterestAndDepreciation) : calculateProcessCostUsingCostApplicabilityBasis(item, NetRawMaterialsCost, NetBoughtOutPartCost)
           }
 
           return {
@@ -759,20 +760,20 @@ function ProcessCost(props) {
             ProcessDetailId: '',
             MachineId: el?.MachineId,
             MachineRateId: el?.MachineRateId,
-            MHR: el?.Type === MHRBASIS? el.MachineRate:findApplicabilityCost(el,NetRawMaterialsCost,NetBoughtOutPartCost),
-            MHRWithOutInterestAndDepreciation: el?.Type === MHRBASIS? el?.MachineRateWithOutInterestAndDepreciation:'-',
+            MHR: el?.Type === MHRBASIS ? el.MachineRate : findApplicabilityCost(el, NetRawMaterialsCost, NetBoughtOutPartCost),
+            MHRWithOutInterestAndDepreciation: el?.Type === MHRBASIS ? el?.MachineRateWithOutInterestAndDepreciation : '-',
             ProcessName: el?.ProcessName,
             ProcessDescription: el?.Description,
             MachineName: el?.MachineName,
-            UOM: el?.Type === MHRBASIS? el.UOM:'-',
+            UOM: el?.Type === MHRBASIS ? el.UOM : '-',
             UnitOfMeasurementId: el?.UnitOfMeasurementId,
             Tonnage: el?.Tonnage,
-            Quantity: el?.Type === MHRBASIS? processQuantityMain:'-',
+            Quantity: el?.Type === MHRBASIS ? processQuantityMain : '-',
             ProcessCost: processCostResult?.processCost,
             ProcessCostWithOutInterestAndDepreciation: processCostResult?.processCostWithoutInterestAndDepreciation,
-            UOMType: el?.Type === MHRBASIS? el.UOMType:'-',
+            UOMType: el?.Type === MHRBASIS ? el.UOMType : '-',
             UOMTypeId: el?.UnitTypeId,
-            ProductionPerHour: el?.Type === MHRBASIS? productionPerHourMain:'-',
+            ProductionPerHour: el?.Type === MHRBASIS ? productionPerHourMain : '-',
             ProcessTechnologyId: el?.ProcessTechnologyId,
             Technologies: el?.Technologies,
             ConvertedExchangeRateId: item?.ConvertedExchangeRateId === EMPTY_GUID ? null : item?.ConvertedExchangeRateId,
@@ -781,11 +782,11 @@ function ProcessCost(props) {
             CostingConditionNumber: el?.CostingConditionNumber,
             CostingConditionMasterAndTypeLinkingId: el?.CostingConditionMasterAndTypeLinkingId,
             Type: el?.Type,
-            Percentage:el?.Type === COSTAPPLICABILITYBASIS ? el?.Percentage:'-',
-            Applicability: el?.Type === COSTAPPLICABILITYBASIS? el?.Applicability:'-',
+            Percentage: el?.Type === COSTAPPLICABILITYBASIS ? el?.Percentage : '-',
+            Applicability: el?.Type === COSTAPPLICABILITYBASIS ? el?.Applicability : '-',
           }
         })
-        console.log(rowArr,"rowArr")
+
         let arr = [...parentProcessList, ...rowArr]
         parentTempData = {
           ...parentTempData,
@@ -874,7 +875,7 @@ function ProcessCost(props) {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el?.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, checkForDecimalAndNull(el?.Quantity, getConfigurationKey()?.NoOfDecimalForInputOutput))
         setValue(`${ProcessGridFields}.${i}.remarkPopUp`, el?.Remark)
-        setValue(`${ProcessGridFields}.${i}.Applicability`, el?.CostingConditionNumber ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
+        setValue(`${ProcessGridFields}.${i}.CostingConditionNumber`, el?.CostingConditionNumber ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
         setValue(`${ProcessGridFields}.${i}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
 
         return null
@@ -1111,7 +1112,14 @@ function ProcessCost(props) {
     };
   };
 
-  const onHandleChangeApplicability = (e, index) => {
+  const onHandleChangeApplicability = (e, index, item) => {
+    if (item?.Type === COSTAPPLICABILITYBASIS) {
+      if (e?.label === APPLICABILITY_OVERHEAD_EXCL || e?.label === APPLICABILITY_PROFIT_EXCL || e?.label === APPLICABILITY_OVERHEAD_PROFIT_EXCL || e?.label === APPLICABILITY_OVERHEAD_EXCL_PROFIT || e?.label === APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL) {
+        Toaster.warning("For cost applicability basis, only Overhead and Profit applicability is allowed.")
+
+        return false
+      }
+    }
 
     let gridTempArr = JSON.parse(JSON.stringify(processGroupGrid));
 
@@ -1136,7 +1144,6 @@ function ProcessCost(props) {
         ...tempData,
         CostingConditionMasterAndTypeLinkingId: null,
         CostingConditionNumber: null,
-        Applicability: null,
         NetProcessCostForOverhead: 0,
         NetProcessCostForProfit: 0,
       }
@@ -1146,10 +1153,6 @@ function ProcessCost(props) {
         ...tempData,
         CostingConditionMasterAndTypeLinkingId: e?.value,
         CostingConditionNumber: e?.label,
-        Applicability: e?.value ? {
-          value: e.value,
-          label: e.label
-        } : null,
         // ...netCosts
       }
     }
@@ -1163,10 +1166,7 @@ function ProcessCost(props) {
           ...childProcess,
           CostingConditionMasterAndTypeLinkingId: e?.value,
           CostingConditionNumber: e?.label,
-          Applicability: e?.value ? {  // Store complete applicability object for child processes
-            value: e?.value,
-            label: e?.label
-          } : null,
+
           // ...childNetCosts
         };
       });
@@ -1204,8 +1204,10 @@ function ProcessCost(props) {
 
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex, processName) => {
 
+
     let tempArr = []
     let processTempData = processGroupGrid[parentIndex]
+
     let tempData = list[index]
 
     if (!isNaN(event.target.value) && event.target.value !== '') {
@@ -1217,8 +1219,12 @@ function ProcessCost(props) {
         ProcessCostWithOutInterestAndDepreciation = tempData?.MHRWithOutInterestAndDepreciation * event.target.value
 
       } else {
+
         productionPerHour = findProductionPerHour(event.target.value)
-          ({ processCost, ProcessCostWithOutInterestAndDepreciation } = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour, tempData?.MHRWithOutInterestAndDepreciation))
+
+        const processCostResult = findProcessCost(tempData.UOM, tempData.MHR, productionPerHour, tempData?.MHRWithOutInterestAndDepreciation)
+        processCost = processCostResult?.processCost
+        ProcessCostWithOutInterestAndDepreciation = processCostResult?.processCostWithoutInterestAndDepreciation
 
       }
       const parentApplicability = processTempData.Applicability?.label || null;
@@ -1249,50 +1255,50 @@ function ProcessCost(props) {
     let gridTempArr = Object.assign([...list], { [index]: tempData })
     setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(tempData?.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
 
-      //MAIN PROCESS ROW WITH GROUP
-      const groupTotals = gridTempArr?.reduce((acc, el) => ({
-        ProcessCost: acc?.ProcessCost + checkForNull(el?.ProcessCost),
-        Quantity: acc?.Quantity + checkForNull(el?.Quantity),
-        NetProcessCostForOverhead: acc?.NetProcessCostForOverhead + checkForNull(el?.NetProcessCostForOverhead),
-        NetProcessCostForProfit: acc?.NetProcessCostForProfit + checkForNull(el?.NetProcessCostForProfit),
-      }), {
-        ProcessCost: 0,
-        Quantity: 0,
-        NetProcessCostForOverhead: 0,
-        NetProcessCostForProfit: 0,
-      });
+    //MAIN PROCESS ROW WITH GROUP
+    const groupTotals = gridTempArr?.reduce((acc, el) => ({
+      ProcessCost: acc?.ProcessCost + checkForNull(el?.ProcessCost),
+      Quantity: acc?.Quantity + checkForNull(el?.Quantity),
+      NetProcessCostForOverhead: acc?.NetProcessCostForOverhead + checkForNull(el?.NetProcessCostForOverhead),
+      NetProcessCostForProfit: acc?.NetProcessCostForProfit + checkForNull(el?.NetProcessCostForProfit),
+    }), {
+      ProcessCost: 0,
+      Quantity: 0,
+      NetProcessCostForOverhead: 0,
+      NetProcessCostForProfit: 0,
+    });
 
-      let groupProductionPerHour = findProductionPerHour(groupTotals.Quantity)
+    let groupProductionPerHour = findProductionPerHour(groupTotals.Quantity)
 
 
-      processTempData = {
-        ...processTempData,
-        Quantity: groupTotals.Quantity,
-        ProductionPerHour: tempData.UOMType !== TIME ? '' : groupProductionPerHour,
-        IsCalculatedEntry: false,
-        ProcessCost: groupTotals.ProcessCost,
-        ProcessList: gridTempArr,
-        ...groupTotals // Add net cost totals to parent process
-      }
-      let processTemparr = Object.assign([...processGroupGrid], { [parentIndex]: processTempData })
-      let apiArr = formatMainArr(processTemparr)
-      const finalTotals = calculateProcessTotals(processTemparr);
-      setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(groupTotals.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
-      setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(groupTotals.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+    processTempData = {
+      ...processTempData,
+      Quantity: groupTotals.Quantity,
+      ProductionPerHour: tempData.UOMType !== TIME ? '' : groupProductionPerHour,
+      IsCalculatedEntry: false,
+      ProcessCost: groupTotals.ProcessCost,
+      ProcessList: gridTempArr,
+      ...groupTotals // Add net cost totals to parent process
+    }
+    let processTemparr = Object.assign([...processGroupGrid], { [parentIndex]: processTempData })
+    let apiArr = formatMainArr(processTemparr)
+    const finalTotals = calculateProcessTotals(processTemparr);
+    setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(groupTotals.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
+    setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(groupTotals.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
 
-      tempArr = {
-        ...tabData,
-        NetConversionCost: finalTotals?.NetProcessCost + checkForNull(tabData?.NetOperationCost !== null ? tabData?.NetOperationCost : 0) + checkForNull(tabData?.NetOtherOperationCost !== null ? tabData?.NetOtherOperationCost : 0),
-        NetProcessCost: finalTotals?.NetProcessCost,
-        ...finalTotals,
-        CostingProcessCostResponse: apiArr,
+    tempArr = {
+      ...tabData,
+      NetConversionCost: finalTotals?.NetProcessCost + checkForNull(tabData?.NetOperationCost !== null ? tabData?.NetOperationCost : 0) + checkForNull(tabData?.NetOtherOperationCost !== null ? tabData?.NetOtherOperationCost : 0),
+      NetProcessCost: finalTotals?.NetProcessCost,
+      ...finalTotals,
+      CostingProcessCostResponse: apiArr,
 
-      }
-      setIsFromApi(false)
-      setTabData(tempArr)
-      setGridData(processTemparr)
+    }
+    setIsFromApi(false)
+    setTabData(tempArr)
+    setGridData(processTemparr)
 
-      dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
+    dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
 
   }
 
@@ -1400,12 +1406,12 @@ function ProcessCost(props) {
   const ProcessGridFields = 'ProcessGridFields'
   const SingleProcessGridField = 'SingleProcessGridField'
 
-  const processNetCostFormula = (value,type) => {
+  const processNetCostFormula = (value, type) => {
     let processNetCostFormulaText;
-    if(type === COSTAPPLICABILITYBASIS){
-     processNetCostFormulaText = 'Net Cost = (MHR * Percentage/100)'
+    if (type === COSTAPPLICABILITYBASIS) {
+      processNetCostFormulaText = 'Net Cost = (MHR * Percentage/100)'
     }
-    else{
+    else {
 
       switch (value) {
         case HOUR:
@@ -1444,10 +1450,10 @@ function ProcessCost(props) {
             <td>{'-'}</td>
             <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.ProcessName}</span></td>
             <td>{item?.Tonnage}</td>
-            <td>{ item?.MHR ?? '-'}</td>
-            <td>{item.Type??'-'}</td>
+            <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
+            <td>{item.Type ?? '-'}</td>
             <td>{item?.Type === MHRBASIS ? item?.UOM : '-'}</td>
-            <td><div className='w-fit' id={`part-hour${index}`}><TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />{(item?.Type === COSTAPPLICABILITYBASIS|| item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined || item.ProductionPerHour === '-') ? '-' : Math.round(checkForNull(item.ProductionPerHour))}</div></td>
+            <td><div className='w-fit' id={`part-hour${index}`}><TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />{(item?.Type === COSTAPPLICABILITYBASIS || item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined || item.ProductionPerHour === '-') ? '-' : Math.round(checkForNull(item.ProductionPerHour))}</div></td>
             <td>
               <div className='d-flex align-items-center'>
                 <span className="d-inline-block  mr-2">
@@ -1490,8 +1496,8 @@ function ProcessCost(props) {
                 </div>
               </div>
             </td>
-           {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>}
-           {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>}
+            {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>}
+            {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>}
             <td style={{ width: 100 }}>
               {
                 <>
@@ -1782,7 +1788,7 @@ function ProcessCost(props) {
                     <th style={{ width: "160px" }}>{`UOM`}</th>
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
                     <th style={{ width: "180px" }}><span>Quantity/Cycle time <TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`quantity-info`} tooltipText={tooltipText} /></span></th>
-                   {showCostBaseAppliacabilityColumns && <th style={{ width: "150px" }}>{`Process Cost Applicability`}</th>}
+                    {showCostBaseAppliacabilityColumns && <th style={{ width: "150px" }}>{`Process Cost Applicability`}</th>}
                     {showCostBaseAppliacabilityColumns && <th style={{ width: "110px" }}>{`Percentage`}</th>}
                     <th style={{ width: "140px" }} >{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
@@ -1793,7 +1799,7 @@ function ProcessCost(props) {
                 <tbody>
                   {processGroupGrid &&
                     processGroupGrid.map((item, index) => {
-                      console.log(item)
+
                       return (
                         <>
                           <tr key={index}>
@@ -1811,8 +1817,8 @@ function ProcessCost(props) {
                             </td>
                             {processGroup && <td className='text-overflow'><span title={item.ProcessName}>{'-'}</span></td>}
                             <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
-                            <td>{ item?.MHR?? '-'}</td>
-                            <td>{item.Type??'-'}</td>
+                            <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
+                            <td>{item.Type ?? '-'}</td>
                             <td>{item.Type === MHRBASIS ? item.UOM : '-'}</td>
                             <td>  <div className='w-fit' id={`part-hour${index}`}>    <TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />    {(item?.Type === COSTAPPLICABILITYBASIS || item?.UOMType !== TIME || !item?.Quantity) ? '-' : item?.IsCalculatedEntry ? item?.ProductionPerHour : calculateProductionPerHour(item?.Quantity)}  </div></td>                            <td >
                               {
@@ -1865,7 +1871,7 @@ function ProcessCost(props) {
                             <td>
                               {
                                 <>
-                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM,item?.Type)} />
+                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type)} />
                                   <TextFieldHookForm
                                     label=""
                                     name={`${ProcessGridFields}.${index}.ProcessCost`}
@@ -1913,10 +1919,10 @@ function ProcessCost(props) {
 
                             <td>
                               <SearchableSelectHookForm
-                                name={`${ProcessGridFields}.${index}.Applicability`}
+                                name={`${ProcessGridFields}.${index}.CostingConditionNumber`}
                                 type="text"
                                 label={false}
-                                errors={`${ProcessGridFields}.${index}.Applicability`}
+                                errors={`${ProcessGridFields}.${index}.CostingConditionNumber`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -1929,7 +1935,7 @@ function ProcessCost(props) {
                                 } : null}
                                 options={processApplicabilitySelect}
                                 required={false}
-                                handleChange={(e) => { onHandleChangeApplicability(e, index) }}
+                                handleChange={(e) => { onHandleChangeApplicability(e, index, item) }}
                                 disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
                               />
@@ -1942,7 +1948,7 @@ function ProcessCost(props) {
                                   position="top right"
                                   onOpen={() => handleRemarkPopup("open", `${ProcessGridFields}.${index}.remarkPopUp`)}
                                   onClose={() => handleRemarkPopup()}
-                                  >
+                                >
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${ProcessGridFields}.${index}.remarkPopUp`}

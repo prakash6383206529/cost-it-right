@@ -196,7 +196,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
       checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(discountAndOtherTabData?.AnyOtherCost) - checkForNull(discountAndOtherTabData?.HundiOrDiscountValue)
   }
-  
+
   let assemblyRequestedData = {
 
     "TopRow": {
@@ -794,30 +794,30 @@ export const handleRemarkPopup = (event, id) => {
   }
 }
 
-export const calculateProcessCostUsingCostApplicabilityBasis = (rowData,NetRawMaterialsCost,NetBoughtOutPartCost) => {
-  
-  if(rowData.Type === COSTAPPLICABILITYBASIS){    
-    switch(rowData.Applicability){
+export const calculateProcessCostUsingCostApplicabilityBasis = (rowData, NetRawMaterialsCost, NetBoughtOutPartCost) => {
+
+  if (rowData.Type === COSTAPPLICABILITYBASIS) {
+    switch (rowData.Applicability) {
       case 'RM':
         return checkForNull(NetRawMaterialsCost) * checkForNull(rowData?.Percentage / 100)
       case 'BOP':
-         return checkForNull(NetBoughtOutPartCost) + (checkForNull(rowData?.Percentage)/100)
+        return checkForNull(NetBoughtOutPartCost) + (checkForNull(rowData?.Percentage) / 100)
       case 'RM + BOP':
-        return (checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost)) * (checkForNull(rowData?.Percentage)/100)
+        return (checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost)) * (checkForNull(rowData?.Percentage) / 100)
       default:
         return '0'
     }
   }
 }
 
-export const findApplicabilityCost = (rowData,NetRawMaterialsCost,NetBoughtOutPartCost)=>{
-  if(rowData?.Type === COSTAPPLICABILITYBASIS){
-    switch(rowData?.Applicability){
+export const findApplicabilityCost = (rowData, NetRawMaterialsCost, NetBoughtOutPartCost) => {
+  if (rowData?.Type === COSTAPPLICABILITYBASIS) {
+    switch (rowData?.Applicability) {
       case 'RM':
         return checkForNull(NetRawMaterialsCost)
       case 'BOP':
         return checkForNull(NetBoughtOutPartCost)
-      case 'RM + BOP':  
+      case 'RM + BOP':
         return checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost)
       default:
         return '0'
@@ -825,14 +825,14 @@ export const findApplicabilityCost = (rowData,NetRawMaterialsCost,NetBoughtOutPa
   }
 }
 
-export const isLockRMAndBOPForCostAppliacabilityProcess =(processArr) =>{
-  
-  
-  if(processArr &&processArr.length>0){
+export const isLockRMAndBOPForCostAppliacabilityProcess = (processArr) => {
 
-   
+
+  if (processArr && processArr.length > 0) {
+
+
     let tempArr = _.filter(processArr, ['Type', COSTAPPLICABILITYBASIS]);
-    
-    return tempArr.length>0 ? true:false
+
+    return tempArr.length > 0 ? true : false
   }
 }

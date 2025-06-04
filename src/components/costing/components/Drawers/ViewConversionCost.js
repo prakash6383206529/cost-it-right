@@ -286,7 +286,7 @@ function ViewConversionCost(props) {
             <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
             <td>{item.MachineName ? item.MachineName : '-'}</td>
             <td>{item.Tonnage ? item.Tonnage : '-'}</td>
-            <td>{item.Type??'-'}</td>
+            <td>{item.Type ?? '-'}</td>
             <td>{item.UOM ? item.UOM : '-'}</td>
             <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
             <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>
@@ -310,9 +310,9 @@ function ViewConversionCost(props) {
 
   const processTableData = () => {
     const tooltipText = <div><div>If UOM is in hours/minutes/seconds, quantity/cycle time is in seconds.</div> <div>For all others UOMs, quantity/cycle time is actual.</div></div>;
-  const mhrTooltipText = <div><div>If Type is Cost Applicability Basis, then Machine Rate is calculated based on the selected Process Cost Applicability.</div></div>;
-    
-  return <>
+    const mhrTooltipText = <div><div>If Type is Cost Applicability Basis, then Machine Rate is calculated based on the selected Process Cost Applicability.</div></div>;
+
+    return <>
       <Row>
         <Col md="12" className='mt-1'>
           <div className="left-border">{'Process Cost:'}</div>
@@ -368,12 +368,12 @@ function ViewConversionCost(props) {
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
                         <td>{item.Tonnage ? item.Tonnage : '-'}</td>
-                        <td>{item.Type??'-'}</td>
+                        <td>{item.Type ?? '-'}</td>
                         <td>{item.UOM ? item.UOM : '-'}</td>
                         <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
                         <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>
                         <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>
-                        <td>{item.MHR ? item.MHR : '-'}</td>
+                        <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
                         {(!isPDFShow) && <td>
                           {
                             (item?.GroupName === '' || item?.GroupName === null) ?
