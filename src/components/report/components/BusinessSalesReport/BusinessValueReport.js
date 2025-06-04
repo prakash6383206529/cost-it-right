@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Field, reduxForm } from 'redux-form'
-import { searchableSelect } from "../../../layout/FormInputs";
 import { Row, Col } from "reactstrap";
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, DatePickerHookForm } from "../../../layout/HookFormInputs";
 import { useForm, Controller } from "react-hook-form";
@@ -48,7 +46,6 @@ const BusinessValueReport = ({ }) => {
   const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
   const [partModelOptions, setModelOptions] = useState([])
   const [IsRequestedForBudgeting, setIsRequestedForBudgeting] = useState(false)
-  const [financialYear, setFinancialYear] = useState('')
   const [fromAndToDate, setFromAndToDate] = useState(false)
   const [financialQuarterAndYear, setFinancialQuarterAndYear] = useState(false)
   const [pieChartLabelArray, setPieChartLabelArray] = useState([])
@@ -93,6 +90,10 @@ const BusinessValueReport = ({ }) => {
       setModelOptions(_.get(res, 'data.SelectList', []))
     }))
  }, [])
+
+  useEffect(() => {
+    viewPieData() 
+  }, [reportDetailsByGroup])
 
   const renderListing = (label, text = '', IsProductHierarchy = false) => {
     const temp = []
@@ -175,18 +176,26 @@ const BusinessValueReport = ({ }) => {
         })
       return temp
     }
+    if (label === 'GroupBy') {
+      businessValueReportHeads && businessValueReportHeads.map((item) => {
+        if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
     if (IsProductHierarchy) {
       const associatedHierarchy = _.find(productHierarchyData, hierarchyData => {
         return String(text) === String(_.get(hierarchyData, 'ProductHierarchyName', 0))
       })
       if (_.size(_.get(associatedHierarchy, 'ProductHierarchyValueDetail', []))) {
         _.map(_.get(associatedHierarchy, 'ProductHierarchyValueDetail', []), item => {        
-          temp.push({ label: item.ProductHierarchyValue, value: item.ProductHierarchyValueDetailsId })
+          temp.push({ label: item.ProductHierarchyValue, value: item.ProductHierarchyValueDetailsId, IsProductHierarchy })
             return null
         })
       } else {
         productDataList && productDataList.map((item) => {
-          temp.push({ label: item.ProductName, value: item.ProductId })
+          temp.push({ label: item.ProductName, value: item.ProductHierarchyValueDetailsIdRef, IsProductHierarchy })
           return null
         })
       }
@@ -196,7 +205,6 @@ const BusinessValueReport = ({ }) => {
 
   const handleSelectFieldChange = async (data, e) => {
     if (data === 'FinancialYear') {
-      setFinancialYear({label: _.get(e, 'label', '')})
       setFinancialQuarterAndYear(true)
     }
     if (data === 'IsRequestedForBudgeting') {
@@ -290,7 +298,6 @@ const BusinessValueReport = ({ }) => {
   const runReport = () => {
     setIsLoader(true)
     const values = getValues()
-    
     const data = {
       ...values,
       fromDate: _.get(values, 'fromDate', '') ? moment(_.get(values, 'fromDate', '')).format('YYYY-MM-DD') : _.get(values, 'fromDate', ''),
@@ -308,7 +315,17 @@ const BusinessValueReport = ({ }) => {
       CustomerCode: _.get(values, 'CustomerCode.label', ''),
       PartModelName: _.get(values, 'PartModelName.label', ''),
       PartNumber : _.get(values, 'PartNumber.label', ''),
+      GroupBy : _.get(values, 'PartNumber.value', ''),
+      SegmentId :''
     }
+    const keys = _.keys(data);
+    const validKeys = _.filter(keys, key => {
+      const item = data[key];
+      return item && _.get(item, 'IsProductHierarchy', false) && !_.isNil(_.get(item, 'value', '')) && _.get(item, 'value', '') !== '';
+    })  
+    const segmentKeys = _.map(validKeys, key => data[key].value)
+    const segmentId = segmentKeys.join(',')
+    data.SegmentId = segmentId
     dispatch(getBusinessValueReportData(data, (res) => {
       if (res?.status === 200) {
         setIsLoader(false)
@@ -319,6 +336,7 @@ const BusinessValueReport = ({ }) => {
   const reset = () => {
     setValue('fromDate', '')
     setValue('toDate', '')
+    setValue('FinancialYear', '')
     setValue('FinancialQuarter', '')
     setValue('TechnologyName', '')
     setValue('PartType', '')
@@ -330,17 +348,26 @@ const BusinessValueReport = ({ }) => {
     setValue('CustomerCode', '')
     setValue('PartModelName', '')
     setValue('PartNumber', '')
-    setFinancialYear({ label: ''})
     setIsRequestedForBudgeting('')
     setFinancialQuarterAndYear(false)
     setFromAndToDate(false)
   }
 
   const viewPieData = _.debounce(() => {
-    let dataArray = []
-    let labelArray = []
-    console.log(reportDetailsByGroup, "reportDetailsByGroup");
-    
+    const truncateToThreeDecimals = (value) => {
+      return Math.floor(value * 1000) / 1000;
+    }    
+    const labelArray = []
+    const dataArray = reportDetailsByGroup
+    .filter(item => item.TotalCostPercentage > 0)
+    .map(item => {
+      const name = _.get(item, 'GroupByValue', '')
+      labelArray.push(name)
+      return {
+        value: truncateToThreeDecimals(item.TotalCostPercentage),
+        Totalcost: truncateToThreeDecimals(item.TotalCost),
+      }
+    })
       setPieChartDataArray(dataArray)
       setPieChartLabelArray(labelArray)
     }, [100])
@@ -475,16 +502,19 @@ const BusinessValueReport = ({ }) => {
                 } else if (_.get(reportFields, 'Value', '') === 'FinancialYear') {                  
                   return (
                     <Col md="3">
-                      <Field
-                        name={_.get(reportFields, 'Value', '')}
-                        type="text"
-                        label={_.get(reportFields, 'Text', '')}
-                        component={searchableSelect}
-                        placeholder={'Select'}
-                        options={renderListing(`${_.get(reportFields, 'Value', '')}`)}
-                        required={false}
-                        handleChangeDescription={(e) => handleSelectFieldChange(`${_.get(reportFields, 'Value', '')}`, e)}
-                        valueDescription={financialYear}
+                      <SearchableSelectHookForm
+                        label={`${_.get(reportFields, 'Text', '')}`}
+                        name={`${_.get(reportFields, 'Value', '')}`}
+                        placeholder={`${_.get(reportFields, 'Text', '')}`}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        defaultValue={''}
+                        options={renderListing(_.get(reportFields, 'Value', ''))}
+                        mandatory={false}
+                        handleChange={(e) => handleSelectFieldChange(`${_.get(reportFields, 'Value', '')}`, e)}
+                        errors={`${errors}.${_.get(reportFields, 'Value', '')}`}   
                         disabled={fromAndToDate}
                       />
                     </Col>
@@ -578,6 +608,23 @@ const BusinessValueReport = ({ }) => {
                   )
                 }
               })}
+              <Col md="3">
+                <SearchableSelectHookForm
+                  label={'Group By'}
+                  name={'GroupBy'}
+                  placeholder={'Group By'}
+                  Controller={Controller}
+                  control={control}
+                  rules={{ required: false }}
+                  register={register}
+                  defaultValue={''}
+                  options={renderListing('GroupBy')}
+                  mandatory={false}
+                  handleChange={(e) => handleSelectFieldChange('GroupBy', e)}
+                  errors={''}
+                  disabled={false}
+                />
+              </Col>
               {
                 <Col md="3" className="mt-4">
                   <button type="button" className={"user-btn mr5 save-btn"} onClick={reset} disabled={false}> <div className={"Run-icon"}></div>reset</button>
@@ -601,9 +648,14 @@ const BusinessValueReport = ({ }) => {
               </button>
             </Col>
           </Row>
-         { graphAccordian && 
-         <div className='column-data'><button className='view-pie-button btn-hyper-link ml-0' onMouseOver={() => viewPieData()}><span className='tooltiptext graph-tooltip'><div className='mb-2'><strong>All value is showing in Percentage</strong></div><Costratiograph data={pieChartData} options={pieChartOption} /></span>View Graph</button></div>
-       }
+          {graphAccordian && (
+            <div className='column-data'>
+              <div className='mb-2'>
+                <h6>{_.size(reportDetailsByGroup) ? 'All value is showing in Percentage' : 'No data to show'}</h6>
+              </div>
+              {_.size(reportDetailsByGroup) > 0 && <Costratiograph data={pieChartData} options={pieChartOption} />}
+            </div>
+          )}
         </div>
         </Row>
       }
@@ -656,7 +708,5 @@ const BusinessValueReport = ({ }) => {
 
 }
 
-export default reduxForm({
-  form: 'businessValueReportForm',
-})(BusinessValueReport);
+export default BusinessValueReport
 

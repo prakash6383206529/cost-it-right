@@ -739,6 +739,8 @@ export function getBusinessValueReportData(data, callback) {
     addParam("CustomerCode", data?.CustomerCode)
     addParam("PartModelName", data?.PartModelName)
     addParam("PartNumber", data?.PartNumber)
+    addParam("GroupBy", data?.GroupBy)
+    addParam("SegmentId", data?.Segmentid)
     
     return (dispatch) => {
         const request = axios.get(`${API.getBusinessValueReportData}?${params.toString()}`, config());
