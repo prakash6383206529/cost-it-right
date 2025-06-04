@@ -1652,7 +1652,7 @@ class AddLabour extends Component {
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               onChange={() => { }}
-                              // required={true}
+                              required={true}
                               className=" "
                               customClassName="withBorder"
                               id="LabourRatePerShift"
@@ -1674,7 +1674,7 @@ class AddLabour extends Component {
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               onChange={this.handleLabourRatePerMonthBasicCurrency}
-                              // required={true}
+                              required={true}
                               disabled={true}
                               className=" "
                               customClassName=" withBorder"
@@ -1696,7 +1696,7 @@ class AddLabour extends Component {
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               onChange={this.handleLabourRateBasicCurrency}
-                              // required={true}
+                              required={true}
                               disabled={true}
                               className=" "
                               customClassName=" withBorder"
@@ -1718,7 +1718,7 @@ class AddLabour extends Component {
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               onChange={() => { }}
-                              // required={true}
+                              required={true}
                               disabled={true}
                               className=" "
                               customClassName=" withBorder"

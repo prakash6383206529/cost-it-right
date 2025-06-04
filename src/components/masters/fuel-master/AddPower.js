@@ -2154,7 +2154,7 @@ class AddPower extends Component {
                                     validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
                                     component={renderTextInputField}
                                     // onChange={this.onNetCostChange}
-                                    // required={true}
+                                    required={true}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={true}
