@@ -4989,7 +4989,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                                       validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                                       component={renderText}
                                       // onChange={this.handleMachineRate}
-                                      required={true}
+                                      required={!(this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated))}
                                       disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                                       className=" "
                                       customClassName=" withBorder"
@@ -5011,7 +5011,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                                     validate={[number, maxLength10, decimalLengthsix, hashValidation]}
                                     component={renderText}
                                     onChange={this.handleMachineRatePlantCurrency}
-                                    required={true}
+                                    // required={true}
                                     disabled={true}
                                     className=" "
                                     customClassName=" withBorder"
@@ -5029,7 +5029,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                                     validate={[number, maxLength10, decimalLengthsix, hashValidation]}
                                     component={renderText}
                                     onChange={this.handleMachineRateBasicCurrency}
-                                    required={true}
+                                    // required={true}
                                     disabled={true}
                                     className=" "
                                     customClassName=" withBorder"

@@ -2124,7 +2124,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Net Cost/Unit g(${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
+                                    label={`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                                     name={"NetPowerCostPerUnitLocalConversion"}
                                     type="text"
                                     id="cost-local"
@@ -2146,7 +2146,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Net Cost/Unit t(${reactLocalStorage.getObject("baseCurrency")})`}
+                                    label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"NetPowerCostPerUnitConversion"}
                                     id="fuel-rate"
                                     type="text"
@@ -2154,7 +2154,7 @@ class AddPower extends Component {
                                     validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
                                     component={renderTextInputField}
                                     // onChange={this.onNetCostChange}
-                                    required={true}
+                                    // required={true}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={true}

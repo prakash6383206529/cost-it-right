@@ -1289,7 +1289,7 @@ class AddFuel extends Component {
                                       ? [required]
                                       : []
                                   }
-                                  required={true}
+                                  // required={true}
                                   handleChangeDescription={this.handleUOM}
                                   valueDescription={this.state.UOM}
                                   disabled={true}
