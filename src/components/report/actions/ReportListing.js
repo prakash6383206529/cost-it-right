@@ -14,7 +14,9 @@ import {
     GET_STAGE_OF_PART_DETAILS,
     GET_NFR_INSIGHT_DETAILS,
     GET_NFR_INSIGHT_STATUS_DETAILS,
-    GET_COST_DEVIATION_REPORT
+    GET_COST_DEVIATION_REPORT,
+    GET_BUSINESS_VALUE_REPORT_HEADS,
+    GET_BUSINESS_VALUE_REPORT_DATA
 } from '../../../config/constants';
 import { apiErrors, loggedInUserId, userDetails } from '../../../helper';
 
@@ -692,3 +694,69 @@ export function getCostDeviationReport(data, callback) {
         })
     }
 }
+
+export function getBusinessValueReportHeads(callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getBusinessValueReportHeads}`, config());
+        request.then((response) => {
+            if (response?.data?.DataList || response?.status === 204) {
+                dispatch({
+                    type: GET_BUSINESS_VALUE_REPORT_HEADS,
+                    payload: response.status === 204 ? [] : response?.data?.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error);
+        })
+    }
+}
+
+export function getBusinessValueReportData(data, callback) {
+    const params = new URLSearchParams()
+    // Function to add params only if they have a valid value
+    const addParam = (key, value) => {
+        if (value !== null && value !== undefined && value !== '') {
+            params.append(key, value);
+        }
+    }
+    addParam("loggedInUserId", loggedInUserId())
+    addParam("fromDate", data?.fromDate)
+    addParam("toDate", data?.toDate)
+    addParam("FinancialQuarter", data?.FinancialQuarter)
+    addParam("FinancialYear", data?.FinancialYear)
+    addParam("IsRequestedForBudgeting", data?.IsRequestedForBudgeting)
+    addParam("TechnologyName", data?.TechnologyName)
+    addParam("PartType", data?.PartType)
+    addParam("PartGroup", data?.PartGroup)
+    addParam("PartFamilyCode", data?.PartFamilyCode)
+    addParam("PartNepNumber", data?.PartNepNumber)
+    addParam("PlantCode", data?.PlantCode)
+    addParam("VendorCode", data?.VendorCode)
+    addParam("CustomerCode", data?.CustomerCode)
+    addParam("PartModelName", data?.PartModelName)
+    addParam("PartNumber", data?.PartNumber)
+    addParam("GroupBy", data?.GroupBy)
+    addParam("SegmentId", data?.Segmentid)
+    
+    return (dispatch) => {
+        const request = axios.get(`${API.getBusinessValueReportData}?${params.toString()}`, config());
+        request.then((response) => {
+            if (response?.data?.Data || response?.status === 204) {
+                dispatch({
+                    type: GET_BUSINESS_VALUE_REPORT_DATA,
+                    payload: response.status === 204 ? [] : response?.data?.Data
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error);
+        })
+    }
+}
+

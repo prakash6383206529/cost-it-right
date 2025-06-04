@@ -8664,3 +8664,10 @@ export const DUMMYCONDITIONCOSTDATA = [
         "ConditionCostPerQuantityConversion": 5
     }
 ]
+
+export const FinancialQuarterOptions = [
+    { Text: 'Q1', Value: 'Q1' },
+    { Text: 'Q2', Value: 'Q2' },
+    { Text: 'Q3', Value: 'Q3' },
+    { Text: 'Q4', Value: 'Q4' }
+]
