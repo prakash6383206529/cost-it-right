@@ -334,20 +334,10 @@ const BusinessValueReport = ({ }) => {
   }
 
   const reset = () => {
-    setValue('fromDate', '')
-    setValue('toDate', '')
-    setValue('FinancialYear', '')
-    setValue('FinancialQuarter', '')
-    setValue('TechnologyName', '')
-    setValue('PartType', '')
-    setValue('PartGroup', '')
-    setValue('PartFamilyCode', '')
-    setValue('PartNepNumber', '')
-    setValue('PlantCode', '')
-    setValue('VendorCode', '')
-    setValue('CustomerCode', '')
-    setValue('PartModelName', '')
-    setValue('PartNumber', '')
+    const values = getValues()
+    _.forEach(_.keys(values), (key) => {
+      setValue(key, '')
+    });
     setIsRequestedForBudgeting('')
     setFinancialQuarterAndYear(false)
     setFromAndToDate(false)
