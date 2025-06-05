@@ -68,7 +68,7 @@ function BoughtOutPart(props) {
           <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
           {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
           <td className='text-right'>
-            {partType && (item?.Technology === ASSEMBLYNAME||IsMultiVendorCosting) &&
+            {partType &&
               <button
                 type="button"
                 className={'Edit mr-2 align-middle'}

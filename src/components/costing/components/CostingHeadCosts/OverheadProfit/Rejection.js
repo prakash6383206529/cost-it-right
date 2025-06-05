@@ -658,6 +658,7 @@ function Rejection(props) {
                 customerId: costData.CustomerId,
                 technologyId: IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting) ? costData?.TechnologyId : null,
                 partFamilyId: costData?.PartFamilyId,
+                IsMultiVendorCosting:IsMultiVendorCosting
             }
             dispatch(getRejectionDataByModelType(reqParams, (res) => {
                 let data = res?.data?.Data?.CostingRejectionDetail

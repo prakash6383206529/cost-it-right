@@ -310,7 +310,8 @@ function Icc(props) {
                 customerId: costData.CustomerId,
                 technologyId: null,
                 partFamilyId: costData?.PartFamilyId,
-                MethodTypeId: null
+                MethodTypeId: null,
+                IsMultiVendorCosting:IsMultiVendorCosting
             }
             dispatch(getIccDataByModelType(reqParams, (res) => {
                 let data = res?.data?.Data

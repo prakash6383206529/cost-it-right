@@ -274,6 +274,7 @@ useEffect(() => {
       rawMaterialChildId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
       technologyId: IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting) ? costData?.TechnologyId : null,
       partFamilyId: costData?.PartFamilyId ? costData?.PartFamilyId : EMPTY_GUID,
+      IsMultiVendorCosting:IsMultiVendorCosting
     }
 
     dispatch(getOverheadProfitDataByModelType(reqParams, res => {
