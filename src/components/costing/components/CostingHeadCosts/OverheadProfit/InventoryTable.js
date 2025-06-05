@@ -111,7 +111,7 @@ useEffect(()=>{
             identifier: "inputOutput",
         },
         {
-            columnHead: "Applicabilty Cost",
+            columnHead: "Applicability Cost",
             key: "ApplicabilityCost",
             identifier: "cost",
             fieldKey: "ApplicabilityCostForInventory",
@@ -167,6 +167,7 @@ useEffect(()=>{
                         setValue={setValue}
                         isInventory={true}
                         totalIccPayable={state?.totalIccPayable}
+                        isCreditBased={true}
                     />
                 </Col>
             </Row>

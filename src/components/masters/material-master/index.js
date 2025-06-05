@@ -65,7 +65,9 @@ function RowMaterialMaster(props) {
 
     }, [topAndLeftMenuData])
 
-
+    useEffect(() => {
+        setIsImport(listToggle.RawMaterial)
+    }, [listToggle])
 
     // UNSAFE_componentWillReceiveProps(nextProps) {
     //     if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {

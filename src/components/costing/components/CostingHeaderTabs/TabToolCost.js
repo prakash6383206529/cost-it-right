@@ -392,6 +392,8 @@ function TabToolCost(props) {
       if (item.ProcessOrOperationType !== itemToRemove.ProcessOrOperationType) return true;
       // If the ChildPartNumber doesn't match, keep the item
       if (item.ChildPartNumber !== itemToRemove.ChildPartNumber) return true;
+      // If the ToolName doesn't match, keep the item
+      if (item.ToolName !== itemToRemove.ToolName) return true;
       // If the relevant ID doesn't match or either is null, keep the item
       if (item[compareKey] !== itemToRemove[compareKey] || item[compareKey] === null || itemToRemove[compareKey] === null) return true;
       // Otherwise, filter the item out
@@ -467,7 +469,7 @@ function TabToolCost(props) {
     const itemGroups = data.reduce((acc, item, index) => {
       // Determine the key based on ProcessOrOperationType
       const refId = item.ProcessOrOperationType === 'Operation' ? item.OperationChildIdRef : item.ProcessIdRef;
-      const key = `${item.ChildPartNumber}-${refId}`;
+      const key = `${item.ChildPartNumber}-${refId}-${item.ToolName}`;
 
       const level = parseInt(item?.BOMLevel?.substring(1), 10); // Extract numerical part of BOMLevel
 

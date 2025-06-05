@@ -431,7 +431,8 @@ function Tool(props) {
       case 'Fixed':
         setValue('MaintananceCostApplicability', '-');
         setValue('ToolMaintenanceCost', checkForDecimalAndNull(maintanenceToolCost, noOfDecimal));
-        setValue('ToolMaintenanceCostPerPc', 0);
+        let costPerPc = maintanenceToolCost / life;
+        setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(costPerPc, noOfDecimal));
         setToolObj({
           ...toolObj,
           ToolApplicabilityId: applicability.value,
@@ -450,30 +451,26 @@ function Tool(props) {
 
   useEffect(() => {
     calculateNetToolCost()
-  }, [toolObj,fieldValues])
+  }, [fieldValues])
 
   const calculateNetToolCost = () => {
 
+    const ToolMaintenanceCostPerPiece = checkForNull(getValues('ToolMaintenanceCostPerPc'))
     const ToolCost = checkForNull(getValues('ToolCost'));
     const Life = checkForNull(getValues('Life'))
-    const costPerPc = ToolCost / Life;
-    const ToolMaintenanceCostPerPiece = checkForNull(costPerPc)   
     const ToolAmortizationCost = ToolCost / Life
     const toolInterestRatePercent = checkForNull(getValues('ToolInterestRatePercent'))
     const toolInterestCost= ToolCost * toolInterestRatePercent / 100
     const toolInterestCostPerPc = toolInterestCost / checkForNull(getValues('Life'))
+    setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
     setValue('ToolInterestCost', checkForDecimalAndNull(toolInterestCost, initialConfiguration?.NoOfDecimalForPrice))
     setValue('ToolInterestCostPerPc', checkForDecimalAndNull(toolInterestCostPerPc, initialConfiguration?.NoOfDecimalForPrice))
-    setValue('ToolMaintenanceCostPerPc', checkForDecimalAndNull(costPerPc, initialConfiguration?.NoOfDecimalForPrice));
     setState(prevState => ({
       ...prevState,
       ToolInterestCost: toolInterestCost,
-      ToolInterestCostPerPc: toolInterestCostPerPc,
-      ToolMaintenanceCostPerPiece: costPerPc
+      ToolInterestCostPerPc: toolInterestCostPerPc
     }))
     const netToolValue = checkForNull(ToolMaintenanceCostPerPiece) + checkForNull(ToolAmortizationCost) + checkForNull(toolInterestCostPerPc)    
-    if (netToolValue) {
-      setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
       setValue('NetToolCost', checkForDecimalAndNull(netToolValue, initialConfiguration.NoOfDecimalForPrice))
       const zeroIndex = 0;
       let rowArray = {
@@ -497,15 +494,13 @@ function Tool(props) {
         "ToolInterestRatePercent": getValues('ToolInterestRatePercent'),
         "ToolInterestCost": toolInterestCost,
         "ToolInterestCostPerPiece": toolInterestCostPerPc,
-        "ToolMaintenanceCostPerPiece": ToolMaintenanceCostPerPiece
+        "ToolMaintenanceCostPerPiece": toolObj?.ToolMaintenanceCost / Life,
       }
-      
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       dispatch(isToolDataChange(true))
       setTimeout(() => {
         setGridData(tempArr)
       }, 200)
-    } 
   }
 
   const resetData = () => {
@@ -756,7 +751,6 @@ function Tool(props) {
                         mandatory={false}
                         rules={{
                           required: false,
-                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                         }}
                         handleChange={() => { }}
                         defaultValue={''}
@@ -785,7 +779,7 @@ function Tool(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence-per-pc"} tooltipText={`${toolMaintenanceCostPerPcLabel}= (${toolMaintenanceCostLabel} / Amortization Quantity (Tool Life) `} />}
+                  <Col md="3">{<TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence-per-pc"} tooltipText={`${toolMaintenanceCostPerPcLabel}= (${toolMaintenanceCostLabel} / Amortization Quantity (Tool Life) `} />}
                     <TextFieldHookForm
                       label={toolMaintenanceCostPerPcLabel}
                       name={`ToolMaintenanceCostPerPc`}
