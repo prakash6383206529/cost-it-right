@@ -126,8 +126,7 @@ function AddAssemblyProcess(props) {
       let totalCost
 
       let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
-        checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) +
-        checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
+        checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost))
 
       if (isAssemblyTechnology) {
         tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray

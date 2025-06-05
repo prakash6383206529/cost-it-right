@@ -285,14 +285,12 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
         "TotalCost": netPOPrice,
         "NetOverheadAndProfitCost": checkForNull(ComponentItemOverheadData?.CostingPartDetails?.OverheadCost) +
           checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) +
-          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) +
-          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost),
+          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) ,
         "CostingPartDetails": {
           ...ComponentItemOverheadData?.CostingPartDetails,
           NetOverheadAndProfitCost: checkForNull(ComponentItemOverheadData?.CostingPartDetails?.OverheadCost) +
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) +
-            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) +
-            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost)
+            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) 
         },
         "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }

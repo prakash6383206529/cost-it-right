@@ -141,11 +141,11 @@ const TableRenderer = ({
                         tooltipClass="net-rm-cost"
                         id={randomId}
                         tooltipText={col?.columnHead === 'Interest Cost Per Unit' ?
-                          'Interest Cost Per Unit = (Applicabilty Cost * Interest Days * Interest on Receivables (%)/ Annual ICC) / 365 * 100':
+                          'Interest Cost Per Unit = (Applicability Cost * Interest Days * Interest on Receivables (%)/ Annual ICC) / 365 * 100':
                           item?.InventoryType === "Receivables" ?
-                          'Net Cost = (Applicabilty Cost * Markup Factor * No of Days * Interest on Receivables (%)/ Annual ICC) /365 * 100'
+                          'Net Cost = (Applicability Cost * Markup Factor * No of Days * Interest on Receivables (%)/ Annual ICC) /365 * 100'
                           :
-                          'Net Cost = (Applicabilty Cost * No of Days * Interest on Receivables (%)/ Annual ICC) /365 * 100'
+                          'Net Cost = (Applicability Cost * No of Days * Interest on Receivables (%)/ Annual ICC) /365 * 100'
                         }
                       />}
                     </div>
