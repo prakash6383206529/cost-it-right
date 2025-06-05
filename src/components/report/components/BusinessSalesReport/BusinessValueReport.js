@@ -28,6 +28,7 @@ import moment from "moment";
 import { Costratiograph } from "../../../dashboard/CostRatioGraph";
 import { colorArray } from "../../../dashboard/ChartsDashboard";
 import { PaginationWrapper } from "../../../common/commonPagination";
+import ReactExport from 'react-export-excel';
 
 const BusinessValueReport = ({ }) => { 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -64,6 +65,9 @@ const BusinessValueReport = ({ }) => {
   const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
   const group = initialConfiguration?.BusinessValueSummaryHeadDefault
+  const ExcelFile = ReactExport.ExcelFile;
+  const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+  const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
   
   useEffect(() => {
     if (businessValueReportData) {
@@ -413,6 +417,21 @@ const BusinessValueReport = ({ }) => {
     }
   }
 
+  const downloadAllData = () => {
+    let button = document.getElementById('Excel-Downloads')
+    button.click()
+  }
+ 
+  const renderColumn = () => {
+    return (
+      <ExcelSheet data={tableData} name={"Business Value Summary Report"}>
+        {tableHeaderColumnDefs && tableHeaderColumnDefs.map((ele, index) => {
+          return <ExcelColumn key={index} label={ele?.headerName} value={ele?.field} style={ele?.style} /> 
+        })}
+      </ExcelSheet>
+    )
+  }
+
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -673,10 +692,18 @@ const BusinessValueReport = ({ }) => {
           <Row>
             <Col md="8"><h3 className={`mb-${detailAccordian ? 3 : 0}`}>Detail View</h3></Col>
             <Col md="4" className="text-right">
+              <button title={"All"} type="button" onClick={downloadAllData} className={'user-btn Tour_List_Download'}><div className="download mr-1"></div>
+                {"All"}
+              </button>
               <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setDetailAccordian(!detailAccordian) }}>
                 {detailAccordian ? (<i className="fa fa-minus" ></i>) : (<i className="fa fa-plus"></i>)}
               </button>
             </Col>
+             <ExcelFile filename={'Business Value Summary Report'} fileExtension={'.xls'} element={
+                <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
+                </button>}>
+                {renderColumn()}
+             </ExcelFile>
           </Row>
          { detailAccordian && 
           <div className={`ag-grid-react ag-grid-wrapper height-width-wrapper  ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
