@@ -312,7 +312,7 @@ function TabToolCost(props) {
  
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetToolCost = ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost
-        let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost)
+        let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) 
         let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetTotalRMBOPCC) +
           checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
           checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
@@ -365,7 +365,7 @@ function TabToolCost(props) {
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     } else if (partType) {
-      let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
+      let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost))
       basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(totalOverheadPrice) +
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
@@ -392,6 +392,8 @@ function TabToolCost(props) {
       if (item.ProcessOrOperationType !== itemToRemove.ProcessOrOperationType) return true;
       // If the ChildPartNumber doesn't match, keep the item
       if (item.ChildPartNumber !== itemToRemove.ChildPartNumber) return true;
+      // If the ToolName doesn't match, keep the item
+      if (item.ToolName !== itemToRemove.ToolName) return true;
       // If the relevant ID doesn't match or either is null, keep the item
       if (item[compareKey] !== itemToRemove[compareKey] || item[compareKey] === null || itemToRemove[compareKey] === null) return true;
       // Otherwise, filter the item out
@@ -467,7 +469,7 @@ function TabToolCost(props) {
     const itemGroups = data.reduce((acc, item, index) => {
       // Determine the key based on ProcessOrOperationType
       const refId = item.ProcessOrOperationType === 'Operation' ? item.OperationChildIdRef : item.ProcessIdRef;
-      const key = `${item.ChildPartNumber}-${refId}`;
+      const key = `${item.ChildPartNumber}-${refId}-${item.ToolName}`;
 
       const level = parseInt(item?.BOMLevel?.substring(1), 10); // Extract numerical part of BOMLevel
 

@@ -90,7 +90,7 @@ function TabDiscountOther(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType,IccDataDiscountTab, checkIsIccDataChange,costingDetailForIcc,IccCost,includeOverHeadProfitIcc, includeToolCostIcc, } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType,IccDataDiscountTab, checkIsIccDataChange,costingDetailForIcc,IccCost,includeOverHeadProfitIcc, includeToolCostIcc, disableIccCheckBox } = useSelector(state => state.costing)
   
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
@@ -142,8 +142,9 @@ function TabDiscountOther(props) {
   const [count, setCount] = useState(0)
   const [icc, setIcc] = useState(false)
   const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC??false)
+  
   const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(costingDetailForIcc?.IsIncludeToolCostInCCForICC??false)
-  const npvDrawerCondition = (
+   const npvDrawerCondition = (
     ((IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
     (!(IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
     (!(IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost)
@@ -232,6 +233,8 @@ function TabDiscountOther(props) {
   useEffect(() => {
     dispatch(setIncludeToolCostIcc(costingDetailForIcc?.IsIncludeToolCostInCCForICC, () => { }))
     dispatch(setIncludeOverheadProfitIcc(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC, () => { }))
+    setIsIncludeToolCostInCCForICC(costingDetailForIcc?.IsIncludeToolCostInCCForICC)
+    setIncludeOverheadProfitInIcc(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC)
   }, [costingDetailForIcc])
   const viewAddButtonIcon = (data, type) => {
 
@@ -1419,7 +1422,7 @@ let iccObj={
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscountsCost = DiscountCostData.HundiOrDiscountValue
-        const totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) /* + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.PaymentTermCost) */ + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
+        const totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) /* + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.PaymentTermCost) */ )
         let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetTotalRMBOPCC) +
           checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
           checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
@@ -2182,7 +2185,7 @@ let iccObj={
                           <input
                             type="checkbox"
                             checked={IncludeOverheadProfitInIcc}
-                            disabled={(CostingViewMode )}
+                            disabled={(CostingViewMode || disableIccCheckBox)}
                           />
                           <span
                             className=" before-box"
@@ -2200,7 +2203,7 @@ let iccObj={
                           <input
                             type="checkbox"
                             checked={IsIncludeToolCostInCCForICC}
-                            disabled={(CostingViewMode )}
+                            disabled={(CostingViewMode || disableIccCheckBox)}
                           />
                           <span
                             className=" before-box"

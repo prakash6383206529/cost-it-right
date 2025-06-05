@@ -31,5 +31,6 @@
     "packagingCost": "Packaging Cost",
     "totalAddedCost": "Additional cost",
     "totalCostOfCrate": "Total cost of crate/trolley",
-    "totalCostOfCrateWithAddedCost": "Total cost of crate/trolley (with additional costs)"
+    "totalCostOfCrateWithAddedCost": "Total cost of crate/trolley (with additional costs)",
+    "Standard": "Standard"
 }

@@ -12,7 +12,7 @@ import { getRejectionDataByModelType, isOverheadProfitDataChange, setOverheadPro
 import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
-import { number, percentageLimitValidation, isNumber, checkWhiteSpaces, NoSignNoDecimalMessage, nonZero, decimalAndNumberValidation } from "../../../../../helper/validation";
+import { number, percentageLimitValidation, isNumber, checkWhiteSpaces, NoSignNoDecimalMessage, nonZero, decimalAndNumberValidation, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from "../../../../../helper/validation";
 import { CBCTypeId, CRMHeads, EMPTY_DATA, EMPTY_GUID, NFRTypeId, REJECTIONMASTER, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Popup from 'reactjs-popup';
 import Toaster from '../../../../common/Toaster';
@@ -887,7 +887,7 @@ function Rejection(props) {
                 </Row>}
 
                 <Col md="11">
-                    <Table className="table mb-0 forging-cal-table" size="sm">
+                    <Table className="table mb-0 forging-cal-table mt-2" size="sm">
                         <thead>
                             <tr>
                                 <th>Applicability</th>
@@ -913,6 +913,10 @@ function Rejection(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
+                                                    rules={{
+                                                        required: false,
+                                                        validate: { number, checkWhiteSpaces, positiveAndDecimalNumber, maxLength10, decimalLengthsix },
+                                                    }}
                                                     mandatory={false}
                                                     handleChange={(e) => {
                                                         const updatedGridData = [...state?.gridData];
