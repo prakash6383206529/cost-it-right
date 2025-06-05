@@ -12,7 +12,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
 import NoContentFound from '../../../../common/NoContentFound';
-import { getSingleCostingDetails, gridDataAdded, setCostingViewData, setCostingViewDataForAssemblyTechnology, getBOPDrawerDataList } from '../../../actions/Costing';
+import { getSingleCostingDetails, gridDataAdded, setCostingViewData, setCostingViewDataForAssemblyTechnology, getBOPDrawerDataList, setIsMultiVendor, setApplicabilityForChildParts } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
 import { AWAITING_APPROVAL_ID, CBCTypeId, EMPTY_DATA, EMPTY_GUID, NFRTypeId, NCCTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, REJECTEDID, VBCTypeId, WACTypeId, ZBCTypeId, PENDING_FOR_APPROVAL_ID, INR } from '../../../../../config/constants';
@@ -466,6 +466,9 @@ function EditPartCost(props) {
                     setTechnologyName(tempObj[0].technology)
                     dispatch(setCostingViewDataForAssemblyTechnology(tempObj))
                     dispatch(setCostingViewData(tempObj))
+                    dispatch(setIsMultiVendor(dataFromAPI?.IsMultiVendorCosting))
+                    dispatch(setApplicabilityForChildParts(dataFromAPI?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
+
 
                 }
             },

@@ -55,8 +55,8 @@ function CostingHeaderTabs(props) {
   const { t } = useTranslation("Costing");
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, PaymentTermDataDiscountTab, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, ActualCostingDataList, IsIncludedSurfaceInRejection, IsIncludedToolCost, includeOverHeadProfitIcc, includeToolCostIcc } = useSelector(state => state.costing)
-  const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount, costingOpenCloseStatus } = useSelector(state => state.costing)
+    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, ActualCostingDataList, IsIncludedSurfaceInRejection, IsIncludedToolCost, includeOverHeadProfitIcc, includeToolCostIcc, IsIncludeApplicablForChildParts } = useSelector(state => state.costing)
+  const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount, costingOpenCloseStatus, IsIncludeApplicabilityForChildParts, IsIncludeApplicabilityForChildPartsInICC, IsIncludeApplicabilityForChildPartsInPayment } = useSelector(state => state.costing)
   const [isBOPExists, setIsBOPExists] = useState(false)
   const [isPartExists, setIsPartExists] = useState(false)
   const [ispartLocked, setIsPartLocked] = useState(false)
@@ -70,6 +70,8 @@ function CostingHeaderTabs(props) {
     tabName: '',
     messageShow: false
   })
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+
   const [tabsTour, setTabsTour] = useState({
     steps: [],
     hints: [],
@@ -79,7 +81,7 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
   const isPartType = useContext(IsPartType);
   const isNFR = useContext(IsNFR);
 
@@ -88,7 +90,7 @@ function CostingHeaderTabs(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
   const isRequestForMultiTechnology = IdForMultiTechnology?.includes(String(costData?.TechnologyId))
-const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
+  const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -277,6 +279,8 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
         "IsIncludeToolCostWithOverheadAndProfit": IsIncludedToolCost,
         "IsIncludeOverheadAndProfitInICC": includeOverHeadProfitIcc,
         "IsIncludeToolCostInCCForICC": includeToolCostIcc,
+        "IsIncludeChildPartsApplicabilityCost": IsIncludeApplicabilityForChildParts,
+        "IsIncludeApplicabilityForChildPartsInICC": IsIncludeApplicabilityForChildPartsInICC,
         "LoggedInUserId": loggedInUserId(),
         "IsSurfaceTreatmentApplicable": true,
         "IsApplicableForChildParts": false,
@@ -313,7 +317,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
           InjectDiscountAPICall()
           let arrTemp = [...OverheadProfitTabData]
           arrTemp[0].IsOpen = false
-          console.log(arrTemp,'arrTempfgfg')
+
           dispatch(setOverheadProfitData(arrTemp, () => { }))
         }))
       }
@@ -434,7 +438,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
 
   useEffect(() => {
     const operationConditionTypeId = getCostingConditionTypes(COSTINGOVERHEADANDPROFTOPERATION)
-    dispatch(getCostingCondition(null, operationConditionTypeId,isRequestForMultiTechnology, (res) => {
+    dispatch(getCostingCondition(null, operationConditionTypeId, isRequestForMultiTechnology, (res) => {
       if (res?.data?.DataList) {
         const operationData = res?.data?.DataList.map(item => ({
           label: item?.CostingConditionNumber,
@@ -445,7 +449,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
     }))
 
     const processConditionTypeId = getCostingConditionTypes(COSTINGOVERHEADANDPROFTFORPROCESS)
-    dispatch(getCostingCondition(null, processConditionTypeId,isRequestForMultiTechnology, (res) => {
+    dispatch(getCostingCondition(null, processConditionTypeId, isRequestForMultiTechnology, (res) => {
       if (res?.data?.DataList) {
         const processData = res?.data?.DataList.map(item => ({
           label: item?.CostingConditionNumber,
@@ -892,7 +896,7 @@ const { register, handleSubmit, formState: { errors }, control, setValue, getVal
           <PreviousTabData.Provider value={previousTab}>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
-                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) ? <TabAssemblyTechnology
+                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting) ? <TabAssemblyTechnology
                   setHeaderCost={props.setHeaderCost}
                   backBtn={props.backBtn}
                   activeTab={activeTab}

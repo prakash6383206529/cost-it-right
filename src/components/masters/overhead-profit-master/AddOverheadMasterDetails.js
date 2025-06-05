@@ -34,7 +34,7 @@ const AddOverheadMasterDetails = (props) => {
 
     useEffect(() => {
         // let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
-        dispatch(fetchApplicabilityList(null, conditionTypeId, state.isAssemblyCheckbox, res => { }));
+        dispatch(fetchApplicabilityList(null, conditionTypeId, state.isAssemblyCheckbox ? null : false, res => { }));
         // setState(prev => ({ ...prev, isAssemblyCheckbox: !state.isAssemblyCheckbox, ApplicabilityDetails: [], OverheadApplicability: {}, OverheadPercentage: "" }));
     }, [state.isAssemblyCheckbox])
 

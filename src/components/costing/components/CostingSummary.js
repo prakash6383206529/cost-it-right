@@ -7,6 +7,8 @@ import DayTime from '../../common/DayTimeWrapper'
 import {
   getPartInfo, checkPartWithTechnology,
   storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology, setBreakupBOP,
+  setIsMultiVendor,
+  setApplicabilityForChildParts,
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -75,6 +77,8 @@ function CostingSummary(props) {
           let dataFromAPI = res.data.Data
           const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
           dispatch(setCostingViewData(tempObj))
+          dispatch(setIsMultiVendor(dataFromAPI?.IsMultiVendorCosting))
+          dispatch(setApplicabilityForChildParts(dataFromAPI?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
         }
         // history.push("/costing-summary");
       },
@@ -145,6 +149,9 @@ function CostingSummary(props) {
               let dataFromAPI = res.data.Data
               const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
               dispatch(setCostingViewData(tempObj))
+              dispatch(setIsMultiVendor(dataFromAPI?.IsMultiVendorCosting))
+              dispatch(setApplicabilityForChildParts(dataFromAPI?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
+
 
             }
           },
@@ -247,7 +254,7 @@ function CostingSummary(props) {
       })
       return temp
     }
-    
+
   }
 
   /**
@@ -309,6 +316,8 @@ function CostingSummary(props) {
                               let dataFromAPI = res.data.Data
                               const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
                               dispatch(setCostingViewData(tempObj))
+                              dispatch(setIsMultiVendor(dataFromAPI?.IsMultiVendorCosting))
+                              dispatch(setApplicabilityForChildParts(dataFromAPI?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
                               setIsLoader(false)
                             }
                           },

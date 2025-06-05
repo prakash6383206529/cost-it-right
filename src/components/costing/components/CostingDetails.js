@@ -23,7 +23,9 @@ import {
   setCostingtype,
   setCurrencySource,
   setExchangeRateSourceValue,
-  exchangeRateReducer
+  exchangeRateReducer,
+  setIsMultiVendor,
+  setApplicabilityForChildParts
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -164,6 +166,7 @@ function CostingDetails(props) {
   const breakupBOP = useSelector(state => state.costing.breakupBOP);
   const { topAndLeftMenuData } = useSelector(state => state.auth);
   const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
 
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
@@ -557,7 +560,7 @@ function CostingDetails(props) {
           setvbcVendorOldArray(Data)
           setzbcPlantOldArray(Data)
           setIsLoader(false)
-
+          dispatch(setIsMultiVendor(Data[0]?.IsMultiVendorCosting))
           setTimeout(() => {
             vbcArray && vbcArray.map((item, index) => {
               setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
@@ -711,7 +714,8 @@ function CostingDetails(props) {
     if (type === VBCTypeId && newValue !== '') {
       let tempData = vbcVendorGrid[index]
       let selectedOptionObj = tempData.CostingOptions.find((el) => el.CostingId === newValue.value,)
-      let isRFQApproved = selectedOptionObj?.IsRFQApproved
+dispatch(setIsMultiVendor(selectedOptionObj?.IsMultiVendorCosting))
+ let isRFQApproved = selectedOptionObj?.IsRFQApproved
       let isRfqCosting = selectedOptionObj?.IsRfqCosting
 
       tempData = {
@@ -789,6 +793,7 @@ function CostingDetails(props) {
    * @description HIDE VENDOR DRAWER
    */
   const closeVendorDrawer = (e = '', vendorData = {}) => {
+
     if (Object.keys(vendorData).length > 0) {
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = vbcVendorGrid.findIndex(el => (el.VendorId === vendorData.VendorId && el.DestinationPlantId === vendorData.DestinationPlantId && el.InfoCategory === vendorData.InfoCategory))
@@ -1055,7 +1060,7 @@ function CostingDetails(props) {
     const userDetail = userDetails()
     setCostingOptionsSelectedObject({})
     setCostingType(type)
-
+    
     let tempData;
     if (type === VBCTypeId) {
       tempData = vbcVendorGrid[index]
@@ -1129,6 +1134,7 @@ function CostingDetails(props) {
             CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
             CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
             InfoCategory: vbcVendorGrid[index]?.InfoCategory ?? 'Standard',
+            IsMultiVendorCosting: IsMultiVendorCosting
           }
           if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
             data.Technology = technology.label
@@ -1146,8 +1152,9 @@ function CostingDetails(props) {
           if (type === WACTypeId) {
             data.PlantCode = tempData.PlantCode
           }
-
-          if (IdForMultiTechnology.includes(String(technology?.value)) || (type === WACTypeId)) {
+          
+          
+          if (IdForMultiTechnology.includes(String(technology?.value)) || (type === WACTypeId) || (partInfo?.PartType === 'Assembly' && IsMultiVendorCosting)) {
             setDisableButton(true)
             dispatch(createMultiTechnologyCosting(data, (res) => {
               if (res?.data?.Result) {
@@ -1737,6 +1744,7 @@ function CostingDetails(props) {
       dispatch(setSurfaceCostInOverheadProfitRejection(false, () => { }))
       dispatch(setToolCostInOverheadProfit(false, () => { }))
       dispatch(exchangeRateReducer({}))
+      dispatch(setApplicabilityForChildParts(false))
     }
   }
 
