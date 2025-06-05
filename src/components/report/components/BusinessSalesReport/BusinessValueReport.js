@@ -315,24 +315,24 @@ const BusinessValueReport = ({ }) => {
 
   const runReport = () => {
     setIsLoader(true)
-    const values = getValues()
+    const values = getValues()    
     const data = {
       ...values,
       fromDate: _.get(values, 'fromDate', '') ? moment(_.get(values, 'fromDate', '')).format('YYYY-MM-DD') : _.get(values, 'fromDate', ''),
       toDate: _.get(values, 'toDate', '') ? moment(_.get(values, 'toDate', '')).format('YYYY-MM-DD') : _.get(values, 'toDate', ''),
       FinancialQuarter: _.get(values, 'FinancialQuarter.label', ''),
-      FinancialYear: _.get(values, 'financialYear.label', ''),
+      FinancialYear: _.get(values, 'FinancialYear.label', ''),
       IsRequestedForBudgeting: IsRequestedForBudgeting,
-      TechnologyName: _.get(values, 'TechnologyName.label', ''),
-      PartType: _.get(values, 'PartType.label', ''),
-      PartGroup: _.get(values, 'PartGroup.label', ''),
-      PartFamilyCode: _.get(values, 'PartFamilyCode.label', ''),
-      PartNepNumber: _.get(values, 'PartNepNumber.label', ''),
-      PlantCode: _.get(values, 'PlantCode.label', ''),
-      VendorCode: _.get(values, 'VendorCode.label', ''),
-      CustomerCode: _.get(values, 'CustomerCode.label', ''),
-      PartModelName: _.get(values, 'PartModelName.label', ''),
-      PartNumber : _.get(values, 'PartNumber.label', ''),
+      TechnologyName: _.get(values, 'TechnologyName.value', ''),
+      PartType: _.get(values, 'PartType.value', ''),
+      PartGroup: _.get(values, 'PartGroup.value', ''),
+      PartFamilyCode: _.get(values, 'PartFamilyCode.value', ''),
+      PartNepNumber: _.get(values, 'PartNepNumber.value', ''),
+      PlantCode: _.get(values, 'PlantCode.value', ''),
+      VendorCode: _.get(values, 'VendorCode.value', ''),
+      CustomerCode: _.get(values, 'CustomerCode.value', ''),
+      PartModelName: _.get(values, 'PartModelName.value', ''),
+      PartNumber : _.get(values, 'PartNumber.value', ''),
       GroupBy : _.get(values, 'GroupBy.value', ''),
       SegmentId :''
     }
