@@ -722,25 +722,25 @@ export function getBusinessValueReportData(data, callback) {
         if (value !== null && value !== undefined && value !== '') {
             params.append(key, value);
         }
-    }
+    }    
     addParam("loggedInUserId", loggedInUserId())
     addParam("fromDate", data?.fromDate)
     addParam("toDate", data?.toDate)
     addParam("financialQuarter", data?.FinancialQuarter)
     addParam("financialYear", data?.FinancialYear)
     addParam("isRequestForBudgetedVolume", data?.IsRequestedForBudgeting)
-    addParam("technology", data?.TechnologyName)
-    addParam("partType", data?.PartType)
+    addParam("technologyId", data?.TechnologyName)
+    addParam("partTypeId", data?.PartType)
     addParam("partGroupId", data?.PartGroup)
-    addParam("partFamilyCode", data?.PartFamilyCode)
+    addParam("partFamilyId", data?.PartFamilyCode)
     addParam("nepNumber", data?.PartNepNumber)
-    addParam("plantName", data?.PlantCode)
-    addParam("vendorName", data?.VendorCode)
-    addParam("customerName", data?.CustomerCode)
-    addParam("partModelName", data?.PartModelName)
-    addParam("partNumber", data?.PartNumber)
+    addParam("plantId", data?.PlantCode)
+    addParam("vendorId", data?.VendorCode)
+    addParam("customerId", data?.CustomerCode)
+    addParam("partModelId", data?.PartModelName)
+    addParam("partId", data?.PartNumber)
     addParam("groupByKey", data?.GroupBy)
-    addParam("segmentId", data?.Segmentid)
+    addParam("segmentId", data?.SegmentId)
     
     return (dispatch) => {
         const request = axios.get(`${API.getBusinessValueReportData}?${params.toString()}`, config());

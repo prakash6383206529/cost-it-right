@@ -28,6 +28,7 @@ import moment from "moment";
 import { Costratiograph } from "../../../dashboard/CostRatioGraph";
 import { colorArray } from "../../../dashboard/ChartsDashboard";
 import { PaginationWrapper } from "../../../common/commonPagination";
+import ReactExport from 'react-export-excel';
 
 const BusinessValueReport = ({ }) => { 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -64,6 +65,9 @@ const BusinessValueReport = ({ }) => {
   const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
   const group = initialConfiguration?.BusinessValueSummaryHeadDefault
+  const ExcelFile = ReactExport.ExcelFile;
+  const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+  const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
   
   useEffect(() => {
     if (businessValueReportData) {
@@ -315,24 +319,24 @@ const BusinessValueReport = ({ }) => {
 
   const runReport = () => {
     setIsLoader(true)
-    const values = getValues()
+    const values = getValues()    
     const data = {
       ...values,
       fromDate: _.get(values, 'fromDate', '') ? moment(_.get(values, 'fromDate', '')).format('YYYY-MM-DD') : _.get(values, 'fromDate', ''),
       toDate: _.get(values, 'toDate', '') ? moment(_.get(values, 'toDate', '')).format('YYYY-MM-DD') : _.get(values, 'toDate', ''),
       FinancialQuarter: _.get(values, 'FinancialQuarter.label', ''),
-      FinancialYear: _.get(values, 'financialYear.label', ''),
+      FinancialYear: _.get(values, 'FinancialYear.label', ''),
       IsRequestedForBudgeting: IsRequestedForBudgeting,
-      TechnologyName: _.get(values, 'TechnologyName.label', ''),
-      PartType: _.get(values, 'PartType.label', ''),
-      PartGroup: _.get(values, 'PartGroup.label', ''),
-      PartFamilyCode: _.get(values, 'PartFamilyCode.label', ''),
-      PartNepNumber: _.get(values, 'PartNepNumber.label', ''),
-      PlantCode: _.get(values, 'PlantCode.label', ''),
-      VendorCode: _.get(values, 'VendorCode.label', ''),
-      CustomerCode: _.get(values, 'CustomerCode.label', ''),
-      PartModelName: _.get(values, 'PartModelName.label', ''),
-      PartNumber : _.get(values, 'PartNumber.label', ''),
+      TechnologyName: _.get(values, 'TechnologyName.value', ''),
+      PartType: _.get(values, 'PartType.value', ''),
+      PartGroup: _.get(values, 'PartGroup.value', ''),
+      PartFamilyCode: _.get(values, 'PartFamilyCode.value', ''),
+      PartNepNumber: _.get(values, 'PartNepNumber.value', ''),
+      PlantCode: _.get(values, 'PlantCode.value', ''),
+      VendorCode: _.get(values, 'VendorCode.value', ''),
+      CustomerCode: _.get(values, 'CustomerCode.value', ''),
+      PartModelName: _.get(values, 'PartModelName.value', ''),
+      PartNumber : _.get(values, 'PartNumber.value', ''),
       GroupBy : _.get(values, 'GroupBy.value', ''),
       SegmentId :''
     }
@@ -411,6 +415,21 @@ const BusinessValueReport = ({ }) => {
         top: 30
       }
     }
+  }
+
+  const downloadAllData = () => {
+    let button = document.getElementById('Excel-Downloads')
+    button.click()
+  }
+ 
+  const renderColumn = () => {
+    return (
+      <ExcelSheet data={tableData} name={"Business Value Summary Report"}>
+        {tableHeaderColumnDefs && tableHeaderColumnDefs.map((ele, index) => {
+          return <ExcelColumn key={index} label={ele?.headerName} value={ele?.field} style={ele?.style} /> 
+        })}
+      </ExcelSheet>
+    )
   }
 
   return (
@@ -673,10 +692,18 @@ const BusinessValueReport = ({ }) => {
           <Row>
             <Col md="8"><h3 className={`mb-${detailAccordian ? 3 : 0}`}>Detail View</h3></Col>
             <Col md="4" className="text-right">
+              <button title={"All"} type="button" onClick={downloadAllData} className={'user-btn Tour_List_Download'}><div className="download mr-1"></div>
+                {"All"}
+              </button>
               <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setDetailAccordian(!detailAccordian) }}>
                 {detailAccordian ? (<i className="fa fa-minus" ></i>) : (<i className="fa fa-plus"></i>)}
               </button>
             </Col>
+             <ExcelFile filename={'Business Value Summary Report'} fileExtension={'.xls'} element={
+                <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
+                </button>}>
+                {renderColumn()}
+             </ExcelFile>
           </Row>
          { detailAccordian && 
           <div className={`ag-grid-react ag-grid-wrapper height-width-wrapper  ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
