@@ -1437,6 +1437,7 @@ export const VendorTempData = [
 
 export const RejectionCBC = [
     { label: 'Note', value: 'Note', },
+    { label: "Technology", value: 'Technology' },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'RejectionApplicability', value: 'OverheadApplicability', },
     { label: 'RejectionPercentage', value: 'OverheadPercentage', },
@@ -1444,13 +1445,14 @@ export const RejectionCBC = [
     { label: "CustomerCode", value: "CustomerCode" },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    // { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const RejectionCBC_TempData = [
     {
         'Note': '',
+        'Technology': 'Sheet Metal',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
@@ -1458,10 +1460,11 @@ export const RejectionCBC_TempData = [
         "CustomerCode": 'C-10006',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
         'Note': '',
+        'Technology': 'Forging, Rubber, Rivet',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '10',
@@ -1469,11 +1472,12 @@ export const RejectionCBC_TempData = [
         "CustomerCode": 'C-10006',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
         'Note': '',
+        'Technology': 'Plastic, Machining',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'CC',
         'OverheadPercentage': '',
@@ -1481,11 +1485,12 @@ export const RejectionCBC_TempData = [
         "CustomerCode": 'C-10006',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
         'Note': '',
+        'Technology': 'Die Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'CCForMachining',
         'OverheadPercentage': '10',
@@ -1493,11 +1498,12 @@ export const RejectionCBC_TempData = [
         "CustomerCode": 'C-10006',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        'Note': '',
+        'Technology': 'Ferrous Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '10',
@@ -1505,11 +1511,12 @@ export const RejectionCBC_TempData = [
         "CustomerCode": 'C-10006',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text'
     },
     {
         'Note': 'If Applicability is Fixed applicability, no % input is needed.',
+        'Technology': 'Corrugated Box',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Fixed',
         'OverheadPercentage': '',
@@ -1517,7 +1524,7 @@ export const RejectionCBC_TempData = [
         "CustomerCode": 'C-10006',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 
@@ -1526,86 +1533,95 @@ export const RejectionCBC_TempData = [
 
 export const Rejection = [
     { label: 'Note', value: 'Note', },
+    { label: "Technology", value: 'Technology' },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'RejectionApplicability', value: 'OverheadApplicability', },
     { label: 'RejectionPercentage', value: 'OverheadPercentage', },
     { label: 'PlantCode', value: 'PlantCode', },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    // { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const RejectionTempData = [
     {
         'Note': '',
+        'Technology': 'Sheet Metal',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }, {
         'Note': '',
+        'Technology': 'Forging, Rubber, Rivet',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
         'Note': '',
+        'Technology': 'Plastic, Machining',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'CC',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
         'Note': '',
+        'Technology': 'Die Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'CCForMachining',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
-        'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        // 'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        'Note': '',
+        'Technology': 'Ferrous Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text',
     },
     {
         'Note': 'If Applicability is Fixed applicability, no % input is needed.',
+        'Technology': 'Corrugated Box',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Fixed',
         'OverheadPercentage': '',
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
 
 export const RejectionVBC = [
     { label: 'Note', value: 'Note', },
+    { label: "Technology", value: 'Technology' },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'RejectionApplicability', value: 'OverheadApplicability', },
     { label: 'RejectionPercentage', value: 'OverheadPercentage', },
@@ -1613,13 +1629,14 @@ export const RejectionVBC = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    // { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const RejectionVBC_TempData = [
     {
         'Note': '',
+        'Technology': 'Sheet Metal',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
@@ -1627,10 +1644,11 @@ export const RejectionVBC_TempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
         'Note': '',
+        'Technology': 'Forging, Rubber, Rivet',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '10',
@@ -1638,11 +1656,12 @@ export const RejectionVBC_TempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
         'Note': '',
+        'Technology': 'Plastic, Machining',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'CC',
         'OverheadPercentage': '10',
@@ -1650,11 +1669,12 @@ export const RejectionVBC_TempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
         'Note': '',
+        'Technology': 'Die Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'CCForMachining',
         'OverheadPercentage': '10',
@@ -1662,11 +1682,13 @@ export const RejectionVBC_TempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        // 'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        'Note': '',
+        'Technology': 'Ferrous Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '10',
@@ -1674,11 +1696,12 @@ export const RejectionVBC_TempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text'
     },
     {
         'Note': 'If Applicability is Fixed applicability, no % input is needed.',
+        'Technology': 'Corrugated Box',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Fixed',
         'OverheadPercentage': '',
@@ -1686,7 +1709,7 @@ export const RejectionVBC_TempData = [
         "PlantCode": '0503',
         "PartFamilyCode": '1234',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 ]
@@ -1697,80 +1720,89 @@ export const RejectionVBC_TempData = [
 */
 export const Overhead = [
     { label: 'Note', value: 'Note', },
+    { label: "Technology", value: 'Technology' },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
     { label: 'PlantCode', value: 'PlantCode', },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    // { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const OverheadTempData = [
     {
         'Note': '',
+        'Technology': 'Sheet Metal',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }, {
         'Note': '',
+        'Technology': 'Forging, Rubber, Rivet',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
         'Note': '',
+        'Technology': 'Plastic, Machining',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'CC',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
         'Note': '',
+        'Technology': 'Die Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Welding',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
+        // 'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
         'Note': '',
-        'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        'Technology': 'Ferrous Casting',
+        'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text',
     },
     {
         'Note': 'If Applicability is Fixed applicability, no % input is needed.',
+        'Technology': 'Corrugated Box',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Fixed',
         'OverheadPercentage': '',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
 
 export const OverheadVBC = [
     { label: 'Note', value: 'Note', },
+    { label: "Technology", value: 'Technology' },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
@@ -1778,79 +1810,87 @@ export const OverheadVBC = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    // { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const OverheadVBC_TempData = [
     {
         'Note': '',
+        'Technology': 'Sheet Metal',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
         'Note': '',
+        'Technology': 'Forging, Rubber, Rivet',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
         'Note': '',
+        'Technology': 'Plastic, Machining',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'CC',
         'OverheadPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
         'Note': '',
+        'Technology': 'Die Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Welding',
         'OverheadPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
-        'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        // 'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        'Note': '',
+        'Technology': 'Ferrous Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text',
     },
     {
         'Note': 'If Applicability is Fixed applicability, no % input is needed.',
+        'Technology': 'Corrugated Box',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Fixed',
         'OverheadPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
 export const OverheadCBC = [
     { label: 'Note', value: 'Note', },
+    { label: "Technology", value: 'Technology' },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
@@ -1858,74 +1898,81 @@ export const OverheadCBC = [
     { label: "CustomerCode", value: "CustomerCode" },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    // { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const OverheadCBC_TempData = [
     {
         'Note': '',
+        'Technology': 'Sheet Metal',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
         'Note': '',
+        'Technology': 'Forging, Rubber, Rivet',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
         'Note': '',
+        'Technology': 'Plastic, Machining',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'CC',
         'OverheadPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
         'Note': '',
+        'Technology': 'Die Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Welding',
         'OverheadPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        // 'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        'Note': '',
+        'Technology': 'Ferrous Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text'
     },
     {
         'Note': 'If Applicability is Fixed applicability, no % input is needed.',
+        'Technology': 'Corrugated Box',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'Fixed',
         'OverheadPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 
@@ -2765,80 +2812,89 @@ export const CBCOperationTempData = [
 */
 export const Profit = [
     { label: 'Note', value: 'Note', },
+    { label: "Technology", value: 'Technology' },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    // { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const ProfitTempData = [
     {
         'Note': '',
+        'Technology': 'Sheet Metal',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }, {
         'Note': '',
+        'Technology': 'Forging, Rubber, Rivet',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
         'Note': '',
+        'Technology': 'Plastic, Machining',
         'ModelType': 'High volume',
         'ProfitApplicability': 'CC',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
         'Note': '',
+        'Technology': 'Die Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'Welding',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     },
     {
-        'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        // 'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        'Note': '',
+        'Technology': 'Ferrous Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'Part Cost',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text',
     },
     {
         'Note': 'If Applicability is Fixed applicability, no % input is needed.',
+        'Technology': 'Corrugated Box',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'Fixed',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
     }
 ]
 
 export const ProfitVBC = [
     { label: 'Note', value: 'Note', },
+    { label: "Technology", value: 'Technology' },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
@@ -2846,79 +2902,87 @@ export const ProfitVBC = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    // { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', }
 ]
 
 export const ProfitTempDataVBC = [
     {
         'Note': '',
+        'Technology': 'Sheet Metal',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
         'Note': '',
+        'Technology': 'Forging, Rubber, Rivet',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
         'Note': '',
+        'Technology': 'Plastic, Machining',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'CC',
         'ProfitPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
         'Note': '',
+        'Technology': 'Die Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'Welding',
         'ProfitPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        // 'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        'Note': '',
+        'Technology': 'Ferrous Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'Part Cost',
         'ProfitPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text'
     },
     {
         'Note': 'If Applicability is Fixed applicability, no % input is needed.',
+        'Technology': 'Corrugated Box',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'Fixed',
         'ProfitPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 ]
 export const ProfitCBC = [
     { label: 'Note', value: 'Note', },
+    { label: "Technology", value: 'Technology' },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
@@ -2926,74 +2990,81 @@ export const ProfitCBC = [
     { label: 'CustomerCode', value: 'CustomerCode' },
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
+    // { label: "Manage Applicabilities For Multi TechnologyAssembly", value: "ManageApplicabilitiesForMultiTechnologyAssembly" },
     { label: 'Remark', value: 'Remark', }
 ]
 
 export const ProfitTempDataCBC = [
     {
         'Note': '',
+        'Technology': 'Sheet Metal',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }, {
         'Note': '',
+        'Technology': 'Forging, Rubber, Rivet',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
         'Note': '',
+        'Technology': 'Plastic, Machining',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'CC',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
         'Note': '',
+        'Technology': 'Die Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'Welding',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     },
     {
-        'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        // 'Note': 'If Applicability is Part Cost, enter YES in Manage Applicabilities For Multi Technology Assembly',
+        'Note': '',
+        'Technology': 'Ferrous Casting',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'Part Cost',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text'
     },
     {
         'Note': 'If Applicability is Fixed applicability, no % input is needed.',
+        'Technology': 'Corrugated Box',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'Fixed',
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
+        // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
     }
 ]
@@ -7976,6 +8047,7 @@ export const POWERLISTING_DOWNLOAD_EXCEl = [
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
+    { label: "Technologies", value: "Technologies" },
     { label: "Raw Material Name", value: "RawMaterialName" },
     { label: "Raw Material Grade", value: "RawMaterialGrade" },
     { label: "Plant (Code)", value: "PlantName" },
@@ -7992,6 +8064,7 @@ export const INTERESTRATE_DOWNLOAD_EXCEl = [
 
 export const PAYMENTTERMS_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
+    { label: "Technologies", value: "Technologies" },
     { label: "Raw Material Name", value: "RawMaterialName" },
     { label: "Raw Material Grade", value: "RawMaterialGrade" },
     { label: "Plant (Code)", value: "PlantName" },
@@ -8211,6 +8284,8 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Technologies", value: "Technologies" },
+    { label: "Technologies", value: "Technologies" },
     { label: "Raw Material Name", value: "RawMaterialName", },
     { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
@@ -8349,6 +8424,7 @@ export const BUDGET_DOWNLOAD_EXCEl = [
 
 export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Technologies", value: "Technologies" },
     { label: "Raw Material Name", value: "RawMaterialName", },
     { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },

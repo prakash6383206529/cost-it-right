@@ -73,7 +73,7 @@ const InterestRateListing = (props) => {
     totalRecordCount: 0,
     globalTake: defaultPageSize
   })
-  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, technologyLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
   const { statusColumnData } = useSelector((state) => state.comman);
   const { costingHeadFilter } = useSelector((state) => state?.comman);
@@ -600,6 +600,7 @@ const InterestRateListing = (props) => {
               >
                 <AgGridColumn minWidth={180} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
                   floatingFilterComponent="statusFilter"></AgGridColumn>
+                <AgGridColumn field="Technologies" tooltipField='Technologies' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                 {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
