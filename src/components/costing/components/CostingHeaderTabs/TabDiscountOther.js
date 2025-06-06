@@ -1658,7 +1658,7 @@ let iccObj={
           applicabilityCost = overheadAndProfitTabDataValue?.RejectionCost;
           break;
         case 'ICC Cost':
-          applicabilityCost = overheadAndProfitTabDataValue?.ICCCost;
+          applicabilityCost = IccCost?.NetCost;
           break;
         case 'Payment Terms Cost':
           applicabilityCost = UpdatePaymentTermCost?.NetCost;

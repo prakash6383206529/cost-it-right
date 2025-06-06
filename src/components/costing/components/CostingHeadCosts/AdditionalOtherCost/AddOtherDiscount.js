@@ -37,7 +37,7 @@ function AddOtherDiscount(props) {
     const costData = useContext(costingInfoContext);
     const [applicabilityCost, setApplicabilityCost] = useState('')
     const dispatch = useDispatch()
-    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData } = useSelector(state => state.costing)
+    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, IccCost } = useSelector(state => state.costing)
     const { currencySource } = useSelector((state) => state?.costing);
     const fieldValuesForPercent = useWatch({
         control,
@@ -341,9 +341,9 @@ function AddOtherDiscount(props) {
                 setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.RejectionCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'ICC Cost':
-                totalCost = (overheadAndProfitTabDataValue?.ICCCost) * calculatePercentage(percent)
-                setApplicabilityCost(overheadAndProfitTabDataValue?.ICCCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.ICCCost, initialConfiguration?.NoOfDecimalForPrice))
+                totalCost = (IccCost?.NetCost) * calculatePercentage(percent)
+                setApplicabilityCost(IccCost?.NetCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(IccCost?.NetCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Payment terms Cost':
                 totalCost = (overheadAndProfitTabDataValue?.PaymentTermCost) * calculatePercentage(percent)

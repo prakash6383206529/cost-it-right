@@ -23,7 +23,7 @@ import InventoryDetails from './InventoryTable'
 import Button from '../../../../layout/Button'
 
 function IccCalculator(props) {
-    const { CostingViewMode } = props
+    const { CostingViewMode,isCostingSummary=false } = props
     const headerCosts = useContext(netHeadCostContext);
     const costData = useContext(costingInfoContext);
     const { SurfaceTabData, PackageAndFreightTabData, IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData } = useSelector(state => state.costing)
@@ -53,8 +53,7 @@ function IccCalculator(props) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-
-        dispatch(getIccCalculation(props.iccInterestRateId, !IsCalculatorExist ? null : costingData?.CostingId, (response) => {
+        dispatch(getIccCalculation(props.iccInterestRateId, !IsCalculatorExist ? null : !isCostingSummary ? costingData?.CostingId : props?.costingId, (response) => {
             let data = response?.data?.Data
             setValue("InterestOnReceivables", data?.CreditBasedAnnualICCPercent)
             setValue('MarkupFactor', data?.MarkupFactor)

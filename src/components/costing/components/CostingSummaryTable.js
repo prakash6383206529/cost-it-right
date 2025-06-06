@@ -2074,6 +2074,7 @@ const CostingSummaryTable = (props) => {
 
   const highlighter = (key, columnName = '') => {
     const firstInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 1 : 0
+    
     const secondInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 0 : 1
     let highlighClass = ''; // The variable to hold the highlight class
     const activeClass = isApproval && !props.isRfqCosting; // Check if main row highlight class is applicable
@@ -3167,23 +3168,23 @@ const CostingSummaryTable = (props) => {
                             !drawerDetailPDF ? (
                               <tr>
                                 <td>
-                                  <span className={highlighter("sTreatment")}>Net Overhead Cost</span>
-                                  <span className={highlighter("tCost")}> Net Profit Cost</span>
-                                  <span className={highlighter("HangerCostPerPart")}> Net Rejection Cost </span>
+                                  <span className={highlighter("netOperationCost")}>Net Overhead Cost</span>
+                                  <span className={highlighter("netProfitCost")}> Net Profit Cost</span>
+                                  <span className={highlighter("netRejectionCost")}> Net Rejection Cost </span>
                                 </td>
                                 {viewCostingData &&
                                   viewCostingData?.map((data) => {
                                     return (
                                       <td className={tableDataClass(data)}>
-                                        <span className={highlighter("sTreatment")}>
+                                        <span className={highlighter("netOverheadCost")}>
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : '')}
                                         </span>
-                                        <span className={highlighter("tCost")}>
+                                        <span className={highlighter("netProfitCost")}>
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
                                             (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
                                             : '')}
                                         </span>
-                                        <span className={highlighter("HangerCostPerPart")}>
+                                        <span className={highlighter("netRejectionCost")}>
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
                                             (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}</span>)
                                             : '')}
@@ -3362,7 +3363,7 @@ const CostingSummaryTable = (props) => {
                           }
                           < tr className='border-right' >
                             <td>
-                              <span className={highlighter("tCost")}>Net ICC Cost</span>
+                              <span className={highlighter("netICCCost")}>Net ICC Cost</span>
                             </td>
                             {
                               viewCostingData &&
@@ -3370,7 +3371,7 @@ const CostingSummaryTable = (props) => {
                                 return (
                                   (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
                                     <td className={tableDataClass(data)}>
-                                      <div className={`${highlighter("tCost")}`}>
+                                      <div className={`${highlighter("netICCCost")}`}>
                                         <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetICCCost, initialConfiguration?.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetICCCost, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''}</span>
                                       </div>
                                     </td>
