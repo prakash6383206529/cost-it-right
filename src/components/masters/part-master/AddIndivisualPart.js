@@ -458,15 +458,15 @@ class AddIndivisualPart extends Component {
         }
       }
       //THIS CONDITION TO CHECK IF ALL VALUES ARE SAME (IF YES, THEN NO NEED TO CALL UPDATE API JUST SEND IT TO LISTING PAGE)
-      const partDetailNotChange = partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartModelId) === String(this?.state?.Model?.value) : true &&
-        partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartsModelMaster) === String(this?.state?.Model?.label) : true &&
-          partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamilyId) === String(this?.state?.PartFamilySelected?.value) : true &&
-            partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamily) === String(this?.state?.PartFamilySelected?.label) : true &&
+      const partDetailNotChange = partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamilyId) === String(this?.state?.PartFamilySelected?.value) : true &&
+        partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamily) === String(this?.state?.PartFamilySelected?.label) : true &&
+        // partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartModelId) === String(this?.state?.Model?.value) : true &&
+        // partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartsModelMaster) === String(this?.state?.Model?.label) : true &&
               partPermissions?.IsNepNumberMandatory ? String(DataToCheck?.NEPNumber) === String(values?.NEP) : true
       const DataNotChange = DropdownChanged && String(DataToCheck.PartName) === String(values?.PartName) && String(DataToCheck.Description) === String(values?.Description) &&
         String(DataToCheck.ECNNumber) === String(values?.ECNNumber) && JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(productArray) &&
         String(DataToCheck.RevisionNumber) === String(values?.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values?.DrawingNumber) &&
-        (this?.state?.isBomEditable ? String(DataToCheck?.PartModelId) === String(values?.Model?.value) : true)
+        (this?.state?.isBomEditable ? String(DataToCheck?.PartsModelMaster) === String(this?.state?.Model?.label) : true)
         && String(DataToCheck.Remark) === String(values?.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values?.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)
 
       if (DataNotChange && partDetailNotChange) {
@@ -812,6 +812,7 @@ class AddIndivisualPart extends Component {
                                     id="Model-edit"
                                     className="drawer-edit mt10 mb-0"
                                     variant="Edit"
+                                    disabled={!this?.state?.isBomEditable}
                                     onClick={() => this.modelToggler(this?.state?.Model.value)}
                                   /> :
                                   <div className='d-flex justify-content-center align-items-center'>
