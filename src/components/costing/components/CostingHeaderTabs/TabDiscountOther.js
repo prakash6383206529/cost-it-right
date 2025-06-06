@@ -90,7 +90,7 @@ function TabDiscountOther(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType,IccDataDiscountTab, checkIsIccDataChange,costingDetailForIcc,IccCost,includeOverHeadProfitIcc, includeToolCostIcc, } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType,IccDataDiscountTab, checkIsIccDataChange,costingDetailForIcc,IccCost,includeOverHeadProfitIcc, includeToolCostIcc, disableIccCheckBox } = useSelector(state => state.costing)
   
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
@@ -142,8 +142,9 @@ function TabDiscountOther(props) {
   const [count, setCount] = useState(0)
   const [icc, setIcc] = useState(false)
   const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC??false)
+  
   const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(costingDetailForIcc?.IsIncludeToolCostInCCForICC??false)
-  const npvDrawerCondition = (
+   const npvDrawerCondition = (
     ((IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
     (!(IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
     (!(IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost)
@@ -225,11 +226,15 @@ function TabDiscountOther(props) {
       let isCalculatorExist=res?.data?.Data?.IsCalculatorExist
       dispatch(setIsCalculatorExist(isCalculatorExist))
     }))
-    dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => {}))
+    if(initialConfiguration?.IsShowPaymentTerm){
+      dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => {}))
+    }
   }, [costData])
   useEffect(() => {
     dispatch(setIncludeToolCostIcc(costingDetailForIcc?.IsIncludeToolCostInCCForICC, () => { }))
     dispatch(setIncludeOverheadProfitIcc(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC, () => { }))
+    setIsIncludeToolCostInCCForICC(costingDetailForIcc?.IsIncludeToolCostInCCForICC)
+    setIncludeOverheadProfitInIcc(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC)
   }, [costingDetailForIcc])
   const viewAddButtonIcon = (data, type) => {
 
@@ -1387,12 +1392,12 @@ let iccObj={
       dispatch(saveDiscountOtherCostTab(data, res => {
         setIsLoader(false)
         if (res.data.Result) {
-          if (checkIsPaymentTermsDataChange === true) {
+          if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
             dispatch(saveCostingPaymentTermDetail(obj, res => { }))
           }
           
           if (checkIsIccDataChange === true) {
-            dispatch(saveCostingDetailForIcc(iccObj, res => { }))
+            dispatch(saveCostingDetailForIcc(iccObj, res => { })) 
           }
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           // dispatch(setComponentDiscountOtherItemData({}, () => { }))
@@ -2180,7 +2185,7 @@ let iccObj={
                           <input
                             type="checkbox"
                             checked={IncludeOverheadProfitInIcc}
-                            disabled={(CostingViewMode )}
+                            disabled={(CostingViewMode || disableIccCheckBox)}
                           />
                           <span
                             className=" before-box"
@@ -2198,7 +2203,7 @@ let iccObj={
                           <input
                             type="checkbox"
                             checked={IsIncludeToolCostInCCForICC}
-                            disabled={(CostingViewMode )}
+                            disabled={(CostingViewMode || disableIccCheckBox)}
                           />
                           <span
                             className=" before-box"
@@ -2367,7 +2372,7 @@ let iccObj={
                         </Col>
                       </Row>
                     </Col>}
-                    <Col md="12">
+                  { initialConfiguration?.IsShowPaymentTerm && <Col md="12">
                       <Row>
                         <Col md="8"><div className="left-border mt-1">Payment Terms:</div></Col>
                         <Col md="4" className="text-right">
@@ -2380,7 +2385,7 @@ let iccObj={
                           </button>
                         </Col>
                       </Row>
-                    </Col>
+                    </Col>}
                     <Row>
                       {/* net cost *(90- usersvalues 60)/30 *1% */}
                       {paymentTerms && <Col md="12" className='payment-terms'>

@@ -1450,7 +1450,7 @@ export const RejectionCBC = [
 
 export const RejectionCBC_TempData = [
     {
-        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'Note': '',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
@@ -1538,7 +1538,7 @@ export const Rejection = [
 
 export const RejectionTempData = [
     {
-        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'Note': '',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
@@ -1619,7 +1619,7 @@ export const RejectionVBC = [
 
 export const RejectionVBC_TempData = [
     {
-        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'Note': '',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
@@ -1709,7 +1709,7 @@ export const Overhead = [
 
 export const OverheadTempData = [
     {
-        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'Note': '',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
@@ -1784,7 +1784,7 @@ export const OverheadVBC = [
 
 export const OverheadVBC_TempData = [
     {
-        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'Note': '',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
@@ -1864,7 +1864,7 @@ export const OverheadCBC = [
 
 export const OverheadCBC_TempData = [
     {
-        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'Note': '',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
@@ -2777,7 +2777,7 @@ export const Profit = [
 
 export const ProfitTempData = [
     {
-        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'Note': '',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '10',
@@ -2852,7 +2852,7 @@ export const ProfitVBC = [
 
 export const ProfitTempDataVBC = [
     {
-        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'Note': '',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '10',
@@ -2932,7 +2932,7 @@ export const ProfitCBC = [
 
 export const ProfitTempDataCBC = [
     {
-        'Note': 'If Applicability is single input percentage in relevant applicability field.',
+        'Note': '',
         'ModelType': 'All/High Investment/High Volume/Low Volume/Medium Volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '',
@@ -4629,7 +4629,7 @@ export const MHRMoreZBC = [
     { label: "DateOfPurchase", value: "DateOfPurchase", },
     { label: "IsMaintenanceFixed", value: "IsMaintenanceFixed", },
     { label: "AnnualMaintanceCRMHead", value: "AnnualMaintanceCRMHead", },
-    { label: "AnnualMaintenancePercentage ", value: "AnnualMaintenancePercentage ", },
+    { label: "AnnualMaintenancePercentage", value: "AnnualMaintenancePercentage", },
     { label: "AnnualMaintenanceAmount", value: "AnnualMaintenanceAmount", },
     { label: "IsConsumableFixed", value: "IsConsumableFixed", },
     { label: "AnnualConsumableCRMHead", value: "AnnualConsumableCRMHead", },
@@ -4703,7 +4703,7 @@ export const MHRMoreVBC = [
     { label: "DateOfPurchase", value: "DateOfPurchase", },
     { label: "IsMaintenanceFixed", value: "IsMaintenanceFixed", },
     { label: "AnnualMaintanceCRMHead", value: "AnnualMaintanceCRMHead", },
-    { label: "AnnualMaintenancePercentage ", value: "AnnualMaintenancePercentage ", },
+    { label: "AnnualMaintenancePercentage", value: "AnnualMaintenancePercentage", },
     { label: "AnnualMaintenanceAmount", value: "AnnualMaintenanceAmount", },
     { label: "IsConsumableFixed", value: "IsConsumableFixed", },
     { label: "AnnualConsumableCRMHead", value: "AnnualConsumableCRMHead", },
@@ -4777,7 +4777,7 @@ export const MHRMoreCBC = [
     { label: "DateOfPurchase", value: "DateOfPurchase", },
     { label: "IsMaintenanceFixed", value: "IsMaintenanceFixed", },
     { label: "AnnualMaintanceCRMHead", value: "AnnualMaintanceCRMHead", },
-    { label: "AnnualMaintenancePercentage ", value: "AnnualMaintenancePercentage ", },
+    { label: "AnnualMaintenancePercentage", value: "AnnualMaintenancePercentage", },
     { label: "AnnualMaintenanceAmount", value: "AnnualMaintenanceAmount", },
     { label: "IsConsumableFixed", value: "IsConsumableFixed", },
     { label: "AnnualConsumableCRMHead", value: "AnnualConsumableCRMHead", },
@@ -4937,7 +4937,7 @@ export const MHRMoreZBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "YES",
-        "AnnualMaintenancePercentage ": 0,
+        "AnnualMaintenancePercentage": 0,
         "AnnualMaintenanceAmount": 1000,
         "IsConsumableFixed": "YES",
         "AnnualConsumablePercentage": 0,
@@ -5008,7 +5008,7 @@ export const MHRMoreZBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "NO",
-        "AnnualMaintenancePercentage ": 10,
+        "AnnualMaintenancePercentage": 10,
         "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumablePercentage": 10,
@@ -5076,7 +5076,7 @@ export const MHRMoreZBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "NO",
-        "AnnualMaintenancePercentage ": 10,
+        "AnnualMaintenancePercentage": 10,
         "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumablePercentage": 10,
@@ -5144,7 +5144,7 @@ export const MHRMoreZBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "NO",
-        "AnnualMaintenancePercentage ": 10,
+        "AnnualMaintenancePercentage": 10,
         "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumablePercentage": 10,
@@ -5212,7 +5212,7 @@ export const MHRMoreZBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "NO",
-        "AnnualMaintenancePercentage ": 10,
+        "AnnualMaintenancePercentage": 10,
         "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumablePercentage": 10,
@@ -5356,7 +5356,7 @@ export const MHRMoreVBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "YES",
-        "AnnualMaintenancePercentage ": 0,
+        "AnnualMaintenancePercentage": 0,
         "AnnualMaintenanceAmount": 1000,
         "IsConsumableFixed": "YES",
         "AnnualConsumablePercentage": 0,
@@ -5428,7 +5428,7 @@ export const MHRMoreVBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "NO",
-        "AnnualMaintenancePercentage ": 10,
+        "AnnualMaintenancePercentage": 10,
         "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumablePercentage": 10,
@@ -5497,7 +5497,7 @@ export const MHRMoreVBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "NO",
-        "AnnualMaintenancePercentage ": 10,
+        "AnnualMaintenancePercentage": 10,
         "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumablePercentage": 10,
@@ -5641,7 +5641,7 @@ export const MHRMoreCBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "YES",
-        "AnnualMaintenancePercentage ": 0,
+        "AnnualMaintenancePercentage": 0,
         "AnnualMaintenanceAmount": 1000,
         "IsConsumableFixed": "YES",
         "AnnualConsumablePercentage": 0,
@@ -5713,7 +5713,7 @@ export const MHRMoreCBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "NO",
-        "AnnualMaintenancePercentage ": 10,
+        "AnnualMaintenancePercentage": 10,
         "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumablePercentage": 10,
@@ -5782,7 +5782,7 @@ export const MHRMoreCBCTempData = [
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintenanceFixed": "NO",
-        "AnnualMaintenancePercentage ": 10,
+        "AnnualMaintenancePercentage": 10,
         "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumablePercentage": 10,
@@ -10275,4 +10275,12 @@ export const DUMMYCONDITIONCOSTDATA = [
         "ConditionCostPerQuantity": 5,
         "ConditionCostPerQuantityConversion": 5
     }
+]
+
+export const FinancialQuarterOptions = [
+    { Text: 'All', Value: 'All' },
+    { Text: 'Q1', Value: 'Q1' },
+    { Text: 'Q2', Value: 'Q2' },
+    { Text: 'Q3', Value: 'Q3' },
+    { Text: 'Q4', Value: 'Q4' }
 ]

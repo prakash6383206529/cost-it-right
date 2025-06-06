@@ -87,6 +87,7 @@ import {
   SET_ICC_COST,
   CHECK_IS_ICC_DATA_CHANGE,
   SET_COMPONENT_ICC_DATA,
+  SET_DISABLE_ICC_CHECKBOX
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -3509,5 +3510,13 @@ export function setIccDataInDiscountOtherTab(TabData, callback) {
       payload: TabData,
     });
     callback();
+  }
+};
+export function setDisableIccCheckBox(IsDisabled) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_DISABLE_ICC_CHECKBOX,
+      payload: IsDisabled,
+    });
   }
 };

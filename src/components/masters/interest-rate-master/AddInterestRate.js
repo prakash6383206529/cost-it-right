@@ -112,14 +112,10 @@ const AddInterestRate = (props) => {
     const costingHead = useSelector((state) => state.comman.costingHead);
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
     const { iccApplicabilitySelectList, interestRateData, iccMethodSelectList, inventoryDayTypeSelectList, wipCompositionMethodSelectList } = useSelector((state) => state.interestRate);
-    console.log(inventoryDayTypeSelectList,'inventoryDayTypeSelectList')
     const { applicabilityList } = useSelector((state) => state.comman);
     const vendorSelectList = useSelector((state) => state.comman.vendorSelectList);
-
     const conditionTypeId = getCostingConditionTypes(ICCMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
-
-
 
     const columns = [
       { columnHead: "WIP Head", key: "InventoryType" },
@@ -369,7 +365,7 @@ const AddInterestRate = (props) => {
         if (label === 'InventoryDayType') {
             const existingTypes = state?.selectedInventoryDayType?.map(item => item.InventoryType);
             inventoryDayTypeSelectList && inventoryDayTypeSelectList.map((item) => {
-                if (item.Value === '0') return false;
+                if ((item.Value === '0') || (item.Value === '5')) return false;
                 if (!existingTypes.includes(item.Text)) {
                     temp.push({ label: item.Text, value: item.Value });
                 }
@@ -705,7 +701,6 @@ const AddInterestRate = (props) => {
     };
 
     const applicabilityInventoryDayTypeChange = (newValue) => {
-        console.log(newValue,'newValue')
         setState(prev => ({ ...prev, ApplicabilityBasedInventoryDayType: newValue }));
     };
     const handleChangeCreditBasePercentage = (e) => {

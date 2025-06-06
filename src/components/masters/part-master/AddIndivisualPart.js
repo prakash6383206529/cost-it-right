@@ -465,7 +465,8 @@ class AddIndivisualPart extends Component {
               partPermissions?.IsNepNumberMandatory ? String(DataToCheck?.NEPNumber) === String(values?.NEP) : true
       const DataNotChange = DropdownChanged && String(DataToCheck.PartName) === String(values?.PartName) && String(DataToCheck.Description) === String(values?.Description) &&
         String(DataToCheck.ECNNumber) === String(values?.ECNNumber) && JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(productArray) &&
-        String(DataToCheck.RevisionNumber) === String(values?.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values?.DrawingNumber)
+        String(DataToCheck.RevisionNumber) === String(values?.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values?.DrawingNumber) &&
+        (this?.state?.isBomEditable ? String(DataToCheck?.PartModelId) === String(values?.Model?.value) : true)
         && String(DataToCheck.Remark) === String(values?.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values?.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)
 
       if (DataNotChange && partDetailNotChange) {

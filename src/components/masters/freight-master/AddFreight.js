@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
 import { checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
-import { getVendorNameByVendorSelectList, getPlantSelectListByType, getCurrencySelectList } from "../../../actions/Common";
+import { getVendorNameByVendorSelectList, getPlantSelectListByType, getCurrencySelectList, getExchangeRateSource, setListToggle } from "../../../actions/Common";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
   getTruckDimensionsSelectList,
@@ -134,6 +134,8 @@ const AddFreight = (props) => {
   const truckDimensionsSelectList = useSelector(state => state.freight.truckDimensionsSelectList);
   const plantSelectList = useSelector(state => state.comman.plantSelectList);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
+  const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList)
+
 
 
   /**
@@ -152,6 +154,7 @@ const AddFreight = (props) => {
     }
 
     if (!(props.data.isEditFlag || state.isViewMode)) {
+      dispatch(getExchangeRateSource((res) => {}))
       dispatch(getClientSelectList(() => { }));
     } else {
       getDetails();
@@ -280,8 +283,8 @@ const AddFreight = (props) => {
                 settlementCurrency: rate2 !== 0 ? rate2 : 1,
                 plantExchangeRateId: exchangeRateId1,
                 settlementExchangeRateId: exchangeRateId2,
-                showPlantWarning: showPlantWarning1,
-                showWarning: showWarning2
+                showPlantWarning: showPlantWarning2,
+                showWarning: showPlantWarning1
               }));
               handleCalculation(getValuesTableForm("Rate"))
             });
@@ -587,6 +590,14 @@ const AddFreight = (props) => {
       currencySelectList && currencySelectList.map(item => {
         if (item.Value === '0') return false;
         if (item.Text === getValuesMainForm("plantCurrency")) return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'ExchangeSource') {
+      exchangeRateSourceList && exchangeRateSourceList?.map(item => {
+        if (item.Text === '--Exchange Rate Source Name--') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -1142,6 +1153,7 @@ const AddFreight = (props) => {
     setState(prev => ({ ...prev, isShowTruckDimensions: !prev.isShowTruckDimensions }));
   };
   const importToggle = () => {
+    dispatch(setListToggle({ Freight: !state.isImport }));
     setState(prev => ({ ...prev, isImport: !prev.isImport }));
   };
   const handleExchangeRate = (newValue) => {
@@ -1165,7 +1177,7 @@ const AddFreight = (props) => {
     const plantCurrencyLabel = getValuesMainForm("plantCurrency") ?? 'Plant Currency';
 
     // Check the exchange rates or provide a default placeholder if undefined
-    const plantCurrencyRate = plantCurrency ?? '0';
+    const plantCurrencyRate = plantCurrency ?? '1';
 
     // Generate tooltip text based on the condition
     return `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}`

@@ -105,7 +105,7 @@ function RawMaterialCost(props) {
   ])
   const [isScrapRateUOMApplied, setIsScrapRateUOMApplied] = useState(false)
   const [dataInNFRAPI, setDataInNFRAPI] = useState(false)
-  const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
+  const { ferrousCalculatorReset,rubberCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
   const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
   const isNFR = useContext(IsNFR);
@@ -377,7 +377,7 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
     const data = res && res.data && res.data.Data ? res.data.Data : {}
-    tempData = { ...tempData, CalculatorType: (Number(costData?.TechnologyId) === CORRUGATEDBOX || Number(costData?.TechnologyId) === RUBBER) ? calculatorType : '', WeightCalculatorRequest: ferrousCalculatorReset === true ? {} : data }
+    tempData = { ...tempData, CalculatorType: (Number(costData?.TechnologyId) === CORRUGATEDBOX || Number(costData?.TechnologyId) === RUBBER) ? calculatorType : '', WeightCalculatorRequest: (ferrousCalculatorReset === true || rubberCalculatorReset === true) ? {} : data }
     tempArr = Object.assign([...gridData], { [index]: tempData })
     setTimeout(() => {
       setGridData(tempArr)
@@ -624,6 +624,7 @@ function RawMaterialCost(props) {
       }
       dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
       setGridData(tempArr)
+      dispatch(setRubberCalculatorReset(true))
       removeErrorGrossFinishWeight(grossValue, FinishWeight, index)
     }
     for (let i = 0; i < gridData.length; i++) {
@@ -790,6 +791,7 @@ function RawMaterialCost(props) {
       }
       dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
       setGridData(tempArr)
+      dispatch(setRubberCalculatorReset(true))
       removeErrorGrossFinishWeight(GrossWeight, FinishWeight, index)
 
     }

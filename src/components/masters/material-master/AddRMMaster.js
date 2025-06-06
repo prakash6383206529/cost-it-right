@@ -3,7 +3,7 @@ import { Row, Col, Label } from 'reactstrap';
 import AddRMDetails from "./AddRMDetails"
 import AddRMFinancialDetails from "./AddRMFinancialDetails"
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, IsSelectSinglePlant, RM_MASTER_ID, VBCTypeId, ZBCTypeId } from "../../../config/constants"
-import { getCommodityIndexRateAverage } from '../../../../src/actions/Common';
+import { getCommodityIndexRateAverage, setListToggle } from '../../../../src/actions/Common';
 import {  convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { useForm, Controller, useWatch, } from 'react-hook-form';
@@ -331,6 +331,7 @@ function AddRMMaster(props) {
     * @description RM TOGGLE
     */
     const onRmToggle = () => {
+        dispatch(setListToggle({ RawMaterial: !state.isImport }));
         setState(prevState => ({ ...prevState, isImport: !prevState.isImport }))
     }
     const closeApprovalDrawer = (e = '', type) => {

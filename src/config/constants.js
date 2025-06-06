@@ -163,6 +163,7 @@ export const API = {
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
   productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   checkRFQBulkUpload: `${BASE_URL}/rfq-quotation/check-valid-part-via-bulk-upload`,
+  getNepNumberDataList: `${BASE_URL}/masters-part/select-list-part-nep-number`,
 
   CreatComponentBySap: `${BASE_URL}/sap-sync/create-component-by-sap`,
   updateMultiplecomponentTechnology: `${BASE_URL}/masters-part/update-technology-for-multiple-component`,
@@ -1190,6 +1191,8 @@ export const API = {
   getNfrInsightsDetails: `${BASE_URL}/reports/get-nfr-insights-details`,
   getNfrInsightsStatusDetails: `${BASE_URL}/reports/get-nfr-insights-status-details`,
   getCostDeviationReport: `${BASE_URL}/reports/get-weight-comparison-report`,
+  getBusinessValueReportHeads: `${BASE_URL}/configuration/select-business-value-summary-report-heads`,
+  getBusinessValueReportData: `${BASE_URL}/reports/get-business-value-summary-report`,
 
 
   //RFQ
@@ -1448,6 +1451,7 @@ export const GET_ALL_PARTS_FAILURE = 'GET_ALL_PARTS_FAILURE'
 export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS'
 export const GET_DRAWER_CHILD_PART_DATA = 'GET_DRAWER_CHILD_PART_DATA'
 export const SET_ACTUAL_BOM_DATA = 'SET_ACTUAL_BOM_DATA'
+export const GET_NEP_NUMBER_LIST = 'GET_NEP_NUMBER_LIST'
 
 //PRODUCT MASTER
 export const GET_PRODUCT_DATA_LIST = 'GET_PRODUCT_DATA_LIST'
@@ -1843,6 +1847,7 @@ export const SET_EXCHANGE_RATE_DATA = 'SET_EXCHANGE_RATE_DATA'
 export const SET_OPERATION_APPLICABILITY_SELECT = 'SET_OPERATION_APPLICABILITY_SELECT'
 export const SET_PROCESS_APPLICABILITY_SELECT = 'SET_PROCESS_APPLICABILITY_SELECT'
 export const SET_OVERALL_APPLICABILITY_TOOL_DATA = 'SET_OVERALL_APPLICABILITY_TOOL_DATA'
+export const SET_DISABLE_ICC_CHECKBOX = 'SET_DISABLE_ICC_CHECKBOX'
 
 //WEIGHT CALCULATION COSTING
 
@@ -2175,6 +2180,9 @@ export const GET_DATA_FROM_REPORT = 'GET_DATA_FROM_REPORT'
 export const GET_PRODUCT_LIST = 'GET_PRODUCT_LIST'
 export const GET_PRODUCT_PART_DATA_LIST = 'GET_PRODUCT_PART_DATA_LIST'
 export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
+export const GET_BUSINESS_VALUE_REPORT_HEADS = 'GET_BUSINESS_VALUE_REPORT_HEADS'
+export const GET_BUSINESS_VALUE_REPORT_DATA = 'GET_BUSINESS_VALUE_REPORT_DATA'
+
 //MINDA
 export const GET_NFR_INSIGHT_DETAILS = 'GET_NFR_INSIGHT_DETAILS'
 export const GET_NFR_INSIGHT_STATUS_DETAILS = 'GET_NFR_INSIGHT_STATUS_DETAILS'
@@ -2379,6 +2387,7 @@ export const PURCHASE_PROVISION_FILE_NAME = 'Purchase Provision Report'
 export const SALES_PROVISION_REPORT = 'Sales Provision Report'
 export const COST_DEVIATION_REPORT = 'Cost Deviation'
 export const COST_VARIANCE_REPORT = 'Cost Variance'
+export const BUSINESS_VALUE_REPORT = 'Business Value Report'
 //RE
 // export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'          						//RE
 export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'
@@ -3445,7 +3454,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.51";
+export const VERSION = "V4.2.54";
 
 
 
