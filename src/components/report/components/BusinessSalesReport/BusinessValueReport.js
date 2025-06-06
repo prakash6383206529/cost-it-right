@@ -185,7 +185,7 @@ const BusinessValueReport = ({ }) => {
         })
       return temp
     }
-    if (label === 'PartNepNumber') {
+    if (label === 'PartNepNumber' || label === 'NepNumber') {
       nepNumberSelectList && nepNumberSelectList.map((item) => {
         if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
@@ -334,7 +334,7 @@ const BusinessValueReport = ({ }) => {
       PartType: _.get(values, 'PartType.value', ''),
       PartGroup: _.get(values, 'PartGroup.value', ''),
       PartFamilyCode: _.get(values, 'PartFamilyCode.value', ''),
-      PartNepNumber: _.get(values, 'PartNepNumber.value', ''),
+      PartNepNumber: _.get(values, 'NepNumber.value', ''),
       PlantCode: _.get(values, 'PlantCode.value', ''),
       VendorCode: _.get(values, 'VendorCode.value', ''),
       CustomerCode: _.get(values, 'CustomerCode.value', ''),
@@ -710,7 +710,7 @@ const BusinessValueReport = ({ }) => {
           </Row>
          { detailAccordian && 
           <div className={`ag-grid-react ag-grid-wrapper height-width-wrapper  ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-            <div className={`ag-theme-material grid-parent-wrapper mt-2 ${isLoader && "max-loader-height"}`}>
+            <div className={`ag-theme-material grid-parent-wrapper mt-2 ${isLoader && "max-loader-height"} ${tableData && tableData?.length <= 0 && "overlay-contain"}`}>
               {isLoader ? <LoaderCustom customClass="loader-center" /> :
                 <AgGridReact
                   defaultColDef={defaultColDef}
