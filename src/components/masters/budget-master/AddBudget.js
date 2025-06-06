@@ -726,7 +726,7 @@ function AddBudget(props) {
                                 setShowWarning(false)
                             }
                             resolve({
-                                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                                rate: res?.data?.Data.CurrencyExchangeRate!==0 && res?.data?.Data.CurrencyExchangeRate!==null && res?.data?.Data.CurrencyExchangeRate!==undefined ? checkForNull(res?.data?.Data.CurrencyExchangeRate) : 1,
                                 exchangeRateId: res?.data?.Data?.ExchangeRateId,
                                 showWarning: Object.keys(res.data.Data).length === 0,
                                 showPlantWarning: Object.keys(res.data.Data).length === 0
