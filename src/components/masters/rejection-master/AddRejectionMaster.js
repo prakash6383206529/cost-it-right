@@ -172,7 +172,7 @@ const AddRejectionMaster = (props) => {
       let technologyArray = [];
       if(Data.Technologies && Data.Technologies.length > 0){
         Data.Technologies.map((item) => {
-          technologyArray.push({ label: item.Technology, value: item.TechnologyId })
+          technologyArray.push({ label: item.TechnologyName, value: item.TechnologyId })
           return null;
         })
       }
@@ -278,7 +278,7 @@ const AddRejectionMaster = (props) => {
     let technologyArray = [];
     if(selectedTechnologies && selectedTechnologies.length > 0){
       selectedTechnologies && selectedTechnologies.map((item) => {
-        technologyArray.push({ Technology: item.label, TechnologyId: item.value })
+        technologyArray.push({ TechnologyName: item.label, TechnologyId: item.value })
         return null;
       })
     }

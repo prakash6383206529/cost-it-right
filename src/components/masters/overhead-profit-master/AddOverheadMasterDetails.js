@@ -401,7 +401,7 @@ const AddOverheadMasterDetails = (props) => {
                             register={register}
                             mandatory={true}
                             rules={{ required: true }}
-                            isMulti={(state?.isEditFlag || state?.isViewMode) ? false : true}
+                            isMulti={true}
                             selection={state.selectedTechnologies == null || state.selectedTechnologies.length === 0 ? [] : state.selectedTechnologies}
                             options={renderListing("technology")}
                             handleChange={handleTechnologyChange}
@@ -409,7 +409,8 @@ const AddOverheadMasterDetails = (props) => {
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.Technology}
-                            disabled={state?.isEditFlag || state?.isViewMode}
+                            // disabled={state?.isEditFlag || state?.isViewMode || state?.IsAssociated}
+                            disabled={state?.isViewMode || state?.IsAssociated}
                         />
                     </Col>
 
