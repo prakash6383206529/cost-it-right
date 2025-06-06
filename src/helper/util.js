@@ -1923,14 +1923,14 @@ export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendor
     toCurrency === reactLocalStorage.getObject("baseCurrency");
 
   // Handle base currency conversion only for settlement currency, not when both are INR
-  if (toCurrency === reactLocalStorage.getObject("baseCurrency") &&
-    !isPlantAndTargetBothBase) {
-    return {
-      costingHeadTypeId: ZBCTypeId,
-      vendorId: null,
-      clientId: null
-    };
-  }
+  // if (toCurrency === reactLocalStorage.getObject("baseCurrency") &&
+  //   !isPlantAndTargetBothBase) {
+  //   return {
+  //     costingHeadTypeId: ZBCTypeId,
+  //     vendorId: null,
+  //     clientId: null
+  //   };
+  // }
 
   // Handle Raw Material case
   if (master === RAWMATERIAL && defaultCostingTypeId === ZBCTypeId) {

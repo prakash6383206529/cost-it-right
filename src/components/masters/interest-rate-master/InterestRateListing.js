@@ -44,6 +44,7 @@ const gridOptions = {};
 
 const InterestRateListing = (props) => {
   const dispatch = useDispatch();
+  const { AddAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, ViewAccessibility, BulkUploadAccessibility } = props;
   const [state, setState] = useState({
     tableData: [],
     vendorName: [],
@@ -53,12 +54,6 @@ const InterestRateListing = (props) => {
     data: { isEditFlag: false, ID: '', IsAssociatedData: false },
     toggleForm: false,
     isBulkUpload: false,
-    ViewAccessibility: false,
-    AddAccessibility: false,
-    EditAccessibility: false,
-    DeleteAccessibility: false,
-    BulkUploadAccessibility: false,
-    DownloadAccessibility: false,
     gridColumnApi: null,
     rowData: null,
     sideBar: { toolPanels: ['columns'] },
@@ -71,7 +66,8 @@ const InterestRateListing = (props) => {
     dataCount: 0,
     showExtraData: false,
     totalRecordCount: 0,
-    globalTake: defaultPageSize
+    globalTake: defaultPageSize,
+    disableDownload: false,
   })
   const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
@@ -92,14 +88,12 @@ const InterestRateListing = (props) => {
   const [disableDownload, setDisableDownload] = useState(false);
 
   useEffect(() => {
-    applyPermission(topAndLeftMenuData);
-    setState((prevState) => ({ ...prevState, isLoader: true }))
+    !props.stopApiCallOnCancel && setState((prevState) => ({ ...prevState, isLoader: true }))
     dispatch(agGridStatus("", ""))
     setSelectedRowForPagination([])
     dispatch(resetStatePagination());
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
-        // setState((prevState) => ({ ...prevState, isLoader: true }))
         getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
       }
     }, 500);
@@ -107,7 +101,6 @@ const InterestRateListing = (props) => {
         dispatch(setResetCostingHead(true, "costingHead"))
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
   }, []);
   useEffect(() => {
     if (statusColumnData) {
@@ -121,14 +114,6 @@ const InterestRateListing = (props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusColumnData, costingHeadFilter]);
-
-  useEffect(() => {
-    if (topAndLeftMenuData) {
-      applyPermission(topAndLeftMenuData);
-      setTimeout(() => {
-      }, 200);
-    }
-  }, [topAndLeftMenuData,]);
 
   useEffect(() => {
     if (statusColumnData?.id) {
@@ -147,26 +132,6 @@ const InterestRateListing = (props) => {
     dispatch(getGridHeight({ value: interestRateDataList?.length, component: 'interestRate' }))
   }, [interestRateDataList])
 
-  const applyPermission = (topAndLeftMenuData) => {
-    if (topAndLeftMenuData !== undefined) {
-      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
-      const accessData = Data && Data.Pages.find(el => el.PageName === INTEREST_RATE)
-      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-      if (permmisionData !== undefined) {
-        setState((prevState) => ({
-          ...prevState,
-          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-        }))
-      }
-
-    }
-  }
 
   /**
    * @method getDataList
@@ -203,11 +168,12 @@ const InterestRateListing = (props) => {
           dispatch(updatePageNumber(0))
       }
 
+      // CODE FOR DOWNLOAD BUTTON LOGIC
       if (res && isPagination === false) {
           setDisableDownload(false)
           dispatch(disabledClass(false))
           setTimeout(() => {
-              let button = document.getElementById('Excel-Downloads-interestRateListing');
+              let button = document.getElementById('Excel-Downloads-Interest-Master');
               button && button.click()
           }, 500);
       }
@@ -315,10 +281,8 @@ const InterestRateListing = (props) => {
   }
 
   const buttonFormatter = (props) => {
-    const IsAssociatedData = props?.data?.IsAssociated
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
         {ViewAccessibility && <Button id={`interesetRateListing_view${props.rowIndex}`} className={"View mr-2 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
@@ -432,6 +396,23 @@ const InterestRateListing = (props) => {
     const selectedRows = gridApi?.getSelectedRows()
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
   }
+
+  const onExcelDownload = () => {
+    setState(prevState => ({ ...prevState, disableDownload: true }))
+    dispatch(disabledClass(true))
+    let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+    if (tempArr?.length > 0) {
+        setTimeout(() => {
+            setState(prevState => ({ ...prevState, disableDownload: false }))
+            dispatch(disabledClass(false))
+            let button = document.getElementById('Excel-Downloads-Interest-Master')
+            button && button.click()
+        }, 400);
+    } else {
+        getDataList(null, null, null, null, 0, globalTakes, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+    }
+  }
+
   const INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(INTERESTRATE_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = []
@@ -497,8 +478,8 @@ const InterestRateListing = (props) => {
     dispatch(setSelectedRowForPagination([]))
     dispatch(resetStatePagination())
     setState((prevState) => ({ ...prevState, dataCount: 0 }))
-}
-  const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, dataCount } = state;
+  }
+  const { toggleForm, data, isBulkUpload, noData, dataCount } = state;
   const ExcelFile = ReactExport.ExcelFile;
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -555,12 +536,15 @@ const InterestRateListing = (props) => {
                     {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&
                       <>
+                        <Button className="user-btn mr5 Tour_List_Download" id={"interestRateListing_excel_download"} onClick={onExcelDownload} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                            icon={"download mr-1"}
+                            buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                        />
                         <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
-                          <Button id={"Excel-Downloads-interestRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
-                          {state?.totalRecordCount !== 0 ? onBtExport() : null}
+                            <Button id={"Excel-Downloads-Interest-Master"} className="p-absolute" />}>
+                            {onBtExport()}
                         </ExcelFile>
                       </>
-
                     }
                     <Button id={"interestRateListing_refresh"} className={"Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                   </div>

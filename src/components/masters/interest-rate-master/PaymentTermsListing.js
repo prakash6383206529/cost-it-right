@@ -7,20 +7,18 @@ import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getInterestRateDataList, deleteInterestRate } from '../actions/InterestRateMaster';
 import DayTime from '../../common/DayTimeWrapper'
-import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
-import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
+import { InterestMaster } from '../../../config/constants';
+import { getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
-import { INTERESTRATE_DOWNLOAD_EXCEl, PAYMENTTERMS_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { PAYMENTTERMS_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
-import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
@@ -35,7 +33,7 @@ import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFil
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import WarningMessage from '../../common/WarningMessage';
-import { setCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize, skipUpdate, resetStatePagination, updateCurrentRowIndex } from '../../common/Pagination/paginationAction';
+import { updatePageNumber, resetStatePagination, updateCurrentRowIndex } from '../../common/Pagination/paginationAction';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -44,6 +42,7 @@ const gridOptions = {};
 
 const PaymentTermsListing = (props) => {
   const dispatch = useDispatch();
+  const { AddAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, ViewAccessibility, BulkUploadAccessibility } = props;
   const [state, setState] = useState({
     tableData: [],
     vendorName: [],
@@ -53,12 +52,6 @@ const PaymentTermsListing = (props) => {
     data: { isEditFlag: false, ID: '', IsAssociatedData: false },
     toggleForm: false,
     isBulkUpload: false,
-    ViewAccessibility: false,
-    AddAccessibility: false,
-    EditAccessibility: false,
-    DeleteAccessibility: false,
-    BulkUploadAccessibility: false,
-    DownloadAccessibility: false,
     gridColumnApi: null,
     rowData: null,
     sideBar: { toolPanels: ['columns'] },
@@ -71,7 +64,8 @@ const PaymentTermsListing = (props) => {
     dataCount: 0,
     showExtraData: false,
     totalRecordCount: 0,
-    globalTake: defaultPageSize
+    globalTake: defaultPageSize,
+    disableDownload: false
   })
   const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
@@ -87,12 +81,9 @@ const PaymentTermsListing = (props) => {
   const [disableDownload, setDisableDownload] = useState(false);
 
   const { t } = useTranslation("common")
-  const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { interestRateDataList } = useSelector((state) => state.interestRate);
-  const floatingFilterIcc = { maxValue: 3, suppressFilterButton: true, component: "InterestRate" }
   useEffect(() => {
-    applyPermission(topAndLeftMenuData);
-    setState((prevState) => ({ ...prevState, isLoader: true }))
+    !props.stopApiCallOnCancel && setState((prevState) => ({ ...prevState, isLoader: true }))
     dispatch(agGridStatus("", ""))
     setSelectedRowForPagination([])
     dispatch(resetStatePagination());
@@ -136,35 +127,6 @@ const PaymentTermsListing = (props) => {
     dispatch(getGridHeight({ value: interestRateDataList?.length, component: 'paymentTerms' }))
   }, [interestRateDataList])
 
-  useEffect(() => {
-    if (topAndLeftMenuData) {
-      applyPermission(topAndLeftMenuData);
-      setTimeout(() => {
-      }, 200);
-    }
-  }, [topAndLeftMenuData,]);
-
-  const applyPermission = (topAndLeftMenuData) => {
-    if (topAndLeftMenuData !== undefined) {
-      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
-      const accessData = Data && Data.Pages.find(el => el.PageName === INTEREST_RATE)
-      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-      if (permmisionData !== undefined) {
-        setState((prevState) => ({
-          ...prevState,
-          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-        }))
-      }
-
-    }
-  }
-
   const getDataList = (costingHead = null, vendorName = null, iccApplicability = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
     setPageRecord(skip);
     const filterData = {
@@ -195,6 +157,7 @@ const PaymentTermsListing = (props) => {
         dispatch(updatePageNumber(0))
       }
 
+      // CODE FOR DOWNLOAD BUTTON LOGIC
       if (res && isPagination === false) {
           setDisableDownload(false)
           dispatch(disabledClass(false))
@@ -251,9 +214,6 @@ const PaymentTermsListing = (props) => {
     * @method viewOrEditItemDetails
     * @description confirm edit oor view item
     */
-  // const viewOrEditItemDetails = (Id, isViewMode, IsAssociatedData) => {
-  //   setState((prevState) => ({ ...prevState, data: { isEditFlag: true, ID: Id, isViewMode: isViewMode, IsAssociatedData: IsAssociatedData }, toggleForm: true, }))
-  // }
 
   const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
       let data = {
@@ -311,13 +271,8 @@ const PaymentTermsListing = (props) => {
   }
 
   const buttonFormatter = (props) => {
-    const IsAssociatedData = props?.data?.IsAssociated
-    // const cellValue = props?.value;
-
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
         {ViewAccessibility && <Button id={`interesetRateListing_view${props.rowIndex}`} className={"View mr-2 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
@@ -329,13 +284,9 @@ const PaymentTermsListing = (props) => {
 
 
   const combinedCostingHeadRenderer = (props) => {
-    // Call the existing checkBoxRenderer
     costingHeadFormatter(props);
-
-    // Get and localize the cell value
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-
     // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
     return localizedValue;
   };
@@ -353,11 +304,6 @@ const PaymentTermsListing = (props) => {
    * @method onFloatingFilterChanged
    * @description Filter data when user type in searching input
    */
-  // const onFloatingFilterChanged = (value) => {
-  //   setTimeout(() => {
-  //     interestRateDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), totalRecordCount: state?.gridApi?.getDisplayedRowCount() }))
-  //   }, 500);
-  // }
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
@@ -433,7 +379,6 @@ const PaymentTermsListing = (props) => {
       state.gridColumnApi = params.columnApi
       setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }));
       params.api.paginationGoToPage(0);
-      // params.api.sizeColumnsToFit();
   };
 
   const onSearch = () => {
@@ -458,6 +403,22 @@ const PaymentTermsListing = (props) => {
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (interestRateDataList ? interestRateDataList : [])
     return returnExcelColumn(PAYMENTTERMS_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
+
+  const onExcelDownload = () => {
+    setState(prevState => ({ ...prevState, disableDownload: true }))
+    dispatch(disabledClass(true))
+    let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+    if (tempArr?.length > 0) {
+        setTimeout(() => {
+            setState(prevState => ({ ...prevState, disableDownload: false }))
+            dispatch(disabledClass(false))
+            let button = document.getElementById('Excel-Downloads-Payment-Terms')
+            button && button.click()
+        }, 400);
+    } else {
+        getDataList(null, null, null, null, 0, globalTakes, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+    }
+  }
 
   const returnExcelColumn = (data = [], TempData) => {
     let excelData = hideCustomerFromExcel(data, "CustomerName")
@@ -508,7 +469,7 @@ const PaymentTermsListing = (props) => {
     setState((prevState) => ({ ...prevState, dataCount: 0 }))
   }
 
-  const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, dataCount } = state;
+  const { toggleForm, data, isBulkUpload, noData, dataCount } = state;
   const ExcelFile = ReactExport.ExcelFile;
 
   const isFirstColumn = (params) => {
@@ -566,9 +527,13 @@ const PaymentTermsListing = (props) => {
                     {BulkUploadAccessibility && (<Button id="paymentTermsListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&
                       <>
-                        <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
-                          <Button id={"Excel-Downloads-paymentTermsListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
-                          {state?.totalRecordCount !== 0 ? onBtExport() : null}
+                        <Button className="user-btn mr5 Tour_List_Download" id={"paymentTermsListing_excel_download"} onClick={onExcelDownload} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                            icon={"download mr-1"}
+                            buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                        />
+                        <ExcelFile filename={'Payment Terms'} fileExtension={'.xls'} element={
+                            <Button id={"Excel-Downloads-Payment-Terms"} className="p-absolute" />}>
+                            {onBtExport()}
                         </ExcelFile>
                       </>
                     }
@@ -616,15 +581,12 @@ const PaymentTermsListing = (props) => {
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                {/* <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
-                {/* <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                 <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period (Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>}
-              {/* {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />} */}
               <div className='button-wrapper'>
                   {<PaginationWrappers gridApi={gridApi} totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="interestRate" />}
                   {<PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="interestRate" />

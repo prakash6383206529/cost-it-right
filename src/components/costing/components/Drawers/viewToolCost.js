@@ -30,7 +30,7 @@ function ViewToolCost(props) {
                 <th>{`Process/Operation`}</th>
                 <th>{`Process/Operation Type`}</th>
                 <th>{`Process Run Count`}</th>
-                <th>{`Category`}</th>
+                {initialConfiguration?.IsShowToolCategory && <th>{`Category`}</th>}
                 <th>{`Tool Name`}</th>
                 <th>{`Tool Rate`}</th>
                 <th>{`Life/Amortization`}</th>
@@ -60,7 +60,7 @@ function ViewToolCost(props) {
                       <td>{item?.ProcessOrOperation ?? '-'}</td>
                       <td>{item?.ProcessOrOperationType ?? "-"}</td>
                       <td>{item?.Quantity ?? '-'}</td>
-                      <td>{item?.ToolCategory ?? '-'}</td>
+                      {initialConfiguration?.IsShowToolCategory && <td>{item?.ToolCategory ?? '-'}</td>}
                       <td>{item?.ToolName ?? '-'}</td>
                       <td>{checkForDecimalAndNull(item?.ToolCost, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
                       <td>{item?.Life ?? '-'}</td>

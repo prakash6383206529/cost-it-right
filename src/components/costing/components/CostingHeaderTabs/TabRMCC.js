@@ -2029,8 +2029,7 @@ function TabRMCC(props) {
     const TotalCost = ((tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity +
       checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
       (checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) +
-        checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) +
-        checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost)) +
+        checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost)) +
       checkForNull(PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost)) -
       checkForNull(discountAndOtherTabData?.HundiOrDiscountValue)) + checkForNull(discountAndOtherTabData?.AnyOtherCost)
     if (!CostingViewMode) {
