@@ -687,8 +687,7 @@ function EditPartCost(props) {
 
             dispatch(saveSettledCostingDetails(obj, res => { }))
             let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
-                checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) +
-                checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
+                checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost))
             let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) +
                 checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
                 checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +

@@ -12,7 +12,7 @@ import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { findProcessCost } from '../../../CostingUtil';
 import { debounce } from 'lodash';
-import { nonZero } from '../../../../../helper/validation'
+import { decimalNumberLimit6, maxLength8, nonZero } from '../../../../../helper/validation'
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit } from "../../../../../helper/validation";
 
@@ -422,6 +422,7 @@ function SheetMetalBaicDrawer(props) {
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
+                          validate: { nonZero,decimalNumberLimit6 }
                         }}
                         id={'cycle-time'}
                         handleChange={() => { }}
@@ -445,10 +446,10 @@ function SheetMetalBaicDrawer(props) {
                       rules={{
                         required: !disable,
                         pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                          value: /^[0-9]\d*$/i,
+                          message: 'Cavity must be an integer value.',
                         },
-                        validate: { nonZero }
+                        validate: { nonZero, maxLength8 }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

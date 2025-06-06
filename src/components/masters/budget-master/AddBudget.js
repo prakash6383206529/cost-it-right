@@ -763,7 +763,7 @@ function AddBudget(props) {
             } else if (!costConverSionInLocalCurrency && fromCurrencyRef.current !== reactLocalStorage?.getObject("baseCurrency")) {
                 const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
                 callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning, showWarning }) => {
-                    setPlantCurrency(rate1);
+                    setSettlementCurrency(rate1)
                     setPlantExchangeRateId(exchangeRateId1);
                     setShowPlantWarning(showPlantWarning)
                     setShowWarning(showWarning)
@@ -939,6 +939,11 @@ function AddBudget(props) {
     };
 
     const getCostingPrice = () => {
+        // If currentPrice already has a value, don't make the API call
+        if (currentPrice) {
+            return false;
+        }
+
         let obj = {}
         obj.costingHeadId = costingTypeId
         obj.partId = part.value
@@ -1098,20 +1103,20 @@ function AddBudget(props) {
     
 
     const getTooltipTextForCurrency = () => {
-        const plantCurrencyLabel = getValues("plantCurrency") ?? 'Plant Currency';
+        const plantCurrencyLabel = (getValues("plantCurrency")===null || getValues("plantCurrency")===undefined || getValues("plantCurrency")==='') ? 'Plant Currency' : getValues("plantCurrency");
         const baseCurrency = reactLocalStorage.getObject("baseCurrency");
         const currencyLabel = currency?.label ?? 'Currency';
 
         // Check the exchange rates or provide a default placeholder if undefined
-        const plantCurrencyRate = plantCurrency ?? '-';
-        const settlementCurrencyRate = settlementCurrency ?? '-';
+        const plantCurrencyRate = plantCurrency ?? 1;
+        const settlementCurrencyRate = settlementCurrency ?? 1;
 
-        // Generate tooltip text based on the condition
-        return <>
-            {!hidePlantCurrency
-                ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-                : ''}<p>{hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
-        </>;
+        return (
+            <>
+                <p>Exchange Rate: 1 {currencyLabel} = {plantCurrencyRate} {plantCurrencyLabel}</p>
+                <p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+            </>
+        );
     };
 
     return (
@@ -1329,7 +1334,7 @@ function AddBudget(props) {
                                                                     </div>
                                                                 </>
                                                             )}
-                                                            <Col className="col-md-15">
+                                                            <Col className="col-md-3">
                                                                 <TextFieldHookForm
                                                                     name="plantCurrency"
                                                                     label="Plant Currency"
@@ -1434,7 +1439,7 @@ function AddBudget(props) {
 
                                                             </div>
                                                             {budgetedEntryType && <Col md="3">
-                                                                <TooltipCustom id="currency" width="250px" tooltipText={getTooltipTextForCurrency()} />
+                                                                <TooltipCustom id="currency" width="300px" tooltipText={getTooltipTextForCurrency()} />
                                                                 <SearchableSelectHookForm
                                                                     name="currency"
                                                                     type="text"
@@ -1763,3 +1768,4 @@ function AddBudget(props) {
 }
 
 export default AddBudget;
+

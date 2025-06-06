@@ -8,7 +8,7 @@ import { checkForNull, number, checkWhiteSpaces, decimalAndNumberValidation, non
 import TableRenderer from '../../../../common/TableRenderer'
 
 function InventoryDetails(props) {
-    const { register, control, setValue, getValues,  errors , isViewMode} = props
+    const { register, control, setValue, getValues, errors, isViewMode } = props
 
     const [state, setState] = useState({
         inventoryTypeDetails: [],
@@ -18,79 +18,80 @@ function InventoryDetails(props) {
     const dispatch = useDispatch()
 
 
-const fieldValues = useWatch({
-    control,
-    name: ['MarkupFactor',]
-})
- useEffect(()=>{
-    if(state?.inventoryTypeDetails?.length > 0){
-    let markupFactor = checkForNull(getValues('MarkupFactor'));
-    const updatedDetails = state?.inventoryTypeDetails.map(item => {
-        if(item.InventoryType === "Receivables") {
-            let netCost = checkForNull((item.ApplicabilityCost * item.NumberOfDays * props?.annualInterestPercent * markupFactor)/36500);
-            return { ...item, NetCost: netCost };
+    const fieldValues = useWatch({
+        control,
+        name: ['MarkupFactor',]
+    })
+    useEffect(() => {
+        if (state?.inventoryTypeDetails?.length > 0) {
+            let markupFactor = getValues('MarkupFactor')?checkForNull(getValues('MarkupFactor')):1;
+            const updatedDetails = state?.inventoryTypeDetails.map(item => {
+                if (item.InventoryType === "Receivables") {
+                    let netCost = checkForNull((item.ApplicabilityCost * item.NumberOfDays * props?.annualInterestPercent * markupFactor) / 36500);
+                    return { ...item, NetCost: netCost };
+                }
+                return item;
+            });
+            setState(prev => ({ ...prev, inventoryTypeDetails: updatedDetails }));
+            props?.setInventoryDetail(updatedDetails)
         }
-        return item;
-    });
-    setState(prev => ({ ...prev, inventoryTypeDetails: updatedDetails }));
-    props?.setInventoryDetail(updatedDetails)
-}
-},[fieldValues])
+    }, [fieldValues])
 
-useEffect(()=>{
-    if(state?.inventoryTypeDetails?.length > 0){
-        let totalIccPayable = state?.inventoryTypeDetails.reduce((acc, item) => acc + item.NetCost, 0);
-        setState(prev => ({ ...prev, totalIccPayable: totalIccPayable }));
-        props?.calculateInventoryCarryingCost(props?.totalIccReceivable,totalIccPayable)
-    }
-},[state?.inventoryTypeDetails])
+    useEffect(() => {
+        if (state?.inventoryTypeDetails?.length > 0) {
+            let totalIccPayable = state?.inventoryTypeDetails.reduce((acc, item) => acc + item.NetCost, 0);
+            setState(prev => ({ ...prev, totalIccPayable: totalIccPayable }));
+            props?.calculateInventoryCarryingCost(props?.totalIccReceivable, totalIccPayable)
+        }
+    }, [state?.inventoryTypeDetails])
 
-useEffect(() => {
-  setState(prev => ({
-    ...prev,
-    inventoryTypeDetails: props?.inventoryTypeDetails
-  }))
-}, [props?.inventoryTypeDetails,props?.wipCompositionMethodDetails])
-
-useEffect(()=>{
-    if(props?.wipCompositionMethodDetails?.length > 0){
-        let totalWipCost = props?.wipCompositionMethodDetails?.reduce((acc, item) => acc + item.ApplicabilityCost, 0);
-        let inventoryTypeDetails = [...props?.inventoryTypeDetails];
-        const updatedInventoryTypeDetails = inventoryTypeDetails?.map(item => {
-            if (item?.InventoryType === 'WIP') {
-                return {
-                    ...item,
-                    ApplicabilityCost: totalWipCost,
-                    NetCost: checkForNull((totalWipCost * item?.NumberOfDays * props?.annualInterestPercent)/36500)
-                };
-            }else {
-                return {
-                    ...item,
-                    ApplicabilityCost: item.ApplicabilityCost,
-                    NetCost: item.NetCost
-                };
-            }
-        });
-    
+    useEffect(() => {
         setState(prev => ({
             ...prev,
-            totalWipCost: totalWipCost,
-            inventoryTypeDetails: updatedInventoryTypeDetails
-        })); 
-        props?.setInventoryDetail(updatedInventoryTypeDetails)
-    }
-},[props?.wipCompositionMethodDetails])
+            inventoryTypeDetails: props?.inventoryTypeDetails
+        }))
+    }, [props?.inventoryTypeDetails, props?.wipCompositionMethodDetails])
+
+    useEffect(() => {
+        if (props?.wipCompositionMethodDetails?.length > 0) {
+            let totalWipCost = props?.wipCompositionMethodDetails?.reduce((acc, item) => acc + item.ApplicabilityCost, 0);
+            let inventoryTypeDetails = [...props?.inventoryTypeDetails];
+            const updatedInventoryTypeDetails = inventoryTypeDetails?.map(item => {
+                if (item?.InventoryType === 'WIP') {
+                    return {
+                        ...item,
+                        ApplicabilityCost: totalWipCost,
+                        NetCost: checkForNull((totalWipCost * item?.NumberOfDays * props?.annualInterestPercent) / 36500)
+                    };
+                } else {
+                    return {
+                        ...item,
+                        ApplicabilityCost: item.ApplicabilityCost,
+                        NetCost: item.NetCost
+                    };
+                }
+            });
+
+            setState(prev => ({
+                ...prev,
+                totalWipCost: totalWipCost,
+                inventoryTypeDetails: updatedInventoryTypeDetails
+            }));
+            props?.setInventoryDetail(updatedInventoryTypeDetails)
+        }
+    }, [props?.wipCompositionMethodDetails])
 
     const handleApplicabilityCostChange = (e, data) => {
         let val = checkForNull(e.target.value);
         let netCost = 0;
-        let markupFactor =checkForNull(getValues('MarkupFactor'));
+        let markupFactor = getValues('MarkupFactor')?checkForNull(getValues('MarkupFactor')):1;
+        
         const updatedDetails = state.inventoryTypeDetails.map(item => {
-            if (item.InventoryType==="Finished Goods"||item.InventoryType==="Transit") {
-                netCost = checkForNull((val * item?.NumberOfDays * props?.annualInterestPercent)/36500);
+            if (item.InventoryType === "Finished Goods" || item.InventoryType === "Transit") {
+                netCost = checkForNull((val * item?.NumberOfDays * props?.annualInterestPercent) / 36500);
                 return { ...item, ApplicabilityCost: val, NetCost: netCost };
-            }else if(item.InventoryType==="Receivables"){
-                netCost = checkForNull((val * item?.NumberOfDays * props?.annualInterestPercent * markupFactor)/36500);
+            } else if (item.InventoryType === "Receivables") {
+                netCost = checkForNull((val * item?.NumberOfDays * props?.annualInterestPercent * markupFactor) / 36500);
                 return { ...item, ApplicabilityCost: val, NetCost: netCost };
             }
             return item;
@@ -98,7 +99,7 @@ useEffect(()=>{
         setState(prev => ({ ...prev, inventoryTypeDetails: updatedDetails }));
         props?.setInventoryDetail(updatedDetails)
     }
-   
+
     const inventoryTypeColumns = [
         {
             columnHead: "Inventory Day Type",
@@ -128,7 +129,7 @@ useEffect(()=>{
             identifier: "cost",
         }
     ]
-   
+
 
     return (
         <>
@@ -167,6 +168,7 @@ useEffect(()=>{
                         setValue={setValue}
                         isInventory={true}
                         totalIccPayable={state?.totalIccPayable}
+                        isCreditBased={true}
                     />
                 </Col>
             </Row>

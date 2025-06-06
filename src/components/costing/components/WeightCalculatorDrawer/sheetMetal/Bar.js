@@ -244,7 +244,7 @@ function Pipe(props) {
      * @description CALCULATE NUMBER OF PARTS PER SHEET
      */
     const calculateNumberOfPartPerSheet = () => {
-        if (fieldValues.SheetLength === '') {
+        if (fieldValues.SheetLength === '' || fieldValues.SheetLength === 0) {
             setValue('NumberOfPartsPerSheet', 1)
             const updatedValue = dataToSend
             updatedValue.NumberOfPartsPerSheet = 1
@@ -381,7 +381,7 @@ function Pipe(props) {
         let grossWeight
         const updatedValue = dataToSend
         if (rmRowData.RawMaterialCategory === STD) {
-            grossWeight = checkForNull(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
+            grossWeight = checkForNull(dataToSend.WeightofPart + checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
             setGrossWeights(grossWeight)
             updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
             updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)

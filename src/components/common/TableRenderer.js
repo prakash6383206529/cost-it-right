@@ -5,6 +5,7 @@ import { nonZero, number, maxLength7, checkWhiteSpaces, checkForDecimalAndNull }
 import { TextFieldHookForm } from "../layout/HookFormInputs";
 import { getConfigurationKey } from "../../helper";
 import { EMPTY_DATA } from "../../config/constants";
+import TooltipCustom from "./Tooltip";
 
 const TableRenderer = ({
   data = [],
@@ -21,7 +22,8 @@ const TableRenderer = ({
   isInventory = false,
   totalIccPayable = 0,
   totalIccReceivable = 0,
-  includeOverHeadProfitIcc = false
+  includeOverHeadProfitIcc = false,
+  isCreditBased = false
 }) => {
   // Filter data based on includeOverHeadProfitIcc
   const filteredData = includeOverHeadProfitIcc 
@@ -123,14 +125,32 @@ const TableRenderer = ({
                     </td>
                   );
                 } else {
+                  const randomId = `inventory-net-cost-${Math?.floor(1000000000 + Math?.random() * 9000000000)}`;
                   // Ensure we're rendering a string value
                   const cellValue = col?.identifier === "inputOutput" 
                     ? checkForDecimalAndNull(item?.[col.key], getConfigurationKey()?.NoOfDecimalForInputOutput) 
                     : col?.identifier === "cost" 
                       ? checkForDecimalAndNull(item?.[col.key], getConfigurationKey()?.NoOfDecimalForPrice)
                       : item?.[col.key]??'-';
-                  
-                  return <td key={colIdx}>{cellValue || '-'}</td>;
+                      return  <td key={colIdx}>
+                  <div className="w-fit d-flex">
+                    <div id={randomId}>
+                      {cellValue}
+                     {(col?.columnHead === 'Net Cost'||col?.columnHead === 'Interest Cost Per Unit') && isCreditBased &&  <TooltipCustom
+                        disabledIcon={true}
+                        tooltipClass="net-rm-cost"
+                        id={randomId}
+                        tooltipText={col?.columnHead === 'Interest Cost Per Unit' ?
+                          'Interest Cost Per Unit = (Applicability Cost * Interest Days * Interest on Receivables (%)/ Annual ICC) / 365 * 100':
+                          item?.InventoryType === "Receivables" ?
+                          'Net Cost = (Applicability Cost * Markup Factor * No of Days * Interest on Receivables (%)/ Annual ICC) /365 * 100'
+                          :
+                          'Net Cost = (Applicability Cost * No of Days * Interest on Receivables (%)/ Annual ICC) /365 * 100'
+                        }
+                      />}
+                    </div>
+                  </div>
+                </td>
                 }
               })}
             </tr>

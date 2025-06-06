@@ -50,7 +50,7 @@ function AddAssemblyOperation(props) {
 
   useEffect(() => {
 
-    if (!CostingViewMode) {
+  
       let arr = JSON.parse(sessionStorage.getItem('costingArray'))?.filter(element =>
         element?.PartNumber === itemInState?.PartNumber &&
         element?.AssemblyPartNumber === itemInState?.AssemblyPartNumber &&
@@ -72,12 +72,12 @@ function AddAssemblyOperation(props) {
             operationCost += checkForNull(item?.OperationCost);
           }
         });
-
+        
         setOperationGridData(operationResponse)
         setOperationCostAssemblyTechnology(operationCost)
         setWeldingCostAssemblyTechnology(weldingCost)
       }
-    }
+   
   }, [itemInState])
 
   // Restore subAssemblyTechnologyArray effect
@@ -85,12 +85,13 @@ function AddAssemblyOperation(props) {
 
     if (isAssemblyTechnology && subAssemblyTechnologyArray?.length > 0) {
       const operationResponse = Array.isArray(subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingOperationCostResponse) ? subAssemblyTechnologyArray[0].CostingPartDetails.CostingOperationCostResponse : [];
-
+      
       setOperationGridData(operationResponse)
       setOperationCostAssemblyTechnology(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost || 0)
       setWeldingCostAssemblyTechnology(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost || 0)
     }
     return () => {
+      
       setOperationGridData([])
     }
   }, [])
@@ -115,6 +116,7 @@ function AddAssemblyOperation(props) {
   }
 
   const getOperationGrid = (grid, operationCostAssemblyTechnology, isAssemblyTechnologyCall) => {
+    
     setOperationGridData(grid)
     if (isAssemblyTechnologyCall) {
       setOperationCostAssemblyTechnology(operationCostAssemblyTechnology)
@@ -224,7 +226,7 @@ function AddAssemblyOperation(props) {
       }
 
       let requestObj = createSaveAssemblyRMCCObject(item, costData, basicRate, totalCostSaveAPI, CostingEffectiveDate, operationGridData, true)
-      
+
       if (isAssemblyTechnology) {
         item.NetOperationCost = operationCostAssemblyTechnology
         item.NetWeldingCost = weldingCostAssemblyTechnology
