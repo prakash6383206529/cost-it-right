@@ -45,7 +45,7 @@ const gridOptions = {};
 
 function ProfitListing(props) {
 
-    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, technologyLabel } = useLabels()
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props
     const [showExtraData, setShowExtraData] = useState(false)
     const { t } = useTranslation("common")
@@ -778,6 +778,7 @@ function ProfitListing(props) {
                                             <AgGridColumn field="CostingHead" minWidth={200} headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer}
                                                 floatingFilterComponentParams={floatingFilterStatus}
                                                 floatingFilterComponent="statusFilter"></AgGridColumn>
+                                            <AgGridColumn field="Technologies" tooltipField='Technologies' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
