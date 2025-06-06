@@ -7,7 +7,7 @@ import {
   setComponentToolItemData, saveDiscountOtherCostTab, saveAssemblyPartRowCostingCalculation, isToolDataChange, saveCostingPaymentTermDetail
 } from '../../actions/Costing';
 import { costingInfoContext, IsNFRContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
 import Toaster from '../../../common/Toaster';
@@ -667,7 +667,7 @@ function TabToolCost(props) {
                                 <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation" ></AgGridColumn>
                                 <AgGridColumn field="ProcessOrOperationType" headerName="Process/Operation Type" ></AgGridColumn>
                                 <AgGridColumn field="ProcessRunCount" headerName="Process Run Count" cellRenderer={'valueFormatter'}></AgGridColumn>
-                                <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
+                                {getConfigurationKey().IsShowToolCategory && <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>}
                                 <AgGridColumn field="ToolName" headerName="Tool Name" ></AgGridColumn>
                                 <AgGridColumn field="ToolCost" headerName="Tool Rate" cellRenderer={'decimalFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Life" headerName="Life/Amortization" cellRenderer={'valueFormatter'}></AgGridColumn>

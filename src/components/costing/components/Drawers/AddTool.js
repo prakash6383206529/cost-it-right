@@ -655,7 +655,7 @@ function AddTool(props) {
                   </Col>
                   <Col md="4">
                     <TextFieldHookForm
-                      label="Process Run Count"
+                      label="Process Run Count/No. of Tools"
                       name={'Quantity'}
                       Controller={Controller}
                       control={control}
@@ -696,23 +696,27 @@ function AddTool(props) {
                                             title={'Tool Details'}
                                             customClass={'underLine-title'}
                                         />
-                  <Col md="4">
-                    <SearchableSelectHookForm
-                      label={'Tool Category'}
-                      name={'ToolCategory'}
-                      placeholder={'Select'}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={tool.length !== 0 ? tool : ''}
-                      options={renderListing('ToolCategory')}
-                      mandatory={true}
-                      handleChange={handleToolChange}
-                      errors={errors.ToolCategory}
-                      disabled={isEditFlag || CostingViewMode ? true : false}
-                    />
-                  </Col>
+
+
+                  {getConfigurationKey().IsShowToolCategory &&
+                    <Col md="4">
+                      <SearchableSelectHookForm
+                        label={'Tool Category'}
+                        name={'ToolCategory'}
+                        placeholder={'Select'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={tool.length !== 0 ? tool : ''}
+                        options={renderListing('ToolCategory')}
+                        mandatory={true}
+                        handleChange={handleToolChange}
+                        errors={errors.ToolCategory}
+                        disabled={isEditFlag || CostingViewMode ? true : false}
+                      />
+                    </Col>
+                  } 
 
                   <Col md="4">
                     <TextFieldHookForm
