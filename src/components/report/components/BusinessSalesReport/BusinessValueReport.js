@@ -185,7 +185,7 @@ const BusinessValueReport = ({ }) => {
         })
       return temp
     }
-    if (label === 'PartNepNumber') {
+    if (label === 'PartNepNumber' || label === 'NepNumber') {
       nepNumberSelectList && nepNumberSelectList.map((item) => {
         if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
@@ -196,6 +196,9 @@ const BusinessValueReport = ({ }) => {
     if (label === 'GroupBy') {
       businessValueReportHeads && businessValueReportHeads.map((item) => {
         if (item.Value === '0') return false
+        if (item.Value === "IsRequestedForBudgeting") return false
+        if (item.Value === "PartGroup") return false
+        if (item.IsProductHierarchy) return false
           temp.push({ label: item.Text, value: item.Value })
           return null
         })
@@ -270,9 +273,9 @@ const BusinessValueReport = ({ }) => {
     if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
       inputValue = inputValue.trim();
     }
-    const resultInput = inputValue.slice(0, searchCount)
-    if (inputValue?.length >= searchCount && partName !== resultInput) {
-      const res = await getPartSelectListByTechnology(null, resultInput, null, null);
+    const resultInput = inputValue.slice(0, searchCount)    
+    if (inputValue?.length >= searchCount) {
+      const res = await getPartSelectListByTechnology(_.get(getValues('TechnologyName'), 'value', null), resultInput, _.get(getValues('PartType'), 'value', null), _.get(getValues('PartFamilyCode'), 'value', null));
       setPartName(resultInput)
       let partDataAPI = res?.data?.SelectList
       if (inputValue) {
@@ -331,7 +334,7 @@ const BusinessValueReport = ({ }) => {
       PartType: _.get(values, 'PartType.value', ''),
       PartGroup: _.get(values, 'PartGroup.value', ''),
       PartFamilyCode: _.get(values, 'PartFamilyCode.value', ''),
-      PartNepNumber: _.get(values, 'PartNepNumber.value', ''),
+      PartNepNumber: _.get(values, 'NepNumber.value', ''),
       PlantCode: _.get(values, 'PlantCode.value', ''),
       VendorCode: _.get(values, 'VendorCode.value', ''),
       CustomerCode: _.get(values, 'CustomerCode.value', ''),
@@ -589,7 +592,7 @@ const BusinessValueReport = ({ }) => {
                     </Col>
                   )
                 } else if (_.get(reportFields, 'Value', '') === 'PartNumber') {
-                  const fieldDisabled = _.get(reportFields, 'Value', '') === 'PartNumber' && !isTechnologySelected
+                  // const fieldDisabled = _.get(reportFields, 'Value', '') === 'PartNumber' && !isTechnologySelected
                   return (
                     <Col md="3">
                       <AsyncSearchableSelectHookForm
@@ -606,13 +609,13 @@ const BusinessValueReport = ({ }) => {
                         handleChange={(e) => handleSelectFieldChange(`${_.get(reportFields, 'Value', '')}`, e)}
                         asyncOptions={partNumberfilterList}
                         errors={false}
-                        disabled={fieldDisabled ? true : false}
+                        disabled={false}
                         NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                       />
                     </Col>
                   )
                 } else {
-                  const fieldDisabled = _.get(reportFields, 'Value', '') === 'PartModelName' && !isTechnologySelected
+                  // const fieldDisabled = _.get(reportFields, 'Value', '') === 'PartModelName' && !isTechnologySelected
                   return (
                     <Col md="3">
                       <SearchableSelectHookForm
@@ -629,7 +632,7 @@ const BusinessValueReport = ({ }) => {
                         handleChange={(e) => handleSelectFieldChange(`${_.get(reportFields, 'Value', '')}`, e)}
                         errors={`${errors}.${_.get(reportFields, 'Value', '')}`}
                         // buttonCross={resetData('Masters')}   
-                        disabled={fieldDisabled ? true : false}
+                        disabled={false}
                       />
                     </Col>
                   )
@@ -707,7 +710,7 @@ const BusinessValueReport = ({ }) => {
           </Row>
          { detailAccordian && 
           <div className={`ag-grid-react ag-grid-wrapper height-width-wrapper  ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-            <div className={`ag-theme-material grid-parent-wrapper mt-2 ${isLoader && "max-loader-height"}`}>
+            <div className={`ag-theme-material grid-parent-wrapper mt-2 ${isLoader && "max-loader-height"} ${tableData && tableData?.length <= 0 && "overlay-contain"}`}>
               {isLoader ? <LoaderCustom customClass="loader-center" /> :
                 <AgGridReact
                   defaultColDef={defaultColDef}
