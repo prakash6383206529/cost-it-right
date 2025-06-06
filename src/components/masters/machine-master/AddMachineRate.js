@@ -2174,6 +2174,7 @@ class AddMachineRate extends Component {
                           <Field
                             label="Plant Currency"
                             name="plantCurrency"
+                            id="plantCurrency"
                             type="text"
                             placeholder="-"
                             component={renderText}
