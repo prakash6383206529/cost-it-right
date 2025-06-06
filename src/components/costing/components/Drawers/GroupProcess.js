@@ -142,6 +142,9 @@ function GroupProcess(props) {
                                             <thead>
                                                 <tr>
                                                     <th>Process Name</th>
+                                                    <th>Type</th>
+                                                    {item?.PartType !== 'Assembly' && item?.PartType !== 'Sub Assembly' && <th>Applicability</th>}
+                                                    {item?.PartType !== 'Assembly' && item?.PartType !== 'Sub Assembly' && <th>Percentage</th>}
                                                     <th>Machine Rate</th>
                                                     <th>UOM</th>
                                                 </tr>
@@ -150,8 +153,11 @@ function GroupProcess(props) {
                                                 {ProcessList && ProcessList.map(item => {
                                                     return <tr>
                                                         <td>{item.ProcessName}</td>
+                                                        <td>{item.Type}</td>
+                                                        {item?.PartType !== 'Assembly' && item?.PartType !== 'Sub Assembly' && <td>{item?.Applicability ?? '-'}</td>}
+                                                        {item?.PartType !== 'Assembly' && item?.PartType !== 'Sub Assembly' && <td>{item?.Percentage ?? '-'}</td>}
                                                         <td>{item.MachineRate}</td>
-                                                        <td>{item.UOM}</td>
+                                                        <td>{item.UOM ? item.UOM : '-'}</td>
                                                     </tr>
                                                 })}
 

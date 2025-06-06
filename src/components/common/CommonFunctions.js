@@ -87,7 +87,7 @@ export const DropDownFilterList = async (inputValue, filterType, stateKey, apiFu
 // ... existing code ...
 
 // FOR AUTOCOMPLLETE IN PART AND VENDOR 
-export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = false, selectedParts = [], isApiCall) => {
+export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = false, selectedParts = [], isApiCall, partDropDown = false) => {
     let tempArr = []
     let finalArr = []
     let finalArr1 = []
@@ -98,6 +98,9 @@ export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = fa
         commonDropdownFunction(dropdownArray, tempBoolean, selectedParts, finalArr, false)   // TO STORE ALL VENDOR OR PART DATA IN LOCAL STORAGE
         commonDropdownFunction(dropdownArray, tempBoolean, selectedParts, finalArrCity, false)   // TO STORE ALL cityDATA IN LOCAL STORAGE
         reactLocalStorage?.setObject('Data', finalArr)
+        if (partDropDown) {
+            reactLocalStorage?.setObject('PartDataOptions', finalArr)
+        }
         if (finalArr1?.length <= 100) {
             return finalArr1
         } else {
@@ -119,7 +122,6 @@ export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean 
     let tempArr = []
     let finalArr1 = []
     let finalArr = []
-
     if (isApiCall) {
         tempArr = commonFilterFunction(inputValue, dropdownArray, isRMBOPPartCombine ? "Number" : "PartNumber")
         commonDropdownFunction(tempArr, tempBoolean, selectedParts, finalArr1, true, isRMBOPPartCombine)              //TO SHOW THE FILTERED PART
