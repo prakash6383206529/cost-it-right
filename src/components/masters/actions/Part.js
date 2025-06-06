@@ -24,7 +24,8 @@ import {
     GET_PART_FAMILY_LIST_SUCCESS,
     GET_ALL_PART_FAMILY_LIST_SUCCESS,
     GET_PART_FAMILY_DETAILS_SUCCESS,
-    GET_PART_FAMILY_SELECTLIST
+    GET_PART_FAMILY_SELECTLIST,
+    GET_NEP_NUMBER_LIST
 } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
@@ -1227,6 +1228,31 @@ export function partFamilyBulkUpload(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error);
+        });
+    };
+}
+
+
+/**
+ * @method getNepNumberList
+ * @description create Part Family by Bulk Upload
+ */
+
+export function getNepNumberList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNepNumberDataList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_NEP_NUMBER_LIST,
+                    payload: response?.data?.SelectList || [],
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
         });
     };
 }

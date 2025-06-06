@@ -90,7 +90,9 @@ function Icc(props) {
     }, [])
     useEffect(() => {
         dispatch(setIccCost({ NetCost: costingDetailForIcc?.NetICC }))
-        callModelTypeApi(state.modelType)
+        if(!CostingViewMode){
+            callModelTypeApi(state.modelType)
+        }
     }, [costingDetailForIcc])
 
     /**
@@ -238,7 +240,7 @@ function Icc(props) {
             const tempObj = {
                 ...InventoryObj,
                 Remark: getValues('iccRemark'),
-                ICCCostingApplicabilityDetails: includeOverHeadProfitIcc ? state.iccDetails : state.iccDetails.filter(item => item.Applicability !== 'Overhead' && item.Applicability !== 'Profit')
+                ICCCostingApplicabilityDetails: includeOverHeadProfitIcc ? state.iccDetails : state.iccDetails?.filter(item => item.Applicability !== 'Overhead' && item.Applicability !== 'Profit')
             }
             props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
         }

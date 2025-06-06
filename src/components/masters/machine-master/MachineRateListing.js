@@ -143,7 +143,7 @@ const MachineRateListing = (props) => {
         temp.push(DayTime(state?.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
         temp.push(DayTime(state?.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
         dataObj.dateArray = temp
-      } 
+      }
     }
     let statusString = [props?.approvalStatus].join(",")
     const filterData = {
@@ -698,7 +698,7 @@ const MachineRateListing = (props) => {
     getDataList("", 0, '', 0, "", "", 0, globalTakes, true, state?.floatingFilterData, !state?.isImport)
 
   }
-  
+
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
@@ -741,7 +741,7 @@ const MachineRateListing = (props) => {
     let finalArr = selectedRows;
     let length = finalArr?.length;
     let uniqueArray = _.uniqBy(finalArr, "MachineProcessRateId");
-    uniqueArray = uniqueArray.map(item => ({...item,EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY'): item.EffectiveDate}));
+    uniqueArray = uniqueArray.map(item => ({ ...item, EffectiveDate: item.EffectiveDate?.includes('T') ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : item.EffectiveDate }));
     if (props.isSimulation && !props?.isFromVerifyPage) {
       props.apply(uniqueArray, length);
     }
@@ -819,7 +819,7 @@ const MachineRateListing = (props) => {
                       <button disabled={state?.disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                       {permissions?.Add && !state.isImport && (<button type="button" className={"user-btn mr5 Tour_List_Add"} onClick={displayForm} title="Add">  <div className={"plus mr-0"}></div>{/* ADD */}</button>)}
                       {permissions?.BulkUpload && (<button type="button" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title="Bulk Upload"><div className={"upload mr-0"}></div>{/* Bulk Upload */} </button>)}
-                      {permissions?.Download && <>  <button title={`Download ${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} type="button"  disabled ={state?.totalRecordCount === 0} onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} </button>
+                      {permissions?.Download && <>  <button title={`Download ${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} </button>
 
                         <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
                           <button id={'Excel-Downloads-machine'} className="p-absolute " type="button" >
@@ -871,8 +871,8 @@ const MachineRateListing = (props) => {
                   >
                     { }
                     <AgGridColumn field="CostingHead" headerName="Costing Head" floatingFilterComponentParams={floatingFilterStatus}
-                                            floatingFilterComponent="statusFilter"
-                                            cellRenderer={combinedCostingHeadRenderer}></AgGridColumn>
+                      floatingFilterComponent="statusFilter"
+                      cellRenderer={combinedCostingHeadRenderer}></AgGridColumn>
                     {isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type"></AgGridColumn>}
                     {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
 
@@ -881,6 +881,9 @@ const MachineRateListing = (props) => {
                     <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                     <AgGridColumn field="TonnageCapacity" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
+                    <AgGridColumn field="Type" headerName="Type"></AgGridColumn>
+                    <AgGridColumn field='Applicability' headerName='Applicability'></AgGridColumn>
+                    <AgGridColumn field='Percentage' headerName='Percentage'></AgGridColumn>
                     <AgGridColumn field="UOM" headerName='UOM'></AgGridColumn>
                     <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                     {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}

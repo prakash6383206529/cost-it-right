@@ -117,6 +117,7 @@ import {
   COST_DEVIATION_REPORT,
   REJECTION,
   CUSTOMER_RFQ_LISTING,
+  BUSINESS_VALUE_REPORT,
 } from "../config/constants";
 import ApprovalSummary from "./costing/components/approval/ApprovalSummary";
 import CostingSummaryBulkUpload from "./costing/components/CostingSummaryBulkUpload";
@@ -163,6 +164,7 @@ import Indexation from "./masters/indexation";
 import AuctionIndex from "./rfqAuction/AuctionIndex";
 import AddAuction from "./rfqAuction/AddAuction";
 import CostVariance from "./report/components/CostVariance/CostVariance";
+import BusinessValueReport from "./report/components/BusinessSalesReport/BusinessValueReport";
 import setupAxiosInterceptors from "../axiosInterceptor";
 import CostDeviation from "./report/components/CostVariance/CostDeviation";
 
@@ -710,7 +712,7 @@ class Main extends Component {
                       )}
                     />
                     <Route path="/cost-variance" component={AuthMiddleware(CostVariance, COST_VARIANCE_REPORT)} />
-                    
+                    <Route path="/business-value-summary" component={AuthMiddleware(BusinessValueReport, BUSINESS_VALUE_REPORT)} />
                     <Route path="/sap-push-detail" component={SAPDetailList} />
                     <Route
                       path="/nfr-insights-details"
