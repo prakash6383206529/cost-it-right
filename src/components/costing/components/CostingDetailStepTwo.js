@@ -615,7 +615,7 @@ function CostingDetailStepTwo(props) {
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight Cost`}</span></th>
                           {costingData?.TechnologyId !== TOOLING_ID && <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>}
                           <th style={{ width: '160px' }}><span className="font-weight-500">{`ICC`}</span></th>
-                         {initialConfiguration?.IsAddPaymentTermInNetCost && <th style={{ width: '160px' }}><span className="font-weight-500">{`Payment Terms`}</span></th>}
+                         {initialConfiguration?.IsShowPaymentTerm && <th style={{ width: '160px' }}><span className="font-weight-500">{`Payment Terms`}</span></th>}
                           <th style={{ width: '160px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`Discounts`}</span></th>
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <th style={{ width: '100px' }}><span className="font-weight-500">{`Basic Price`}</span></th>}
@@ -639,7 +639,7 @@ function CostingDetailStepTwo(props) {
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     {costingData?.TechnologyId !== TOOLING_ID && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.ToolCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>}
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetICCCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
-                                    {initialConfiguration?.IsAddPaymentTermInNetCost && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetPaymentTermCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>}
+                                    {initialConfiguration?.IsShowPaymentTerm && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetPaymentTermCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>}
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOtherCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetDiscountsCost, initialConfiguration?.NoOfDecimalForPrice)}</span></td>
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.BasicRate, initialConfiguration?.NoOfDecimalForPrice)}</span></td>}

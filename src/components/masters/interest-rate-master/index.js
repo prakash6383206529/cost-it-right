@@ -12,6 +12,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import { MESSAGES } from '../../../config/message';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import { Loader } from '../../common/Loader';
+import { getConfigurationKey } from '../../../helper';
 
 export const ApplyPermission = React.createContext();
 
@@ -183,7 +184,7 @@ const InterestRatePayment = () => {
                       Manage Interest Rate
                     </NavLink>
                   </NavItem>
-                  <NavItem>
+                  {getConfigurationKey()?.IsShowPaymentTerm && <NavItem>
                     <NavLink
                       className={classnames({
                         active: state.activeTab === "2",
@@ -194,7 +195,7 @@ const InterestRatePayment = () => {
                     >
                       Manage Payment Terms
                     </NavLink>
-                  </NavItem>
+                  </NavItem>}
                 </Nav>
                 <ApplyPermission.Provider value={state.permissions}>
 

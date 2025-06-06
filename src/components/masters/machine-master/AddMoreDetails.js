@@ -70,7 +70,7 @@ class AddMoreDetails extends Component {
       isViewFlag: false,
       isDateChange: false,
       selectedTechnology: editDetails.selectedTechnology ?? [],
-      selectedPlants: Object.keys(editDetails.selectedPlants).length > 0 ? editDetails.selectedPlants : {},
+      selectedPlants: Object.keys(editDetails?.selectedPlants).length > 0 ? editDetails?.selectedPlants : {},
       machineType: editDetails?.machineType ?? [],
       isOpenMachineType: false,
       machineRate: "",
@@ -3498,19 +3498,20 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col Col md="3" className='p-relative'>
+                        <Col md="3">
                           {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.entryType && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             label="Plant Currency"
                             name="plantCurrency"
+                            id='plantCurrency'
                             type="text"
                             placeholder="-"
                             component={renderText}
                             disabled={true}
                             className=" "
-                            customClassName="withBorder mb-1"
+                            customClassName="withBorder"
                           />
-                          {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+                          {this.state.showPlantWarning && <WarningMessage  message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                         </Col>
 
                         {this.state?.entryType && <Col md="3">
@@ -4897,9 +4898,9 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                         </Col>
                         {
                           isProcessOpen && <div className="accordian-content row mx-0 w-100">
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
+                            <Col md="3" className="mb-3">
+                              <div className="d-flex justify-content-between align-items-center">
+                                <div className="fullinput-icon flex-grow-1">
                                   <Field
                                     name="ProcessName"
                                     type="text"
@@ -4907,23 +4908,22 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                                     component={searchableSelect}
                                     placeholder={this.state.isViewMode ? '-' : 'Select'}
                                     options={this.renderListing('ProcessNameList')}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
                                     required={true}
                                     handleChangeDescription={this.handleProcessName}
                                     valueDescription={this.state.processName}
                                     disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
                                   />
-                                  {this.state.errorObj.processName && this.state.processName.length === 0 && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
-
+                                  {this.state.errorObj.processName && this.state.processName.length === 0 && (
+                                    <div className='text-help p-absolute bottom-7'>This field is required.</div>
+                                  )}
                                 </div>
-                                {!isEditFlag && <div id="AddMoreDetails_Process"
-                                  onClick={this.processToggler}
-                                  className={'plus-icon-square right'}>
-                                </div>}
+                                {!isEditFlag && (
+                                  <div id="AddMoreDetails_Process" onClick={this.processToggler} className="plus-icon-square mr5 right mb-3">
+                                  </div>
+                                )}
                               </div>
                             </Col>
-                            <Col md="2" className='p-relative'>
+                            <Col md="3" className='p-relative'>
                               <Field
                                 name="UOM"
                                 type="text"
@@ -4979,10 +4979,8 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                             } */}
 
 
-                            <Col md="7" className="UOM-label-container p-relative">
                               {this.state.UOM.type === TIME && <TooltipCustom disabledIcon={true} id="machineRate" tooltipClass={'machine-rate'} tooltipText={this.machineRateTooltip()} />}
-                              <Row>
-                                <Col md="4">
+                                <Col md="3">
                                   <div className="machine-rate-filed pr-3">
                                     <Field
                                       label={this.DisplayMachineRateLabel()}
@@ -5002,7 +5000,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
 
                                   </div>
                                 </Col>
-                                {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <Col md="4" className='UOM-label-container p-relative'>
+                                {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <Col md="3" className='UOM-label-container p-relative'>
                                   <TooltipCustom disabledIcon={true} width="350px" id="machine-rate-plant" tooltipText={this.machineRateTitle()?.tooltipTextPlantCurrency} />
                                   <Field
                                     label={this.DisplayMachineRatePlantCurrencyLabel()}
@@ -5020,7 +5018,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                                   />
                                   {this.state.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </Col>}
-                                {(!(!this?.state?.isImport && this?.state?.hidePlantCurrency)) && <Col md="4" className='UOM-label-container p-relative'>
+                                {(!(!this?.state?.isImport && this?.state?.hidePlantCurrency)) && <Col md="3" className='UOM-label-container p-relative'>
                                   <TooltipCustom disabledIcon={true} width="350px" id="machine-rate" tooltipText={this?.state?.isImport ? this.machineRateTitle()?.toolTipTextNetCostBaseCurrency : this.machineRateTitle()?.tooltipTextPlantCurrency} />
                                   <Field
                                     label={this.DisplayMachineRateBaseCurrencyLabel()}
@@ -5038,8 +5036,7 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                                   />
                                   {this.state?.errorObj?.MachineRateConversion && (this.props?.fieldsObj?.MachineRateConversion === undefined || Number(this.props?.fieldsObj?.MachineRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </Col>}
-                                <Col md="4">
-                                  <div className="btn-mr-rate pt-2 pr-0 col-auto">
+                                <Col md="2" className={`${this.state.isImport ? 'mt30' : ''}`}>
                                     {this.state.isEditIndex ?
                                       <>
                                         <button
@@ -5071,8 +5068,6 @@ const sortedMachineProcessRates = DataToChange?.MachineProcessRates.map(sortObje
                                           onClick={this.resetProcessGridData}
                                         >Reset</button> </>
                                     }
-                                  </div></Col >
-                              </Row >
                             </Col >
 
                             <Col md="12">

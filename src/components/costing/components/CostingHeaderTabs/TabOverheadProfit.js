@@ -391,7 +391,8 @@ function TabOverheadProfit(props) {
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
             checkForNull(RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0)) +
             checkForNull(i?.CostingPartDetails?.ICCCost)
-
+            i.CostingPartDetails.RejectionModelTypeId = modelType?.value
+            i.CostingPartDetails.RejectionModelType = modelType?.label
 
           formatData(RejectionObj, params, i.CostingChildPartDetails)
 

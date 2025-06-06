@@ -65,14 +65,13 @@ function StandardRub(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'ScrapPercentage', 'NumberOfBends', 'BendTolerance', ...(!isVolumeAutoCalculate ? ['Volume'] : []), ...(!getConfigurationKey()?.IsCalculateVolumeForPartInRubber && isVolumeAutoCalculate ? ['FinishWeight'] : [])],
+        name: ['InnerDiameter', 'OuterDiameter', 'Length', 'CuttingAllowance', 'ScrapPercentage', 'NumberOfBends', 'FinishWeight', 'BendTolerance', ...(!isVolumeAutoCalculate ? ['Volume'] : []), ...(!getConfigurationKey()?.IsCalculateVolumeForPartInRubber && isVolumeAutoCalculate ? ['FinishWeight'] : [])],
     })
 
     useEffect(() => {
-
         calculateTotalLength()
         calculateVolume()
-
+        calculateScrapWeight()
     }, [fieldValues, isVolumeAutoCalculate])
 
 
@@ -164,23 +163,15 @@ function StandardRub(props) {
     }, 500)
 
 
-    const calculateScrapWeight = (scrapWeight) => {
-        const FinishWeight = getConfigurationKey()?.IsCalculateVolumeForPartInRubber ? dataToSend?.FinishWeight : Number(getValues('GrossWeight'))
-
-        const GrossWeight = checkForNull(dataToSend?.GrossWeight)
-        if (Number(getValues('GrossWeight')) || checkForNull(scrapWeight)) {
-            const updatedScrapRate = checkForNull(scrapWeight) ? checkForNull(scrapWeight) : checkForNull(dataToSend.GrossWeight)
-
-            let ScrapWeight = checkForNull(updatedScrapRate) - checkForNull(FinishWeight)
-
+    const calculateScrapWeight = () => {
+        const FinishWeight = Number(getValues('FinishWeight'))
+        if (Number(getValues('GrossWeight'))) {
+            let ScrapWeight = checkForNull(dataToSend.GrossWeight) - checkForNull(FinishWeight)
             setDataToSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
             setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
             setDataToSend(prevState => ({ ...prevState, NetRMCost: NetRmCost }))
             setValue('NetRMCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
-        } else if (GrossWeight === 0 && FinishWeight === 0) {
-            setDataToSend(prevState => ({ ...prevState, ScrapWeight: 0 }))
-            setValue('ScrapWeight', checkForDecimalAndNull(0, getConfigurationKey().NoOfDecimalForInputOutput))
         }
     }
 
@@ -395,7 +386,6 @@ function StandardRub(props) {
             Tonnage: calculateTonnage("Tonnage"),
             MinimumTonnage: calculateTonnage("MinTonnage"),
         }
-        console.log("Obj",obj)
         const lastRow = tableData[tableData.length - 1]
         const validationFields = [
             ...(isVolumeAutoCalculate ? ["OuterDiameter"] : ["Volume"]),

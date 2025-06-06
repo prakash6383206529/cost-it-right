@@ -433,7 +433,7 @@ function AddBudget(props) {
     const costHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Net Cost<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"cost-tooltip"}></i> </span>
+                <span className='ag-header-cell-text'>Net Cost <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon ms-4 ml40`} id={"cost-tooltip"}></i> </span>
             </div>
         );
     };
@@ -750,8 +750,8 @@ function AddBudget(props) {
                             setShowPlantWarning(showPlantWarning1);
                         } else {
                             callAPI(plantCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
-                                setPlantCurrency(rate1);
-                                setSettlementCurrency(rate2);
+                                setPlantCurrency(rate1 === 0 ? 1 : rate1);
+                                setSettlementCurrency(rate2 === 0 ? 1 : rate2);
                                 setPlantExchangeRateId(exchangeRateId1);
                                 setSettlementExchangeRateId(exchangeRateId2);
                                 setShowPlantWarning(showPlantWarning1)
@@ -763,7 +763,7 @@ function AddBudget(props) {
             } else if (!costConverSionInLocalCurrency && fromCurrencyRef.current !== reactLocalStorage?.getObject("baseCurrency")) {
                 const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
                 callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning, showWarning }) => {
-                    setPlantCurrency(rate1);
+                    setSettlementCurrency(rate1)
                     setPlantExchangeRateId(exchangeRateId1);
                     setShowPlantWarning(showPlantWarning)
                     setShowWarning(showWarning)
@@ -939,6 +939,11 @@ function AddBudget(props) {
     };
 
     const getCostingPrice = () => {
+        // If currentPrice already has a value, don't make the API call
+        if (currentPrice) {
+            return false;
+        }
+
         let obj = {}
         obj.costingHeadId = costingTypeId
         obj.partId = part.value
@@ -1095,6 +1100,25 @@ function AddBudget(props) {
             toolTipTextNetCostBaseCurrency: hidePlantCurrency ? `Total Sum (${currency.label}) * Currency Rate (${plantCurrency})` : `Total Sum (${getValues("plantCurrency")}) * Currency Rate (${settlementCurrency})`,
         };
     };
+    
+
+    const getTooltipTextForCurrency = () => {
+        const plantCurrencyLabel = (getValues("plantCurrency")===null || getValues("plantCurrency")===undefined || getValues("plantCurrency")==='') ? 'Plant Currency' : getValues("plantCurrency");
+        const baseCurrency = reactLocalStorage.getObject("baseCurrency");
+        const currencyLabel = currency?.label ?? 'Currency';
+
+        // Check the exchange rates or provide a default placeholder if undefined
+        const plantCurrencyRate = plantCurrency ?? 1;
+        const settlementCurrencyRate = settlementCurrency ?? 1;
+
+        return (
+            <>
+                <p>Exchange Rate: 1 {currencyLabel} = {plantCurrencyRate} {plantCurrencyLabel}</p>
+                <p>Exchange Rate: 1 {plantCurrencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+            </>
+        );
+    };
+
     return (
         <>
             <div className={`ag-grid-react`}>
@@ -1310,7 +1334,7 @@ function AddBudget(props) {
                                                                     </div>
                                                                 </>
                                                             )}
-                                                            <Col className="col-md-15">
+                                                            <Col className="col-md-3">
                                                                 <TextFieldHookForm
                                                                     name="plantCurrency"
                                                                     label="Plant Currency"
@@ -1340,11 +1364,11 @@ function AddBudget(props) {
                                                                         placeholder={"Select"}
                                                                         Controller={Controller}
                                                                         control={control}
-                                                                        rules={{ required: true }}
+                                                                        rules={{ required: false }}
                                                                         register={register}
                                                                         defaultValue={partType.length !== 0 ? partType : ""}
                                                                         options={renderListing('ExchangeSource')}
-                                                                        mandatory={true}
+                                                                        mandatory={false}
                                                                         handleChange={handleExchangeRateSource}
                                                                         errors={errors.ExchangeSource}
                                                                         disabled={isViewMode ? true : false || isEditFlag ? true : false}
@@ -1414,11 +1438,13 @@ function AddBudget(props) {
                                                                 />
 
                                                             </div>
-                                                            <div className="col-md-3 p-relative">
+                                                            {budgetedEntryType && <Col md="3">
+                                                                <TooltipCustom id="currency" width="300px" tooltipText={getTooltipTextForCurrency()} />
                                                                 <SearchableSelectHookForm
                                                                     name="currency"
                                                                     type="text"
                                                                     label="Currency"
+                                                                    id="currency"
                                                                     errors={errors.currency}
                                                                     Controller={Controller}
                                                                     control={control}
@@ -1438,7 +1464,8 @@ function AddBudget(props) {
                                                                     customClassName="mb-1"
                                                                 />
                                                                 {currency?.label && showWarning && <WarningMessage dClass="mt-1" message={`${currency?.label} rate is not present in the Exchange Master`} />}
-
+                                                            </Col>}
+                                                            <div md="1" className='p-relative col-md-0'>
                                                                 <button id='AddBudget_checkbox' className='user-btn budget-tick-btn' type='button' onClick={getCostingPrice} disabled={isViewMode ? true : false} >
                                                                     <div className='save-icon' ></div>
                                                                 </button>
@@ -1608,8 +1635,8 @@ function AddBudget(props) {
                                                         {/* } */}
                                                     </Col>
 
-                                                    {(!hidePlantCurrency && costConverSionInLocalCurrency) && <Col md="4">
-                                                        <TooltipCustom disabledIcon={true} id="total-local" tooltipText={hidePlantCurrency ?budgetedTotalTitle()?.toolTipTextNetCostBaseCurrency : budgetedTotalTitle()?.tooltipTextPlantCurrency} />
+                                                    {(!hidePlantCurrency && costConverSionInLocalCurrency && budgetedEntryType) && <Col md="4">
+                                                        <TooltipCustom disabledIcon={true} id="total-local" tooltipText={hidePlantCurrency ? budgetedTotalTitle()?.toolTipTextNetCostBaseCurrency : budgetedTotalTitle()?.tooltipTextPlantCurrency} />
                                                         {/* {currency && currency?.label ? */}
                                                         <div className='budgeting-details  mt-2 '>
                                                             <label className='w-fit'>{`Total Sum (${getValues("plantCurrency") ?? "Currency"}):`}</label>
@@ -1630,13 +1657,13 @@ function AddBudget(props) {
                                                                 disabled={true}
                                                                 customClassName={'withBorder'}
                                                             />
-                                                        </div>  <></>
+                                                        </div>  
                                                         {/* } */}
                                                     </Col>}
-                                                   
-                                                
+
+
                                                     {(!(!costConverSionInLocalCurrency && reactLocalStorage.getObject("baseCurrency") === getValues("plantCurrency"))) && <Col md="4">
-                                                        <TooltipCustom disabledIcon={true} id="total-base" tooltipText={budgetedEntryType?budgetedTotalTitle()?.toolTipTextNetCostBaseCurrency:budgetedTotalTitle()?.tooltipTextNetCostBaseCurrencyDomestic} />
+                                                        <TooltipCustom disabledIcon={true} id="total-base" tooltipText={budgetedEntryType ? budgetedTotalTitle()?.toolTipTextNetCostBaseCurrency : budgetedTotalTitle()?.tooltipTextNetCostBaseCurrencyDomestic} />
                                                         <div className='budgeting-details  mt-2 mb-2'>
                                                             <label className='w-fit'>{`Total Sum (${reactLocalStorage.getObject("baseCurrency")}):`}</label>
                                                             <NumberFieldHookForm
@@ -1741,3 +1768,4 @@ function AddBudget(props) {
 }
 
 export default AddBudget;
+
