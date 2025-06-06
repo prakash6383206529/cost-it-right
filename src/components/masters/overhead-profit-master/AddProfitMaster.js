@@ -5,7 +5,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, PROFITMASTER, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { TextAreaHookForm } from '../../layout/HookFormInputs';
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash';
 import { LabelsClass } from '../../../helper/core';
 import AddOverheadMasterDetails from './AddOverheadMasterDetails';
 import Dropzone from 'react-dropzone-uploader';
@@ -78,7 +78,8 @@ const AddProfitMaster = (props) => {
     DropdownNotChanged: true,
     minEffectiveDate: '',
     isLoader: false,
-    selectedTechnologies: []
+    selectedTechnologies: [],
+    IsAssociated: props?.IsProfitAssociated ?? false
   })
 
   const { isEditFlag, isViewMode, files, uploadAttachements, setDisable, attachmentLoader, selectedPlants, vendorName, vendorCode, client, singlePlantSelected, costingTypeId, ModelType } = state
@@ -99,7 +100,7 @@ const AddProfitMaster = (props) => {
     }
     dispatch(getPartFamilySelectList(() => { }));
     dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }));
-    dispatch(fetchApplicabilityList(null, conditionTypeId, false, res => {
+    dispatch(fetchApplicabilityList(null, conditionTypeId, null, res => {
 
     }));
     dispatch(getCostingSpecificTechnology(loggedInUserId(), res => {}))
@@ -317,14 +318,16 @@ const AddProfitMaster = (props) => {
       //       return false
       //     }
 
-      if (JSON.stringify(DataToChange?.ApplicabilityDetails ?? []) === JSON.stringify(state?.ApplicabilityDetails ?? []) && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) &&
+      if (JSON.stringify(DataToChange?.ApplicabilityDetails) === JSON.stringify(state?.ApplicabilityDetails) 
+        && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        && _.isEqual(DataToChange?.Technologies, technologyArray) &&
         DropdownNotChanged) {
         Toaster.warning('Please change the data to save Profit Details');
         return false;
       }
 
-      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails ?? []) !== JSON.stringify(state?.ApplicabilityDetails ?? []);
-      if (financialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props?.IsProfitAssociated) {
+      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails);
+      if (financialDataChanged && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsProfitAssociated) {
         setState(prev => ({ ...prev, setDisable: false }));
         Toaster.warning('Please update the Effective date.');
         return false;
