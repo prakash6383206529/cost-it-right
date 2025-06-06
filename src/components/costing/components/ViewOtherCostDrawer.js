@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Row, Col, Container, Table } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
 import { Controller, useForm, } from 'react-hook-form'
-import { useSelector, } from 'react-redux'
+import { useDispatch, useSelector, } from 'react-redux'
 import NpvCost from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/NpvCost'
 import ConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/ConditionCosting'
 import HeaderTitle from '../../common/HeaderTitle'
@@ -15,9 +15,12 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { TextFieldHookForm } from '../../layout/HookFormInputs'
 import TooltipCustom from '../../common/Tooltip'
 import IccCalculator from './CostingHeadCosts/OverheadProfit/IccCalculator'
+import { setIsCalculatorExist } from '../actions/Costing'
 
 function ViewOtherCostDrawer(props) {
+    
     const { partId, vendorId, costingIndex, CostingPaymentTermDetails, npvCostData, iccPaymentData, isPDFShow, rejectAndModelType } = props
+    
     const [tableData, setTableData] = useState(props.tableData)
     const [conditionTableData, seConditionTableData] = useState([])
     const [costingSummary, setCostingSummary] = useState(props.costingSummary ? props.costingSummary : false)
@@ -30,6 +33,7 @@ function ViewOtherCostDrawer(props) {
         openWeightCalculator: false
     })
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC } = rejectAndModelType;
     const showToolTipForICC = [isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC]
@@ -38,7 +42,7 @@ function ViewOtherCostDrawer(props) {
         reValidateMode: 'onChange',
     })
     const showCurrency = (viewCostingData && viewCostingData[costingIndex]?.CostingCurrency) ? viewCostingData[costingIndex]?.CostingCurrency : reactLocalStorage.getObject("baseCurrency")
-
+    const dispatch = useDispatch()
     useEffect(() => {
         if (props.costingSummary) {
             setIsLoader(true)
@@ -84,6 +88,7 @@ function ViewOtherCostDrawer(props) {
             })
             setDiscountData(discountTable)
             setTotalDiscountCost(totalDiscountCost)
+            dispatch(setIsCalculatorExist(iccPaymentData?.IsCalculatorExist))
         }
 
     }, [])
@@ -185,9 +190,9 @@ function ViewOtherCostDrawer(props) {
             </Col>
         </>)
     }
-    const toggleWeightCalculator = () => {
+    const toggleWeightCalculator = (index) => {
         setState({
-            openWeightCalculator: !state.openWeightCalculator
+            openWeightCalculator: !state.openWeightCalculator,
         })
     }
 
@@ -565,6 +570,8 @@ function ViewOtherCostDrawer(props) {
                                 closeCalculator={closeCalculator}
                                 CostingViewMode={true}
                                 iccInterestRateId={iccPaymentData?.ICCApplicabilityDetail?.InterestRateId}
+                                costingId={viewCostingData[costingIndex]?.costingId}
+                                isCostingSummary={true}
                             />}
                         </div>
                     </Container>

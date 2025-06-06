@@ -3452,7 +3452,6 @@ export function getCostingDetailForIcc(costingId, callback) {
     const request = axios.get(`${API.getCostingDetailForIcc}?${queryParams}`, config());
     request.then((response) => {
       if (response.data?.Data || response?.status === 204) {
-        console.log(response.data?.Data,'response.data?.Data');
         const netCost = response.data?.Data?.NetICC;
         //const applicabilityCost = response.data?.Data?.ApplicabilityCost;
         dispatch({
