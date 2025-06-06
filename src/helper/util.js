@@ -891,7 +891,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.isIncludeSurfaceTreatmentWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit
   obj.isIncludeOverheadAndProfitInICC = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeOverheadAndProfitInICC && dataFromAPI?.CostingPartDetails?.IsIncludeOverheadAndProfitInICC
   obj.isIncludeToolCostInCCForICC = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostInCCForICC && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostInCCForICC
-  obj.isIncludeChildPartsApplicabilityCostInICC = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeApplicabilityForChildPartsInICC && dataFromAPI?.CostingPartDetails?.IsIncludeApplicabilityForChildPartsInICC
+  // obj.isIncludeChildPartsApplicabilityCostInICC = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeApplicabilityForChildPartsInICC && dataFromAPI?.CostingPartDetails?.IsIncludeApplicabilityForChildPartsInICC
   obj.rawMaterialCostWithCutOff = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff ? dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff : ''
   obj.anyOtherCostTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOtherCost ? dataFromAPI?.CostingPartDetails?.NetOtherCost : '-'
   obj.saNumber = dataFromAPI?.SANumber ?? '-'

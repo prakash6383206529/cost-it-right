@@ -230,32 +230,34 @@ function Icc(props) {
             JSON.stringify(state.iccDetails) !== JSON.stringify(tempInventoryObj?.ICCCostingApplicabilityDetails);
         if (hasChanges && !CostingViewMode) {
             // Filter ICC details based on conditions
-            const filteredData = state.iccDetails.filter(item => {
-                const applicability = item?.Applicability;
-              
-                // Hide Overhead and Profit if includeOverHeadProfitIcc is false
-                if (!includeOverHeadProfitIcc && (applicability === "Overhead" || applicability === "Profit")) {
-                    return false;
-                }
-              
-                // If includeChildPartCost is true, hide Part Cost
-                if (IsIncludeApplicabilityForChildPartsInICC && applicability === "Part Cost") {
-                    return false;
-                }
-              
-                // If includeChildPartCost is false, hide RM
-                if (!IsIncludeApplicabilityForChildPartsInICC && applicability === "RM") {
-                    return false;
-                }
-              
-                return true;
-            });
+            const filteredData = state?.iccDetails?.length > 0 
+                ? state.iccDetails.filter(item => {
+                    const applicability = item?.Applicability;
+
+                    // Hide Overhead and Profit if includeOverHeadProfitIcc is false
+                    if (!includeOverHeadProfitIcc && (applicability === "Overhead" || applicability === "Profit")) {
+                        return false;
+                    }
+
+                    // If includeChildPartCost is true, hide Part Cost
+                    if (IsIncludeApplicabilityForChildPartsInICC && applicability === "Part Cost") {
+                        return false;
+                    }
+
+                    // If includeChildPartCost is false, hide RM
+                    if (!IsIncludeApplicabilityForChildPartsInICC && applicability === "RM") {
+                        return false;
+                    }
+
+                    return true;
+                })
+                : [];
 
             const tempObj = {
                 ...InventoryObj,
                 Remark: getValues('iccRemark'),
                 ICCCostingApplicabilityDetails: filteredData
-            }
+            };
             props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
         }
     }, [InventoryObj, state.iccDetails, tempInventoryObj, CostingViewMode])
@@ -311,7 +313,7 @@ function Icc(props) {
                 technologyId: null,
                 partFamilyId: costData?.PartFamilyId,
                 MethodTypeId: null,
-                IsMultiVendorCosting:IsMultiVendorCosting
+                IsMultiVendorCosting: IsMultiVendorCosting
             }
             dispatch(getIccDataByModelType(reqParams, (res) => {
                 let data = res?.data?.Data

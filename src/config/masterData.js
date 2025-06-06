@@ -5833,7 +5833,7 @@ export const PartComponentTempData = [
 
 //Part Family
 export const PartFamily = [
-    {label: 'PartFamilyName', value: 'PartFamilyName', },
+    { label: 'PartFamilyName', value: 'PartFamilyName', },
     { label: 'PartFamilyCode', value: 'PartFamilyCode', },
     { label: 'Remarks', value: 'Description', },
     // { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -5990,54 +5990,54 @@ export const VBCInterestRate = [
 ]
 
 export const VBCInterestRateTempData = [
-  {
-    VendorCode: 'VCode001',
-    PlantCode: '1511',
-    PartFamilyCode: '1234',
-    TechnologyName: '',
-    ICCModelType: 'All / High Investment / High Volume / Low Volume / Medium Volume / New Development',
-    ICCMethod: 'Applicability Based / Credit Based',
-    InventoryDaysCheckBox: 'YES',
-    ApplicabilityBasedInventoryDayType: 'General',
-    CreditBasedAnnualICCPercent: '',
-    InventoryDayTypes: '',
-    NoOfDays: '',
-    WIPHead: '',
-    InventoryDays: '',
-    SupplierCreditDays: '',
-    InterestDays: '',
-    ICCApplicability: 'RM',
-    ICCPercent: '10',
-    EffectiveDate: DayTime().format('DD-MM-YYYY'),
-    RawMaterialName: '',
-    RawMaterialGrade: '',
-    Remark: 'Test Remark',
-    // ManageApplicabilitiesForMultiTechnologyAssembly: 'NO'
-  },
-  {
-    VendorCode: 'VCode002',
-    PlantCode: '1512',
-    PartFamilyCode: '1235',
-    TechnologyName: '',
-    ICCModelType: 'All / High Investment / High Volume / Low Volume / Medium Volume / New Development',
-    ICCMethod: 'Credit Based / Applicability Based',
-    InventoryDaysCheckBox: 'YES',
-    ApplicabilityBasedInventoryDayType: '',
-    CreditBasedAnnualICCPercent: 2,
-    InventoryDayTypes: 'Finished Goods',
-    NoOfDays: 2,
-    WIPHead: 'RM',
-    InventoryDays: 3,
-    SupplierCreditDays: 15,
-    InterestDays: -12,
-    ICCApplicability: '',
-    ICCPercent: '',
-    EffectiveDate: DayTime().format('DD-MM-YYYY'),
-    RawMaterialName: '',
-    RawMaterialGrade: '',
-    Remark: 'Test Remark',
-    // ManageApplicabilitiesForMultiTechnologyAssembly: 'NO'
-  }
+    {
+        VendorCode: 'VCode001',
+        PlantCode: '1511',
+        PartFamilyCode: '1234',
+        TechnologyName: '',
+        ICCModelType: 'All / High Investment / High Volume / Low Volume / Medium Volume / New Development',
+        ICCMethod: 'Applicability Based / Credit Based',
+        InventoryDaysCheckBox: 'YES',
+        ApplicabilityBasedInventoryDayType: 'General',
+        CreditBasedAnnualICCPercent: '',
+        InventoryDayTypes: '',
+        NoOfDays: '',
+        WIPHead: '',
+        InventoryDays: '',
+        SupplierCreditDays: '',
+        InterestDays: '',
+        ICCApplicability: 'RM',
+        ICCPercent: '10',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+        // ManageApplicabilitiesForMultiTechnologyAssembly: 'NO'
+    },
+    {
+        VendorCode: 'VCode002',
+        PlantCode: '1512',
+        PartFamilyCode: '1235',
+        TechnologyName: '',
+        ICCModelType: 'All / High Investment / High Volume / Low Volume / Medium Volume / New Development',
+        ICCMethod: 'Credit Based / Applicability Based',
+        InventoryDaysCheckBox: 'YES',
+        ApplicabilityBasedInventoryDayType: '',
+        CreditBasedAnnualICCPercent: 2,
+        InventoryDayTypes: 'Finished Goods',
+        NoOfDays: 2,
+        WIPHead: 'RM',
+        InventoryDays: 3,
+        SupplierCreditDays: 15,
+        InterestDays: -12,
+        ICCApplicability: '',
+        ICCPercent: '',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+        // ManageApplicabilitiesForMultiTechnologyAssembly: 'NO'
+    }
 ];
 
 export const CBCInterestRate = [
@@ -6179,34 +6179,34 @@ export const VBCPaymentTerms = [
 ]
 
 export const VBCPaymentTermsTempData = [
-  {
-    VendorCode: 'VCode001',
-    PlantCode: '1511',
-    PartFamilyCode: '1234',
-    TechnologyName: '',
-    // ManageApplicabilitiesForMultiTechnologyAssembly: 'NO',
-    PaymentTermApplicability: 'RM',
-    RepaymentPeriod: '30',
-    PaymentTermPercentage: '40',
-    EffectiveDate: DayTime().format('DD-MM-YYYY'),
-    RawMaterialName: '',
-    RawMaterialGrade: '',
-    Remark: 'Test Remark',
-  },
-  {
-    VendorCode: 'VCode002',
-    PlantCode: '1512',
-    PartFamilyCode: '1235',
-    TechnologyName: '',
-    // ManageApplicabilitiesForMultiTechnologyAssembly: 'NO',
-    PaymentTermApplicability: 'BOP',
-    RepaymentPeriod: '31',
-    PaymentTermPercentage: '42',
-    EffectiveDate: DayTime().format('DD-MM-YYYY'),
-    RawMaterialName: '',
-    RawMaterialGrade: '',
-    Remark: 'Test Remark',
-  }
+    {
+        VendorCode: 'VCode001',
+        PlantCode: '1511',
+        PartFamilyCode: '1234',
+        TechnologyName: '',
+        // ManageApplicabilitiesForMultiTechnologyAssembly: 'NO',
+        PaymentTermApplicability: 'RM',
+        RepaymentPeriod: '30',
+        PaymentTermPercentage: '40',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+    },
+    {
+        VendorCode: 'VCode002',
+        PlantCode: '1512',
+        PartFamilyCode: '1235',
+        TechnologyName: '',
+        // ManageApplicabilitiesForMultiTechnologyAssembly: 'NO',
+        PaymentTermApplicability: 'BOP',
+        RepaymentPeriod: '31',
+        PaymentTermPercentage: '42',
+        EffectiveDate: DayTime().format('DD-MM-YYYY'),
+        RawMaterialName: '',
+        RawMaterialGrade: '',
+        Remark: 'Test Remark',
+    }
 ];
 
 export const CBCPaymentTerms = [
@@ -7927,7 +7927,7 @@ export const NFR_LISTING_DOWNLOAD_EXCEL = [
     { label: "Created By", value: "CreatedBy" },
     { label: "Created Date", value: "CreatedDate" },
     { label: "Status", value: "Status" }
-  ];
+];
 
 
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
@@ -8047,7 +8047,7 @@ export const POWERLISTING_DOWNLOAD_EXCEl = [
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
-    { label: "Technologies", value: "Technologies" },
+    { label: "Technologies", value: "TechnologyName" },
     { label: "Raw Material Name", value: "RawMaterialName" },
     { label: "Raw Material Grade", value: "RawMaterialGrade" },
     { label: "Plant (Code)", value: "PlantName" },
@@ -8064,7 +8064,7 @@ export const INTERESTRATE_DOWNLOAD_EXCEl = [
 
 export const PAYMENTTERMS_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
-    { label: "Technologies", value: "Technologies" },
+    { label: "Technologies", value: "TechnologyName" },
     { label: "Raw Material Name", value: "RawMaterialName" },
     { label: "Raw Material Grade", value: "RawMaterialGrade" },
     { label: "Plant (Code)", value: "PlantName" },
@@ -8284,8 +8284,8 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Technologies", value: "Technologies" },
-    { label: "Technologies", value: "Technologies" },
+    { label: "Technologies", value: "TechnologyName" },
+
     { label: "Raw Material Name", value: "RawMaterialName", },
     { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
@@ -8294,6 +8294,20 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Part Family (Code)", value: "PartFamily" },
     { label: "Model Type", value: "ModelType", },
     { label: "Overhead Applicability", value: "Applicability", },
+    { label: "Effective Date", value: "EffectiveDate", },
+]
+export const REJECTION_DOWNLOAD_EXCEl = [
+    { label: "Costing Head", value: "CostingHead", },
+    { label: "Technologies", value: "TechnologyName" },
+
+    { label: "Raw Material Name", value: "RawMaterialName", },
+    { label: "Raw Material Grade", value: "RawMaterialGrade", },
+    { label: "Plant (Code)", value: "PlantName", },
+    { label: "Vendor (Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName", },
+    { label: "Part Family (Code)", value: "PartFamily" },
+    { label: "Model Type", value: "ModelType", },
+    { label: "Rejection Applicability", value: "Applicability", },
     { label: "Effective Date", value: "EffectiveDate", },
 ]
 

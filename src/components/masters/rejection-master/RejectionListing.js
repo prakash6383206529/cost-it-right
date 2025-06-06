@@ -8,10 +8,10 @@ import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
-import { OVERHEAD_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { REJECTION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
-import { OverheadMaster } from '../../../config/constants';
+import { RejectionMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -590,13 +590,13 @@ function RejectionListing(props) {
         }
 
     }
-    const OVERHEAD_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(OVERHEAD_DOWNLOAD_EXCEl, "MasterLabels")
+    const REJECTION_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(REJECTION_DOWNLOAD_EXCEl, "MasterLabels")
     const onBtExport = () => {
 
         let tempArr = []
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (overheadProfitListAll ? overheadProfitListAll : [])
-        return returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+        return returnExcelColumn(REJECTION_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -624,7 +624,7 @@ function RejectionListing(props) {
                 return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
             }
         }).filter(Boolean) // remove null columns
-        return <ExcelSheet data={temp} name={OverheadMaster}>{excelColumns}</ExcelSheet>
+        return <ExcelSheet data={temp} name={RejectionMaster}>{excelColumns}</ExcelSheet>
     }
 
     const onFilterTextBoxChanged = (e) => {
@@ -799,7 +799,7 @@ function RejectionListing(props) {
                                         >
                                             <AgGridColumn field="CostingHead" minWidth={200} headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer} floatingFilterComponentParams={floatingFilterStatus}
                                                 floatingFilterComponent="statusFilter"></AgGridColumn>
-                                            <AgGridColumn field="Technologies" tooltipField='Technologies' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>
+                                            <AgGridColumn field="TechnologyName" tooltipField='Technologies' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}

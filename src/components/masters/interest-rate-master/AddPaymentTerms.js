@@ -100,7 +100,9 @@ const AddPaymentTerms = (props) => {
         IsPaymentTermsRecord: true,
         RepaymentPeriod: "",
         isHideModelType: true,
-        selectedTechnologies: []
+        selectedTechnologies: [],
+        IsAssociated:props?.IsPaymentTermAssociated
+
     });
 
     // Selectors
@@ -117,8 +119,7 @@ const AddPaymentTerms = (props) => {
             dispatch(getClientSelectList(() => {}));
             dispatch(getPartFamilySelectList(() => {}));
         }
-        const isRequestForMultiTechnology = state?.isAssemblyCheckbox;
-        dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, () => {}));
+        dispatch(fetchApplicabilityList(null, conditionTypeId, null, () => {}));
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => {}));
         dispatch(getCostingSpecificTechnology(loggedInUserId(), res => {}))
         getDetail();
@@ -379,7 +380,7 @@ const AddPaymentTerms = (props) => {
 
         if (state.isEditFlag) {
             if (JSON.stringify(Data?.PaymentTermsApplicabilityDetails) === JSON.stringify(state?.ApplicabilityDetails) && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) &&
-                DropdownNotChanged) {
+                DropdownNotChanged&&JSON.stringify(Data?.Technologies) === JSON.stringify(technologyArray)) {
                 Toaster.warning('Please change the data to save Interest Rate Details');
                 return false;
             }
