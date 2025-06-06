@@ -196,6 +196,9 @@ const BusinessValueReport = ({ }) => {
     if (label === 'GroupBy') {
       businessValueReportHeads && businessValueReportHeads.map((item) => {
         if (item.Value === '0') return false
+        if (item.Value === "IsRequestedForBudgeting") return false
+        if (item.Value === "PartGroup") return false
+        if (item.IsProductHierarchy) return false
           temp.push({ label: item.Text, value: item.Value })
           return null
         })
