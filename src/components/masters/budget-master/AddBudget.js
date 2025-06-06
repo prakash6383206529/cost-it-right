@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Label, Button, Tooltip } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
-import { getCurrencySelectList, getExchangeRateSource, getPlantSelectListByType, getVendorNameByVendorSelectList, plantSelectList } from '../../../actions/Common'
+import { getCurrencySelectList, getExchangeRateSource, getPlantSelectListByType, getVendorNameByVendorSelectList, plantSelectList, setListToggle } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, userDetails } from '../../../helper/auth'
@@ -116,6 +116,8 @@ function AddBudget(props) {
     const [showPlantWarning, setShowPlantWarning] = useState(false)
     const { vendorLabel } = useLabels()
     const [budgetingId, setBudgetingId] = useState(0)
+    // const [isImport, setIsImport] = useState(listToggle.RawMaterial);
+
     useEffect(() => {
         setCostingTypeId(getCostingTypeIdByCostingPermission())
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
@@ -142,6 +144,10 @@ function AddBudget(props) {
             callExchangeRateAPI()
         }
     }, [currency, year, ExchangeSource, fromCurrencyRef, costConverSionInLocalCurrency, vendorName, client]);
+
+    useEffect(() => {
+        setBudgetedEntryType(props?.isImport)
+    }, [props?.isImport])
 
     // ... existing code ...
     useEffect(() => {
@@ -526,6 +532,7 @@ function AddBudget(props) {
 
     }
     const ImportToggle = () => {
+        dispatch(setListToggle({ Budget: !budgetedEntryType }));
         setBudgetedEntryType(!budgetedEntryType)
     }
     /**
