@@ -816,6 +816,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.destinationPlantId = dataFromAPI?.DestinationPlantId ? dataFromAPI?.DestinationPlantId : '-'
   obj.CostingHeading = header
   obj.partName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.PartName ? dataFromAPI?.CostingPartDetails?.PartName : '-'
+  obj.partFamily = dataFromAPI && dataFromAPI?.PartFamily ? dataFromAPI?.PartFamily : '-'
   obj.netOtherOperationCost = dataFromAPI && dataFromAPI?.CostingPartDetails?.NetOtherOperationCost ? dataFromAPI?.CostingPartDetails?.NetOtherOperationCost : 0
   obj.masterBatchTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchTotal ? dataFromAPI?.CostingPartDetails?.MasterBatchTotal : 0
   obj.masterBatchRMPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice ? dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice : 0

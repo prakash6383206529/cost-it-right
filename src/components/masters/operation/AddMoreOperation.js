@@ -157,7 +157,7 @@ function AddMoreOperation(props) {
         fromCurrencyRef.current = fromCurrencyRef
         settlementCurrencyRef.current = settlementCurrencyRef
         plantCurrencyRef.current = plantCurrencyRef
-        localCurrencyLabel.current = localCurrencyLabel
+        localCurrencyLabel.current = localCurrencyLabel?.current // If not assign with ?.current it store as [object][object]
     }, [fromCurrencyRef, settlementCurrencyRef, plantCurrencyRef, localCurrencyLabel]);
     useEffect(() => {
         callExchangeRateAPI()
