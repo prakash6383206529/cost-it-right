@@ -1422,7 +1422,7 @@ let iccObj={
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscountsCost = DiscountCostData.HundiOrDiscountValue
-        const totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) /* + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.PaymentTermCost) */ + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
+        const totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) /* + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.PaymentTermCost) */ )
         let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetTotalRMBOPCC) +
           checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
           checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
@@ -1658,7 +1658,7 @@ let iccObj={
           applicabilityCost = overheadAndProfitTabDataValue?.RejectionCost;
           break;
         case 'ICC Cost':
-          applicabilityCost = overheadAndProfitTabDataValue?.ICCCost;
+          applicabilityCost = IccCost?.NetCost;
           break;
         case 'Payment Terms Cost':
           applicabilityCost = UpdatePaymentTermCost?.NetCost;

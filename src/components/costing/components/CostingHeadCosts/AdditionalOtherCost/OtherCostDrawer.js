@@ -42,7 +42,7 @@ function OtherCostDrawer(props) {
     const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
 
-    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, getCostingPaymentDetails, UpdatePaymentTermCost, ToolTabData } = useSelector(state => state.costing)
+    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, getCostingPaymentDetails, UpdatePaymentTermCost, ToolTabData, IccCost } = useSelector(state => state.costing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingHead = useSelector(state => state.comman.costingHead)
     const [isEdit, setIsEdit] = useState(false);
@@ -383,9 +383,9 @@ function OtherCostDrawer(props) {
                 setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.RejectionCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'ICC Cost':
-                totalCost = (overheadAndProfitTabDataValue?.ICCCost) * calculatePercentage(percent)
-                setApplicabilityCost(overheadAndProfitTabDataValue?.ICCCost)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.ICCCost, initialConfiguration?.NoOfDecimalForPrice))
+                totalCost = (IccCost?.NetCost) * calculatePercentage(percent)
+                setApplicabilityCost(IccCost?.NetCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(IccCost?.NetCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Payment Terms Cost':
                 totalCost = (UpdatePaymentTermCost?.NetCost) * calculatePercentage(percent)

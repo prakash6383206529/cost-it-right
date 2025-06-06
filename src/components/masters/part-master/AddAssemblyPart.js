@@ -840,7 +840,7 @@ class AddAssemblyPart extends Component {
         String(DataToCheck?.SAPCode ?? "") === String(values?.SAPCode ?? "") &&
         // (partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartModelId) === String(this?.state?.Model?.value) : true) &&
         // (partPermissions?.IsPartModelMandatory ? String(DataToCheck?.PartsModelMaster) === String(this?.state?.Model?.label) : true) &&
-        (this?.state?.isBomEditable ? String(DataToCheck?.PartModelId) === String(values?.Model?.value) : true) && // Handled via "isBOMEditable" to allow edits even if "partPermissions?.IsPartModelMandatory" is false. user can edit without warning mesage 
+        (this?.state?.isBomEditable ? String(DataToCheck?.PartsModelMaster) === String(this?.state?.Model?.label) : true) && // Handled via "isBOMEditable" to allow edits even if "partPermissions?.IsPartModelMandatory" is false. user can edit without warning mesage , here check is applied on label because user can edit only label, value remains same
         (partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamilyId) === String(this?.state?.PartFamilySelected?.value) : true) &&
         (partPermissions?.IsPartFamilyMandatory ? String(DataToCheck?.PartFamily) === String(this?.state?.PartFamilySelected?.label) : true) &&
         (partPermissions?.IsNepNumberMandatory ? String(DataToCheck?.NEPNumber) === String(values?.NEP) : true);
@@ -1381,6 +1381,7 @@ class AddAssemblyPart extends Component {
                                   id="Model-edit"
                                   className="drawer-edit mt10 mb-0"
                                   variant="Edit"
+                                  disabled={!this?.state?.isBomEditable}
                                   onClick={() => this.modelToggler(this?.state?.Model.value)}
                                 /> :
                                 <div className='d-flex justify-content-center align-items-center'>

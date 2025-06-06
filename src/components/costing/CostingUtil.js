@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { EMPTY_GUID, HOUR, MACHINING, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS } from "../../config/constants";
+import { COSTAPPLICABILITYBASIS, EMPTY_GUID, HOUR, MACHINING, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, getConfigurationKey, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
 import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
@@ -9,6 +9,7 @@ import { checkDivisionByPlantAndGetDivisionIdByPart } from "../../actions/Common
 import Toaster from "../common/Toaster";
 import { MESSAGES } from "../../config/message";
 import $ from "jquery"
+import _ from 'lodash'
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '', isPartType = {}, IsAddPaymentTermInNetCost = false, remark = '', bopCostingIdForRemark = '') => {
@@ -195,7 +196,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
       checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(discountAndOtherTabData?.AnyOtherCost) - checkForNull(discountAndOtherTabData?.HundiOrDiscountValue)
   }
-  
+
   let assemblyRequestedData = {
 
     "TopRow": {
@@ -206,7 +207,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "NetConversionCost": tabData && tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
       "NetTotalRMBOPCC": tabData && tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "NetSurfaceTreatmentCost": surfaceTabData && surfaceTabData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys,
-      "NetOverheadAndProfitCost": overHeadAndProfitTabData?.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost)) : 0,
+      "NetOverheadAndProfitCost": overHeadAndProfitTabData?.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost)) : 0,
       "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
       "NetToolCost": ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
       "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
@@ -557,7 +558,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
   })
 
   let basicRate = 0
-  let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost)
+  let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) 
   basicRate = checkForNull(tabData?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(totalOverheadPrice) +
     checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
     checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) + (IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
@@ -793,4 +794,45 @@ export const handleRemarkPopup = (event, id) => {
   }
 }
 
+export const calculateProcessCostUsingCostApplicabilityBasis = (rowData, NetRawMaterialsCost, NetBoughtOutPartCost) => {
 
+  if (rowData.Type === COSTAPPLICABILITYBASIS) {
+    switch (rowData.Applicability) {
+      case 'RM':
+        return checkForNull(NetRawMaterialsCost) * checkForNull(rowData?.Percentage / 100)
+      case 'BOP':
+        return checkForNull(NetBoughtOutPartCost) + (checkForNull(rowData?.Percentage) / 100)
+      case 'RM + BOP':
+        return (checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost)) * (checkForNull(rowData?.Percentage) / 100)
+      default:
+        return '0'
+    }
+  }
+}
+
+export const findApplicabilityCost = (rowData, NetRawMaterialsCost, NetBoughtOutPartCost) => {
+  if (rowData?.Type === COSTAPPLICABILITYBASIS) {
+    switch (rowData?.Applicability) {
+      case 'RM':
+        return checkForNull(NetRawMaterialsCost)
+      case 'BOP':
+        return checkForNull(NetBoughtOutPartCost)
+      case 'RM + BOP':
+        return checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost)
+      default:
+        return '0'
+    }
+  }
+}
+
+export const isLockRMAndBOPForCostAppliacabilityProcess = (processArr) => {
+
+
+  if (processArr && processArr.length > 0) {
+
+
+    let tempArr = _.filter(processArr, ['Type', COSTAPPLICABILITYBASIS]);
+
+    return tempArr.length > 0 ? true : false
+  }
+}

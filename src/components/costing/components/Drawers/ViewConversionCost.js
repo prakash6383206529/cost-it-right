@@ -3,7 +3,7 @@ import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../
 import { Container, Row, Col, Table, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { EMPTY_DATA, HANGEROVERHEAD, TIME } from '../../../../config/constants'
+import { COSTAPPLICABILITYBASIS, EMPTY_DATA, HANGEROVERHEAD, TIME } from '../../../../config/constants'
 import { useSelector, useDispatch } from 'react-redux'
 import classnames from 'classnames';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -286,8 +286,11 @@ function ViewConversionCost(props) {
             <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
             <td>{item.MachineName ? item.MachineName : '-'}</td>
             <td>{item.Tonnage ? item.Tonnage : '-'}</td>
+            <td>{item.Type ?? '-'}</td>
             <td>{item.UOM ? item.UOM : '-'}</td>
             <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
+            <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>
+            <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>
             <td>{item.MHR ? item.MHR : '-'}</td>
             {!isPDFShow && <td><button
               className="CalculatorIcon cr-cl-icon mr-auto ml-0"
@@ -307,6 +310,8 @@ function ViewConversionCost(props) {
 
   const processTableData = () => {
     const tooltipText = <div><div>If UOM is in hours/minutes/seconds, quantity/cycle time is in seconds.</div> <div>For all others UOMs, quantity/cycle time is actual.</div></div>;
+    const mhrTooltipText = <div><div>If Type is Cost Applicability Basis, then Machine Rate is calculated based on the selected Process Cost Applicability.</div></div>;
+
     return <>
       <Row>
         <Col md="12" className='mt-1'>
@@ -326,9 +331,13 @@ function ViewConversionCost(props) {
                 <th>{technologyLabel}</th>
                 <th>{`Machine Name`}</th>
                 <th>{`Tonnage`}</th>
+                <th>{`Type`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Parts/Hour`}</th>
-                <th>{`MHR`}</th>
+                <th >{`Process Cost Applicability`}</th>
+                <th >{`Percentage`}</th>
+                <th><span className='d-flex'>MHR  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{mhrTooltipText}</span></div>}</span></th>
+
                 {!isPDFShow && <th>{`Calculator`}</th>}
                 <th><span className='d-flex'>Quantity/Cycle time  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div>}</span></th>
                 <th>{`Net Cost`}</th>
@@ -359,9 +368,12 @@ function ViewConversionCost(props) {
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
                         <td>{item.Tonnage ? item.Tonnage : '-'}</td>
+                        <td>{item.Type ?? '-'}</td>
                         <td>{item.UOM ? item.UOM : '-'}</td>
                         <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
-                        <td>{item.MHR ? item.MHR : '-'}</td>
+                        <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>
+                        <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>
+                        <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
                         {(!isPDFShow) && <td>
                           {
                             (item?.GroupName === '' || item?.GroupName === null) ?

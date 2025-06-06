@@ -28,7 +28,8 @@ import {
     GET_PART_FAMILY_LIST_SUCCESS,
     GET_ALL_PART_FAMILY_LIST_SUCCESS,
     GET_PART_FAMILY_DETAILS_SUCCESS,
-    GET_PART_FAMILY_SELECTLIST
+    GET_PART_FAMILY_SELECTLIST,
+    GET_NEP_NUMBER_LIST
 } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper';
 
@@ -253,12 +254,19 @@ export default function partReducer(state = initialState, action) {
                 error: true,
                 partFamilyDetails: action.payload
             }
-            case GET_PART_FAMILY_SELECTLIST:
+        case GET_PART_FAMILY_SELECTLIST:
             return {
                 ...state,
                 loading: false,
                 error: true,
                 partFamilySelectList: action.payload
+            }
+        case GET_NEP_NUMBER_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                nepNumberSelectList: action.payload
             }
         default:
             return state;

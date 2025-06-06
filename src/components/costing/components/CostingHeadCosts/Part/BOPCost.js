@@ -23,6 +23,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { REMARKMAXLENGTH } from '../../../../../config/masterData';
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { IsNFRContext } from '../../CostingDetailStepTwo';
+import { isLockRMAndBOPForCostAppliacabilityProcess } from '../../../CostingUtil';
 
 let counter = 0;
 function BOPCost(props) {
@@ -67,7 +68,7 @@ function BOPCost(props) {
   const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const { t } = useTranslation("Costing")
   const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
-
+  const processArr = item && Object.keys(item).length>0 ? item?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse:[]
   useEffect(() => {
     setTimeout(() => {
       const Params = {
@@ -529,7 +530,7 @@ function BOPCost(props) {
               </div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ &&
+              {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) &&
                 <Button
                   id="Costing_addBOP"
                   onClick={DrawerToggle}
@@ -678,8 +679,8 @@ function BOPCost(props) {
                               </td>}
                               <td>
                                 <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} />}
-                                   {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} />} 
+                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} />}
+                                   {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} />} 
                                   <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
                                 </div>
                               </td>

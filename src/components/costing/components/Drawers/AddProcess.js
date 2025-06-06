@@ -4,7 +4,7 @@ import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 
 import { getProcessDrawerDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, COMBINED_PROCESS_NAME, ZBCTypeId, NFRTypeId, WACTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, COMBINED_PROCESS_NAME, ZBCTypeId, NFRTypeId, WACTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, MHRBASIS } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -80,11 +80,21 @@ function AddProcess(props) {
 
   useEffect(() => {
     if (groupMachineId === '') {
-      const filteredData = processDrawerList && processDrawerList.filter(item => item);
-      setTableDataList(filteredData)
+      let filteredData = processDrawerList && processDrawerList.filter(filtereditem => filtereditem );
+      if(item?.PartType === 'Assembly' || item?.PartType === 'Sub Assembly'){
+        filteredData = filteredData && filteredData?.filter(filtereditem => filtereditem.Type === MHRBASIS)
+        setTableDataList(filteredData)
+      }else {
+        setTableDataList(filteredData)
+      }
     } else {
-      let filteredData = processDrawerList && processDrawerList.filter(item => item.MachineId === groupMachineId)
-      setTableDataList(filteredData)
+      let filteredData = processDrawerList && processDrawerList.filter(filtereditem => filtereditem.MachineId === groupMachineId)
+      if(item?.PartType === 'Assembly' || item?.PartType === 'Sub Assembly'){
+        filteredData = filteredData && filteredData?.filter(filtereditem => filtereditem.Type === MHRBASIS)
+        setTableDataList(filteredData)
+      }else {
+        setTableDataList(filteredData)
+      }
     }
   }, [processDrawerList])
 
@@ -264,7 +274,7 @@ function AddProcess(props) {
   const rateFormat = (props) => {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return rowData?.IsValidExchangeRate ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    return (rowData?.IsValidExchangeRate|| rowData.Type === MHRBASIS) ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
 
   const currencyFormatter = (props) => {
@@ -416,8 +426,11 @@ function AddProcess(props) {
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
                                   <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
+                                  <AgGridColumn field="Type" headerName="Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                  {item?.PartType !== 'Assembly' && item?.PartType !== 'Sub Assembly' && <AgGridColumn field="Applicability" headerName="Applicability" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                                 { item?.PartType !== 'Assembly' && item?.PartType !== 'Sub Assembly' && <AgGridColumn field="Percentage" headerName="Percentage" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                   <AgGridColumn field="Tonnage" headerName="Machine Tonnage" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                                  <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                  <AgGridColumn field="UOM" headerName="UOM" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="Currency" headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                                   <AgGridColumn field="CostingCurrency" headerName="Costing Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                                   <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>
