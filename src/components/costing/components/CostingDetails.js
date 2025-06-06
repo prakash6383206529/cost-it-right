@@ -167,7 +167,12 @@ function CostingDetails(props) {
   const { topAndLeftMenuData } = useSelector(state => state.auth);
   const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
   const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
-
+  useEffect(() => {
+    if (partInfo?.PartType === ASSEMBLYNAME) {
+      dispatch(setIsMultiVendor(IdForMultiTechnology.includes(String(partInfo?.TechnologyId)) ? true : false))
+    }
+  }, [partInfo])
+  
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
       dispatch(openCloseStatus({ RMC: false }))
@@ -560,7 +565,6 @@ function CostingDetails(props) {
           setvbcVendorOldArray(Data)
           setzbcPlantOldArray(Data)
           setIsLoader(false)
-          dispatch(setIsMultiVendor(Data[0]?.IsMultiVendorCosting))
           setTimeout(() => {
             vbcArray && vbcArray.map((item, index) => {
               setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
@@ -714,8 +718,8 @@ function CostingDetails(props) {
     if (type === VBCTypeId && newValue !== '') {
       let tempData = vbcVendorGrid[index]
       let selectedOptionObj = tempData.CostingOptions.find((el) => el.CostingId === newValue.value,)
-dispatch(setIsMultiVendor(selectedOptionObj?.IsMultiVendorCosting))
- let isRFQApproved = selectedOptionObj?.IsRFQApproved
+      dispatch(setIsMultiVendor(selectedOptionObj?.IsMultiVendorCosting))
+      let isRFQApproved = selectedOptionObj?.IsRFQApproved
       let isRfqCosting = selectedOptionObj?.IsRfqCosting
 
       tempData = {
@@ -1060,7 +1064,7 @@ dispatch(setIsMultiVendor(selectedOptionObj?.IsMultiVendorCosting))
     const userDetail = userDetails()
     setCostingOptionsSelectedObject({})
     setCostingType(type)
-    
+
     let tempData;
     if (type === VBCTypeId) {
       tempData = vbcVendorGrid[index]
@@ -1134,7 +1138,7 @@ dispatch(setIsMultiVendor(selectedOptionObj?.IsMultiVendorCosting))
             CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
             CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
             InfoCategory: vbcVendorGrid[index]?.InfoCategory ?? 'Standard',
-            IsMultiVendorCosting: IsMultiVendorCosting
+            IsMultiVendorCosting: IdForMultiTechnology.includes(technology?.value) ? true : IsMultiVendorCosting
           }
           if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
             data.Technology = technology.label
@@ -1152,8 +1156,8 @@ dispatch(setIsMultiVendor(selectedOptionObj?.IsMultiVendorCosting))
           if (type === WACTypeId) {
             data.PlantCode = tempData.PlantCode
           }
-          
-          
+
+
           if (IdForMultiTechnology.includes(String(technology?.value)) || (type === WACTypeId) || (partInfo?.PartType === 'Assembly' && IsMultiVendorCosting)) {
             setDisableButton(true)
             dispatch(createMultiTechnologyCosting(data, (res) => {
