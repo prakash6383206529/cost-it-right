@@ -610,7 +610,7 @@ const PaymentTermsListing = (props) => {
               >
                 <AgGridColumn minWidth={180} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
                   floatingFilterComponent="statusFilter"></AgGridColumn>
-                <AgGridColumn field="Technologies" tooltipField='Technologies' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>
+                <AgGridColumn field="TechnologyName" tooltipField='Technologies' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                 {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}

@@ -5,7 +5,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, REJECTIONMASTER, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { TextAreaHookForm } from '../../layout/HookFormInputs';
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash';
 import { LabelsClass } from '../../../helper/core';
 // import AddOverheadMasterDetails from './AddOverheadMasterDetails';
 import AddOverheadMasterDetails from '../overhead-profit-master/AddOverheadMasterDetails';
@@ -101,7 +101,7 @@ const AddRejectionMaster = (props) => {
     }
     dispatch(getPartFamilySelectList(() => { }));
     dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }));
-    dispatch(fetchApplicabilityList(null, conditionTypeId, false, res => {
+    dispatch(fetchApplicabilityList(null, conditionTypeId, null, res => {
 
     }));
     dispatch(getCostingSpecificTechnology(loggedInUserId(), res => {}));
@@ -283,13 +283,16 @@ const AddRejectionMaster = (props) => {
       })
     }
     if (isEditFlag) {
-      if (
-        (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged
-        && (JSON.stringify(ApplicabilityDetails) === JSON.stringify(DataToChange.ApplicabilityDetails))
-        && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
-        Toaster.warning('Please change the data to save Rejection Details')
-        return false
+      if ((JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && JSON.stringify(DataToChange?.ApplicabilityDetails) === JSON.stringify(state?.ApplicabilityDetails)
+        && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        && _.isEqual(DataToChange?.Technologies, technologyArray) &&
+        DropdownNotChanged&& String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
+        Toaster.warning('Please change the data to save Rejection Details');
+        return false;
       }
+ 
+      
+ 
 
       setState(prev => ({ ...prev, setDisable: true }));
       let updatedFiles = files.map((file) => {
@@ -326,10 +329,12 @@ const AddRejectionMaster = (props) => {
         PartFamily: selectedPartFamily?.label
       }
 
-      if (IsFinancialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props.IsOverheadAssociated) {
-        Toaster.warning('Please update the Effective date.');
+     
+      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails);
+      if (financialDataChanged && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsRejectionAssociated) {
         setState(prev => ({ ...prev, setDisable: false }));
-        return false
+        Toaster.warning('Please update the Effective date.');
+        return false;
       }
 
       dispatch(updateOverhead(requestData, (res) => {
@@ -377,7 +382,7 @@ const AddRejectionMaster = (props) => {
       }));
     }
   }, (errors) => {  // Handle form errors
-    // console.log( "errors:", errors);  // Check if there are validation errors
+    //   // Check if there are validation errors
   }), 500);
 
   const handleMessageChange = (e) => {
@@ -622,6 +627,7 @@ const AddRejectionMaster = (props) => {
                     isOverHeadMaster={true}
                     isShowPartFamily={true}
                     applicabilityLabel="Rejection"
+                    IsAssociated={props?.IsRejectionAssociated}
                   />
 
                   <Row>

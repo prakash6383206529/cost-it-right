@@ -169,10 +169,10 @@ function CostingDetails(props) {
   const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
   useEffect(() => {
     if (partInfo?.PartType === ASSEMBLYNAME) {
-      dispatch(setIsMultiVendor(IdForMultiTechnology.includes(String(partInfo?.TechnologyId)) ? true : false))
+      dispatch(setIsMultiVendor(IdForMultiTechnology.includes(String(partInfo?.TechnologyId)) ? true : IsMultiVendorCosting))
     }
   }, [partInfo])
-  
+
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
       dispatch(openCloseStatus({ RMC: false }))
@@ -1068,6 +1068,8 @@ function CostingDetails(props) {
     let tempData;
     if (type === VBCTypeId) {
       tempData = vbcVendorGrid[index]
+      dispatch(setIsMultiVendor(tempData?.IsMultiVendorCosting))
+      
     } else if (type === NCCTypeId) {
       tempData = nccGrid[index]
     } else if (type === ZBCTypeId) {
@@ -1157,42 +1159,42 @@ function CostingDetails(props) {
             data.PlantCode = tempData.PlantCode
           }
 
-
-          if (IdForMultiTechnology.includes(String(technology?.value)) || (type === WACTypeId) || (partInfo?.PartType === 'Assembly' && IsMultiVendorCosting)) {
-            setDisableButton(true)
-            dispatch(createMultiTechnologyCosting(data, (res) => {
-              if (res?.data?.Result) {
-                dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
-                  setIsCostingViewMode(false)
-                  setIsCostingEditMode(false)
-                  setIsCopyCostingMode(false)
-                  setStepTwo(true)
-                  setStepOne(false)
-                }))
-                setPartInfo(res.data.Data)
-                setCostingData({ costingId: res.data.Data.CostingId, type })
-              } else {
-                setDisableButton(false)
-              }
-            }))
-          } else {
-            setDisableButton(true)
-            dispatch(createCosting(data, (res) => {
-              if (res?.data?.Result) {
-                dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
-                  setIsCostingViewMode(false)
-                  setIsCostingEditMode(false)
-                  setIsCopyCostingMode(false)
-                  setStepTwo(true)
-                  setStepOne(false)
-                }))
-                setPartInfo(res.data.Data)
-                setCostingData({ costingId: res.data.Data.CostingId, type })
-              } else {
-                setDisableButton(false)
-              }
-            }))
-          }
+          
+            if (IdForMultiTechnology.includes(String(technology?.value)) || (type === WACTypeId) || (partInfo?.PartType === 'Assembly' && tempData?.IsMultiVendorCosting)) {
+              setDisableButton(true)
+              dispatch(createMultiTechnologyCosting(data, (res) => {
+                if (res?.data?.Result) {
+                  dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
+                    setIsCostingViewMode(false)
+                    setIsCostingEditMode(false)
+                    setIsCopyCostingMode(false)
+                    setStepTwo(true)
+                    setStepOne(false)
+                  }))
+                  setPartInfo(res.data.Data)
+                  setCostingData({ costingId: res.data.Data.CostingId, type })
+                } else {
+                  setDisableButton(false)
+                }
+              }))
+            } else {
+              setDisableButton(true)
+              dispatch(createCosting(data, (res) => {
+                if (res?.data?.Result) {
+                  dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
+                    setIsCostingViewMode(false)
+                    setIsCostingEditMode(false)
+                    setIsCopyCostingMode(false)
+                    setStepTwo(true)
+                    setStepOne(false)
+                  }))
+                  setPartInfo(res.data.Data)
+                  setCostingData({ costingId: res.data.Data.CostingId, type })
+                } else {
+                  setDisableButton(false)
+                }
+              }))
+            }
         }
         else {
           Toaster.warning('SOB should not be greater than 100.')

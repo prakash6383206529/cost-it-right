@@ -280,7 +280,7 @@ function CostingHeaderTabs(props) {
         "IsIncludeOverheadAndProfitInICC": includeOverHeadProfitIcc,
         "IsIncludeToolCostInCCForICC": includeToolCostIcc,
         "IsIncludeChildPartsApplicabilityCost": IsIncludeApplicabilityForChildParts,
-        "IsIncludeApplicabilityForChildPartsInICC": IsIncludeApplicabilityForChildPartsInICC,
+        // "IsIncludeApplicabilityForChildPartsInICC": IsIncludeApplicabilityForChildPartsInICC,
         "LoggedInUserId": loggedInUserId(),
         "IsSurfaceTreatmentApplicable": true,
         "IsApplicableForChildParts": false,
