@@ -103,7 +103,9 @@ const AddInterestRate = (props) => {
         ICCMethods: [],
         isShowApplicabilitySection: true,
         CreditBasedAnnualICCPercent: 0,
-        selectedTechnologies: []
+        selectedTechnologies: [],
+        IsAssociated:props?.IsInterestRateAssociated
+
     });
 
     // Selectors
@@ -926,7 +928,6 @@ const AddInterestRate = (props) => {
                                         isShowPartFamily={true}
                                         applicabilityLabel="ICC"
                                         isShowApplicabilitySection= {state.isShowApplicabilitySection}
-                                        IsAssociated={props?.IsInterestRateAssociated}
                                     >
                                         <Row>
                                             <Col md="12">

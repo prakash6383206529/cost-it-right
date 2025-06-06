@@ -100,7 +100,9 @@ const AddPaymentTerms = (props) => {
         IsPaymentTermsRecord: true,
         RepaymentPeriod: "",
         isHideModelType: true,
-        selectedTechnologies: []
+        selectedTechnologies: [],
+        IsAssociated:props?.IsPaymentTermAssociated
+
     });
 
     // Selectors
@@ -504,7 +506,6 @@ const AddPaymentTerms = (props) => {
                                         isShowPartFamily={true}
                                         applicabilityLabel="Payment Terms"
                                         isShowApplicabilitySection= {state.isShowApplicabilitySection}
-                                        IsAssociated={props?.IsPaymentTermAssociated}
                                     >
                                     </AddOverheadMasterDetails>
                                 </div>

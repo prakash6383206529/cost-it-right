@@ -80,7 +80,9 @@ const AddRejectionMaster = (props) => {
     DropdownNotChanged: true,
     minEffectiveDate: '',
     isLoader: false,
-    selectedTechnologies: []
+    selectedTechnologies: [],
+    IsAssociated: props?.IsRejectionAssociated
+
   })
 
   const { isEditFlag, isViewMode, files, uploadAttachements, setDisable, attachmentLoader, selectedPlants, vendorName, vendorCode, client, singlePlantSelected, costingTypeId, ModelType } = state
@@ -627,7 +629,6 @@ const AddRejectionMaster = (props) => {
                     isOverHeadMaster={true}
                     isShowPartFamily={true}
                     applicabilityLabel="Rejection"
-                    IsAssociated={props?.IsRejectionAssociated}
                   />
 
                   <Row>
