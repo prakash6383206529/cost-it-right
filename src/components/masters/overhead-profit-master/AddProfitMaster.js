@@ -32,6 +32,7 @@ import { Steps } from './TourMessages';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkEffectiveDate } from '../masterUtil';
 import { getPartFamilySelectList } from '../actions/Part';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 
 
 const AddProfitMaster = (props) => {
@@ -76,7 +77,8 @@ const AddProfitMaster = (props) => {
     RMSpec: [],
     DropdownNotChanged: true,
     minEffectiveDate: '',
-    isLoader: false
+    isLoader: false,
+    selectedTechnologies: []
   })
 
   const { isEditFlag, isViewMode, files, uploadAttachements, setDisable, attachmentLoader, selectedPlants, vendorName, vendorCode, client, singlePlantSelected, costingTypeId, ModelType } = state
@@ -100,6 +102,7 @@ const AddProfitMaster = (props) => {
     dispatch(fetchApplicabilityList(null, conditionTypeId, false, res => {
 
     }));
+    dispatch(getCostingSpecificTechnology(loggedInUserId(), res => {}))
     getDetails();
   }, [])
 
@@ -189,6 +192,13 @@ const AddProfitMaster = (props) => {
     setState(prev => ({ ...prev, DataToChange: Data }));
     setState(prev => ({ ...prev, minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '' }));
     setTimeout(() => {
+      let technologyArray = [];
+      if(Data.Technologies && Data.Technologies.length > 0){
+        Data.Technologies.map((item) => {
+          technologyArray.push({ label: item.TechnologyName, value: item.TechnologyId })
+          return null;
+        })
+      }
       setValue("ModelType", { label: Data.ModelType, value: Data.ModelTypeId })
       setValue("isAssemblyCheckbox", Data.TechnologyId === ASSEMBLY ? true : false)
       setValue("Remark", Data.Remark)
@@ -200,6 +210,7 @@ const AddProfitMaster = (props) => {
       setValue("DestinationPlant", Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {})
       // setValue("EffectiveDate", Data.EffectiveDate && DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate) : '')
       setValue("EffectiveDate", DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '')
+      setValue("Technology", technologyArray);
 
       setState(prev => ({
         ...prev,
@@ -219,6 +230,7 @@ const AddProfitMaster = (props) => {
         isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false,
         ApplicabilityDetails: Data.ApplicabilityDetails,
         selectedPartFamily: Data.PartFamily !== undefined ? { label: Data.PartFamily, value: Data.PartFamilyId } : [],
+        selectedTechnologies: technologyArray,
         isLoader: false
       }));
 
@@ -260,7 +272,7 @@ const AddProfitMaster = (props) => {
 
   const onSubmit = debounce(handleSubmit((values) => {
     const { client, costingTypeId, ModelType, vendorName, selectedPlants, remarks, ProfitID, RMGrade, ApplicabilityDetails, selectedPartFamily,
-      singlePlantSelected, isEditFlag, files, EffectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, IsFinancialDataChanged } = state;
+      singlePlantSelected, isEditFlag, files, EffectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, IsFinancialDataChanged, selectedTechnologies } = state;
     const userDetailsProfit = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
@@ -288,6 +300,13 @@ const AddProfitMaster = (props) => {
       }
     }
     setState(prev => ({ ...prev, isVendorNameNotSelected: false }));
+    let technologyArray = [];
+    if(selectedTechnologies && selectedTechnologies.length > 0){
+      selectedTechnologies && selectedTechnologies.map((item) => {
+        technologyArray.push({ TechnologyName: item.label, TechnologyId: item.value })
+        return null;
+      })
+    }
     if (isEditFlag) {
       // if (
       //     (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged 
@@ -328,6 +347,7 @@ const AddProfitMaster = (props) => {
         VendorCode: state.vendorCode ? state.vendorCode : "",
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         ModelTypeId: ModelType.value,
+        Technologies: technologyArray,
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
@@ -369,6 +389,7 @@ const AddProfitMaster = (props) => {
         VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         ModelTypeId: ModelType.value,
+        Technologies: technologyArray,
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
@@ -573,7 +594,7 @@ const AddProfitMaster = (props) => {
 
                 <form noValidate className="form"
                   onSubmit={handleSubmit(onSubmit)}
-                  onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}
+                  onKeyDown={(e) => { handleKeyDown(e, onSubmit); }}
                 >
                   <Row>
                     <Col md="12">

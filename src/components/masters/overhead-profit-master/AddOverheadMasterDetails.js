@@ -2,7 +2,7 @@ import React, { useEffect, useState, } from 'react';
 import { Row, Col, Label, Table } from 'reactstrap';
 import { Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { LabelsClass } from '../../../helper/core';
+import { LabelsClass, useLabels } from '../../../helper/core';
 import { MESSAGES } from '../../../config/message';
 import NoContentFound from '../../common/NoContentFound';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -14,12 +14,14 @@ import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncS
 import { fetchApplicabilityList, getVendorNameByVendorSelectList, fetchSpecificationDataAPI } from '../../../actions/Common';
 import { autoCompleteDropdown, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
+import { LOGISTICS } from '../../../config/masterData';
 
 
 
 const AddOverheadMasterDetails = (props) => {
     const dispatch = useDispatch();
     const { t } = useTranslation("MasterLabels");
+    const { technologyLabel } = useLabels();
     const { costingTypeId, conditionTypeId, state, setState, inputLoader, register, control, setValue, getValues, errors, trigger, clearErrors, isShowApplicabilitySection = true} = props
     const [isEditIndex, setIsEditIndex] = useState(false)
     const [editItemId, setEditItemId] = useState("")
@@ -28,6 +30,7 @@ const AddOverheadMasterDetails = (props) => {
     const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
     const modelTypes = useSelector((state) => state.comman.modelTypes)
     const costingHead = useSelector((state) => state.comman.applicabilityList)
+    const costingSpecifiTechnology = useSelector((state) => state.costing.costingSpecifiTechnology)
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
     // const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
@@ -128,6 +131,15 @@ const AddOverheadMasterDetails = (props) => {
                 return null;
             });
             return temp;
+        }
+        if (label === 'technology') {
+            costingSpecifiTechnology && costingSpecifiTechnology.map((item) => {
+                if (item.Value === '0') return false
+                if (item.Value === String(LOGISTICS)) return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
         }
     }
 
@@ -328,6 +340,11 @@ const AddOverheadMasterDetails = (props) => {
         setState(prev => ({...prev, RepaymentPeriod: value, IsFinancialDataChanged: true}));
     };
 
+    const handleTechnologyChange = (newValue) => {
+        setValue("Technology", newValue);
+        setState(prev => ({...prev, selectedTechnologies: newValue, isDropDownChanged: true}));
+    }
+
 
     return (
         <Row>
@@ -374,7 +391,30 @@ const AddOverheadMasterDetails = (props) => {
                         </>
                     }
 
-                    {!state.isHideModelType && 
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={`${technologyLabel}`}
+                            name={'Technology'}
+                            placeholder={'Technology'}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={true}
+                            rules={{ required: true }}
+                            isMulti={true}
+                            selection={state.selectedTechnologies == null || state.selectedTechnologies.length === 0 ? [] : state.selectedTechnologies}
+                            options={renderListing("technology")}
+                            handleChange={handleTechnologyChange}
+                            defaultValue={''}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.Technology}
+                            // disabled={state?.isEditFlag || state?.isViewMode || state?.IsAssociated}
+                            disabled={state?.isViewMode || state?.IsAssociated}
+                        />
+                    </Col>
+
+                    {!state.isHideModelType &&
                         <Col md="3">
                             <SearchableSelectHookForm
                                 label={`Model Type`}
@@ -511,7 +551,9 @@ const AddOverheadMasterDetails = (props) => {
                         </Col>
                     }
 
-                    <Col md="3" className="st-operation mt-4 pt-2">
+                    {/*--- DO NOT REMOVE THIS BELOW CODE, THIS WILL REQUIRE IN FUTURE ---*/}
+
+                    {/* <Col md="3" className="st-operation mt-4 pt-2">
                         <label id="AddOverhead_ApplyPartCheckbox"
                             className={`custom-checkbox ${state?.isEditFlag ? "disabled" : ""}`}
                             onChange={onPressAssemblyCheckbox}
@@ -529,7 +571,7 @@ const AddOverheadMasterDetails = (props) => {
                             onChange={onPressAssemblyCheckbox}
                         />
                         </label>
-                    </Col>
+                    </Col> */}
 
                     <Col md="3">
                         <div id="EffectiveDate_Container" className="form-group date-section">
@@ -752,4 +794,4 @@ const AddOverheadMasterDetails = (props) => {
 }
 
 
-export default React.memo(AddOverheadMasterDetails);
+export default AddOverheadMasterDetails;  // Memo prevent to show the errors 1st time || if use memo then need to paas the children for this component from parent

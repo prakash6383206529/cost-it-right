@@ -32,6 +32,7 @@ import { Steps } from './TourMessages';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkEffectiveDate } from '../masterUtil';
 import { getPartFamilySelectList } from '../actions/Part';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 
 
 const AddOverheadMaster = (props) => {
@@ -77,7 +78,8 @@ const AddOverheadMaster = (props) => {
     RMSpec: [],
     DropdownNotChanged: true,
     minEffectiveDate: '',
-    isLoader: false
+    isLoader: false,
+    selectedTechnologies: []
   })
 
   const { isEditFlag, isViewMode, files, uploadAttachements, setDisable, attachmentLoader, selectedPlants, vendorName, vendorCode, client, singlePlantSelected, costingTypeId, ModelType } = state
@@ -101,6 +103,7 @@ const AddOverheadMaster = (props) => {
     dispatch(fetchApplicabilityList(null, conditionTypeId, false, res => {
 
     }));
+    dispatch(getCostingSpecificTechnology(loggedInUserId(), res => {}))
     getDetails();
   }, [])
 
@@ -190,6 +193,13 @@ const AddOverheadMaster = (props) => {
     // setState(prev => ({ ...prev, minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' }));
     setState(prev => ({ ...prev, minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '' }));
     setTimeout(() => {
+      let technologyArray = [];
+      if(Data.Technologies && Data.Technologies.length > 0){
+        Data.Technologies.map((item) => {
+          technologyArray.push({ label: item.TechnologyName, value: item.TechnologyId })
+          return null;
+        })
+      }
       setValue("ModelType", { label: Data.ModelType, value: Data.ModelTypeId })
       setValue("isAssemblyCheckbox", Data.TechnologyId === ASSEMBLY ? true : false)
       setValue("Remark", Data.Remark)
@@ -201,6 +211,7 @@ const AddOverheadMaster = (props) => {
       setValue("DestinationPlant", Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {})
       // setValue("EffectiveDate", Data.EffectiveDate && DayTime(Data?.EffectiveDate).isValid() ? DayTime(Data?.EffectiveDate) : '')
       setValue("EffectiveDate", DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '')
+      setValue("Technology", technologyArray)
       setState(prev => ({
         ...prev,
         IsFinancialDataChanged: false,
@@ -219,6 +230,7 @@ const AddOverheadMaster = (props) => {
         isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false,
         ApplicabilityDetails: Data.ApplicabilityDetails,
         selectedPartFamily: Data.PartFamily !== undefined ? { label: Data.PartFamily, value: Data.PartFamilyId } : [],
+        selectedTechnologies: technologyArray,
         isLoader: false
       }));
       let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -259,7 +271,7 @@ const AddOverheadMaster = (props) => {
 
   const onSubmit = debounce(handleSubmit((values) => {
     const { client, costingTypeId, ModelType, vendorName, selectedPlants, remarks, OverheadID, RMGrade, ApplicabilityDetails, selectedPartFamily,
-      singlePlantSelected, isEditFlag, files, EffectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, IsFinancialDataChanged } = state;
+      singlePlantSelected, isEditFlag, files, EffectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, IsFinancialDataChanged, selectedTechnologies } = state;
     const userDetailsOverhead = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
@@ -285,6 +297,13 @@ const AddOverheadMaster = (props) => {
         setState(prev => ({ ...prev, isVendorNameNotSelected: true, setDisable: false }));  // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
         return false
       }
+    }
+    let technologyArray = [];
+    if(selectedTechnologies && selectedTechnologies.length > 0){
+      selectedTechnologies && selectedTechnologies.map((item) => {
+        technologyArray.push({ TechnologyName: item.label, TechnologyId: item.value })
+        return null;
+      })
     }
     setState(prev => ({ ...prev, isVendorNameNotSelected: false }));
     if (isEditFlag) {
@@ -325,6 +344,7 @@ const AddOverheadMaster = (props) => {
         VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         ModelTypeId: ModelType.value,
+        Technologies: technologyArray,
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
@@ -367,6 +387,7 @@ const AddOverheadMaster = (props) => {
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         ModelType: ModelType.label,
         ModelTypeId: ModelType.value,
+        Technologies: technologyArray,
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
@@ -574,7 +595,7 @@ const AddOverheadMaster = (props) => {
 
                 <form noValidate className="form"
                   onSubmit={handleSubmit(onSubmit)}
-                  onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}
+                  onKeyDown={handleKeyDown}
                 >
                   <Row>
                     <Col md="12">
