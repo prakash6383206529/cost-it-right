@@ -64,7 +64,8 @@ function AddFreight(props) {
   const { RMCCTabData, CostingEffectiveDate, PackageAndFreightTabData } = useSelector(state => state.costing)
   const truckDimensionsSelectList = useSelector(state => state.freight.truckDimensionsSelectList);
   const [freightCost, setFreightCost] = useState(rowObjData.Rate ? rowObjData.Rate : '')
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId||(costData?.PartType === 'Assembly' && IsMultiVendorCosting))
   const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
   const [costingFreightCalculationDetailsId, setCostingFreightCalculationDetailsId] = useState(rowObjData?.CostingFreightCalculationDetailsId ?? null)
   const [state, setState] = useState({

@@ -39,7 +39,11 @@ import {
   SET_ICC_COST,
   CHECK_IS_ICC_DATA_CHANGE,
   SET_COMPONENT_ICC_DATA,
-  SET_DISABLE_ICC_CHECKBOX
+  SET_DISABLE_ICC_CHECKBOX,
+  SET_IS_MULTI_VENDOR,
+  SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS,
+  SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_ICC,
+  SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_PAYMENT
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -55,6 +59,8 @@ const initialState = {
   IsIncludedSurfaceInOverheadProfit: false,
   IsCostingDateDisabled: false,
   IsToolCostApplicable: false,
+  IsMultiVendorCosting: false,
+  IsIncludeApplicabilityForChildParts: false,
   SurfaceCostData: {},
   RMCCutOffObj: { IsCutOffApplicable: false, CutOffRMC: '' },
   getAssemBOPCharge: {},
@@ -102,7 +108,9 @@ const initialState = {
   getToolTabData: [],
   remark: '',
   bopCostingId: '',
-  costingDetailForIcc: {}
+  costingDetailForIcc: {},
+  IsIncludeApplicabilityForChildPartsInICC: false,
+  IsIncludeApplicabilityForChildPartsInPayment: false,
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -513,6 +521,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         IsIncludedSurfaceInOverheadProfit: action.payload
+      }
+    case SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS:
+      return {
+        ...state,
+        loading: false,
+        IsIncludeApplicabilityForChildParts: action.payload
       }
     case SET_EXCHANGE_RATE_CURRENCY_DATA:
       return {
@@ -990,6 +1004,22 @@ export default function costingReducer(state = initialState, action) {
             loading: false,
             disableIccCheckBox: action.payload
           }
+    case SET_IS_MULTI_VENDOR:
+      return {
+        ...state,
+        IsMultiVendorCosting: action.payload
+      };
+    case SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_ICC:
+      return {
+        ...state,
+        IsIncludeApplicabilityForChildPartsInICC: action.payload
+      };
+    case SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_PAYMENT:
+      return {
+        ...state,
+        IsIncludeApplicabilityForChildPartsInPayment: action.payload
+      };  
+      
     default:
       return state
   }

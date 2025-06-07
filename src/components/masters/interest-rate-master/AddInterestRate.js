@@ -103,7 +103,9 @@ const AddInterestRate = (props) => {
         ICCMethods: [],
         isShowApplicabilitySection: true,
         CreditBasedAnnualICCPercent: 0,
-        selectedTechnologies: []
+        selectedTechnologies: [],
+        IsAssociated:props?.IsInterestRateAssociated
+
     });
 
     // Selectors
@@ -178,8 +180,8 @@ const AddInterestRate = (props) => {
         dispatch(getInventoryDayTypeSelectList(() => {}));
         dispatch(getICCMethodSelectList(() => {}));
         // const isRequestForMultiTechnology = !state.isAssemblyCheckboxIcc ? true : false;
-        const isRequestForMultiTechnology = state.isAssemblyCheckbox;
-        dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, () => {}));
+    
+        dispatch(fetchApplicabilityList(null, conditionTypeId, null, () => {}));
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => {}));
         getDetail();
         dispatch(getICCAppliSelectList(() => {}));
@@ -650,7 +652,7 @@ const AddInterestRate = (props) => {
             if(JSON.stringify(state?.ApplicabilityDetails ?? []) === JSON.stringify(Data?.ICCApplicabilityDetails ?? []) &&
                 (JSON.stringify(state?.selectedInventoryDayType ?? []) === JSON.stringify(Data?.InterestRateInventoryTypeDetails ?? [])) &&
                 JSON.stringify(state?.selectedWIPMethods ?? []) === JSON.stringify(Data?.InterestRateWIPCompositionMethodDetails ?? []) &&
-                checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && DropdownNotChanged
+                checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && DropdownNotChanged&&JSON.stringify(Data?.Technologies) === JSON.stringify(technologyArray)
             ){
                 Toaster.warning('Please change the data to save Interest Rate Details');
                 return false;

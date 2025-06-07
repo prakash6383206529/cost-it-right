@@ -13,7 +13,8 @@ import {
   isIccDataChange,
   setIsCalculatorExist,
   setIncludeToolCostIcc,
-  setToolCostInOverheadProfit
+  setToolCostInOverheadProfit,
+  setIncludeApplicabilityForChildPartsInICC
 } from '../../actions/Costing';
 import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, getTaxCodeSelectList, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -90,8 +91,8 @@ function TabDiscountOther(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType,IccDataDiscountTab, checkIsIccDataChange,costingDetailForIcc,IccCost,includeOverHeadProfitIcc, includeToolCostIcc, disableIccCheckBox } = useSelector(state => state.costing)
-  
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType, IccDataDiscountTab, checkIsIccDataChange, costingDetailForIcc, IccCost, includeOverHeadProfitIcc, includeToolCostIcc,disableIccCheckBox } = useSelector(state => state.costing)
+
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
   const [reRender, setRerender] = useState([])
@@ -102,7 +103,8 @@ function TabDiscountOther(props) {
   const [isOpenandClose, setisOpenandClose] = useState(false)
   const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
   const [showWarning, setShowWarning] = useState(false)
   const [isInputLoader, setIsInputLoader] = useState(false)
   const [npvTableData, setNpvTableData] = useState([])
@@ -141,10 +143,11 @@ function TabDiscountOther(props) {
   const taxCodeList = useSelector(state => state.comman.taxCodeList)
   const [count, setCount] = useState(0)
   const [icc, setIcc] = useState(false)
-  const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC??false)
-  
-  const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(costingDetailForIcc?.IsIncludeToolCostInCCForICC??false)
-   const npvDrawerCondition = (
+
+const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC ?? false)
+  const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(costingDetailForIcc?.IsIncludeToolCostInCCForICC ?? false)
+  const [IsIncludeApplicabilityForChildPartsInICC, setIsIncludeApplicabilityForChildPartsInICC] = useState(costingDetailForIcc?.IsIncludeApplicabilityForChildPartsInICC ?? false)
+  const npvDrawerCondition = (
     ((IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
     (!(IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
     (!(IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost)
@@ -163,7 +166,7 @@ function TabDiscountOther(props) {
   const isPartType = useContext(IsPartType);
   const [paymentTerms, setPaymentTerms] = useState(false)
   const [paymentTermsWarning, setPaymentTermsWarning] = useState(false)
-  const { getCostingPaymentDetails ,overallApplicabilityToolData} = useSelector(state => state.costing);
+  const { getCostingPaymentDetails, overallApplicabilityToolData } = useSelector(state => state.costing);
   const { evaluationType } = useSelector((state) => state?.costing)
   const { currencySource, exchangeRateSource } = useSelector((state) => state?.costing);
 
@@ -185,7 +188,7 @@ function TabDiscountOther(props) {
         setValue('HundiOrDiscountPercentage', discountObj !== undefined && discountObj?.HundiOrDiscountPercentage !== null ? discountObj?.HundiOrDiscountPercentage : '')
         // setValue('HundiOrDiscountValue', discountObj !== undefined && discountObj?.DiscountCostType === 'Percentage' ? discountObj !== undefined && (netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)) : otherDiscountData.otherCostTotal)
         setValue('AnyOtherCost', discountObj !== undefined && checkForDecimalAndNull(discountObj?.AnyOtherCost, initialConfiguration?.NoOfDecimalForPrice))
-        
+
         let topHeaderData = {
           DiscountsAndOtherCost: checkForNull(otherDiscountData.totalCost),
           HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
@@ -217,13 +220,13 @@ function TabDiscountOther(props) {
         plantCode: costData?.PlantCode,
         partNumber: costData?.PartNumber
       }
-    dispatch(getExternalIntegrationEvaluationType(data, res => { }))
+      dispatch(getExternalIntegrationEvaluationType(data, res => { }))
     }
 
   }, [])
   useEffect(() => {
     dispatch(getCostingDetailForIcc(costData?.CostingId, (res) => {
-      let isCalculatorExist=res?.data?.Data?.IsCalculatorExist
+      let isCalculatorExist = res?.data?.Data?.IsCalculatorExist
       dispatch(setIsCalculatorExist(isCalculatorExist))
     }))
     if(initialConfiguration?.IsShowPaymentTerm){
@@ -233,8 +236,11 @@ function TabDiscountOther(props) {
   useEffect(() => {
     dispatch(setIncludeToolCostIcc(costingDetailForIcc?.IsIncludeToolCostInCCForICC, () => { }))
     dispatch(setIncludeOverheadProfitIcc(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC, () => { }))
+    dispatch(setIncludeApplicabilityForChildPartsInICC(costingDetailForIcc?.IsIncludeApplicabilityForChildPartsInICC, () => { }))
     setIsIncludeToolCostInCCForICC(costingDetailForIcc?.IsIncludeToolCostInCCForICC)
     setIncludeOverheadProfitInIcc(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC)
+    setIsIncludeApplicabilityForChildPartsInICC(costingDetailForIcc?.IsIncludeApplicabilityForChildPartsInICC)
+
   }, [costingDetailForIcc])
   const viewAddButtonIcon = (data, type) => {
 
@@ -768,7 +774,7 @@ function TabDiscountOther(props) {
 
 
             dispatch(setDiscountCost(discountValues, () => { }))
-            
+
             // setTimeout(() => {           // IF ANY ISSUE COME IN DISCOUNT TAB UNCOMMENT THE SETTIMEOUT ON FIRST PRIORITY AND TEST 
             let topHeaderData = {
               ...Data, ...Data?.CostingPartDetails,
@@ -823,7 +829,7 @@ function TabDiscountOther(props) {
     dispatch(setDiscountCost(discountValues, () => { }))
 
     setTimeout(() => {
-      
+
       let topHeaderData = {
         DiscountsAndOtherCost: checkForNull(otherDiscountData.totalCost),
         HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
@@ -930,7 +936,7 @@ function TabDiscountOther(props) {
 
   useEffect(() => {
     setValueForTopHeader()
-  }, [discountObj,IccCost])
+  }, [discountObj, IccCost])
 
   /**
   * @method handleAnyOtherCostChange
@@ -1369,17 +1375,18 @@ function TabDiscountOther(props) {
         "Remark": DiscountAndOtherCostTabData?.Remark || ""
       }
     };
-let iccObj={
-  "LoggedInUserId": loggedInUserId(),
-  "CostingId": costData?.CostingId,
-  "IsIncludeToolCostInCCForICC":IsIncludeToolCostInCCForICC,
-  "IsIncludeOverheadAndProfitInICC":IncludeOverheadProfitInIcc,
-  "NetPOPrice": netPOPrice,
-  "BasicRate": netPOPrice - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)),
-  "NetICC": IccCost?.NetCost,
-  "IsInventoryCarringCost": true,
-  "ICCApplicabilityDetail":IccDataDiscountTab
-}
+    let iccObj = {
+      "LoggedInUserId": loggedInUserId(),
+      "CostingId": costData?.CostingId,
+      "IsIncludeToolCostInCCForICC": IsIncludeToolCostInCCForICC,
+      "IsIncludeOverheadAndProfitInICC": IncludeOverheadProfitInIcc,
+      "IsIncludeApplicabilityForChildPartsInICC": IsIncludeApplicabilityForChildPartsInICC,
+      "NetPOPrice": netPOPrice,
+      "BasicRate": netPOPrice - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)),
+      "NetICC": IccCost?.NetCost,
+      "IsInventoryCarringCost": true,
+      "ICCApplicabilityDetail": IccDataDiscountTab
+    }
     if (costData.IsAssemblyPart === true && !partType) {
       let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
       if (!CostingViewMode) {
@@ -1395,7 +1402,7 @@ let iccObj={
           if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
             dispatch(saveCostingPaymentTermDetail(obj, res => { }))
           }
-          
+
           if (checkIsIccDataChange === true) {
             dispatch(saveCostingDetailForIcc(iccObj, res => { })) 
           }
@@ -1691,8 +1698,8 @@ let iccObj={
     const totalOtherCostTemp = otherCostTemp.reduce((total, item) => total + item.AnyOtherCost, 0);
 
     let discountTemp = otherDiscountData.gridData?.length > 0 ? otherDiscountData.gridData.map(item => calculateCostByApplicability(item, true)) : [];
-    
-    const totalDiscountTemp = discountTemp.reduce((total, item) => total + item.NetCost, 0);    
+
+    const totalDiscountTemp = discountTemp.reduce((total, item) => total + item.NetCost, 0);
     dispatch(setOtherCostData({ gridData: otherCostTemp, otherCostTotal: totalOtherCostTemp }));
     dispatch(setOtherDiscountData({ gridData: discountTemp, totalCost: totalDiscountTemp }));
     setOtherCostArray(otherCostTemp)
@@ -2071,23 +2078,23 @@ let iccObj={
     dispatch(setPaymentTermsDataInDiscountOtherTab(updatedPaymentTermobj, () => { }))
     dispatch(setDiscountAndOtherCostData(data, () => { }));
   };
-    /**
- * @method setIccDetail
- * @description  set updated NetPaymentTermCost 
- */
-    const setICCDetail = (data, params) => {
-      let updatedIccobj = {
-        ...IccDataDiscountTab,
-          ...data
-      };
-      updatedIccobj.NetPaymentTermCost = data.NetCost;
-  
-      dispatch(setIccDataInDiscountOtherTab(updatedIccobj, () => { }))
-      dispatch(setDiscountAndOtherCostData(data, () => { }));
+  /**
+* @method setIccDetail
+* @description  set updated NetPaymentTermCost 
+*/
+  const setICCDetail = (data, params) => {
+    let updatedIccobj = {
+      ...IccDataDiscountTab,
+      ...data
     };
-    
-  
-  
+    updatedIccobj.NetPaymentTermCost = data.NetCost;
+
+    dispatch(setIccDataInDiscountOtherTab(updatedIccobj, () => { }))
+    dispatch(setDiscountAndOtherCostData(data, () => { }));
+  };
+
+
+
 
 
   const handleValuationType = (value) => {
@@ -2122,7 +2129,7 @@ let iccObj={
     dispatch(isIccDataChange(true))
   }
   const onPressIsIncludeToolCostInCCForICC = () => {
-   
+
     if ((ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Fixed' &&
       ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Tool Rate') ||
       (overallApplicabilityToolData?.label && overallApplicabilityToolData?.label !== 'Fixed' && overallApplicabilityToolData?.label !== 'Tool Rate')) {
@@ -2133,6 +2140,10 @@ let iccObj={
       dispatch(setIncludeToolCostIcc(!IsIncludeToolCostInCCForICC, () => { }))
       dispatch(isIccDataChange(true))
     }
+  }
+  const onPressApplicableForChildParts = () => {
+    setIsIncludeApplicabilityForChildPartsInICC(!IsIncludeApplicabilityForChildPartsInICC)
+    dispatch(setIncludeApplicabilityForChildPartsInICC(!IsIncludeApplicabilityForChildPartsInICC))
   }
 
   return (
@@ -2171,11 +2182,11 @@ let iccObj={
                         </button>
                       </Col>
                     </Row>
-                    
+
                   </Col>
                   {icc && <div className='costing-border px-2 py-4 m-0 mb-4 row'>
                     <Row className="m-0 border-left border-right pl-0">
-                      {icc &&  <Col md="12" className="py-3">
+                      {icc && <Col md="12" className="py-3">
                         <label
                           id="Overhead_profit_checkbox4"
                           className={`custom-checkbox mb-0 w-fit-content`}
@@ -2188,7 +2199,7 @@ let iccObj={
                             disabled={(CostingViewMode || disableIccCheckBox)}
                           />
                           <span
-                            className=" before-box"
+                            className="before-box"
                             checked={IncludeOverheadProfitInIcc}
                             onChange={onPressIncludeOverheadProfitInIcc}
                           />
@@ -2206,30 +2217,48 @@ let iccObj={
                             disabled={(CostingViewMode || disableIccCheckBox)}
                           />
                           <span
-                            className=" before-box"
+                            className="before-box"
                             checked={IsIncludeToolCostInCCForICC}
                             onChange={onPressIsIncludeToolCostInCCForICC}
                           />
                         </label>
-
+                        {partType &&
+                          <label
+                            id="icc_checkbox0"
+                            className={`custom-checkbox mb-0 w-fit-content`}
+                            onChange={onPressApplicableForChildParts}
+                          >
+                            Apply Child Parts Cost in ICC
+                            <input
+                              type="checkbox"
+                              checked={IsIncludeApplicabilityForChildPartsInICC}
+                              disabled={CostingViewMode}
+                            />
+                            <span
+                              className="before-box"
+                              checked={IsIncludeApplicabilityForChildPartsInICC}
+                              onChange={onPressApplicableForChildParts}
+                            />
+                          </label>
+                        }
                       </Col>}
                     </Row>
-                        {icc && <Icc
-                          Controller={Controller}
-                          control={control}
-                          //  rules={rules}
-                          register={register}
-                          defaultValue={''}
-                          setValue={setValue}
-                          getValues={getValues}
-                          errors={errors}
-                          useWatch={useWatch}
-                          CostingInterestRateDetail={CostingInterestRateDetail}
-                          data={DiscountCostData}
-                          setICCDetail={setICCDetail}
-                        />}
-                    </div>}
-                    <Row>
+                    {icc && <Icc
+                      Controller={Controller}
+                      control={control}
+                      //  rules={rules}
+                      register={register}
+                      defaultValue={''}
+                      setValue={setValue}
+                      getValues={getValues}
+                      errors={errors}
+                      useWatch={useWatch}
+                      CostingInterestRateDetail={CostingInterestRateDetail}
+                      data={DiscountCostData}
+                      setICCDetail={setICCDetail}
+                    />}
+                  </div>}
+                  <Row>
                     {/* {
                       initialConfiguration?.IsShowCRMHead && <Col md="3">
                         <SearchableSelectHookForm
@@ -2386,6 +2415,25 @@ let iccObj={
                         </Col>
                       </Row>
                     </Col>}
+                    {/* {partType && paymentTerms &&
+                        <label
+                          id="icc_checkbox0"
+                          className={`custom-checkbox mb-0 w-fit-content mt-2`}
+                          onChange={onPressApplicableForChildParts}
+                        >
+                          Apply Child Parts Cost in Payment
+                          <input
+                            type="checkbox"
+                            checked={IsIncludeApplicabilityForChildPartsInICC}
+                            disabled={CostingViewMode}
+                          />
+                          <span
+                            className="before-box"
+                            checked={IsIncludeApplicabilityForChildPartsInICC}
+                            onChange={onPressApplicableForChildParts}
+                          />
+                        </label>
+                      } */}
                     <Row>
                       {/* net cost *(90- usersvalues 60)/30 *1% */}
                       {paymentTerms && <Col md="12" className='payment-terms'>

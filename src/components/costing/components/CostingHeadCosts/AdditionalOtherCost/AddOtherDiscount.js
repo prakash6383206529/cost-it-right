@@ -47,7 +47,8 @@ function AddOtherDiscount(props) {
         control,
         name: ['ApplicabilityCost'],
     })
-    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId||(costData?.PartType === 'Assembly' && IsMultiVendorCosting))
 
     useEffect(() => {
         setValue('ApplicabilityCost', '')

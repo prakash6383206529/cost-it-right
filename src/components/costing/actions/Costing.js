@@ -87,7 +87,11 @@ import {
   SET_ICC_COST,
   CHECK_IS_ICC_DATA_CHANGE,
   SET_COMPONENT_ICC_DATA,
-  SET_DISABLE_ICC_CHECKBOX
+  SET_DISABLE_ICC_CHECKBOX,
+  SET_IS_MULTI_VENDOR,
+  SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS,
+  SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_ICC,
+  SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_PAYMENT,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -223,6 +227,7 @@ export function getExistingCosting(PartId, callback) {
     dispatch({ type: API_REQUEST })
     const request = axios.get(`${API.getExistingCosting}/${PartId}/${loggedInUser?.loggedInUserId}`, config())
     request.then((response) => {
+
       if (response.data.Result) {
         callback(response)
       }
@@ -826,6 +831,8 @@ export function setSurfaceCostInOverheadProfit(IsIncluded, callback) {
   }
 };
 
+
+
 /**
  * @method saveComponentCostingSurfaceTab
  * @description SAVE COMPONENT COSTING SURFACE TAB
@@ -882,6 +889,10 @@ export function getOverheadProfitTabData(data, IsUseReducer, callback) {
           type: SET_OVERHEAD_PROFIT_TAB_DATA,
           payload: TabData,
         });
+        dispatch({
+          type: SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS,
+          payload: TabData[0]?.IsIncludeChildPartsApplicabilityCost === true ? true : false,
+        })
       } else {
         callback(response);
       }
@@ -928,7 +939,7 @@ export function getOverheadProfitDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}&partFamilyId=${data?.partFamilyId}`
+    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}&partFamilyId=${data?.partFamilyId}&IsMultiVendorCosting=${data?.IsMultiVendorCosting}`
     const request = axios.get(`${API.getOverheadProfitDataByModelType}?${queryParams}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
@@ -3321,7 +3332,7 @@ export function getRejectionDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${null}&rawMaterialChildId=${null}&technologyId=${data.technologyId}&partFamilyId=${data.partFamilyId}`
+    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${null}&rawMaterialChildId=${null}&technologyId=${data.technologyId}&partFamilyId=${data.partFamilyId}&IsMultiVendorCosting=${data?.IsMultiVendorCosting}`
     const request = axios.get(`${API.getRejectionDataByModelType}?${queryParams}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
@@ -3344,7 +3355,7 @@ export function getIccDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const loggedInUser = { loggedInUserId: loggedInUserId() }
-    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&methodTypeId=${data.MethodTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${null}&rawMaterialChildId=${null}&technologyId=${data.technologyId}&partFamilyId=${data.partFamilyId}`
+    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&methodTypeId=${data.MethodTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${null}&rawMaterialChildId=${null}&technologyId=${data.technologyId}&partFamilyId=${data.partFamilyId}&IsMultiVendorCosting=${data?.IsMultiVendorCosting}`
     const request = axios.get(`${API.getIccDataByModelType}?${queryParams}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
@@ -3452,7 +3463,7 @@ export function getCostingDetailForIcc(costingId, callback) {
     const request = axios.get(`${API.getCostingDetailForIcc}?${queryParams}`, config());
     request.then((response) => {
       if (response.data?.Data || response?.status === 204) {
-        console.log(response.data?.Data,'response.data?.Data');
+
         const netCost = response.data?.Data?.NetICC;
         //const applicabilityCost = response.data?.Data?.ApplicabilityCost;
         dispatch({
@@ -3517,6 +3528,48 @@ export function setDisableIccCheckBox(IsDisabled) {
     dispatch({
       type: SET_DISABLE_ICC_CHECKBOX,
       payload: IsDisabled,
+    });
+  }
+};
+
+
+/**
+ * @method setIsMultiVendor
+ * @description Set multi-vendor state
+ */
+export function setIsMultiVendor(IsMultiVendorCosting) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_IS_MULTI_VENDOR,
+      payload: IsMultiVendorCosting
+    })
+  }
+}
+export function setIncludeApplicabilityForChildPartsInICC(IsIncludeApplicabilityForChildPartsInICC) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_ICC,
+      payload: IsIncludeApplicabilityForChildPartsInICC
+    })
+  }
+}
+export function setIncludeApplicabilityForChildPartsInPayment(IsIncludeApplicabilityForChildPartsInPayment) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_PAYMENT,
+      payload: IsIncludeApplicabilityForChildPartsInPayment
+    })
+  }
+}
+/**
+ * @method setApplicabilityForChildParts
+ * @description SET IS INCLUDE APPLICABLE FOR CHILD PARTS
+ */
+export function setApplicabilityForChildParts(IsInclude) {
+  return (dispatch) => {
+    dispatch({
+      type:SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS,
+      payload: IsInclude,
     });
   }
 };
