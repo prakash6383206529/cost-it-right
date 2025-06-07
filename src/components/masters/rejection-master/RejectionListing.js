@@ -155,7 +155,7 @@ function RejectionListing(props) {
         dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
-        setSelectedRowForPagination([])
+        dispatch(setSelectedRowForPagination([]))
         dispatch(resetStatePagination());
         return () => {
             dispatch(setResetCostingHead(true, "costingHead"))
@@ -211,7 +211,7 @@ function RejectionListing(props) {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads-overhead')
+                    let button = document.getElementById('Excel-Downloads-Rejection')
                     button && button.click()
                 }, 500);
             }
@@ -523,15 +523,6 @@ function RejectionListing(props) {
         }
     }
 
-    /**
-    * @method onSubmit
-    * @description Used to Submit the form
-    */
-    const onSubmit = (values) => {
-
-    }
-
-
     const onGridReady = (params) => {
         window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         setGridApi(params.api)
@@ -581,7 +572,7 @@ function RejectionListing(props) {
             setTimeout(() => {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
-                let button = document.getElementById('Excel-Downloads-overhead')
+                let button = document.getElementById('Excel-Downloads-Rejection')
                 button && button.click()
             }, 400);
 
@@ -710,58 +701,56 @@ function RejectionListing(props) {
                 isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <div className={`ag-grid-react grid-parent-wrapper custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                         {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                        <form onSubmit={(onSubmit)} noValidate>
-                            <Row className="pt-4 ">
-                                <Col md="9" className="search-user-block mb-3 pl-0">
-                                    <div className="d-flex justify-content-end bd-highlight w100">
-                                        <div className="warning-message d-flex align-items-center">
-                                            {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                        </div>
+                        <Row className="pt-4 ">
+                            <Col md="9" className="search-user-block mb-3 pl-0">
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    <div className="warning-message d-flex align-items-center">
+                                        {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                        <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                    </div>
 
-                                        {AddAccessibility && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5 Tour_List_Add"}
-                                                onClick={formToggle}
-                                                title="Add"
-                                            >
-                                                <div className={"plus mr-0"}></div>
-                                                {/* ADD */}
-                                            </button>
-                                        )}
+                                    {AddAccessibility && (
                                         <button
                                             type="button"
                                             className={"user-btn mr5 Tour_List_Add"}
-                                            onClick={bulkToggle}
-                                            title="Bulk Upload"
+                                            onClick={formToggle}
+                                            title="Add"
                                         >
-                                            <div className={"upload mr-0"}></div>
-
+                                            <div className={"plus mr-0"}></div>
+                                            {/* ADD */}
                                         </button>
-                                        {
-                                            DownloadAccessibility &&
-                                            <>
-                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" disabled={totalRecordCount === 0} onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" ></div>
-                                                    {/* DOWNLOAD */}
-                                                    {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                                                </button>
-                                                <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads-overhead'} className="p-absolute" type="button" >
-                                                    </button>}>
-                                                    {onBtExport()}
-                                                </ExcelFile>
-                                            </>
-                                        }
+                                    )}
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5 Tour_List_Add"}
+                                        onClick={bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
 
-                                        <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
+                                    </button>
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+                                            <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" disabled={totalRecordCount === 0} onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" ></div>
+                                                {/* DOWNLOAD */}
+                                                {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                            </button>
+                                            <ExcelFile filename={'Rejection'} fileExtension={'.xls'} element={
+                                                <button id={'Excel-Downloads-Rejection'} className="p-absolute" type="button" >
+                                                </button>}>
+                                                {onBtExport()}
+                                            </ExcelFile>
+                                        </>
+                                    }
 
-                                    </div>
-                                </Col>
-                            </Row>
-                        </form>
+                                    <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
+
+                                </div>
+                            </Col>
+                        </Row>
                         <Row>
                             <Col>
                                 <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>

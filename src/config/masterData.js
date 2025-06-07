@@ -1739,6 +1739,7 @@ export const OverheadTempData = [
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -1749,6 +1750,7 @@ export const OverheadTempData = [
         'OverheadApplicability': 'BOP',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -1760,6 +1762,7 @@ export const OverheadTempData = [
         'OverheadApplicability': 'CC',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -1771,6 +1774,7 @@ export const OverheadTempData = [
         'OverheadApplicability': 'Welding',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -1783,6 +1787,7 @@ export const OverheadTempData = [
         'OverheadApplicability': 'Part Cost',
         'OverheadPercentage': '10',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text',
@@ -1794,6 +1799,7 @@ export const OverheadTempData = [
         'OverheadApplicability': 'Fixed',
         'OverheadPercentage': '',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -1823,6 +1829,7 @@ export const OverheadVBC_TempData = [
         'OverheadPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -1834,6 +1841,7 @@ export const OverheadVBC_TempData = [
         'OverheadPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -1846,6 +1854,7 @@ export const OverheadVBC_TempData = [
         'OverheadPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -1858,6 +1867,7 @@ export const OverheadVBC_TempData = [
         'OverheadPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -1871,6 +1881,7 @@ export const OverheadVBC_TempData = [
         'OverheadPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text',
@@ -1883,6 +1894,7 @@ export const OverheadVBC_TempData = [
         'OverheadPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '0503',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -1911,6 +1923,7 @@ export const OverheadCBC_TempData = [
         'OverheadPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -1922,6 +1935,7 @@ export const OverheadCBC_TempData = [
         'OverheadPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -1934,6 +1948,7 @@ export const OverheadCBC_TempData = [
         'OverheadPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -1946,6 +1961,7 @@ export const OverheadCBC_TempData = [
         'OverheadPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -1959,6 +1975,7 @@ export const OverheadCBC_TempData = [
         'OverheadPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text'
@@ -1971,6 +1988,7 @@ export const OverheadCBC_TempData = [
         'OverheadPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -2831,6 +2849,7 @@ export const ProfitTempData = [
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -2841,6 +2860,7 @@ export const ProfitTempData = [
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -2852,6 +2872,7 @@ export const ProfitTempData = [
         'ProfitApplicability': 'CC',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -2863,6 +2884,7 @@ export const ProfitTempData = [
         'ProfitApplicability': 'Welding',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -2875,6 +2897,7 @@ export const ProfitTempData = [
         'ProfitApplicability': 'Part Cost',
         'ProfitPercentage': '10',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text',
@@ -2886,6 +2909,7 @@ export const ProfitTempData = [
         'ProfitApplicability': 'Fixed',
         'ProfitPercentage': '',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text',
@@ -2915,6 +2939,7 @@ export const ProfitTempDataVBC = [
         'ProfitPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -2926,6 +2951,7 @@ export const ProfitTempDataVBC = [
         'ProfitPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -2938,6 +2964,7 @@ export const ProfitTempDataVBC = [
         'ProfitPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -2950,6 +2977,7 @@ export const ProfitTempDataVBC = [
         'ProfitPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -2963,6 +2991,7 @@ export const ProfitTempDataVBC = [
         'ProfitPercentage': '10',
         'VendorCode': '1313',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text'
@@ -2975,6 +3004,7 @@ export const ProfitTempDataVBC = [
         'ProfitPercentage': '',
         'VendorCode': '1313',
         "PlantCode": '3456',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -3003,6 +3033,7 @@ export const ProfitTempDataCBC = [
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -3014,6 +3045,7 @@ export const ProfitTempDataCBC = [
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -3026,6 +3058,7 @@ export const ProfitTempDataCBC = [
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -3038,6 +3071,7 @@ export const ProfitTempDataCBC = [
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -3051,6 +3085,7 @@ export const ProfitTempDataCBC = [
         'ProfitPercentage': '10',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'YES',
         'Remark': 'Remark Text'
@@ -3063,6 +3098,7 @@ export const ProfitTempDataCBC = [
         'ProfitPercentage': '',
         "PlantCode": '3456',
         "CustomerCode": 'C-10006',
+        'PartFamilyCode': '111',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         // "ManageApplicabilitiesForMultiTechnologyAssembly": 'NO',
         'Remark': 'Remark Text'
@@ -8047,7 +8083,7 @@ export const POWERLISTING_DOWNLOAD_EXCEl = [
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
-    { label: "Technologies", value: "TechnologyName" },
+    { label: "TechnologyName", value: "TechnologyName" },
     { label: "Raw Material Name", value: "RawMaterialName" },
     { label: "Raw Material Grade", value: "RawMaterialGrade" },
     { label: "Plant (Code)", value: "PlantName" },
@@ -8064,7 +8100,7 @@ export const INTERESTRATE_DOWNLOAD_EXCEl = [
 
 export const PAYMENTTERMS_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
-    { label: "Technologies", value: "TechnologyName" },
+    { label: "TechnologyName", value: "TechnologyName" },
     { label: "Raw Material Name", value: "RawMaterialName" },
     { label: "Raw Material Grade", value: "RawMaterialGrade" },
     { label: "Plant (Code)", value: "PlantName" },
@@ -8072,7 +8108,7 @@ export const PAYMENTTERMS_DOWNLOAD_EXCEl = [
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Payment Term Applicability", value: "PaymentTermApplicability" },
     { label: "Repayment Period (Days)", value: "RepaymentPeriod" },
-    { label: "Payment Term Interest Rate (%)", value: "PaymentTermPercent" },
+    { label: "Payment Term (%)", value: "PaymentTermPercent" },
     { label: "Effective Date", value: "EffectiveDate" }
 ]
 
@@ -8284,7 +8320,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Technologies", value: "TechnologyName" },
+    { label: "TechnologyName", value: "TechnologyName" },
 
     { label: "Raw Material Name", value: "RawMaterialName", },
     { label: "Raw Material Grade", value: "RawMaterialGrade", },
@@ -8298,8 +8334,7 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
 ]
 export const REJECTION_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Technologies", value: "TechnologyName" },
-
+    { label: "TechnologyName", value: "TechnologyName" },
     { label: "Raw Material Name", value: "RawMaterialName", },
     { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
@@ -8438,7 +8473,7 @@ export const BUDGET_DOWNLOAD_EXCEl = [
 
 export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Technologies", value: "Technologies" },
+    { label: "TechnologyName", value: "TechnologyName" },
     { label: "Raw Material Name", value: "RawMaterialName", },
     { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },

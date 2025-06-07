@@ -323,8 +323,8 @@ const AddOverheadMaster = (props) => {
         return false;
       }
 
-      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails);
-      if (financialDataChanged && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsOverheadAssociated) {
+      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails) && !_.isEqual(DataToChange?.Technologies, technologyArray);
+      if ((financialDataChanged || IsFinancialDataChanged) && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsOverheadAssociated) {
         setState(prev => ({ ...prev, setDisable: false }));
         Toaster.warning('Please update the Effective date.');
         return false;

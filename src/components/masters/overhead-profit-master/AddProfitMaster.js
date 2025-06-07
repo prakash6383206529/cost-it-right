@@ -326,8 +326,8 @@ const AddProfitMaster = (props) => {
         return false;
       }
 
-      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails);
-      if (financialDataChanged && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsProfitAssociated) {
+      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails) && !_.isEqual(DataToChange?.Technologies, technologyArray);
+      if ((financialDataChanged || IsFinancialDataChanged) && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsProfitAssociated) {
         setState(prev => ({ ...prev, setDisable: false }));
         Toaster.warning('Please update the Effective date.');
         return false;
@@ -369,11 +369,11 @@ const AddProfitMaster = (props) => {
         PartFamily: selectedPartFamily?.label
       }
 
-      if (IsFinancialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props.IsProfitAssociated) {
-        Toaster.warning('Please update the Effective date.');
-        setState(prev => ({ ...prev, setDisable: false }));
-        return false
-      }
+      // if (IsFinancialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props.IsProfitAssociated) {
+      //   Toaster.warning('Please update the Effective date.');
+      //   setState(prev => ({ ...prev, setDisable: false }));
+      //   return false
+      // }
       dispatch(updateProfit(requestData, (res) => {
         setState(prev => ({ ...prev, setDisable: false }));
         if (res?.data?.Result) {

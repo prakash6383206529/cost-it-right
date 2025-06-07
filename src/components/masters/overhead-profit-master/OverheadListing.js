@@ -155,7 +155,7 @@ function OverheadListing(props) {
         dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
-        setSelectedRowForPagination([])
+        dispatch(setSelectedRowForPagination([]))
         dispatch(resetStatePagination());
         return () => {
             dispatch(setResetCostingHead(true, "costingHead"))
@@ -547,7 +547,6 @@ function OverheadListing(props) {
 
 
     const onRowSelect = (event) => {
-
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
@@ -596,7 +595,6 @@ function OverheadListing(props) {
     }
     const OVERHEAD_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(OVERHEAD_DOWNLOAD_EXCEl, "MasterLabels")
     const onBtExport = () => {
-
         let tempArr = []
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (overheadProfitListAll ? overheadProfitListAll : [])
