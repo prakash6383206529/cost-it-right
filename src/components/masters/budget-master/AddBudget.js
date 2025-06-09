@@ -284,16 +284,18 @@ function AddBudget(props) {
             Mode: 'master',
             approvalTypeId: costingHeadFlag
         }
-        dispatch(checkFinalUser(obj, res => {
-            if (res.data?.Result) {
-                setIsFinalApprover(res.data?.Data?.IsFinalApprover)
-                if (res.data?.Data?.IsUserInApprovalFlow === false) {
-                    setDisableSendForApproval(true)
-                } else {
-                    setDisableSendForApproval(false)
+        if (initialConfiguration?.IsMasterApprovalAppliedConfigure) {
+            dispatch(checkFinalUser(obj, res => {
+                if (res.data?.Result) {
+                    setIsFinalApprover(res.data?.Data?.IsFinalApprover)
+                    if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                        setDisableSendForApproval(true)
+                    } else {
+                        setDisableSendForApproval(false)
+                    }
                 }
-            }
-        }))
+            }))
+        }
     }
 
     /**
@@ -726,7 +728,7 @@ function AddBudget(props) {
                                 setShowWarning(false)
                             }
                             resolve({
-                                rate: res?.data?.Data.CurrencyExchangeRate!==0 && res?.data?.Data.CurrencyExchangeRate!==null && res?.data?.Data.CurrencyExchangeRate!==undefined ? checkForNull(res?.data?.Data.CurrencyExchangeRate) : 1,
+                                rate: res?.data?.Data.CurrencyExchangeRate !== 0 && res?.data?.Data.CurrencyExchangeRate !== null && res?.data?.Data.CurrencyExchangeRate !== undefined ? checkForNull(res?.data?.Data.CurrencyExchangeRate) : 1,
                                 exchangeRateId: res?.data?.Data?.ExchangeRateId,
                                 showWarning: Object.keys(res.data.Data).length === 0,
                                 showPlantWarning: Object.keys(res.data.Data).length === 0
@@ -739,7 +741,7 @@ function AddBudget(props) {
 
             if (costConverSionInLocalCurrency && Object.keys(currency).length !== 0) {
                 const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
-                
+
                 if (currency?.label === plantCurrency) {
                     setPlantCurrency(1);
                     setPlantExchangeRateId(null);
@@ -747,7 +749,7 @@ function AddBudget(props) {
                 } else {
                     callAPI(currency?.label, plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
                         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
-                        
+
                         if (plantCurrency === reactLocalStorage.getObject("baseCurrency")) {
                             setSettlementCurrency(1);
                             setSettlementExchangeRateId(null);
@@ -1107,10 +1109,10 @@ function AddBudget(props) {
             toolTipTextNetCostBaseCurrency: hidePlantCurrency ? `Total Sum (${currency.label}) * Currency Rate (${plantCurrency})` : `Total Sum (${getValues("plantCurrency")}) * Currency Rate (${settlementCurrency})`,
         };
     };
-    
+
 
     const getTooltipTextForCurrency = () => {
-        const plantCurrencyLabel = (getValues("plantCurrency")===null || getValues("plantCurrency")===undefined || getValues("plantCurrency")==='') ? 'Plant Currency' : getValues("plantCurrency");
+        const plantCurrencyLabel = (getValues("plantCurrency") === null || getValues("plantCurrency") === undefined || getValues("plantCurrency") === '') ? 'Plant Currency' : getValues("plantCurrency");
         const baseCurrency = reactLocalStorage.getObject("baseCurrency");
         const currencyLabel = currency?.label ?? 'Currency';
 
@@ -1664,7 +1666,7 @@ function AddBudget(props) {
                                                                 disabled={true}
                                                                 customClassName={'withBorder'}
                                                             />
-                                                        </div>  
+                                                        </div>
                                                         {/* } */}
                                                     </Col>}
 
