@@ -35,11 +35,12 @@ const AddOverheadMasterDetails = (props) => {
     // const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
-    useEffect(() => {
-        // let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
-        dispatch(fetchApplicabilityList(null, conditionTypeId, state.isAssemblyCheckbox ? null : false, res => { }));
-        // setState(prev => ({ ...prev, isAssemblyCheckbox: !state.isAssemblyCheckbox, ApplicabilityDetails: [], OverheadApplicability: {}, OverheadPercentage: "" }));
-    }, [state.isAssemblyCheckbox])
+    // DO NOT REMOVE THIS (useEffect) CODE
+    // useEffect(() => {
+    //     // let isRequestForMultiTechnology = !state.isAssemblyCheckbox ? true : false
+    //     // dispatch(fetchApplicabilityList(null, conditionTypeId, state.isAssemblyCheckbox ? null : false, res => { }));
+    //     // setState(prev => ({ ...prev, isAssemblyCheckbox: !state.isAssemblyCheckbox, ApplicabilityDetails: [], OverheadApplicability: {}, OverheadPercentage: "" }));
+    // }, [state.isAssemblyCheckbox])
 
     const renderListing = (label) => {
         const temp = [];
