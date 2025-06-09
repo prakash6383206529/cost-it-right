@@ -847,15 +847,32 @@ class AddLabour extends Component {
         gridEditIndex: '',
         isEditIndex: false,
         effectiveDate: '',
-        disableEffectiveDate: false
+        disableEffectiveDate: false,
+        errorObj: {
+          machineType: false,
+          labourType: false,
+          labourRate: false,
+          effectiveDate: false,
+          efficiency: false,
+          workingHours: false,
+          labourRatePerMonth: false,
+          labourRatePerMonthConversion: false,
+          labourRateConversion: false,
+          labourRatePerShift: false,
+          labourRatePerShiftConversion: false,
+          NoOfDays: false
+        }
       },
-      () => this.props.change('LabourRate', ''), this.props.change("LabourRateConversion", "")
-      , this.props.change("LabourRatePerMonth", 0),
+      () => this.props.change('LabourRate', ''), 
+      this.props.change("LabourRateConversion", ""),
+      this.props.change("LabourRatePerMonth", 0),
       this.props.change("LabourRatePerMonthConversion", 0),
       this.props.change("LabourRatePerShift", ""),
       this.props.change("LabourRatePerShiftConversion", ""),
       this.props.change("NoOfDays", ""),
-      this.props.change('workingHours', ''), this.props.change('Efficiency', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
+      this.props.change('workingHours', ''), 
+      this.props.change('Efficiency', ''), 
+      this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
     )
   }
 

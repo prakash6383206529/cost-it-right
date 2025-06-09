@@ -899,16 +899,18 @@ class AddPower extends Component {
   */
   resetData = () => {
     this.setState({
-      effectiveDate: new Date()
+      effectiveDate: new Date(),
+      errorObj: this.initialState.errorObj,
+    }, () => {
+      this.props.change('SEBPowerContributaion', '')
+      this.props.change('DutyChargesAndFCA', '')
+      this.props.change('MeterRentAndOtherChargesPerAnnum', '')
+      this.props.change('MinDemandKWPerMonth', '')
+      this.props.change('DemandChargesPerKW', '')
+      this.props.change('AvgUnitConsumptionPerMonth', '')
+      this.props.change('MaxDemandChargesKW', '')
+      this.props.reset()
     })
-    this.props.change('SEBPowerContributaion', '')
-    this.props.change('DutyChargesAndFCA', '')
-    this.props.change('MeterRentAndOtherChargesPerAnnum', '')
-    this.props.change('MinDemandKWPerMonth', '')
-    this.props.change('DemandChargesPerKW', '')
-    this.props.change('AvgUnitConsumptionPerMonth', '')
-    this.props.change('MaxDemandChargesKW', '')
-    this.props.change('UnitConsumptionPerAnnum', '')
   }
   /**
   * @method updateSEBGrid
@@ -1179,6 +1181,19 @@ class AddPower extends Component {
       UOM: [],
       powerGridEditIndex: '',
       isEditIndex: false,
+      errorObj: {
+        source: false,
+        unitGenerated: false,
+        selfPowerCont: false,
+        unitGeneratedDiesel: false,
+        minDemand: false,
+        demandCharges: false,
+        avgUnitConsumption: false,
+        maxDemandCharges: false,
+        meterRent: false,
+        dutyCharges: false,
+        sebPowerContribution: false
+      }
     }, () => {
       this.props.change('AssetCost', '')
       this.props.change('AnnualCost', '')
