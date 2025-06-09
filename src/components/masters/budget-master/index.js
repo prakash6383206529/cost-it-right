@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import { BUDGET_ID, OPERATIONS_ID } from '../../../config/constants';
@@ -24,7 +24,8 @@ function BudgetMaster() {
     const [data, setData] = useState({});
     const [isOperationAssociated, setIsOperationAssociated] = useState(false);
     const [stopAPICall, setStopAPICall] = useState(false);
-    const [isImport, setIsImport] = useState(false);
+    const { listToggle } = useSelector((state) => state.comman)
+    const [isImport, setIsImport] = useState(listToggle.Budget);
 
     const displayBudgetForm = (data, isImport) => {
         setIsImport(isImport)

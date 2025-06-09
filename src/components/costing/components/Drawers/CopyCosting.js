@@ -46,6 +46,7 @@ function CopyCosting(props) {
   const [nccPlant, setNccPlant] = useState({})
   const [isLoader, setIsLoader] = useState(false)
   const [infoCategory, setInfoCategory] = useState([])
+  const [isAssemblyPart, setIsAssemblyPart] = useState(false)
   const [isInfoCategorySelected, setIsInfoCategorySelected] = useState(false)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -188,6 +189,7 @@ function CopyCosting(props) {
         }
       }
       const Data = res?.data?.Data
+      setIsAssemblyPart(Data?.IsAssemblyPart)
       if (Data?.IsRMExist && Data?.IsOperationExist && Data?.IsProcessExist && Data?.IsBOPExist && Data?.IsOtherOperationExist) {
         setIsLoader(true)
         dispatch(
@@ -578,10 +580,8 @@ function CopyCosting(props) {
 
         </Container >
       </Drawer >
-
-      {
-        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} disablePopup={disablePopup} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected ${vendorLabel}. Do you still wish to continue ?` : ` is not available for the selected ${vendorLabel}. Do you still wish to continue ?`}`} />
-      }
+      {showPopup && isAssemblyPart && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} disablePopup={disablePopup} message={`Raw Material, BOP, Process, Operations and other operations may not be available for the selected ${costingTypeId === 3 ? "Customer" : vendorLabel}. Please check the existing data. Do you still wish to continue? `} />}
+      {showPopup && !isAssemblyPart && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} disablePopup={disablePopup} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected ${costingTypeId === 3 ? "Customer" : vendorLabel}. Do you still wish to continue ?` : ` is not available for the selected ${costingTypeId === 3 ? "Customer" : vendorLabel}. Do you still wish to continue ?`}`} />}
     </>
   );
 }

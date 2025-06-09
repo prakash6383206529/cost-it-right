@@ -169,7 +169,7 @@ export function deleteVolume(ID, callback) {
  * @method getFinancialYearSelectList
  * @description GET FINANCIAL YEAR LIST
  */
-export function getFinancialYearSelectList(callback, onlyShowCurrentAndFutureYears = true) {
+export function getFinancialYearSelectList(callback, onlyShowCurrentAndFutureYears = false) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     const request = axios.get(`${API.getFinancialYearSelectList}?onlyShowCurrentAndFutureYears=${onlyShowCurrentAndFutureYears}`, config())
