@@ -59,7 +59,7 @@ function Rejection(props) {
         rejectionCost: '',
         rejectionRecoveryDetails: {},
         isEditMode: false,
-        isViewRejectionRecovery:false
+        isViewRejectionRecovery: false
     })
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -107,12 +107,12 @@ function Rejection(props) {
         if (!CostingViewMode) {
             checkRejectionApplicability(applicability.label)
         }
-    }, [rejectionFieldValues,IsIncludedSurfaceInRejection]);
+    }, [rejectionFieldValues, IsIncludedSurfaceInRejection]);
     useEffect(() => {
         if (state.modelType && state.modelType.value !== undefined) {
             checkRejectionModelType(CostingRejectionDetail)
         }
-    }, [headerCosts && headerCosts.NetTotalRMBOPCC,IsIncludedSurfaceInRejection])
+    }, [headerCosts && headerCosts.NetTotalRMBOPCC, IsIncludedSurfaceInRejection])
 
 
 
@@ -237,7 +237,7 @@ function Rejection(props) {
                 ...prev,
                 gridData: newData
             }));
-            
+
             dispatch(isOverheadProfitDataChange(true));
         }
     };
@@ -298,7 +298,7 @@ function Rejection(props) {
                 }))
                 break;
             case "Fixed":
-                 setValue('RejectionCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
+                setValue('RejectionCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
                 setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
                 setValue('NetRejectionCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
                 setState(prev => ({
@@ -886,7 +886,7 @@ function Rejection(props) {
                     </Col>
                 </Row>}
 
-                <Col md="11">
+                <Col md="12">
                     <Table className="table mb-0 forging-cal-table mt-2" size="sm">
                         <thead>
                             <tr>
@@ -897,6 +897,7 @@ function Rejection(props) {
                                 {!IdForMultiTechnology.includes(String(costData?.TechnologyId)) && getConfigurationKey().IsRejectionRecoveryApplicable && <th>Rejection Recovery Cost</th>}
                                 <th>Net Rejection</th>
                                 {!CostingViewMode && !fetchRejectionDataFromMaster() && <th className='text-right'>Action</th>}
+                                <th className='text-center'>Remark</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -975,54 +976,53 @@ function Rejection(props) {
                                                 onClick={() => editDeleteData(index, 'delete')}
                                             />
                                         </td>}
+                                        {index === 0 && (
+                                            <td className='text-center align-middle border-start' rowSpan={state?.gridData?.length === 0 || state?.gridData === null || state?.gridData === undefined ? 1 : state?.gridData?.length}>
+                                                <Popup trigger={<button id={`popUpTriggerRejection`} title="Remark" className="Comment-box" type={'button'} />}
+                                                    position="top center">
+                                                    <TextAreaHookForm
+                                                        label="Remark:"
+                                                        name={`rejectionRemark`}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            maxLength: REMARKMAXLENGTH
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        className=""
+                                                        customClassName={"withBorder"}
+                                                        errors={errors.rejectionRemark}
+                                                        disabled={CostingViewMode}
+                                                        hidden={false}
+                                                        validateWithRemarkValidation={true}
+                                                    />
+                                                    <Row>
+                                                        <Col md="12" className='remark-btn-container'>
+                                                            <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickRejection()} > <div className='save-icon'></div> </button>
+                                                            <button className='reset' onClick={() => onRemarkPopUpCloseRejection()} > <div className='cancel-icon'></div></button>
+                                                        </Col>
+                                                    </Row>
+                                                </Popup>
+                                            </td>
+                                        )}
                                     </tr>
                                 );
                             })}
 
                             {(state.gridData && state.gridData.length === 0) && (
                                 <tr>
-                                    <td colSpan={7}><NoContentFound title={EMPTY_DATA} /></td>
+                                    <td colSpan={7} className="text-center">
+                                        <NoContentFound title={EMPTY_DATA} />
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
                     </Table>
                 </Col>
-                <Col md="1" className='second-section pr-2'>
-                    <div className='costing-border-inner-section'>
-                        <Col md="12" className='text-center'>Remark</Col>
-                        <Col md="12">
-                            <Popup trigger={<button id={`popUpTriggerRejection`} title="Remark" className="Comment-box" type={'button'} />}
-                                position="top center">
-                                <TextAreaHookForm
-                                    label="Remark:"
-                                    name={`rejectionRemark`}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    rules={{
-                                        maxLength: REMARKMAXLENGTH
-                                    }}
-                                    handleChange={() => { }}
-                                    className=""
-                                    customClassName={"withBorder"}
-                                    errors={errors.rejectionRemark}
-                                    disabled={CostingViewMode}
-                                    hidden={false}
-                                    validateWithRemarkValidation={true}
-                                />
-                                <Row>
-                                    <Col md="12" className='remark-btn-container'>
-                                        <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickRejection()} > <div className='save-icon'></div> </button>
-                                        <button className='reset' onClick={() => onRemarkPopUpCloseRejection()} > <div className='cancel-icon'></div></button>
-                                    </Col>
-                                </Row>
-                            </Popup>
-                        </Col>
-                        {showRejectionPopup && <PopupMsgWrapper isOpen={showRejectionPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`If 'RM' is not selected in the applicability, you will loss rejection recovery cost.`} />}
-                    </div>
-                </Col>
             </Row>
+            {showRejectionPopup && <PopupMsgWrapper isOpen={showRejectionPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`If 'RM' is not selected in the applicability, you will loss rejection recovery cost.`} />}
             {isOpenRecoveryDrawer && <AddRejectionRecovery
                 isOpen={isOpenRecoveryDrawer}
                 rejectionPercentage={!fetchRejectionDataFromMaster() ? getValues('RejectionPercentage') : state.gridData?.find(item => item.Applicability === 'RM')?.Percentage || ''}
