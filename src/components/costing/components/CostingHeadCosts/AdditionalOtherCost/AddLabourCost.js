@@ -257,7 +257,7 @@ function AddLabourCost(props) {
             // 'description': 'Description',
             'labourType': 'Labour Type',
             'noOfLabour': 'No. of Labour',
-            'absentism': 'Absenteeism %',
+            // 'absentism': 'Absenteeism %',
             'labourRate': 'Labour Rate',
             'workingHours': 'Working Hours',
             'cycleTime': 'Cycle Time'
