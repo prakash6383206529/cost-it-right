@@ -2144,7 +2144,9 @@ class AddBOPImport extends Component {
                           {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowSourceVendorInBoughtOutPart && (
                             <>
                               <Col md="3" className='mb-4'>
-                                <label>Source {VendorLabel} Code<span className="asterisk-required">*</span></label>
+                                <label>Source {VendorLabel} Code
+                                  {/* <span className="asterisk-required">*</span> */}
+                                  </label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.sourceInputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -2165,7 +2167,7 @@ class AddBOPImport extends Component {
                                     />
                                   </div>
                                 </div>
-                                {((this.state.sourceVendorTouched && this.state.sourceVendor.length === 0) || this.state.isSourceVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                                {/* {((this.state.sourceVendorTouched && this.state.sourceVendor.length === 0) || this.state.isSourceVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>} */}
                               </Col>
                             </>
                           )}
