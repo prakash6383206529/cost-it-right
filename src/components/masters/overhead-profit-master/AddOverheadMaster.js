@@ -5,7 +5,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, OVERHEADMASTER, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { TextAreaHookForm } from '../../layout/HookFormInputs';
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash';
 import { LabelsClass } from '../../../helper/core';
 import AddOverheadMasterDetails from './AddOverheadMasterDetails';
 import Dropzone from 'react-dropzone-uploader';
@@ -79,7 +79,8 @@ const AddOverheadMaster = (props) => {
     DropdownNotChanged: true,
     minEffectiveDate: '',
     isLoader: false,
-    selectedTechnologies: []
+    selectedTechnologies: [],
+    IsAssociated: props?.IsOverheadAssociated ?? false
   })
 
   const { isEditFlag, isViewMode, files, uploadAttachements, setDisable, attachmentLoader, selectedPlants, vendorName, vendorCode, client, singlePlantSelected, costingTypeId, ModelType } = state
@@ -100,7 +101,7 @@ const AddOverheadMaster = (props) => {
     }
     dispatch(getPartFamilySelectList(() => { }));
     dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }));
-    dispatch(fetchApplicabilityList(null, conditionTypeId, false, res => {
+    dispatch(fetchApplicabilityList(null, conditionTypeId, null, res => {
 
     }));
     dispatch(getCostingSpecificTechnology(loggedInUserId(), res => {}))
@@ -314,15 +315,16 @@ const AddOverheadMaster = (props) => {
       //   Toaster.warning('Please change the data to save Overhead Details')
       //   return false
       // }
-
-      if (JSON.stringify(DataToChange?.ApplicabilityDetails) === JSON.stringify(state?.ApplicabilityDetails) && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) &&
+      if (JSON.stringify(DataToChange?.ApplicabilityDetails) === JSON.stringify(state?.ApplicabilityDetails) 
+        && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        && _.isEqual(DataToChange?.Technologies, technologyArray) &&
         DropdownNotChanged) {
         Toaster.warning('Please change the data to save Overhead Details');
         return false;
       }
 
-      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails);
-      if (financialDataChanged && checkEffectiveDate(EffectiveDate, DataToChange?.EffectiveDate) && props?.IsOverheadAssociated) {
+      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails) && !_.isEqual(DataToChange?.Technologies, technologyArray);
+      if ((financialDataChanged || IsFinancialDataChanged) && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsOverheadAssociated) {
         setState(prev => ({ ...prev, setDisable: false }));
         Toaster.warning('Please update the Effective date.');
         return false;

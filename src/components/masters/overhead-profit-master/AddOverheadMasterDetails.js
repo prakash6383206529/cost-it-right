@@ -136,7 +136,14 @@ const AddOverheadMasterDetails = (props) => {
             costingSpecifiTechnology && costingSpecifiTechnology.map((item) => {
                 if (item.Value === '0') return false
                 if (item.Value === String(LOGISTICS)) return false
-                temp.push({ label: item.Text, value: item.Value })
+                // Here Excluded Already Selected Technology
+                const alreadySelected = Array.isArray(state?.selectedTechnologies) &&
+                state.selectedTechnologies.some(
+                    tech => String(tech?.value) === String(item?.Value)
+                );
+                if (!alreadySelected) {
+                    temp.push({ label: item.Text, value: item.Value });
+                }
                 return null
             })
             return temp
@@ -222,9 +229,10 @@ const AddOverheadMasterDetails = (props) => {
 
     const deleteApplicability = (id) => {
         const filteredApplicability = state.ApplicabilityDetails.filter((item, ind) => item.ApplicabilityId !== id)
-        setState(prev => ({ ...prev, ApplicabilityDetails: filteredApplicability, OverheadApplicability: {}, OverheadPercentage: "" }));
+        setState(prev => ({ ...prev, ApplicabilityDetails: filteredApplicability, OverheadApplicability: {}, OverheadPercentage: "", RepaymentPeriod: "" }));
         setValue("OverheadPercentage", "");
         setValue("OverheadApplicability", {});
+        setValue("RepaymentPeriod", "");
     }
 
     const editApplicability = (editItem) => {
@@ -405,12 +413,12 @@ const AddOverheadMasterDetails = (props) => {
                             selection={state.selectedTechnologies == null || state.selectedTechnologies.length === 0 ? [] : state.selectedTechnologies}
                             options={renderListing("technology")}
                             handleChange={handleTechnologyChange}
-                            defaultValue={''}
+                            // defaultValue={state.selectedTechnologies}
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.Technology}
                             // disabled={state?.isEditFlag || state?.isViewMode || state?.IsAssociated}
-                            disabled={state?.isViewMode || state?.IsAssociated}
+                            disabled={state?.isViewMode || (state?.IsAssociated && state?.selectedTechnologies && state?.selectedTechnologies?.length > 0)}
                         />
                     </Col>
 

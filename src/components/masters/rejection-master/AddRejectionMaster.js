@@ -332,7 +332,7 @@ const AddRejectionMaster = (props) => {
       }
 
      
-      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails);
+      let financialDataChanged = JSON.stringify(DataToChange?.ApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails) && !_.isEqual(DataToChange?.Technologies, technologyArray)
       if (financialDataChanged && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsRejectionAssociated) {
         setState(prev => ({ ...prev, setDisable: false }));
         Toaster.warning('Please update the Effective date.');

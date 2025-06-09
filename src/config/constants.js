@@ -1894,6 +1894,7 @@ export const STORE_PART_VALUE = 'STORE_PART_VALUE';
 export const GET_COST_SUMMARY_BY_PART_PLANT = 'GET_COST_SUMMARY_BY_PART_PLANT';
 export const GET_COSTING_BY_VENDOR_VENDOR_PLANT = 'GET_COSTING_BY_VENDOR_VENDOR_PLANT';
 export const GET_INTEREST_RATE_DATA_LIST = 'GET_INTEREST_RATE_DATA_LIST';
+export const GET_INTEREST_RATE_SUCCESS_ALL = 'GET_INTEREST_RATE_SUCCESS_ALL';
 export const SET_ITEM_DATA = 'SET_ITEM_DATA';
 export const SET_SURFACE_TAB_DATA = 'SET_SURFACE_TAB_DATA';
 export const SET_OVERHEAD_PROFIT_TAB_DATA = 'SET_OVERHEAD_PROFIT_TAB_DATA';
@@ -2998,6 +2999,7 @@ export const PlantVbc = "Plant-vbc"
 
 export const OverheadMaster = "Overhead"
 export const ProfitMaster = "Profit"
+export const RejectionMaster = "Rejection"
 export const LabourMaster = "Labour"
 export const Reasonmaster = "Reason"
 export const OperationMaster = "Operation"

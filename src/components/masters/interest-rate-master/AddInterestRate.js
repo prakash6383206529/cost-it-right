@@ -23,7 +23,7 @@ import WarningMessage from '../../common/WarningMessage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import { checkEffectiveDate } from '../masterUtil';
 import { ICC_METHODS } from '../../../config/constants';
@@ -60,7 +60,6 @@ const AddInterestRate = (props) => {
         isVendorNameNotSelected: false,
         InterestRateId: '',
         EffectiveDate: '',
-        Data: [],
         selectedPartFamily: [],
         selectedICCMethod: [],
         InventoryDayType: [],
@@ -79,6 +78,7 @@ const AddInterestRate = (props) => {
         vendorFilterList: [],
         RawMaterial: [],
         RMGrade: [],
+        DataToChange: [],
         isRawMaterialSelected: false,
         isGradeSelected: false,
         isEitherSectionFilled: false,
@@ -477,7 +477,7 @@ const AddInterestRate = (props) => {
                     let Data = res.data.Data;
                     setState(prev => ({
                         ...prev,
-                        Data: Data
+                        DataToChange: Data
                     }));
 
                     let technologyArray = [];
@@ -570,7 +570,7 @@ const AddInterestRate = (props) => {
 
     // Form submission
     const onSubmit = debounce((values) => {
-        const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, EffectiveDate, DropdownNotChanged, RMGrade, RawMaterial, selectedPartFamily, selectedTechnologies } = state;
+        const { vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, EffectiveDate, DropdownNotChanged, RMGrade, RawMaterial, selectedPartFamily, selectedTechnologies, DataToChange } = state;
         const { data } = props;
         const userDetail = userDetails();
         const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'));
@@ -649,19 +649,20 @@ const AddInterestRate = (props) => {
         };
 
         if (state.isEditFlag) {
-            if(JSON.stringify(state?.ApplicabilityDetails ?? []) === JSON.stringify(Data?.ICCApplicabilityDetails ?? []) &&
-                (JSON.stringify(state?.selectedInventoryDayType ?? []) === JSON.stringify(Data?.InterestRateInventoryTypeDetails ?? [])) &&
-                JSON.stringify(state?.selectedWIPMethods ?? []) === JSON.stringify(Data?.InterestRateWIPCompositionMethodDetails ?? []) &&
-                checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && DropdownNotChanged&&JSON.stringify(Data?.Technologies) === JSON.stringify(technologyArray)
+            if(JSON.stringify(state?.ApplicabilityDetails ?? []) === JSON.stringify(DataToChange?.ICCApplicabilityDetails ?? []) &&
+                (JSON.stringify(state?.selectedInventoryDayType ?? []) === JSON.stringify(DataToChange?.InterestRateInventoryTypeDetails ?? [])) &&
+                JSON.stringify(state?.selectedWIPMethods ?? []) === JSON.stringify(DataToChange?.InterestRateWIPCompositionMethodDetails ?? []) &&
+                DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && DropdownNotChanged &&
+                _.isEqual(DataToChange?.Technologies, technologyArray)
             ){
                 Toaster.warning('Please change the data to save Interest Rate Details');
                 return false;
             }
-            let financialDataChanged =  JSON.stringify(state?.ApplicabilityDetails ?? []) !== JSON.stringify(Data?.ICCApplicabilityDetails ?? []) ||
-                (JSON.stringify(state?.selectedInventoryDayType ?? []) !== JSON.stringify(Data?.InterestRateInventoryTypeDetails ?? [])) ||
-                JSON.stringify(state?.selectedWIPMethods ?? []) !== JSON.stringify(Data?.InterestRateWIPCompositionMethodDetails ?? [])
+            let financialDataChanged =  JSON.stringify(state?.ApplicabilityDetails ?? []) !== JSON.stringify(DataToChange?.ICCApplicabilityDetails ?? []) ||
+                (JSON.stringify(state?.selectedInventoryDayType ?? []) !== JSON.stringify(DataToChange?.InterestRateInventoryTypeDetails ?? [])) ||
+                JSON.stringify(state?.selectedWIPMethods ?? []) !== JSON.stringify(DataToChange?.InterestRateWIPCompositionMethodDetails ?? [])
 
-            if (financialDataChanged && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && props?.IsInterestRateAssociated) {
+            if (financialDataChanged && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsInterestRateAssociated) {
                 setState(prev => ({ ...prev, setDisable: false }));
                 Toaster.warning('Please update the Effective date.');
                 return false;
