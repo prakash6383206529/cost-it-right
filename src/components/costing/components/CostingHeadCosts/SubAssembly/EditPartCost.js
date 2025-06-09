@@ -112,6 +112,7 @@ function EditPartCost(props) {
                     tempObject.NetLandedCost = item?.SettledPrice
                     tempObject.EffectiveDate = item?.EffectiveDate
                     tempObject.Remark = item?.Remark
+                    tempObject.SourceVendor = item?.SourceVendor
                 }
                 tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -154,6 +155,7 @@ function EditPartCost(props) {
                     tempObject.NetLandedCost = item?.SettledPrice
                     tempObject.EffectiveDate = item?.EffectiveDate
                     tempObject.Remark = item?.Remark
+                    tempObject.SourceVendor = item?.SourceVendor
 
                 } tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -853,6 +855,9 @@ function EditPartCost(props) {
                                             {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
                                                 <th>{vendorLabel} (Code)</th>
                                             }
+                                            {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId)  && isBOPView &&
+                                                <th>Source {vendorLabel} (Code)</th>
+                                            }
                                             {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
                                                 <th>Customer (Code)</th>
                                             }
@@ -872,6 +877,9 @@ function EditPartCost(props) {
                                                     <tr key={index}>
                                                         {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
                                                             <td>{`${item?.Vendor || '-'}`}</td>
+                                                        }
+                                                        {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
+                                                            <td>{`${item?.SourceVendor || '-'}`}</td>
                                                         }
                                                         {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
                                                             <td>{`${item.CustomerName || '-'} (${item.CustomerCode || '-'})`}</td>
