@@ -462,7 +462,7 @@ function AddLabourCost(props) {
         obj.partId = null
         obj.vendorId = item?.VendorId ?? null
         obj.customerId = item?.CustomerId ?? null
-        obj.effectiveDate = DayTime(item?.CostingDate).format('DD/MM/YYYY')
+        obj.effectiveDate = DayTime(item?.CostingDate).format('YYYY-MM-DD')
         obj.costingHeadId = costingData.CostingTypeId === WACTypeId ? ZBCTypeId : costingData.CostingTypeId
         obj.plantId = (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId || costData.CostingTypeId === WACTypeId) ? costData.PlantId : EMPTY_GUID
         obj.labour_type_id = e?.value

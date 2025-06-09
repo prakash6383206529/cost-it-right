@@ -11,6 +11,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 
 function NpvCost(props) {
     const [totalCost, setTotalCost] = useState(0)
+  const { currencySource } = useSelector((state) => state?.costing);
 
     const editDeleteData = (indexValue, operation) => {
         props.editData(indexValue, operation)
@@ -62,7 +63,7 @@ function NpvCost(props) {
                                 </tr>
                             )}
                             <tr className='table-footer'>
-                                <td colSpan={"3"} className="text-right">{`Total NPV Cost (${reactLocalStorage.getObject("baseCurrency")}) :`}</td>
+                                <td colSpan={"3"} className="text-right">{`Total NPV Cost (${currencySource?.label}) :`}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>
                         </tbody>

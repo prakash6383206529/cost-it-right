@@ -207,8 +207,9 @@ class AddBOPImport extends Component {
     const plantCurrency = fieldsObj?.plantCurrency ?? 'Plant Currency';
     const baseCurrency = reactLocalStorage.getObject("baseCurrency");
     // Check the exchange rates or provide a default placeholder if undefined
-    const plantCurrencyRate = plantCurrencyValue ?? '-';
-    const settlementCurrencyRate = currencyValue ?? '-';
+    const plantCurrencyRate = plantCurrencyValue!==0 && plantCurrencyValue!==null && plantCurrencyValue!==undefined ? plantCurrencyValue : 1;
+    const settlementCurrencyRate = currencyValue!==0 && currencyValue!==null && currencyValue!==undefined ? currencyValue : 1;
+
     // Generate tooltip text based on the condition
     return <>
       {`Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `

@@ -669,7 +669,7 @@ export function renderText(field) {
       </div>
       {children}
       {(touched || error) && (
-        <div className="text-help mb-2">
+        <div className={field.id==="plantCurrency" ? "mt-2" : "text-help mb-2"}>
           {touched && error}
         </div>
       )}
