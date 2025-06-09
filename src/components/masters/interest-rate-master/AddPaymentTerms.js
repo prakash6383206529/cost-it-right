@@ -22,7 +22,7 @@ import WarningMessage from '../../common/WarningMessage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import { checkEffectiveDate } from '../masterUtil';
 import AddOverheadMasterDetails from '../overhead-profit-master/AddOverheadMasterDetails';
@@ -379,13 +379,16 @@ const AddPaymentTerms = (props) => {
         };
 
         if (state.isEditFlag) {
-            if (JSON.stringify(Data?.PaymentTermsApplicabilityDetails) === JSON.stringify(state?.ApplicabilityDetails) && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) &&
-                DropdownNotChanged&&JSON.stringify(Data?.Technologies) === JSON.stringify(technologyArray)) {
-                Toaster.warning('Please change the data to save Interest Rate Details');
+            if(JSON.stringify(state?.ApplicabilityDetails ?? []) === JSON.stringify(Data?.PaymentTermsApplicabilityDetails ?? []) &&
+                DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && DropdownNotChanged &&
+                _.isEqual(Data?.Technologies, technologyArray)
+            ){
+                Toaster.warning('Please change the data to save Payment Term Details');
                 return false;
             }
+
             let financialDataChanged = JSON.stringify(Data?.PaymentTermsApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails);
-            if (financialDataChanged && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && props?.IsPaymentTermAssociated) {
+            if (financialDataChanged && DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsPaymentTermAssociated) {
                 setState(prev => ({ ...prev, setDisable: false }));
                 Toaster.warning('Please update the Effective date.');
                 return false;
@@ -394,7 +397,7 @@ const AddPaymentTerms = (props) => {
             dispatch(updateInterestRate(formData, (res) => {
                 setState(prev => ({ ...prev, setDisable: false }));
                 if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+                    Toaster.success(MESSAGES.UPDATE_PAYMENT_TERMS_SUCESS);
                     cancel('submit');
                 }
             }));
@@ -403,7 +406,7 @@ const AddPaymentTerms = (props) => {
             dispatch(createInterestRate(formData, (res) => {
                 setState(prev => ({ ...prev, setDisable: false }));
                 if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
+                    Toaster.success(MESSAGES.PAYMENT_TERM_ADDED_SUCCESS);
                     cancel('submit');
                 }
             }));
