@@ -472,7 +472,7 @@ const IndivisualPartListing = (props) => {
           Toaster.success(MESSAGES.PART_ACTIVE_SUCCESSFULLY)
 
         }
-        getTableListData(skipRecord, globalTakes, state.floatingFilterData, true)
+        getTableListData(currentRowIndex, defaultPageSize, state.floatingFilterData, true)
         setState((prevState) => ({ ...prevState, dataCount: 0 }))
       }
     }))
