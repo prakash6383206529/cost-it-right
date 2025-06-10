@@ -640,6 +640,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.netSurfaceTreatmentCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost : 0
   obj.RawMaterialCalculatorId = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId ? dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ModelType ? dataFromAPI?.CostingPartDetails?.ModelType : '-'
+  obj.rejectionModelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RejectionModelType ? dataFromAPI?.CostingPartDetails?.RejectionModelType : '-'
   obj.aValue = { applicability: 'Applicability', percentage: 'Percentage (%)', value: 'Value' }
   obj.ForgingScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].ForgingScrapWeight : '-'
   obj.MachiningScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapWeight : '-'
