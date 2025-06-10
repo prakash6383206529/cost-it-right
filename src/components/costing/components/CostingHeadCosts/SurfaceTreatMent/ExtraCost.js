@@ -53,12 +53,12 @@ function ExtraCost(props) {
         ApplicabilityCost: 0,
     })
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
 
 
     useEffect(() => {
         let tempData = [...tableData]
-        const costValues = getCostValues(item, costData, subAssemblyTechnologyArray);
+        const costValues = getCostValues(item, costData, subAssemblyTechnologyArray,IsMultiVendorCosting);
         const { rawMaterialsCost, conversionCost, netpartCost } = costValues;
         tempData.map(item => {
             if (item?.CostingConditionMasterId) {
@@ -122,7 +122,7 @@ function ExtraCost(props) {
     useEffect(() => {
         if (!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ) {
             // Check if the technology ID is included in IdForMultiTechnology
-            const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+            const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting)
             dispatch(getCostingCondition('', conditionTypeId, isRequestForMultiTechnology, (res) => {
                 if (res?.data?.DataList) {
                     const temp = res?.data?.DataList?.map((item) => ({
@@ -218,7 +218,7 @@ function ExtraCost(props) {
     const applicabilityChange = (e) => {
         setState(prevState => ({ ...prevState, Applicability: e?.label }));
         // Get cost values once for all cases that need them
-        const costValues = getCostValues(item, costData, subAssemblyTechnologyArray);
+        const costValues = getCostValues(item, costData, subAssemblyTechnologyArray,IsMultiVendorCosting);
         const { rawMaterialsCost, conversionCost, netpartCost } = costValues;
 
         // Handle Basic Rate separately

@@ -4,7 +4,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setRejectedCostingViewData, setCostingApprovalData, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant
+  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant,
+  setIsMultiVendor,
+  setApplicabilityForChildParts
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -107,8 +109,7 @@ const RejectedCostingSummaryTable = (props) => {
   const viewCostingData = useSelector((state) => state.costing.viewRejectedCostingDetailData)
 
   const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
-
-
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
 
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
   const partInfo = useSelector((state) => state.costing.partInfo)
@@ -148,7 +149,7 @@ const RejectedCostingSummaryTable = (props) => {
     if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0 && technologyId) {
       let levelDetailsTemp = ''
       setCount(1)
-      dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId,null, (res) => {
+      dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId, null, (res) => {
         levelDetailsTemp = userTechnologyLevelDetails(viewCostingData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
         if (levelDetailsTemp?.length !== 0) {
           let obj = {}
@@ -537,7 +538,8 @@ const RejectedCostingSummaryTable = (props) => {
       CostingTypeId: type,
       CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
       CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
-      Customer: type === CBCTypeId ? tempData.Customer : ''
+      Customer: type === CBCTypeId ? tempData.Customer : '',
+      IsMultiVendorCosting: IsMultiVendorCosting
     }
     dispatch(createCosting(Data, (res) => {
       if (res.data?.Result) {
@@ -824,6 +826,9 @@ const RejectedCostingSummaryTable = (props) => {
           let dataFromAPI = res.data?.Data
           const tempObj = formViewData(dataFromAPI)
           dispatch(setRejectedCostingViewData(tempObj))
+          dispatch(setIsMultiVendor(dataFromAPI?.IsMultiVendorCosting))
+          dispatch(setApplicabilityForChildParts(dataFromAPI?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
+
         }
       },
       ))

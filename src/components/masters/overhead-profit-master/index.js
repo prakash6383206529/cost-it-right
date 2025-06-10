@@ -116,7 +116,9 @@ const OverheadProfit = () => {
     if (type === 'cancel') {
       setState(prevState => ({
         ...prevState,
-        stopApiCallOnCancel: true
+        stopApiCallOnCancel: true,
+        IsOverheadAssociated: false,
+        IsProfitAssociated: false
       }))
 
     }

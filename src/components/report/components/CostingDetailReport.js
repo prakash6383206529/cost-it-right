@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import NoContentFound from '../../common/NoContentFound'
 import { IdForMultiTechnology, REPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getCostingReport } from '.././actions/ReportListing'
-import { getSingleCostingDetails, setCostingViewData } from '../../costing/actions/Costing'
+import { getSingleCostingDetails, setApplicabilityForChildParts, setCostingViewData, setIsMultiVendor } from '../../costing/actions/Costing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -246,8 +246,10 @@ function ReportListing(props) {
                     let dataFromAPI = res.data.Data
                     setIsReportLoader(false)
                     const tempObj = formViewData(dataFromAPI)
-
+                    dispatch(setIsMultiVendor(dataFromAPI?.IsMultiVendorCosting))
                     dispatch(setCostingViewData(tempObj))
+                    dispatch(setApplicabilityForChildParts(dataFromAPI?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
+
                 }
             },
             ))
@@ -304,6 +306,9 @@ function ReportListing(props) {
                 let dataFromAPI = res.data.Data;
 
                 const tempObj = formViewData(dataFromAPI)
+                dispatch(setIsMultiVendor(dataFromAPI?.IsMultiVendorCosting))
+                dispatch(setApplicabilityForChildParts(dataFromAPI?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
+
                 dispatch(setCostingViewData(tempObj))
                 let data = dataFromAPI && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost
                 setIsAssemblyCosting(dataFromAPI && dataFromAPI?.IsAssemblyCosting)
