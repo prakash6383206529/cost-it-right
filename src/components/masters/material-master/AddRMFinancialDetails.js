@@ -178,6 +178,14 @@ function AddRMFinancialDetails(props) {
             }
         })
     }, [states.costingTypeId])
+
+    useEffect(() => {
+        setTimeout(() => {
+            setState(initialState)
+        }, 300)
+    }, [props.costingTypeId])
+
+
     useEffect(() => {
         const plantValue = getValues('Plants');
         if (plantValue && (plantValue?.value || plantValue[0]?.value)) {

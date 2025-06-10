@@ -4,7 +4,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setCostingViewData, setCostingApprovalData, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData, updateSOBDetail, setCostingMode, getReleaseStrategyApprovalDetails, createMultiTechnologyCosting
+  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData, updateSOBDetail, setCostingMode, getReleaseStrategyApprovalDetails, createMultiTechnologyCosting,
+  setIsMultiVendor,
+  setApplicabilityForChildParts
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -231,6 +233,7 @@ const CostingSummaryTable = (props) => {
   const onBeforeContentResolve = useRef(null)
   const onBeforeContentResolveDetail = useRef(null)
   const tableContainerRef = useRef(null);
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
       setViewCostingData(viewCostingDetailData)
@@ -251,8 +254,8 @@ const CostingSummaryTable = (props) => {
 
 
 
-  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId) || String(viewCostingData[0]?.technologyId) === WACTypeId)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
-
+  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId)) || String(viewCostingData[0]?.technologyId) === WACTypeId || (viewCostingData[0]?.CostingPartDetails?.Type === 'Assembly' && IsMultiVendorCosting)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+ 
 
 
 
@@ -805,7 +808,8 @@ const CostingSummaryTable = (props) => {
       CostingTypeId: type,
       CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
       CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
-      Customer: type === CBCTypeId ? tempData.Customer : ''
+      Customer: type === CBCTypeId ? tempData.Customer : '',
+      IsMultiVendorCosting: IsMultiVendorCosting
     }
     if (IdForMultiTechnology.includes(String(props?.technology?.value)) || (type === WACTypeId)) {
       Data.Technology = props?.technology.label
@@ -1322,6 +1326,9 @@ const CostingSummaryTable = (props) => {
           let dataFromAPI = res.data?.Data
           const tempObj = formViewData(dataFromAPI)
           dispatch(setCostingViewData(tempObj))
+          dispatch(setIsMultiVendor(dataFromAPI?.IsMultiVendorCosting))
+          dispatch(setApplicabilityForChildParts(dataFromAPI?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
+
         }
       },
       ))
