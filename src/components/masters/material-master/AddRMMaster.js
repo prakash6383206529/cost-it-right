@@ -685,6 +685,7 @@ function AddRMMaster(props) {
                             disableAll={state?.disableAll}
                             reset={reset}
                             onWarningChange={onWarningChange}
+                            costingTypeId={state?.costingTypeId}
                         />
                         <RemarksAndAttachments states={state}
                             Controller={Controller}
