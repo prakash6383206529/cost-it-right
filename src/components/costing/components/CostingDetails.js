@@ -1140,7 +1140,7 @@ function CostingDetails(props) {
             CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
             CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
             InfoCategory: vbcVendorGrid[index]?.InfoCategory ?? 'Standard',
-            IsMultiVendorCosting: IdForMultiTechnology.includes(technology?.value) ? true : IsMultiVendorCosting
+            IsMultiVendorCosting: tempData?.IsMultiVendorCosting
           }
           if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
             data.Technology = technology.label
