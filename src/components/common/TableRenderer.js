@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Label, Table, FormGroup, Input } from 'reactstrap';
 import NoContentFound from "./NoContentFound";
 import { nonZero, number, maxLength7, checkWhiteSpaces, checkForDecimalAndNull } from "../../helper/validation";
@@ -23,15 +23,31 @@ const TableRenderer = ({
   totalIccPayable = 0,
   totalIccReceivable = 0,
   includeOverHeadProfitIcc = false,
-  isCreditBased = false
+  isCreditBased = false,
+  includeChildPartCost = null 
 }) => {
-  // Filter data based on includeOverHeadProfitIcc
-  const filteredData = includeOverHeadProfitIcc 
-    ? data 
-    : data?.filter(item => 
-        item?.Applicability !== "Overhead" && 
-        item?.Applicability !== "Profit"
-      );
+
+  const filteredData = data?.filter(item => {
+    const applicability = item?.Applicability;
+  
+    // Hide Overhead and Profit if includeOverHeadProfitIcc is false
+    if (!includeOverHeadProfitIcc && (applicability === "Overhead" || applicability === "Profit")) {
+      return false;
+    }
+  
+    // If includeChildPartCost is true, hide Part Cost
+    if (includeChildPartCost && applicability === "Part Cost") {
+      return false;
+    }
+  
+    // If includeChildPartCost is false, hide RM
+    if (!includeChildPartCost && applicability === "RM") {
+      return false;
+    }
+  
+    return true;
+  });
+  
 
   const renderTextField = ({
     item,
@@ -127,9 +143,9 @@ const TableRenderer = ({
                 } else {
                   const randomId = `inventory-net-cost-${Math?.floor(1000000000 + Math?.random() * 9000000000)}`;
                   // Ensure we're rendering a string value
-                  const cellValue = col?.identifier === "inputOutput" 
-                    ? checkForDecimalAndNull(item?.[col.key], getConfigurationKey()?.NoOfDecimalForInputOutput) 
-                    : col?.identifier === "cost" 
+                  const cellValue = col?.identifier === "inputOutput"
+                    ? checkForDecimalAndNull(item?.[col.key], getConfigurationKey()?.NoOfDecimalForInputOutput)
+                    : col?.identifier === "cost"
                       ? checkForDecimalAndNull(item?.[col.key], getConfigurationKey()?.NoOfDecimalForPrice)
                       : item?.[col.key]??'-';
                       return  <td key={colIdx}>

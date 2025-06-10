@@ -69,7 +69,7 @@ function OperationCost(props) {
   })
   const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
   const { operationApplicabilitySelect } = useSelector(state => state.costing);
-
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
   useEffect(() => {
     const Params = {
       index: 0,
@@ -79,7 +79,7 @@ function OperationCost(props) {
     }
     if (!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) {
       // IF TECHNOLOGY IS ASSEMBLY FOR COSTING THIS ILL BE EXECUTED ELSE FOR PART COSTING AND ASSEMBLY COSTING
-      if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId)) {
+      if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting)) {
         // FUTURE CONDITION FROM API RESPONCE TO CHECK IF DATA IS CHANGED OR NOT
         // JSON.stringify(gridData) !== JSON.stringify(OldGridData)
 
@@ -90,7 +90,7 @@ function OperationCost(props) {
           // props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
           props.getOperationGrid(gridData, '', false)
           setTimeout(() => {
-            props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
+            props?.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
           }, 200);
 
         } else {
@@ -234,25 +234,25 @@ function OperationCost(props) {
     let tempArr = [];
     let tempData = gridData[index];
 
-   // Handle clearing the selection
-   if (!e) {
-    tempData = {
+    // Handle clearing the selection
+    if (!e) {
+      tempData = {
         ...tempData,
         CostingConditionMasterAndTypeLinkingId: null,
         CostingConditionNumber: null,
         NetOperationCostForOverhead: 0,
         NetOperationCostForProfit: 0,
-    };
-} else {
-    // Recalculate net costs with new applicability
-    //const netCosts = calculateNetCosts(tempData?.OperationCost, e?.label, 'Operation');
-    tempData = {
+      };
+    } else {
+      // Recalculate net costs with new applicability
+      //const netCosts = calculateNetCosts(tempData?.OperationCost, e?.label, 'Operation');
+      tempData = {
         ...tempData,
         CostingConditionMasterAndTypeLinkingId: e?.value,
         CostingConditionNumber: e?.label,
         //...netCosts
-    };
-}
+      };
+    }
     tempArr = Object.assign([...gridData], { [index]: tempData });
     setGridData(tempArr);
   };
@@ -284,7 +284,7 @@ function OperationCost(props) {
     //   return accummlator + checkForNull(el.OperationCost)
     // }, 0)
     const totals = calculateOperationTotals(tempArr);
-    if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId)) {
+    if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting)) {
       props.getOperationGrid(tempArr, totals?.NetOperationCost, true)
     }
   }
@@ -639,7 +639,7 @@ function OperationCost(props) {
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
                                 disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
-                                />
+                              />
                             </td>
                             <td>
                               <div className='action-btn-wrapper'>
@@ -705,7 +705,7 @@ function OperationCost(props) {
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
                                 disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
-                                />
+                              />
                             </td>
                             <td>
                               <div className='action-btn-wrapper'>
@@ -715,7 +715,7 @@ function OperationCost(props) {
                                   position={'top right'}
                                   onOpen={() => handleRemarkPopup("open", `${OperationGridFields}.${index}.remarkPopUp`)}
                                   onClose={() => handleRemarkPopup()}
-                                  >
+                                >
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${OperationGridFields}.${index}.remarkPopUp`}

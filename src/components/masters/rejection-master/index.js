@@ -94,7 +94,8 @@ const RejectionMaster = () => {
     if (type === 'cancel') {
       setState(prevState => ({
         ...prevState,
-        stopApiCallOnCancel: true
+        stopApiCallOnCancel: true,
+        IsRejectionAssociated: false
       }))
     }
   }

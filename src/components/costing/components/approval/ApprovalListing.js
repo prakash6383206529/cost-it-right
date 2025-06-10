@@ -20,7 +20,7 @@ import LoaderCustom from '../../../common/LoaderCustom'
 import { Redirect } from 'react-router'
 import WarningMessage from '../../../common/WarningMessage'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
-import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
+import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, checkFinalUser, getReleaseStrategyApprovalDetails, setIsMultiVendor, setApplicabilityForChildParts } from '../../actions/Costing'
 import SendForApproval from './SendForApproval'
 import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer'
 import { PaginationWrapper } from '../../../common/commonPagination'
@@ -514,6 +514,9 @@ function ApprovalListing(props) {
           const tempObj = formViewData(dataFromAPI)
           dispatch(setCostingViewData(tempObj))
           setTechnologyForCosting(tempObj[0]?.technology)
+          dispatch(setIsMultiVendor(dataFromAPI?.IsMultiVendorCosting))
+          dispatch(setApplicabilityForChildParts(dataFromAPI?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
+
         }
       },
       ))

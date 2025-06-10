@@ -23,7 +23,7 @@ import WarningMessage from '../../common/WarningMessage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import { checkEffectiveDate } from '../masterUtil';
 import { ICC_METHODS } from '../../../config/constants';
@@ -33,6 +33,7 @@ import AddOverheadMasterDetails from '../overhead-profit-master/AddOverheadMaste
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import TableRenderer from '../../common/TableRenderer';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 
 
 
@@ -59,7 +60,6 @@ const AddInterestRate = (props) => {
         isVendorNameNotSelected: false,
         InterestRateId: '',
         EffectiveDate: '',
-        Data: [],
         selectedPartFamily: [],
         selectedICCMethod: [],
         InventoryDayType: [],
@@ -78,6 +78,7 @@ const AddInterestRate = (props) => {
         vendorFilterList: [],
         RawMaterial: [],
         RMGrade: [],
+        DataToChange: [],
         isRawMaterialSelected: false,
         isGradeSelected: false,
         isEitherSectionFilled: false,
@@ -101,7 +102,10 @@ const AddInterestRate = (props) => {
         WIPMethod: [],
         ICCMethods: [],
         isShowApplicabilitySection: true,
-        CreditBasedAnnualICCPercent: 0
+        CreditBasedAnnualICCPercent: 0,
+        selectedTechnologies: [],
+        IsAssociated:props?.IsInterestRateAssociated
+
     });
 
     // Selectors
@@ -176,11 +180,12 @@ const AddInterestRate = (props) => {
         dispatch(getInventoryDayTypeSelectList(() => {}));
         dispatch(getICCMethodSelectList(() => {}));
         // const isRequestForMultiTechnology = !state.isAssemblyCheckboxIcc ? true : false;
-        const isRequestForMultiTechnology = state.isAssemblyCheckbox;
-        dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, () => {}));
+    
+        dispatch(fetchApplicabilityList(null, conditionTypeId, null, () => {}));
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => {}));
         getDetail();
         dispatch(getICCAppliSelectList(() => {}));
+        dispatch(getCostingSpecificTechnology(loggedInUserId(), res => {}));
         if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
             dispatch(getRawMaterialNameChild(() => {}));
         }
@@ -214,17 +219,16 @@ const AddInterestRate = (props) => {
 
     useEffect(() => {
         if (!(props?.data?.isEditFlag || state.isViewMode)) {
-            const hasRequiredFields = (
+            const hasRequiredFields = !!(
             (state.costingTypeId === ZBCTypeId) ||
             (state.costingTypeId === CBCTypeId && state?.client) ||
             (state.costingTypeId === VBCTypeId && state?.vendorName)
             );
-            if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
+
             const { plantArray, cbcPlantArray } = getPlants();
             let data = {
-                vendorInterestRateId: state?.InterestRateId,
+                vendorInterestRateId: null,
                 costingHeadId: state?.costingTypeId,
-                // plantId: state?.selectedPlants[0]?.value ?? null,
                 plantId: state?.costingTypeId === CBCTypeId ? cbcPlantArray[0]?.PlantId : plantArray[0]?.PlantId,
                 vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
                 customerId: state?.costingTypeId === CBCTypeId ? state?.client.value : null,
@@ -235,47 +239,52 @@ const AddInterestRate = (props) => {
                 effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                 technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null
             }
-            dispatch(getInterestRateDataCheck(data, (res) => {
-                if (res?.status === 200) {
-                let Data = res?.data?.Data;
-                if(Object.keys(Data).length > 0){
-                    setValue("Remark", Data.Remark)
-                    setValue("costingTypeId", Data.CostingTypeId);
-                    setValue("CreditBasedAnnualICCPercent", Data?.CreditBasedAnnualICCPercent);
-                    setValue("ApplicabilityBasedInventoryDayType", Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : []);
-                    setValue("ICCMethod", Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethod } : []);
-                    setState(prev => ({ ...prev, 
-                    IsFinancialDataChanged: false,
-                    isEditFlag: true,
-                    remarks: Data.Remark,
-                    files: Data.Attachements,
-                    RawMaterial: Data.RawMaterialName !== undefined ? { label: Data?.RawMaterialName, value: Data?.RawMaterialChildId } : [],
-                    RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data?.RawMaterialGrade, value: Data?.RawMaterialGradeId } : [],
-                    ApplicabilityDetails: Data?.ICCApplicabilityDetails !== undefined ? Data?.ICCApplicabilityDetails : [],
-                    selectedInventoryDayType: Data?.InterestRateInventoryTypeDetails ? Data?.InterestRateInventoryTypeDetails : [],
-                    selectedWIPMethods: Data?.InterestRateWIPCompositionMethodDetails ? Data?.InterestRateWIPCompositionMethodDetails : [],
-                    ApplicabilityBasedInventoryDayType: Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : [],
-                    CreditBasedAnnualICCPercent: Data?.CreditBasedAnnualICCPercent,
-                    selectedICCMethod: Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethodId } : [],
-                    isApplyInventoryDays: Data?.IsApplyInventoryDay,
-                    isShowApplicabilitySection: Data?.ICCMethodId == ICC_METHODS.CreditBased ? false : true,
-                    minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
-                    InterestRateId: Data?.VendorInterestRateId,
+            let showPartFamily = getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily
+            if(hasRequiredFields && data?.modelTypeId && data?.plantId && (!showPartFamily || data?.partFamilyId) && DayTime(data?.effectiveDate).isValid()){
+                dispatch(getInterestRateDataCheck(data, (res) => {
+                    if (res?.status === 200) {
+                    let Data = res?.data?.Data;
+                    if(Object.keys(Data).length > 0){
+                        setValue("Remark", Data.Remark)
+                        setValue("costingTypeId", Data.CostingTypeId);
+                        setValue("CreditBasedAnnualICCPercent", Data?.CreditBasedAnnualICCPercent);
+                        setValue("ApplicabilityBasedInventoryDayType", Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : []);
+                        setValue("ICCMethod", Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethod } : []);
+                        setState(prev => ({ ...prev, 
+                        IsFinancialDataChanged: false,
+                        isEditFlag: true,
+                        remarks: Data.Remark,
+                        files: Data.Attachements,
+                        RawMaterial: Data.RawMaterialName !== undefined ? { label: Data?.RawMaterialName, value: Data?.RawMaterialChildId } : [],
+                        RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data?.RawMaterialGrade, value: Data?.RawMaterialGradeId } : [],
+                        ApplicabilityDetails: Data?.ICCApplicabilityDetails !== undefined ? Data?.ICCApplicabilityDetails : [],
+                        selectedInventoryDayType: Data?.InterestRateInventoryTypeDetails ? Data?.InterestRateInventoryTypeDetails : [],
+                        selectedWIPMethods: Data?.InterestRateWIPCompositionMethodDetails ? Data?.InterestRateWIPCompositionMethodDetails : [],
+                        ApplicabilityBasedInventoryDayType: Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : [],
+                        CreditBasedAnnualICCPercent: Data?.CreditBasedAnnualICCPercent,
+                        selectedICCMethod: Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethodId } : [],
+                        isApplyInventoryDays: Data?.IsApplyInventoryDay,
+                        isShowApplicabilitySection: Data?.ICCMethodId == ICC_METHODS.CreditBased ? false : true,
+                        minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
+                        InterestRateId: Data?.VendorInterestRateId,
+                        }));
+                    }
+                    } else {
+                    setState(prev => ({
+                        ...prev,
+                        isEditFlag: false,
+                        ApplicabilityDetails: [],
+                        files: [],
+                        IsFinancialDataChanged: true,
+                        minEffectiveDate: '',
+                        InterestRateId: "",
+                        selectedInventoryDayType: [],
+                        selectedWIPMethods: []
                     }));
-                }
-                } else {
-                setState(prev => ({
-                    ...prev,
-                    isEditFlag: false,
-                    ApplicabilityDetails: [],
-                    files: [],
-                    IsFinancialDataChanged: true,
-                    minEffectiveDate: '',
-                    InterestRateId: "",
+                    }
                 }));
-                }
-            }));
             }
+         
         }
     }, [state?.ModelType, state?.selectedPlants, state?.vendorName, state?.client, state?.EffectiveDate, state.isAssemblyCheckbox]);
 
@@ -472,8 +481,16 @@ const AddInterestRate = (props) => {
                     let Data = res.data.Data;
                     setState(prev => ({
                         ...prev,
-                        Data: Data
+                        DataToChange: Data
                     }));
+
+                    let technologyArray = [];
+                    if(Data.Technologies && Data.Technologies.length > 0){
+                        Data.Technologies.map((item) => {
+                        technologyArray.push({ label: item.TechnologyName, value: item.TechnologyId })
+                        return null;
+                        })
+                    }
                     // setValue("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '');
                     setValue("EffectiveDate", DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '')
                     setState(prev => ({ ...prev, minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' }));
@@ -487,6 +504,7 @@ const AddInterestRate = (props) => {
                     setValue("ICCMethod", Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethod } : [])
                     setValue("CreditBasedAnnualICCPercent", Data?.CreditBasedAnnualICCPercent)
                     setValue("ApplicabilityBasedInventoryDayType", Data?.ApplicabilityBasedInventoryDayType !== undefined ? { label: Data?.ApplicabilityBasedInventoryDayType, value: Data?.ApplicabilityBasedInventoryDayType } : [])
+                    setValue("Technology", technologyArray);
 
                     setTimeout(() => {
                         setState(prev => ({
@@ -512,6 +530,7 @@ const AddInterestRate = (props) => {
                             selectedICCMethod: Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethodId } : [],
                             isApplyInventoryDays: Data?.IsApplyInventoryDay,
                             isShowApplicabilitySection: Data?.ICCMethodId == ICC_METHODS.CreditBased ? false : true,
+                            selectedTechnologies: technologyArray,
                             isLoader: false
                         }));
                     }, 500);
@@ -555,7 +574,7 @@ const AddInterestRate = (props) => {
 
     // Form submission
     const onSubmit = debounce((values) => {
-        const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, EffectiveDate, DropdownNotChanged, RMGrade, RawMaterial, selectedPartFamily } = state;
+        const { vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, EffectiveDate, DropdownNotChanged, RMGrade, RawMaterial, selectedPartFamily, selectedTechnologies, DataToChange } = state;
         const { data } = props;
         const userDetail = userDetails();
         const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'));
@@ -587,7 +606,13 @@ const AddInterestRate = (props) => {
             }
         }
         setState(prev => ({ ...prev, isVendorNameNotSelected: false }));
-
+        let technologyArray = [];
+            if(selectedTechnologies && selectedTechnologies.length > 0){
+            selectedTechnologies && selectedTechnologies.map((item) => {
+                technologyArray.push({ TechnologyName: item.label, TechnologyId: item.value })
+                return null;
+            })
+        }
         let formData = {
             "VendorInterestRateId": state.isEditFlag ? InterestRateId : null,
             "ModifiedBy": state.isEditFlag ? loggedInUserId() : null,
@@ -600,6 +625,7 @@ const AddInterestRate = (props) => {
             "PaymentTermPercent": values.PaymentTermPercent,
             "RepaymentPeriod": values.RepaymentPeriod,
             "EffectiveDate": DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+            "Technologies": technologyArray,
             "IsActive": true,
             "CreatedDate": '',
             "CreatedBy": loggedInUserId(),
@@ -627,19 +653,20 @@ const AddInterestRate = (props) => {
         };
 
         if (state.isEditFlag) {
-            if(JSON.stringify(state?.ApplicabilityDetails ?? []) === JSON.stringify(Data?.ICCApplicabilityDetails ?? []) &&
-                (JSON.stringify(state?.selectedInventoryDayType ?? []) === JSON.stringify(Data?.InterestRateInventoryTypeDetails ?? [])) &&
-                JSON.stringify(state?.selectedWIPMethods ?? []) === JSON.stringify(Data?.InterestRateWIPCompositionMethodDetails ?? []) &&
-                checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && DropdownNotChanged
+            if(JSON.stringify(state?.ApplicabilityDetails ?? []) === JSON.stringify(DataToChange?.ICCApplicabilityDetails ?? []) &&
+                (JSON.stringify(state?.selectedInventoryDayType ?? []) === JSON.stringify(DataToChange?.InterestRateInventoryTypeDetails ?? [])) &&
+                JSON.stringify(state?.selectedWIPMethods ?? []) === JSON.stringify(DataToChange?.InterestRateWIPCompositionMethodDetails ?? []) &&
+                DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && DropdownNotChanged &&
+                _.isEqual(DataToChange?.Technologies, technologyArray)
             ){
                 Toaster.warning('Please change the data to save Interest Rate Details');
                 return false;
             }
-            let financialDataChanged =  JSON.stringify(state?.ApplicabilityDetails ?? []) !== JSON.stringify(Data?.ICCApplicabilityDetails ?? []) ||
-                (JSON.stringify(state?.selectedInventoryDayType ?? []) !== JSON.stringify(Data?.InterestRateInventoryTypeDetails ?? [])) ||
-                JSON.stringify(state?.selectedWIPMethods ?? []) !== JSON.stringify(Data?.InterestRateWIPCompositionMethodDetails ?? [])
+            let financialDataChanged =  JSON.stringify(state?.ApplicabilityDetails ?? []) !== JSON.stringify(DataToChange?.ICCApplicabilityDetails ?? []) ||
+                (JSON.stringify(state?.selectedInventoryDayType ?? []) !== JSON.stringify(DataToChange?.InterestRateInventoryTypeDetails ?? [])) ||
+                JSON.stringify(state?.selectedWIPMethods ?? []) !== JSON.stringify(DataToChange?.InterestRateWIPCompositionMethodDetails ?? [])
 
-            if (financialDataChanged && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && props?.IsInterestRateAssociated) {
+            if (financialDataChanged && DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsInterestRateAssociated) {
                 setState(prev => ({ ...prev, setDisable: false }));
                 Toaster.warning('Please update the Effective date.');
                 return false;

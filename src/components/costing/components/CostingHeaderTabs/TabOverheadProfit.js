@@ -2,15 +2,16 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, isOverheadProfitDataChange, setIncludeOverheadProfitIcc, setIncludeToolCostIcc, setOverheadProfitData, setSurfaceCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, setToolCostInOverheadProfit } from '../../actions/Costing';
+import { getOverheadProfitTabData, isOverheadProfitDataChange, setApplicabilityForChildParts, setIncludeOverheadProfitIcc, setIncludeToolCostIcc, setOverheadProfitData, setSurfaceCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, setToolCostInOverheadProfit } from '../../actions/Costing';
 import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
 import AssemblyOverheadProfit from '../CostingHeadCosts/OverheadProfit/AssemblyOverheadProfit';
-import { LEVEL0 } from '../../../../config/constants';
+import { LEVEL0, WACTypeId } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
 import Toaster from '../../../common/Toaster';
 import WarningMessage from '../../../common/WarningMessage';
+import { IdForMultiTechnology } from '../../../../config/masterData';
 
 function TabOverheadProfit(props) {
 
@@ -25,9 +26,13 @@ function TabOverheadProfit(props) {
   const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(false)
   const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(false)
   const [isPressedToolCostICC, setIsPressedToolCostICC] = useState(false)
+  const [IsIncludeApplicablForChildParts, setIsIncludeApplicablForChildParts] = useState(false)
+
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -36,12 +41,15 @@ function TabOverheadProfit(props) {
         PartId: costData.PartId,
       }
 
-      dispatch(getOverheadProfitTabData(data, true, (res) => { }))
+      dispatch(getOverheadProfitTabData(data, true, (res) => {
+        dispatch(setApplicabilityForChildParts(res?.data.DataList?.IsIncludeChildPartsApplicabilityCost === true ? true : false))
+        setIsIncludeApplicablForChildParts(res?.data.DataList?.IsIncludeChildPartsApplicabilityCost === true ? true : false)
+      }))
     }
   }, [costData]);
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
-  const { ToolTabData, isBreakupBoughtOutPartCostingFromAPI, overallApplicabilityToolData } = useSelector(state => state.costing)
+  const { ToolTabData, isBreakupBoughtOutPartCostingFromAPI, overallApplicabilityToolData, IsIncludeApplicabilityForChildParts } = useSelector(state => state.costing)
 
   useEffect(() => {
 
@@ -578,6 +586,11 @@ function TabOverheadProfit(props) {
       dispatch(isOverheadProfitDataChange(true))
     }
   }
+  const onPressApplicableForChildParts = () => {
+    dispatch(isOverheadProfitDataChange(true))
+    setIsIncludeApplicablForChildParts(!IsIncludeApplicablForChildParts)
+    dispatch(setApplicabilityForChildParts(!IsIncludeApplicablForChildParts))
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -675,6 +688,25 @@ function TabOverheadProfit(props) {
                       onChange={onPressIncludeToolCost}
                     />
                   </label>
+                  {partType &&
+                    <label
+                      id="Overhead_profit_checkbox0"
+                      className={`custom-checkbox mb-0 w-fit-content`}
+                      onChange={onPressApplicableForChildParts}
+                    >
+                      Apply Child Parts Cost
+                      <input
+                        type="checkbox"
+                        checked={IsIncludeApplicabilityForChildParts}
+                        disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
+                      />
+                      <span
+                        className=" before-box"
+                        checked={IsIncludeApplicabilityForChildParts}
+                        onChange={onPressApplicableForChildParts}
+                      />
+                    </label>
+                  }
                 </Col>
               </Row>
 
@@ -727,6 +759,7 @@ function TabOverheadProfit(props) {
                                   IsIncludeToolCost={IsIncludeToolCost}
                                   IncludeOverheadProfitInIcc={IncludeOverheadProfitInIcc}
                                   IncludeToolcostInCCForICC={IsIncludeToolCostInCCForICC}
+                                  // IsIncludeApplicabilityForChildPartsInICC={IsIncludeApplicabilityForChildPartsInICC}
                                   setPartDetails={setPartDetails}
                                   toggleAssembly={toggleAssembly}
                                   setOverheadDetail={setOverheadDetail}

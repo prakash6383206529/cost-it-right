@@ -11,7 +11,8 @@ import {
     GET_WIP_COMPOSITION_METHOD_SELECTLIST,
     GET_INVENTORYDAY_TYPE_SELECTLIST,
     GET_ICC_METHOD_SELECTLIST,
-    GET_OVERHEAD_PROFIT_DATA_SUCCESS
+    GET_OVERHEAD_PROFIT_DATA_SUCCESS,
+    GET_INTEREST_RATE_SUCCESS_ALL
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import axiosInstance from '../../../utils/axiosInstance';
@@ -66,11 +67,19 @@ export function getInterestRateDataList(data, skip, take, isPagination, obj, isP
         // let queryParams = `loggedInUserId=${loggedInUserId()}&vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}&RawMaterialName=${data.RawMaterialName !== undefined ? data.RawMaterialName : ''}&RawMaterialGrade=${data.RawMaterialGrade !== undefined ? data.RawMaterialGrade : ''}&TechnologyName=${data.TechnologyName !== undefined ? data.TechnologyName : ''}&IsCustomerDataShow=${data?.IsCustomerDataShow !== undefined ? data?.IsCustomerDataShow : ""}&IsVendorDataShow=${data?.IsVendorDataShow}&IsZeroDataShow=${data?.IsZeroDataShow}&isPaymentTermsRecord=${data?.isPaymentTermsRecord}`
         axios.get(`${API.getInterestRateDataList}?${queryParams}`, config())
             .then((response) => {
-                if (response.data.Result || response.status === 204)
-                    dispatch({
-                        type: GET_INTEREST_RATE_DATA_LIST,
-                        payload: response.status === 204 ? [] : response.data.DataList
-                    })
+                if (response.data.Result || response.status === 204) {
+                    if (isPagination) {
+                        dispatch({
+                            type: GET_INTEREST_RATE_DATA_LIST,
+                            payload: response.status === 204 ? [] : response.data.DataList,
+                        });
+                    } else {
+                        dispatch({
+                            type: GET_INTEREST_RATE_SUCCESS_ALL,
+                            payload: response.status === 204 ? [] : response.data.DataList,
+                        })
+                    }
+                }
                 callback(response);
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });

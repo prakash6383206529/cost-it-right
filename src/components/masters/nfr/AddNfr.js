@@ -103,6 +103,7 @@ function AddNfr(props) {
     const [nfrPartNumber, setNfrPartNumber] = useState('')
     const [partName, setPartName] = useState('')
     const [isFinalLevelApprover, setIsFinalLevelApprover] = useState('')
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -464,7 +465,8 @@ function AddNfr(props) {
             CostingTypeId: outerItem?.CostingTypeId,
             CustomerId: '',
             CustomerName: '',
-            Customer: ''
+            Customer: '',
+            IsMultiVendorCosting: IsMultiVendorCosting
         }
         // if (callAPI) {
         //     let length = rowData?.length - 1

@@ -24,9 +24,10 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
-import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideColumnFromExcel, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import { TourStartAction, agGridStatus, isResetClick, setResetCostingHead, disabledClass, getGridHeight } from '../../../actions/Common';
 import Button from '../../layout/Button';
+import _ from 'lodash';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
@@ -63,13 +64,14 @@ const InterestRateListing = (props) => {
     deletedId: '',
     selectedRowData: false,
     noData: false,
-    dataCount: 0,
     showExtraData: false,
     totalRecordCount: 0,
     globalTake: defaultPageSize,
     disableDownload: false,
+
   })
-  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+  const [dataCount, setDataCount] = useState(0)
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, technologyLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
   const { statusColumnData } = useSelector((state) => state.comman);
   const { costingHeadFilter } = useSelector((state) => state?.comman);
@@ -77,7 +79,7 @@ const InterestRateListing = (props) => {
 
   const { t } = useTranslation("common")
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
-  const { interestRateDataList } = useSelector((state) => state.interestRate);
+  const { interestRateDataList, interestRateDataListAll } = useSelector((state) => state.interestRate);
   const floatingFilterIcc = { maxValue: 3, suppressFilterButton: true, component: "InterestRate" }
   const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", VendorName: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "", PartFamily: "", ICCApplicability: "", ICCModelType: "", ICCMethod: "" })
   const [filterModel, setFilterModel] = useState({});
@@ -86,11 +88,12 @@ const InterestRateListing = (props) => {
   const [pageRecord, setPageRecord] = useState(0);
   const [disableFilter, setDisableFilter] = useState(true)
   const [disableDownload, setDisableDownload] = useState(false);
+  const { selectedRowForPagination } = useSelector((state => state.simulation))
 
   useEffect(() => {
     !props.stopApiCallOnCancel && setState((prevState) => ({ ...prevState, isLoader: true }))
     dispatch(agGridStatus("", ""))
-    setSelectedRowForPagination([])
+    dispatch(setSelectedRowForPagination([]))
     dispatch(resetStatePagination());
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
@@ -173,7 +176,7 @@ const InterestRateListing = (props) => {
           setDisableDownload(false)
           dispatch(disabledClass(false))
           setTimeout(() => {
-              let button = document.getElementById('Excel-Downloads-Interest-Master');
+              let button = document.getElementById('Excel-Downloads-interestRateListing');
               button && button.click()
           }, 500);
       }
@@ -255,7 +258,7 @@ const InterestRateListing = (props) => {
     dispatch(deleteInterestRate(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
-        setState((prevState) => ({ ...prevState, dataCount: 0 }))
+        setDataCount(0)
         getDataList(null, null, null, null, pageRecord, globalTakes, true, floatingFilterData);
       }
     }));
@@ -392,32 +395,54 @@ const InterestRateListing = (props) => {
 
   };
 
-  const onRowSelect = () => {
-    const selectedRows = gridApi?.getSelectedRows()
-    setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
-  }
-
-  const onExcelDownload = () => {
-    setState(prevState => ({ ...prevState, disableDownload: true }))
-    dispatch(disabledClass(true))
-    let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
-    if (tempArr?.length > 0) {
-        setTimeout(() => {
-            setState(prevState => ({ ...prevState, disableDownload: false }))
-            dispatch(disabledClass(false))
-            let button = document.getElementById('Excel-Downloads-Interest-Master')
-            button && button.click()
-        }, 400);
-    } else {
-        getDataList(null, null, null, null, 0, globalTakes, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
-    }
+  const onRowSelect = (event) => {
+      var selectedRows = gridApi && gridApi?.getSelectedRows();
+      if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
+          selectedRows = selectedRowForPagination
+      } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
+          let finalData = []
+          if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+              for (let i = 0; i < selectedRowForPagination.length; i++) {
+                  if (selectedRowForPagination[i].VendorInterestRateId === event.data.VendorInterestRateId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                      continue;
+                  }
+                  finalData.push(selectedRowForPagination[i])
+              }
+          } else {
+              finalData = selectedRowForPagination
+          }
+          selectedRows = [...selectedRows, ...finalData]
+      }
+      let uniqeArray = _.uniqBy(selectedRows, "VendorInterestRateId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+      setDataCount(uniqeArray.length)
+      dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
   }
 
   const INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(INTERESTRATE_DOWNLOAD_EXCEl, "MasterLabels")
+
+  const onExcelDownload = () => {
+      setDisableDownload(true)
+      dispatch(disabledClass(true))
+      let tempArr = selectedRowForPagination
+      if (tempArr?.length > 0) {
+          setTimeout(() => {
+              setDisableDownload(false)
+              dispatch(disabledClass(false))
+              let button = document.getElementById('Excel-Downloads-interestRateListing')
+              button && button.click()
+          }, 400);
+
+      } else {
+          getDataList(null, null, null, null, 0, defaultPageSize, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+      }
+
+  }
+
+
   const onBtExport = () => {
     let tempArr = []
-    tempArr = gridApi && gridApi?.getSelectedRows()
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (interestRateDataList ? interestRateDataList : [])
+    tempArr = selectedRowForPagination
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (interestRateDataListAll ? interestRateDataListAll : [])
     return returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
 
@@ -433,8 +458,14 @@ const InterestRateListing = (props) => {
       else if (item?.VendorName === '' || item?.VendorName === null) {
         item.VendorName = '-'
       }
+      if (item?.EffectiveDate?.includes('T')) {
+        item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY');
+      }
       return item
     })
+    if (!getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily) {
+      excelData = hideColumnFromExcel(data, "PartFamily");
+    }
     const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
     const excelColumns = excelData && excelData.map((ele, index) => {
       if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
@@ -477,9 +508,9 @@ const InterestRateListing = (props) => {
     getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
     dispatch(setSelectedRowForPagination([]))
     dispatch(resetStatePagination())
-    setState((prevState) => ({ ...prevState, dataCount: 0 }))
-  }
-  const { toggleForm, data, isBulkUpload, noData, dataCount } = state;
+    setDataCount(0)
+}
+  const { toggleForm, data, isBulkUpload, noData } = state;
   const ExcelFile = ReactExport.ExcelFile;
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -536,12 +567,11 @@ const InterestRateListing = (props) => {
                     {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&
                       <>
-                        <Button className="user-btn mr5 Tour_List_Download" id={"interestRateListing_excel_download"} onClick={onExcelDownload} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                            icon={"download mr-1"}
-                            buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                        />
+                        <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" ></div>
+                            {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                        </button>
                         <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
-                            <Button id={"Excel-Downloads-Interest-Master"} className="p-absolute" />}>
+                            <button id={'Excel-Downloads-interestRateListing'} className="p-absolute" type="button" ></button>}>
                             {onBtExport()}
                         </ExcelFile>
                       </>
@@ -578,20 +608,21 @@ const InterestRateListing = (props) => {
                 noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                 rowSelection={'multiple'}
                 onFilterModified={onFloatingFilterChanged}
-                onSelectionChanged={onRowSelect}
+                onRowSelected={onRowSelect}
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
               >
                 <AgGridColumn minWidth={180} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
                   floatingFilterComponent="statusFilter"></AgGridColumn>
+                <AgGridColumn field="TechnologyName" tooltipField='Technologies' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                 {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                {/* <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                 {/* <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn> */}
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                 {/* <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
