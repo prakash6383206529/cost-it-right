@@ -8339,7 +8339,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "SAP Code", value: "SAPPartNumber", },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor", },
-    { label: 'Sourced Vendor (Code)', value: 'SourceVendorName', },
+    { label: 'Source Vendor (Code)', value: 'SourceVendorName', },
     { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
@@ -8381,7 +8381,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },
     { label: "BOP Part Name", value: "BoughtOutPartName" },
-    { label: "BOP Category", value: "BoughtOutPartCategory" },
+    { label: "BOP Part Category", value: "BoughtOutPartCategory" },
     { label: "Part Family", value: "PartFamily" },
     { label: "Division", value: "Division", },
     { label: "UOM", value: "UOM" },
@@ -8389,7 +8389,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "SAP Code", value: "SAPPartNumber", },
     { label: "Plant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "Vendor" },
-    { label: 'Sourced Vendor (Code)', value: 'SourceVendorName', },
+    { label: 'Source Vendor (Code)', value: 'SourceVendorName', },
     { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
