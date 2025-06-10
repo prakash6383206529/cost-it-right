@@ -6,6 +6,7 @@ import Popup from 'reactjs-popup';
 import { REMARKMAXLENGTH } from '../../../../../config/masterData';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
+import TooltipCustom from '../../../../common/Tooltip';
 
 const OverheadProfitTable = ({
   data,
@@ -68,24 +69,39 @@ const OverheadProfitTable = ({
                   />
                 </td>
                 <td>
-                  <TextFieldHookForm
-                    label=""
-                    name={`${fieldPrefix}${fieldSuffix}Cost`}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    rules={{
-                      required: false,
-                      validate: { number, checkWhiteSpaces, positiveAndDecimalNumber, maxLength10, decimalLengthsix },
-                    }}
-                    mandatory={false}
-                    handleChange={(e) => onCostChange(e, item)}
-                    defaultValue={item.Cost !== null ? checkForDecimalAndNull(item.Cost, initialConfiguration?.NoOfDecimalForPrice) : ''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors[`${fieldPrefix}${fieldSuffix}Cost`]}
-                    disabled={!isFixedRecord || CostingViewMode}
-                  />
+                  <div className={`${item?.Applicability === 'CC' ? 'd-flex align-items-start justify-content-end flex-row-reverse gap-2' : ''}`}>
+                    {item?.Applicability === 'CC' &&
+                      <TooltipCustom
+                        disabledIcon={false}
+                        id={`${fieldPrefix}${fieldSuffix}Cost`}
+                        tooltipText={`If the selected applicability includes 'Excluding Int. + Dep.', only costs excluding Interest and Depreciation will be added.`}
+                      />}
+                    <TextFieldHookForm
+                      label=""
+                      name={`${fieldPrefix}${fieldSuffix}Cost`}
+                      id={`${fieldPrefix}${fieldSuffix}Cost`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      rules={{
+                        required: false,
+                        validate: {
+                          number,
+                          checkWhiteSpaces,
+                          positiveAndDecimalNumber,
+                          maxLength10,
+                          decimalLengthsix
+                        },
+                      }}
+                      mandatory={false}
+                      handleChange={(e) => onCostChange(e, item)}
+                      defaultValue={item.Cost !== null ? checkForDecimalAndNull(item.Cost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors[`${fieldPrefix}${fieldSuffix}Cost`]}
+                      disabled={!isFixedRecord || CostingViewMode}
+                    />
+                  </div>
                 </td>
                 <td>
                   <TextFieldHookForm
