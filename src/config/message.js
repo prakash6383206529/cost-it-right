@@ -210,6 +210,8 @@ export const MESSAGES = {
   UPDATE_INTEREST_RATE_SUCESS: 'Interest rate updated successfully',
   DELETE_INTEREST_RATE_SUCCESS: 'Interest rate deleted successfully',
   INTEREST_DELETE_ALERT: 'Are you sure you want to delete this Interest Rate?',
+  PAYMENT_TERM_ADDED_SUCCESS: 'Payment terms added successfully',
+  UPDATE_PAYMENT_TERMS_SUCESS: 'Payment Term updated successfully',
 
   ADD_PART_WITH_SUPPLIER_SUCCESS: 'Supplier added s uccessfully',
   NEW_COSTING_CREATE_SUCCESS: 'New sheetmetal costing created successfully',

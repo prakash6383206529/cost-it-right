@@ -55,7 +55,8 @@ function OtherCostDrawer(props) {
     const [applicabilityCost, setApplicabilityCost] = useState('')
     const { currencySource } = useSelector((state) => state?.costing);
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId||(costData?.PartType === 'Assembly' && IsMultiVendorCosting))
     const fieldValuesForPercent = useWatch({
         control,
         name: ['PercentageOtherCost', 'OtherCostApplicability'],
