@@ -11,7 +11,8 @@ import TooltipCustom from '../../../common/Tooltip'
 import { IdForMultiTechnology } from '../../../../config/masterData'
 function ViewOverheadProfit(props) {
   const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow, viewRejectionRecovery } = props
-  const { rejectData, modelType, isRmCutOffApplicable, rawMaterialCostWithCutOff, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit, isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC } = rejectAndModelType;
+
+  const { rejectData, modelType, isRmCutOffApplicable, rawMaterialCostWithCutOff, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit, isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC, rejectionModelType } = rejectAndModelType;
   const showTooltipForOH = [isRmCutOffApplicable, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithOverheadAndProfit]
   const showToolTipForICC = [isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC]
 
@@ -42,19 +43,16 @@ function ViewOverheadProfit(props) {
     }
     props.closeDrawer('')
   }
+  const overheadAndProfitTooltipText = (
+    <>
+      {isRmCutOffApplicable && (
+        <div>RM Cut Off Price {checkForDecimalAndNull(rawMaterialCostWithCutOff, initialConfiguration?.NoOfDecimalForPrice)} is Applied</div>
+      )}
+      {isIncludeToolCostWithOverheadAndProfit && <div>Tool Cost Included</div>}
+      {isIncludeSurfaceTreatmentWithOverheadAndProfit && <div>Surface Treatment Cost Included</div>}
+    </>
+  );
 
-  const overheadAndProfitTooltipText =
-    `
-    ${isRmCutOffApplicable ? `RM Cut Off Price ${checkForDecimalAndNull(rawMaterialCostWithCutOff, initialConfiguration?.NoOfDecimalForPrice)} is Applied` : ''}
-    ${isIncludeToolCostWithOverheadAndProfit ? 'Tool Cost Included' : ''}
-    ${isIncludeSurfaceTreatmentWithOverheadAndProfit ? 'Surface Treatment Cost Included' : ''}
-  `.trim();
-
-
-  const iccToolTipText =
-
-    ` ${isIncludeToolCostInCCForICC ? 'Tool Cost Included' : ''}
-  ${isIncludeOverheadAndProfitInICC ? 'Overhead and Profit Included' : ''}`.trim()
   const modelShowData = () => {
     return <>
       <div className="input-group form-group col-md-4 input-withouticon pdf-download pl-0">
@@ -70,6 +68,27 @@ function ViewOverheadProfit(props) {
           defaultValue={modelType}
           className=""
           customClassName={"withBorder"}
+          //errors={errors.ECNNumber}
+          disabled={true}
+        />
+      </div>
+    </>
+  }
+  const rejectionModelShowData = () => {
+    return <>
+      <div className="input-group form-group col-md-4 input-withouticon pdf-download pl-0">
+        <TextFieldHookForm
+          label="Model Type for Rejection"
+          name={"rejectionModelType"}
+          Controller={Controller}
+          control={control}
+          register={register}
+          mandatory={false}
+          handleChange={() => { }}
+          //defaultValue={`${viewRM[0].RMName}`}
+          defaultValue={rejectionModelType}
+          className=""
+          customClassName={"withBorder ml-3"}
           //errors={errors.ECNNumber}
           disabled={true}
         />
@@ -104,9 +123,10 @@ function ViewOverheadProfit(props) {
                   <td>
                     {item.Percentage ? checkForDecimalAndNull(item.Percentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
                   </td>
-                  <td>
-                    {item.Cost ? checkForDecimalAndNull(item.Cost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                  </td>
+                  <td> <div className='w-fit d-flex'><div id={`overhead-cost${item.ApplicabilityDetailsId}`}>{item.Cost ? checkForDecimalAndNull(item.Cost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
+                   {item?.Applicability === 'CC' && (rejectAndModelType?.isIncludeSurfaceTreatmentWithOverheadAndProfit || rejectAndModelType?.isIncludeToolCostWithOverheadAndProfit ||isRmCutOffApplicable) && <TooltipCustom disabledIcon={false} tooltipClass="overhead-cost" id={`overhead-cost${item.ApplicabilityDetailsId}`} tooltipText={overheadAndProfitTooltipText} />}
+                   </div></div>
+                   </td>
                   <td>
                     {item.TotalCost ? checkForDecimalAndNull(item.TotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
                   </td>
@@ -156,9 +176,10 @@ function ViewOverheadProfit(props) {
                   <td>
                     {item.Percentage ? checkForDecimalAndNull(item.Percentage, initialConfiguration?.NoOfDecimalForPrice) : "-"}
                   </td>
-                  <td>
-                    {item.Cost ? checkForDecimalAndNull(item.Cost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
-                  </td>
+                  <td> <div className='w-fit d-flex'><div id={`profit-cost${item.ApplicabilityDetailsId}`}>{item.Cost ? checkForDecimalAndNull(item.Cost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
+                   {item?.Applicability === 'CC' && (rejectAndModelType?.isIncludeSurfaceTreatmentWithOverheadAndProfit || rejectAndModelType?.isIncludeToolCostWithOverheadAndProfit||isRmCutOffApplicable) && <TooltipCustom disabledIcon={false} tooltipClass="profit-cost" id={`profit-cost${item.ApplicabilityDetailsId}`} tooltipText={overheadAndProfitTooltipText} />}
+                    </div></div>
+                   </td>
                   <td>
                     {item.TotalCost ? checkForDecimalAndNull(item.TotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
                   </td>
@@ -188,7 +209,7 @@ function ViewOverheadProfit(props) {
       </Row>
       <Row>
         {/*REJECTION RENDERING */}
-
+        {rejectionModelShowData()}
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
             <thead>
@@ -196,7 +217,7 @@ function ViewOverheadProfit(props) {
 
                 <th>{`Applicability`}</th>
                 <th>{`Rejection ${rejectData?.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th><div className='w-fit'>Cost (Applicability){isIncludeSurfaceTreatmentWithRejection && rejectData.RejectionApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="rejection-table" tooltipText={'Surface Treatment Cost Included'} />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability)</div></th>
                 <th>{`Rejection`}</th>
                 {getConfigurationKey().IsRejectionRecoveryApplicable && <th>{`Rejection Recovery Cost`}</th>}
                 <th>{`Net Rejection`}</th>
@@ -218,9 +239,10 @@ function ViewOverheadProfit(props) {
                       <td> {item?.Applicability !== 'Fixed'
                         ? item?.Percentage : '-'}
                       </td>
-                      <td>
-                        {item?.Applicability === 'Fixed' ? '-' : checkForDecimalAndNull(item?.Cost, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}
-                      </td>
+                        <td> <div className='w-fit d-flex'><div id={`rejection-cost${item.ApplicabilityDetailsId}`}>{item?.Applicability === 'Fixed' ? '-' : checkForDecimalAndNull(item?.Cost, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}
+                        {item?.Applicability === 'CC' && rejectAndModelType?.isIncludeSurfaceTreatmentWithRejection && <TooltipCustom disabledIcon={false} tooltipClass="rejection-cost" id={`rejection-cost${item.ApplicabilityDetailsId}`} tooltipText={`${rejectAndModelType?.isIncludeSurfaceTreatmentWithRejection?'Surface Treatment Cost included':''}`} />}
+                        </div></div>
+                        </td> 
                       <td>
                         {item?.TotalCost !== null && item?.TotalCost !== undefined
                           ? checkForDecimalAndNull(item.TotalCost, initialConfiguration?.NoOfDecimalForPrice)

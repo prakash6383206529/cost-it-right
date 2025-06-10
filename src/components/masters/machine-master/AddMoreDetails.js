@@ -5144,7 +5144,7 @@ class AddMoreDetails extends Component {
 
 
                               {this.state.UOM.type === TIME && <TooltipCustom disabledIcon={true} id="machineRate" tooltipClass={'machine-rate'} tooltipText={this.machineRateTooltip()} />}
-                              <Row>
+                              {/* <Row> */}
                                 {!this?.state?.isShowApplicabilityDropdown && <Col md="3">
                                   <div className="machine-rate-filed pr-3">
                                     <Field
@@ -5165,7 +5165,7 @@ class AddMoreDetails extends Component {
 
                                   </div>
                                 </Col>}
-                                </Row>
+                                {/* </Row> */}
 
                                 {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && !this?.state?.isShowApplicabilityDropdown && <Col md="3" className='UOM-label-container p-relative'>
                                   <TooltipCustom disabledIcon={true} width="350px" id="machine-rate-plant" tooltipText={this.machineRateTitle()?.tooltipTextPlantCurrency} />
@@ -5203,7 +5203,7 @@ class AddMoreDetails extends Component {
                                   />
                                   {this.state?.errorObj?.MachineRateConversion && (this.props?.fieldsObj?.MachineRateConversion === undefined || Number(this.props?.fieldsObj?.MachineRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </Col>}
-                                <Col md="2" className={`${this.state.isImport ? 'mt30' : ''}`}>
+                                <Col md="2" className={`${this.state.isImport ? 'mt30' : ''} pt-2 mt-4 `}>
                                     {this.state.isEditIndex ?
                                       <>
                                         <button

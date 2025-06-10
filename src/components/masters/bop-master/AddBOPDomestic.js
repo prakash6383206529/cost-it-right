@@ -2010,7 +2010,7 @@ class AddBOPDomestic extends Component {
                                 validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                 component={renderTextInputField}
                                 required={true}
-                                disabled={isViewMode || disableAll}
+                                disabled={isViewMode || disableAll || this.state?.DataToCheck?.SourceVendorId}
                                 className=" "
                                 customClassName=" withBorder"
                                 onChange={(e) => { this.state.isEditFlag && this.debouncedCompareRate() }}

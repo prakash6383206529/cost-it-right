@@ -1406,37 +1406,45 @@ function ProcessCost(props) {
   const ProcessGridFields = 'ProcessGridFields'
   const SingleProcessGridField = 'SingleProcessGridField'
 
-  const processNetCostFormula = (value, type) => {
+  const processNetCostFormula = (value, type, costWithoutInterestAndDepreciation, isDetailed) => {
     let processNetCostFormulaText;
+    let isDetailedText = isDetailed ? `Net Cost (Without Interest and Depreciation) = ${checkForDecimalAndNull(costWithoutInterestAndDepreciation, getConfigurationKey().NoOfDecimalForPrice)}` : ''
     if (type === COSTAPPLICABILITYBASIS) {
-      processNetCostFormulaText = 'Net Cost = (MHR * Percentage/100)'
+      processNetCostFormulaText = `Net Cost = (MHR * Percentage/100)
+${isDetailedText}`
     }
     else {
 
       switch (value) {
         case HOUR:
-          processNetCostFormulaText = 'Net Cost = Machine Rate / Part per Hour'
+          processNetCostFormulaText = <><p>Net Cost = (Machine Rate / Part per Hour)</p><p>{isDetailedText}</p></>
           break;
         case MINUTES:
-          processNetCostFormulaText = 'Net Cost = (Machine Rate * 60) / Part per Hour'
+          processNetCostFormulaText = <><p>Net Cost = ((Machine Rate * 60) / Part per Hour)</p><p>{isDetailedText}</p></>
           break;
         case SECONDS:
-          processNetCostFormulaText = 'Net Cost = (Machine Rate * 3600) / Part per Hour'
+          processNetCostFormulaText = `Net Cost = ((Machine Rate * 3600) / Part per Hour)
+${isDetailedText}`
           break;
         case MILLISECONDS:
-          processNetCostFormulaText = 'Net Cost = (Machine Rate * 3600000) / Part per Hour'
+          processNetCostFormulaText = `Net Cost = ((Machine Rate * 3600000) / Part per Hour)
+${isDetailedText}`
           break;
         case MICROSECONDS:
-          processNetCostFormulaText = 'Net Cost = (Machine Rate * 3600000000) / Part per Hour'
+          processNetCostFormulaText = `Net Cost = ((Machine Rate * 3600000000) / Part per Hour)
+${isDetailedText}`
           break;
         case undefined:
-          processNetCostFormulaText = 'Net Cost = Total cost of the sub process net cost'
+          processNetCostFormulaText = `Net Cost = (Total cost of the sub process net cost)
+${isDetailedText}`
           break;
         case null:
-          processNetCostFormulaText = 'Net Cost = Total cost of the sub process net cost'
+          processNetCostFormulaText = `Net Cost = (Total cost of the sub process net cost)
+${isDetailedText}`
           break;
         default:
-          processNetCostFormulaText = 'Net Cost = (Quantity * Machine Rate)'
+          processNetCostFormulaText = `Net Cost = (Quantity * Machine Rate)
+${isDetailedText}`
           break;
       }
     }
@@ -1501,7 +1509,7 @@ function ProcessCost(props) {
             <td style={{ width: 100 }}>
               {
                 <>
-                  <TooltipCustom disabledIcon={true} id={`process-net-cost-single${index}`} tooltipText={processNetCostFormula(item.UOM)} />
+                  <TooltipCustom disabledIcon={true} id={`process-net-cost-single${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type, item?.ProcessCostWithOutInterestAndDepreciation, item?.IsDetailed)} />
                   <TextFieldHookForm
                     label=""
                     name={`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`}
@@ -1871,7 +1879,7 @@ function ProcessCost(props) {
                             <td>
                               {
                                 <>
-                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type)} />
+                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type, item?.ProcessCostWithOutInterestAndDepreciation,item?.IsDetailed)} />
                                   <TextFieldHookForm
                                     label=""
                                     name={`${ProcessGridFields}.${index}.ProcessCost`}

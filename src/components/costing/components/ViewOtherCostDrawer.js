@@ -18,9 +18,9 @@ import IccCalculator from './CostingHeadCosts/OverheadProfit/IccCalculator'
 import { setIsCalculatorExist } from '../actions/Costing'
 
 function ViewOtherCostDrawer(props) {
-    
+
     const { partId, vendorId, costingIndex, CostingPaymentTermDetails, npvCostData, iccPaymentData, isPDFShow, rejectAndModelType } = props
-    
+
     const [tableData, setTableData] = useState(props.tableData)
     const [conditionTableData, seConditionTableData] = useState([])
     const [costingSummary, setCostingSummary] = useState(props.costingSummary ? props.costingSummary : false)
@@ -33,7 +33,7 @@ function ViewOtherCostDrawer(props) {
         openWeightCalculator: false
     })
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-    
+
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC } = rejectAndModelType;
     const showToolTipForICC = [isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC]
@@ -96,10 +96,12 @@ function ViewOtherCostDrawer(props) {
     const cancel = () => {
         props.closeDrawer('Close')
     }
-    const iccToolTipText =
-
-        ` ${isIncludeToolCostInCCForICC ? 'Tool Cost Included' : ''}
-  ${isIncludeOverheadAndProfitInICC ? 'Overhead and Profit Included' : ''}`.trim()
+    const iccToolTipText = (
+        <>
+          {isIncludeToolCostInCCForICC && <div>Tool Cost Included</div>}
+          {isIncludeOverheadAndProfitInICC && <div>Overhead and Profit Included</div>}
+        </>
+      );
     const DiscountCost = () => {
         return (<>
             <Col md="12">
@@ -349,7 +351,7 @@ function ViewOtherCostDrawer(props) {
                         <thead>
                             <tr>
                                 <th>{`Applicability`}</th>
-                               {iccPaymentData?.ICCApplicabilityDetail?.IsApplyInventoryDay && <th>{`No. of Days`}</th>}
+                                {iccPaymentData?.ICCApplicabilityDetail?.IsApplyInventoryDay && <th>{`No. of Days`}</th>}
                                 <th>{`Interest Rate (%)`}</th>
                                 <th>{`Cost (Applicability)`}</th>
                                 <th>{`Total Cost`}</th>
@@ -370,7 +372,10 @@ function ViewOtherCostDrawer(props) {
                                             <td>{detail.Applicability || '-'}</td>
                                             {iccPaymentData?.ICCApplicabilityDetail?.IsApplyInventoryDay && <td>{detail.NoOfDays || '-'}</td>}
                                             <td>{detail.Percentage ? checkForDecimalAndNull(detail.Percentage, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                            <td>{detail.Cost ? checkForDecimalAndNull(detail.Cost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                            <td> <div className='w-fit d-flex'><div id={`icc-cost${detail?.ApplicabilityDetailsId}`}>{detail.Cost ? checkForDecimalAndNull(detail.Cost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
+                                                {detail?.Applicability === 'CC' && (isIncludeOverheadAndProfitInICC || isIncludeToolCostInCCForICC) && <TooltipCustom disabledIcon={false} tooltipClass="icc-cost" id={`icc-cost${detail.ApplicabilityDetailsId}`} tooltipText={iccToolTipText} />}
+                                            </div></div>
+                                            </td>
                                             <td>{detail.TotalCost ? checkForDecimalAndNull(detail.TotalCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                                             {initialConfiguration?.IsShowCRMHead && <td>{iccPaymentData?.ICCApplicabilityDetail?.ICCCRMHead || '-'}</td>}
                                             <td>{iccPaymentData.ICCApplicabilityDetail.Remark || '-'}</td>
