@@ -3250,9 +3250,9 @@ export const Plant = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_DOMESTIC = [
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3364,9 +3364,9 @@ export const BOP_ZBC_DOMESTIC_TempData = [
 */
 export const BOP_VBC_DOMESTIC = [
     { label: 'Note', value: 'Note', },
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3376,7 +3376,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'ClientApprovedVendor', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'SourceVendorCode', value: 'SourceVendorCode', },
-    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
+    { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
@@ -3504,9 +3504,9 @@ export const BOP_VBC_DOMESTIC_TempData = [
 
 export const BOP_DETAILED_DOMESTIC = [
     { label: 'Note', value: 'Note', },
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3515,7 +3515,7 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'SourceVendorCode', value: 'SourceVendorCode', },
-    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
+    { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
     { label: "TechnologyName", value: 'TechnologyName' }, //NOUI
     { label: 'Source', value: 'Source', },
@@ -3598,9 +3598,9 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_IMPORT = [
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3722,9 +3722,9 @@ export const BOP_ZBC_IMPORT_TempData = [
     }
 ]
 export const BOP_CBC_DOMESTIC = [
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3836,9 +3836,9 @@ export const BOP_CBC_DOMESTIC_TempData = [
 */
 export const BOP_DETAILED_IMPORT = [
     { label: 'Note', value: 'Note', },
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3847,7 +3847,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'SourceVendorCode', value: 'SourceVendorCode', },
-    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
+    { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
     { label: "TechnologyName", value: 'TechnologyName' }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
@@ -3946,9 +3946,9 @@ export const BOP_DETAILED_IMPORT_TempData = [
 */
 export const BOP_VBC_IMPORT = [
     { label: 'Note', value: 'Note', },
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3958,7 +3958,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'ClientApprovedVendor', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'SourceVendorCode', value: 'SourceVendorCode', },
-    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
+    { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
@@ -4092,9 +4092,9 @@ export const BOP_VBC_IMPORT_TempData = [
     }
 ]
 export const BOP_CBC_IMPORT = [
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -8339,7 +8339,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "SAP Code", value: "SAPPartNumber", },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor", },
-    { label: 'Sourced Vendor (Code)', value: 'SourceVendorName', },
+    { label: 'Source Vendor (Code)', value: 'SourceVendorName', },
     { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
@@ -8381,7 +8381,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },
     { label: "BOP Part Name", value: "BoughtOutPartName" },
-    { label: "BOP Category", value: "BoughtOutPartCategory" },
+    { label: "BOP Part Category", value: "BoughtOutPartCategory" },
     { label: "Part Family", value: "PartFamily" },
     { label: "Division", value: "Division", },
     { label: "UOM", value: "UOM" },
@@ -8389,7 +8389,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "SAP Code", value: "SAPPartNumber", },
     { label: "Plant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "Vendor" },
-    { label: 'Sourced Vendor (Code)', value: 'SourceVendorName', },
+    { label: 'Source Vendor (Code)', value: 'SourceVendorName', },
     { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
