@@ -162,7 +162,7 @@ function AddBudget(props) {
             approvalTypeId: costingTypeId,
             plantId: plantId,
         }
-        if (initialConfiguration?.IsMasterApprovalAppliedConfigure) {
+        if (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BUDGET_ID) === true) {
             dispatch(checkFinalUser(obj, res => {
                 if (res.data?.Result) {
                     setIsFinalApprover(res.data?.Data?.IsFinalApprover)
@@ -284,7 +284,7 @@ function AddBudget(props) {
             Mode: 'master',
             approvalTypeId: costingHeadFlag
         }
-        if (initialConfiguration?.IsMasterApprovalAppliedConfigure) {
+        if (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BUDGET_ID) === true) {
             dispatch(checkFinalUser(obj, res => {
                 if (res.data?.Result) {
                     setIsFinalApprover(res.data?.Data?.IsFinalApprover)
