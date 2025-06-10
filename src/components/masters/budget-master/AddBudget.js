@@ -1,7 +1,7 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Label, Button, Tooltip } from 'reactstrap'
-import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
+import { checkForDecimalAndNull, checkForNull, number } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
 import { getCurrencySelectList, getExchangeRateSource, getPlantSelectListByType, getVendorNameByVendorSelectList, plantSelectList, setListToggle } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
@@ -419,10 +419,9 @@ function AddBudget(props) {
 
     const budgetedQuantity = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const value = beforeSave(cell)
         return (
             <>
-                <span>{value ? Number(cell) : 0}</span>
+                <span>{cell !== undefined && cell !== null && !isNaN(Number(cell)) ? Number(cell) : 0}</span>
             </>
         )
     }
@@ -446,40 +445,29 @@ function AddBudget(props) {
         );
     };
 
-    const beforeSave = (props) => {
-
-        if (props !== undefined) {
-            const cellValue = props
-            if (cellValue[0] === '-') {
-                let newValue = cellValue.slice(1);
-                if (!/^\d{0,4}(\.\d{0,6})?$/.test(newValue)) {
-                    Toaster.warning('Maximum length for integer is 4 and for decimal is 6.')
-                    return false
-                } else {
-                    return props
-                }
-
-            } else if (cellValue[0] === '+') {
-                let newValue = cellValue.slice(1);
-                if (!/^\d{0,4}(\.\d{0,6})?$/.test(newValue)) {
-                    Toaster.warning('Maximum length for integer is 4 and for decimal is 6.')
-                    return false
-                }
-
-                setCount(Number(count) + Number(newValue))
-                return true
-            } else {
-                if (!/^\d{0,4}(\.\d{0,6})?$/.test(cellValue)) {
-                    Toaster.warning('Maximum length for integer is 4 and for decimal is 6.')
-                    return false
-                } else {
-                    setCount(Number(count) + Number(cellValue))
-                    return true
-                }
-            }
+    const validateCellValue = (params) => {
+        const cellValue = params.newValue;    
+        // Handle empty values
+        if (cellValue === undefined || cellValue === null || cellValue === '') {
+            params.data[params.colDef.field] = 0;
+            return true;
         }
-    }
+    
+        const strValue = cellValue.toString().trim();
+    
+        if (number(strValue)) {
+            Toaster.warning('Invalid value. Only positive numbers are allowed.');
+            return false;
+        }
+    
+        if (!/^\d{0,4}(\.\d{0,6})?$/.test(strValue)) {
+            Toaster.warning('Maximum length for integer is 4 and for decimal is 6.');
+            return false
+        }
 
+        params.data[params.colDef.field] = Number(strValue)
+        return true
+    }
 
 
     /**
@@ -1586,17 +1574,17 @@ function AddBudget(props) {
                                                                 >
                                                                     <AgGridColumn field="Text" headerName="Net Cost" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={310} headerComponent={'costHeader'} ></AgGridColumn>
                                                                     <AgGridColumn width={115} field="April" headerName="April" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="May" headerName="May" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="June" headerName="June" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="July" headerName="July" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="August" headerName="August" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="September" headerName="September" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="October" headerName="October" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="November" headerName="November" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="December" headerName="December" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="January" headerName="January" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="February" headerName="February" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="March" headerName="March" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="May" headerName="May" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="June" headerName="June" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="July" headerName="July" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="August" headerName="August" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="September" headerName="September" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="October" headerName="October" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="November" headerName="November" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="December" headerName="December" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="January" headerName="January" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="February" headerName="February" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="March" headerName="March" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
                                                                     <AgGridColumn width={130} field="Sum" headerName="Sum" cellRenderer='actualQuantity' editable={false} valueGetter='(Number(data.March?data.March:0) + Number(data.January?data.January:0) + Number(data.February?data.February:0)+ Number(data.April?data.April:0)+ Number(data.May?data.May:0)+ Number(data.June?data.June:0)+ Number(data.July?data.July:0)+ Number(data.August?data.August:0)+ Number(data.September?data.September:0)+ Number(data.October?data.October:0)+ Number(data.November?data.November:0)+ Number(data.December?data.December:0))'></AgGridColumn>
                                                                 </AgGridReact>
                                                             </div>
