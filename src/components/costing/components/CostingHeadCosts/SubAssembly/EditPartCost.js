@@ -12,7 +12,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
 import NoContentFound from '../../../../common/NoContentFound';
-import { getSingleCostingDetails, gridDataAdded, setCostingViewData, setCostingViewDataForAssemblyTechnology, getBOPDrawerDataList } from '../../../actions/Costing';
+import { getSingleCostingDetails, gridDataAdded, setCostingViewData, setCostingViewDataForAssemblyTechnology, getBOPDrawerDataList, setIsMultiVendor, setApplicabilityForChildParts } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
 import { AWAITING_APPROVAL_ID, CBCTypeId, EMPTY_DATA, EMPTY_GUID, NFRTypeId, NCCTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, REJECTEDID, VBCTypeId, WACTypeId, ZBCTypeId, PENDING_FOR_APPROVAL_ID, INR } from '../../../../../config/constants';
@@ -112,6 +112,7 @@ function EditPartCost(props) {
                     tempObject.NetLandedCost = item?.SettledPrice
                     tempObject.EffectiveDate = item?.EffectiveDate
                     tempObject.Remark = item?.Remark
+                    tempObject.SourceVendor = item?.SourceVendor
                 }
                 tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -154,6 +155,7 @@ function EditPartCost(props) {
                     tempObject.NetLandedCost = item?.SettledPrice
                     tempObject.EffectiveDate = item?.EffectiveDate
                     tempObject.Remark = item?.Remark
+                    tempObject.SourceVendor = item?.SourceVendor
 
                 } tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -466,6 +468,9 @@ function EditPartCost(props) {
                     setTechnologyName(tempObj[0].technology)
                     dispatch(setCostingViewDataForAssemblyTechnology(tempObj))
                     dispatch(setCostingViewData(tempObj))
+                    dispatch(setIsMultiVendor(dataFromAPI?.IsMultiVendorCosting))
+                    dispatch(setApplicabilityForChildParts(dataFromAPI?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
+
 
                 }
             },
@@ -684,21 +689,23 @@ function EditPartCost(props) {
                 "CostingSettledDetails": tempArray,
                 "LoggedInUserId": loggedInUserId()
             }
+            dispatch(saveSettledCostingDetails(obj, res => {
+                let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
+                    checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) +
+                    checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
+                let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) +
+                    checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+                    checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+                    checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
+                    checkForNull(totalOverheadPrice) +
+                    checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) -
+                    checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
-            dispatch(saveSettledCostingDetails(obj, res => { }))
-            let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
-                checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost))
-            let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) +
-                checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-                checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
-                checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
-                checkForNull(totalOverheadPrice) +
-                checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) -
-                checkForNull(DiscountCostData?.HundiOrDiscountValue)
-
-            let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
-            dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
-            dispatch(gridDataAdded(true))
+                let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
+                dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
+                    dispatch(gridDataAdded(true))
+                }))
+            }))
         }
 
         props?.closeDrawer('')
@@ -744,7 +751,7 @@ function EditPartCost(props) {
         }
         setIsDrawerOpen(false)
     }
-   
+
 
     // Add the onRemarkPopUpClick function
     const onRemarkPopUpClick = (index) => {
@@ -752,16 +759,16 @@ function EditPartCost(props) {
         setRemarkIndex(index)
         // Set the remark state to the current remark of the selected BOP item
         setRemark(selectedBOPItems[index]?.Remark || '')
-       
+
     }
 
     // Add the onRemarkPopUpClose function
     const onRemarkPopUpClose = (index, type = '') => {
         setOpenRemarkPopUp(false)
-       
+
     }
     const onRemarkPopUpConfirm = () => {
-       let editedBOPItem = selectedBOPItems[remarkIndex]
+        let editedBOPItem = selectedBOPItems[remarkIndex]
         editedBOPItem = {
             ...editedBOPItem,
             Remark: remark,
@@ -853,6 +860,9 @@ function EditPartCost(props) {
                                             {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
                                                 <th>{vendorLabel} (Code)</th>
                                             }
+                                            {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId)  && isBOPView &&
+                                                <th>Source {vendorLabel} (Code)</th>
+                                            }
                                             {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
                                                 <th>Customer (Code)</th>
                                             }
@@ -872,6 +882,9 @@ function EditPartCost(props) {
                                                     <tr key={index}>
                                                         {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
                                                             <td>{`${item?.Vendor || '-'}`}</td>
+                                                        }
+                                                        {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
+                                                            <td>{`${item?.SourceVendor || '-'}`}</td>
                                                         }
                                                         {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
                                                             <td>{`${item.CustomerName || '-'} (${item.CustomerCode || '-'})`}</td>

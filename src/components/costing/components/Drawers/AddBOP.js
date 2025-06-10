@@ -295,6 +295,7 @@ function AddBOP(props) {
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                         <AgGridColumn field="Specification" cellRenderer={'specificationFormat'}></AgGridColumn>
                         {costData && costData.VendorType === ZBC && <AgGridColumn field="Vendor"></AgGridColumn>}
+                        <AgGridColumn field="SourceVendor" headerName={"Source Vendor"}></AgGridColumn>
                         <AgGridColumn field="Currency" headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="CostingCurrency" headerName="Costing Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>

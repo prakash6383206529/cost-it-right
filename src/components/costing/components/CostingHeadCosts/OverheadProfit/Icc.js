@@ -31,8 +31,7 @@ function Icc(props) {
 
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-    const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData, costingDetailForIcc } = useSelector(state => state.costing)
-
+    const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData, costingDetailForIcc, IsIncludeApplicabilityForChildPartsInICC } = useSelector(state => state.costing)
     const ICCApplicabilityDetail = costingDetailForIcc && costingDetailForIcc.ICCApplicabilityDetail !== null ? costingDetailForIcc.ICCApplicabilityDetail : {}
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
     const [tempInventoryObj, setTempInventoryObj] = useState(ICCApplicabilityDetail)
@@ -60,7 +59,8 @@ function Icc(props) {
     })
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData?.CostingTypeId === WACTypeId)
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData?.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && !IsMultiVendorCosting))
 
     const dispatch = useDispatch()
 
@@ -93,18 +93,14 @@ function Icc(props) {
         if(!CostingViewMode){
             callModelTypeApi(state.modelType)
         }
-    }, [costingDetailForIcc])
+    }, [costingDetailForIcc,IsIncludeApplicabilityForChildPartsInICC])
 
     /**
      * @method onPressInventory
      * @description  USED TO HANDLE INVENTORY CHANGE
      */
     const onPressInventory = (value) => {
-
         setIsInventoryApplicable(!IsInventoryApplicable)
-
-        // callInventoryAPIByModelType(value)
-
         dispatch(gridDataAdded(true))
         dispatch(isOverheadProfitDataChange(true))
         setInterestRateFixedLimit(false)
@@ -126,6 +122,7 @@ function Icc(props) {
 
     }, [])
 
+
     /**
     * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
     */
@@ -143,7 +140,7 @@ function Icc(props) {
       * @method checkInventoryApplicability
       * @description INVENTORY APPLICABILITY CALCULATION
       */
-    const checkInventoryApplicability = (data, IsApplyInventoryDay) => {
+    const checkInventoryApplicability = (dataObj, IsApplyInventoryDay) => {
         if (headerCosts !== undefined && Text !== '' && !CostingViewMode) {
             let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData?.length > 0 && OverheadProfitTabData?.[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData?.[0]?.CostingPartDetails : null;
             let NetRawMaterialsCost;
@@ -158,19 +155,18 @@ function Icc(props) {
             const toolCost = checkForNull(ToolTabData?.[0]?.CostingPartDetails?.TotalToolCost)
             const ConversionCostForCalculation = costData?.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) + checkForNull(includeToolCostIcc ? toolCost : 0) : headerCosts.NetProcessCost + headerCosts.NetOperationCost + checkForNull(includeToolCostIcc ? toolCost : 0);
             let totalCost = 0;
-            if (Array.isArray(data)) {
-                const updatedData = data.map(item => {
+            if (Array.isArray(dataObj)) {
+                const updatedData = dataObj.map(item => {
                     let cost = 0;
                     switch (item.Applicability) {
                         case 'RM':
-                            cost = NetRawMaterialsCost;
-                            break;
+                        case 'Part Cost':
+                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0); break;
                         case 'BOP':
-                            cost = headerCosts.NetBoughtOutPartCost;
+                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost) : (checkForNull(headerCosts?.NetBoughtOutPartCost) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0));
                             break;
                         case 'CC':
-                            cost = ConversionCostForCalculation;
-                            break;
+                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsConversionCost) + ConversionCostForCalculation : (ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)); break;
                         case 'Overhead':
                             cost = checkForNull(includeOverHeadProfitIcc ? TopHeaderValues.OverheadCost : 0)
                             break;
@@ -218,29 +214,51 @@ function Icc(props) {
             checkInventoryApplicability(state?.iccDetails, state?.isApplyInventoryDay)
         }
     }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight, includeOverHeadProfitIcc, totalOverHeadAndProfit, includeToolCostIcc]);
-
     useEffect(() => {
-        
-        if(state.iccDetails && state.iccDetails?.length>0){
+        if (state.iccDetails && state.iccDetails?.length > 0) {
             const totalIccNetCost = state.iccDetails.reduce((sum, item) => {
                 return sum + (item.TotalCost || 0);
             }, 0);
-            
+
             // Now set it in state
             setState(prev => ({
                 ...prev,
                 totalIccNetCost: totalIccNetCost
             }));
-            setValue('totalIccNetCost',checkForDecimalAndNull(totalIccNetCost, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('totalIccNetCost', checkForDecimalAndNull(totalIccNetCost, getConfigurationKey()?.NoOfDecimalForPrice))
         }
         // Only update if either InventoryObj or iccDetails have meaningful changes
         const hasChanges = JSON.stringify(InventoryObj) !== JSON.stringify(tempInventoryObj) ||
             JSON.stringify(state.iccDetails) !== JSON.stringify(tempInventoryObj?.ICCCostingApplicabilityDetails);
         if (hasChanges && !CostingViewMode) {
+            // Filter ICC details based on conditions
+            const filteredData = state?.iccDetails?.length > 0 
+                ? state.iccDetails.filter(item => {
+                    const applicability = item?.Applicability;
+
+                    // Hide Overhead and Profit if includeOverHeadProfitIcc is false
+                    if (!includeOverHeadProfitIcc && (applicability === "Overhead" || applicability === "Profit")) {
+                        return false;
+                    }
+
+                    // If includeChildPartCost is true, hide Part Cost
+                    if (IsIncludeApplicabilityForChildPartsInICC && applicability === "Part Cost") {
+                        return false;
+                    }
+
+                    // If includeChildPartCost is false, hide RM
+                    if (!IsIncludeApplicabilityForChildPartsInICC && applicability === "RM") {
+                        return false;
+                    }
+
+                    return true;
+                })
+                : [];
+
             const tempObj = {
                 ...InventoryObj,
                 Remark: getValues('iccRemark'),
-                ICCCostingApplicabilityDetails: includeOverHeadProfitIcc ? state.iccDetails : state.iccDetails?.filter(item => item.Applicability !== 'Overhead' && item.Applicability !== 'Profit')
+                ICCCostingApplicabilityDetails: filteredData
             }
             props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
         }
@@ -288,7 +306,7 @@ function Icc(props) {
     const callModelTypeApi = (ModelTypeValues) => {
         if (ModelTypeValues && ModelTypeValues !== '' && ModelTypeValues.value !== undefined) {
             const reqParams = {
-                ModelTypeId: ModelTypeValues.value,
+                ModelTypeId: ModelTypeValues?.value,
                 VendorId: (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? costData.VendorId : null,
                 costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : Number(costData.CostingTypeId === WACTypeId) ? ZBCTypeId : costData.CostingTypeId,
                 EffectiveDate: CostingEffectiveDate,
@@ -296,7 +314,8 @@ function Icc(props) {
                 customerId: costData.CustomerId,
                 technologyId: null,
                 partFamilyId: costData?.PartFamilyId,
-                MethodTypeId: null
+                MethodTypeId: null,
+                IsMultiVendorCosting: IsMultiVendorCosting
             }
             dispatch(getIccDataByModelType(reqParams, (res) => {
                 let data = res?.data?.Data
@@ -598,7 +617,7 @@ function Icc(props) {
                                     />
                                 </Col>)
                         }
-                       {state.iccMethod !== 'Credit Based' &&  <Col md="3">
+                        {state.iccMethod !== 'Credit Based' && <Col md="3">
                             <TextFieldHookForm
                                 name="totalIccNetCost"
                                 label="ICC Net Cost"
@@ -719,6 +738,7 @@ function Icc(props) {
                                 setValue={setValue}
                                 includeOverHeadProfitIcc={includeOverHeadProfitIcc}
                                 isCreditBased={state.iccMethod === 'Credit Based'}
+                                includeChildPartCost={IsIncludeApplicabilityForChildPartsInICC}
                             />
                         </Col>
                         <Col md="1" className='second-section mb-3'>

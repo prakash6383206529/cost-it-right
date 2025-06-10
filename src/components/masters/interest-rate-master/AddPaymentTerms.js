@@ -22,12 +22,13 @@ import WarningMessage from '../../common/WarningMessage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import { checkEffectiveDate } from '../masterUtil';
 import AddOverheadMasterDetails from '../overhead-profit-master/AddOverheadMasterDetails';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 
 
 
@@ -98,7 +99,10 @@ const AddPaymentTerms = (props) => {
         CreditBasedAnnualICCPercent: 0,
         IsPaymentTermsRecord: true,
         RepaymentPeriod: "",
-        isHideModelType: true
+        isHideModelType: true,
+        selectedTechnologies: [],
+        IsAssociated:props?.IsPaymentTermAssociated
+
     });
 
     // Selectors
@@ -115,9 +119,9 @@ const AddPaymentTerms = (props) => {
             dispatch(getClientSelectList(() => {}));
             dispatch(getPartFamilySelectList(() => {}));
         }
-        const isRequestForMultiTechnology = state?.isAssemblyCheckbox;
-        dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, () => {}));
+        dispatch(fetchApplicabilityList(null, conditionTypeId, null, () => {}));
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => {}));
+        dispatch(getCostingSpecificTechnology(loggedInUserId(), res => {}))
         getDetail();
         if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
             dispatch(getRawMaterialNameChild(() => {}));
@@ -151,15 +155,15 @@ const AddPaymentTerms = (props) => {
 
     useEffect(() => {
         if (!(props?.data?.isEditFlag || state.isViewMode)) {
-            const hasRequiredFields = (
+            const hasRequiredFields = !!(
             (state.costingTypeId === ZBCTypeId) ||
             (state.costingTypeId === CBCTypeId && state?.client) ||
             (state.costingTypeId === VBCTypeId && state?.vendorName)
             );
-            if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
+            // if (hasRequiredFields && state?.EffectiveDate && state?.selectedPlants) {
             const { plantArray, cbcPlantArray } = getPlants();
             let data = {
-                vendorInterestRateId: state?.InterestRateId,
+                vendorInterestRateId: null,
                 costingHeadId: state?.costingTypeId,
                 plantId: state?.costingTypeId === CBCTypeId ? cbcPlantArray[0]?.PlantId : plantArray[0]?.PlantId,
                 vendorId: state?.costingTypeId === VBCTypeId ? state?.vendorName.value : null,
@@ -171,36 +175,39 @@ const AddPaymentTerms = (props) => {
                 effectiveDate: DayTime(state?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                 technologyId: state.isAssemblyCheckbox ? ASSEMBLY : null
             }
-            dispatch(getInterestRateDataCheck(data, (res) => {
-                if (res?.status === 200) {
-                let Data = res?.data?.Data;
-                if(Object.keys(Data).length > 0){
-                    setValue("Remark", Data.Remark)
-                    setValue("costingTypeId", Data.CostingTypeId);
-                    setState(prev => ({ ...prev, 
-                    IsFinancialDataChanged: false,
-                    isEditFlag: true,
-                    remarks: Data.Remark,
-                    files: Data.Attachements,
-                    RawMaterial: Data.RawMaterialName !== undefined ? { label: Data?.RawMaterialName, value: Data?.RawMaterialChildId } : [],
-                    RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data?.RawMaterialGrade, value: Data?.RawMaterialGradeId } : [],
-                    ApplicabilityDetails: Data?.PaymentTermsApplicabilityDetails !== undefined ? Data.PaymentTermsApplicabilityDetails : [],
-                    minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
-                    InterestRateId: Data?.VendorInterestRateId,
+
+            let showPartFamily = getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily
+            if(hasRequiredFields && data?.plantId && (!showPartFamily || data?.partFamilyId) && DayTime(data?.effectiveDate).isValid()){
+                dispatch(getInterestRateDataCheck(data, (res) => {
+                    if (res?.status === 200) {
+                    let Data = res?.data?.Data;
+                    if(Object.keys(Data).length > 0){
+                        setValue("Remark", Data.Remark)
+                        setValue("costingTypeId", Data.CostingTypeId);
+                        setState(prev => ({ ...prev, 
+                        IsFinancialDataChanged: false,
+                        isEditFlag: true,
+                        remarks: Data.Remark,
+                        files: Data.Attachements,
+                        RawMaterial: Data.RawMaterialName !== undefined ? { label: Data?.RawMaterialName, value: Data?.RawMaterialChildId } : [],
+                        RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data?.RawMaterialGrade, value: Data?.RawMaterialGradeId } : [],
+                        ApplicabilityDetails: Data?.PaymentTermsApplicabilityDetails !== undefined ? Data.PaymentTermsApplicabilityDetails : [],
+                        minEffectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
+                        InterestRateId: Data?.VendorInterestRateId,
+                        }));
+                    }
+                    } else {
+                    setState(prev => ({
+                        ...prev,
+                        isEditFlag: false,
+                        ApplicabilityDetails: [],
+                        files: [],
+                        IsFinancialDataChanged: true,
+                        minEffectiveDate: '',
+                        InterestRateId: "",
                     }));
-                }
-                } else {
-                setState(prev => ({
-                    ...prev,
-                    isEditFlag: false,
-                    ApplicabilityDetails: [],
-                    files: [],
-                    IsFinancialDataChanged: true,
-                    minEffectiveDate: '',
-                    InterestRateId: "",
+                    }
                 }));
-                }
-            }));
             }
         }
     }, [state?.ModelType, state?.selectedPlants, state?.vendorName, state?.client, state?.EffectiveDate, state.isAssemblyCheckbox]);
@@ -224,6 +231,13 @@ const AddPaymentTerms = (props) => {
                         Data: Data,
                     }));
 
+                    let technologyArray = [];
+                    if(Data.Technologies && Data.Technologies.length > 0){
+                        Data.Technologies.map((item) => {
+                        technologyArray.push({ label: item.TechnologyName, value: item.TechnologyId })
+                        return null;
+                        })
+                    }
                     // setValue("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '');
                     setValue("EffectiveDate", DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '')
                     setState(prev => ({ ...prev, minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' }));
@@ -235,6 +249,7 @@ const AddPaymentTerms = (props) => {
                     setValue("Plant", Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId }] : [])
                     setValue("DestinationPlant", Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {})
                     setValue("ICCMethod", Data.ICCMethod !== undefined ? { label: Data.ICCMethod, value: Data.ICCMethod } : [])
+                    setValue("Technology", technologyArray);
 
                     setTimeout(() => {
                         const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability);
@@ -255,6 +270,7 @@ const AddPaymentTerms = (props) => {
                             RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
                             isAssemblyCheckbox: Data?.TechnologyId === ASSEMBLY ? true : false ,
                             selectedPartFamily: Data?.PartFamily !== undefined ? { label: Data?.PartFamily, value: Data?.PartFamilyId } : [],
+                            selectedTechnologies: technologyArray,
                             isLoader: false
                         }));
                     }, 500);
@@ -298,7 +314,7 @@ const AddPaymentTerms = (props) => {
 
     // Form submission
     const onSubmit = debounce((values) => {
-        const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, EffectiveDate, DropdownNotChanged, RMGrade, RawMaterial, selectedPartFamily } = state;
+        const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, EffectiveDate, DropdownNotChanged, RMGrade, RawMaterial, selectedPartFamily, selectedTechnologies } = state;
         const { data } = props;
         const userDetail = userDetails();
         const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'));
@@ -330,6 +346,13 @@ const AddPaymentTerms = (props) => {
             }
         }
         setState(prev => ({ ...prev, isVendorNameNotSelected: false }));
+        let technologyArray = [];
+            if(selectedTechnologies && selectedTechnologies.length > 0){
+            selectedTechnologies && selectedTechnologies.map((item) => {
+                technologyArray.push({ TechnologyName: item.label, TechnologyId: item.value })
+                return null;
+            })
+        }
 
         let formData = {
             "VendorInterestRateId": state.isEditFlag ? InterestRateId : null,
@@ -340,6 +363,7 @@ const AddPaymentTerms = (props) => {
             "CostingTypeId": costingTypeId,
             "VendorIdRef": costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
             "EffectiveDate": DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+            "Technologies": technologyArray,
             "IsActive": true,
             "CreatedDate": '',
             "CreatedBy": loggedInUserId(),
@@ -358,13 +382,16 @@ const AddPaymentTerms = (props) => {
         };
 
         if (state.isEditFlag) {
-            if (JSON.stringify(Data?.PaymentTermsApplicabilityDetails) === JSON.stringify(state?.ApplicabilityDetails) && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) &&
-                DropdownNotChanged) {
-                Toaster.warning('Please change the data to save Interest Rate Details');
+            if(JSON.stringify(state?.ApplicabilityDetails ?? []) === JSON.stringify(Data?.PaymentTermsApplicabilityDetails ?? []) &&
+                DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && DropdownNotChanged &&
+                _.isEqual(Data?.Technologies, technologyArray)
+            ){
+                Toaster.warning('Please change the data to save Payment Term Details');
                 return false;
             }
+
             let financialDataChanged = JSON.stringify(Data?.PaymentTermsApplicabilityDetails) !== JSON.stringify(state?.ApplicabilityDetails);
-            if (financialDataChanged && checkEffectiveDate(EffectiveDate, Data?.EffectiveDate) && props?.IsPaymentTermAssociated) {
+            if (financialDataChanged && DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(EffectiveDate).format('YYYY-MM-DD HH:mm:ss') && props?.IsPaymentTermAssociated) {
                 setState(prev => ({ ...prev, setDisable: false }));
                 Toaster.warning('Please update the Effective date.');
                 return false;
@@ -373,7 +400,7 @@ const AddPaymentTerms = (props) => {
             dispatch(updateInterestRate(formData, (res) => {
                 setState(prev => ({ ...prev, setDisable: false }));
                 if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+                    Toaster.success(MESSAGES.UPDATE_PAYMENT_TERMS_SUCESS);
                     cancel('submit');
                 }
             }));
@@ -382,7 +409,7 @@ const AddPaymentTerms = (props) => {
             dispatch(createInterestRate(formData, (res) => {
                 setState(prev => ({ ...prev, setDisable: false }));
                 if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
+                    Toaster.success(MESSAGES.PAYMENT_TERM_ADDED_SUCCESS);
                     cancel('submit');
                 }
             }));

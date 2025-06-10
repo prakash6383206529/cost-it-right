@@ -55,10 +55,10 @@ function SurfaceTreatment(props) {
   const [extraCostDetails, setExtraCostDetails] = useState({ TransportationCost: checkForNull(item?.CostingPartDetails?.TransportationCost) ?? 0, TransportationDetails: item?.CostingPartDetails?.TransportationDetails })
 
   const [paintAndMaskingDetails, setPaintAndMaskingDetails] = useState({ TotalPaintCost: checkForNull(item?.CostingPartDetails?.TotalPaintCost) ?? 0, PaintCost: checkForNull(item?.CostingPartDetails?.PaintCost) ?? 0, TapeCost: checkForNull(item?.CostingPartDetails?.TapeCost) ?? 0, PaintConsumptionCost: checkForNull(item?.CostingPartDetails?.PaintConsumptionCost) ?? 0 })
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
 
 
-
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting)
 
   const [errorObjectTransport, setErrorObjectTransport] = useState({})
   const [errorObjectSurfaceTreatment, setErrorObjectSurfaceTreatment] = useState({})
@@ -409,7 +409,7 @@ function SurfaceTreatment(props) {
 
   const updateExtraCost = () => {
     let tempData = extraCostDetails?.TransportationDetails ? [...extraCostDetails?.TransportationDetails] : []
-    const costValues = getCostValues(item, costData, subAssemblyTechnologyArray);
+    const costValues = getCostValues(item, costData, subAssemblyTechnologyArray,IsMultiVendorCosting);
     const { rawMaterialsCost, conversionCost, netpartCost } = costValues;
     tempData.map(item => {
       if (item?.CostingConditionMasterId) {

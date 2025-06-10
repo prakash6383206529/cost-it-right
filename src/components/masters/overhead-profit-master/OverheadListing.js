@@ -48,7 +48,7 @@ function OverheadListing(props) {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
     const { t } = useTranslation("common")
     const permissions = useContext(ApplyPermission);
-    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+    const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -155,7 +155,7 @@ function OverheadListing(props) {
         dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
-        setSelectedRowForPagination([])
+        dispatch(setSelectedRowForPagination([]))
         dispatch(resetStatePagination());
         return () => {
             dispatch(setResetCostingHead(true, "costingHead"))
@@ -547,7 +547,6 @@ function OverheadListing(props) {
 
 
     const onRowSelect = (event) => {
-
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
@@ -596,7 +595,6 @@ function OverheadListing(props) {
     }
     const OVERHEAD_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(OVERHEAD_DOWNLOAD_EXCEl, "MasterLabels")
     const onBtExport = () => {
-
         let tempArr = []
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (overheadProfitListAll ? overheadProfitListAll : [])
@@ -803,6 +801,7 @@ function OverheadListing(props) {
                                         >
                                             <AgGridColumn field="CostingHead" minWidth={200} headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer} floatingFilterComponentParams={floatingFilterStatus}
                                                 floatingFilterComponent="statusFilter"></AgGridColumn>
+                                            <AgGridColumn field="TechnologyName" tooltipField='TechnologyName' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}

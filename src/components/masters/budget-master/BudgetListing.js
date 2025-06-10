@@ -19,7 +19,7 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import WarningMessage from '../../common/WarningMessage'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash'
-import { TourStartAction, disabledClass, setResetCostingHead } from '../../../actions/Common'
+import { TourStartAction, disabledClass, setListToggle, setResetCostingHead } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { Drawer } from '@material-ui/core'
 import Attachament from '../../costing/components/Drawers/Attachament'
@@ -83,7 +83,8 @@ function BudgetListing(props) {
     const { volumeDataList, volumeDataListForDownload } = useSelector(state => state.volume);
     const { globalTakes } = useSelector(state => state.pagination)
     const { selectedRowForPagination } = useSelector((state => state.simulation))
-    const [isImport, setIsImport] = useState(props?.isImport ? props?.isImport : false)
+    const { listToggle } = useSelector((state) => state.comman)
+    const [isImport, setIsImport] = useState(listToggle.Budget);
     const dispatch = useDispatch();
     const { t } = useTranslation("common")
     const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
@@ -561,6 +562,7 @@ function BudgetListing(props) {
         setBulkUploadBtn(false)
     }
     const importToggle = () => {
+        dispatch(setListToggle({ Budget: !isImport }));
         setIsImport(!isImport)
         getTableListData(0, defaultPageSize, true, !isImport)
 
