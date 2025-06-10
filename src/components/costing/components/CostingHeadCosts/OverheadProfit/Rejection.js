@@ -191,7 +191,7 @@ function Rejection(props) {
         const BOP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost)) : checkForNull(headerCosts?.NetBoughtOutPartCost);
         const CCForMachining = checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
         const CC = partType ? IsIncludeApplicabilityForChildParts
-            ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) + checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
+            ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) + checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
             : checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
             : IsIncludeApplicabilityForChildParts
                 ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) + checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
