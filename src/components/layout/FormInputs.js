@@ -668,9 +668,9 @@ export function renderText(field) {
         />
       </div>
       {children}
-      {(touched || error) && (
+      {(touched && (validateSpecialChars(input.value) || error)) && (  //fixed warning message
         <div className={field.id==="plantCurrency" ? "mt-2" : "text-help mb-2"}>
-          {touched && error}
+          {validateSpecialChars(input.value) || error}
         </div>
       )}
       {field?.warningMessage && (
