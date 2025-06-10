@@ -45,6 +45,7 @@ const gridOptions = {};
 
 const InterestRateListing = (props) => {
   const dispatch = useDispatch();
+  const { AddAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, ViewAccessibility, BulkUploadAccessibility } = props;
   const [state, setState] = useState({
     tableData: [],
     vendorName: [],
@@ -54,12 +55,6 @@ const InterestRateListing = (props) => {
     data: { isEditFlag: false, ID: '', IsAssociatedData: false },
     toggleForm: false,
     isBulkUpload: false,
-    ViewAccessibility: false,
-    AddAccessibility: false,
-    EditAccessibility: false,
-    DeleteAccessibility: false,
-    BulkUploadAccessibility: false,
-    DownloadAccessibility: false,
     gridColumnApi: null,
     rowData: null,
     sideBar: { toolPanels: ['columns'] },
@@ -181,7 +176,7 @@ const InterestRateListing = (props) => {
           setDisableDownload(false)
           dispatch(disabledClass(false))
           setTimeout(() => {
-              let button = document.getElementById('Excel-Downloads-Interest-Master');
+              let button = document.getElementById('Excel-Downloads-interestRateListing');
               button && button.click()
           }, 500);
       }
@@ -291,8 +286,6 @@ const InterestRateListing = (props) => {
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
- 
     return (
       <>
         {ViewAccessibility && <Button id={`interesetRateListing_view${props.rowIndex}`} className={"View mr-2 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
@@ -517,7 +510,7 @@ const InterestRateListing = (props) => {
     dispatch(resetStatePagination())
     setDataCount(0)
 }
-  const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = state;
+  const { toggleForm, data, isBulkUpload, noData } = state;
   const ExcelFile = ReactExport.ExcelFile;
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -628,8 +621,8 @@ const InterestRateListing = (props) => {
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                {/* <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                 {/* <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn> */}
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                 {/* <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}

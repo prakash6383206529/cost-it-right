@@ -247,7 +247,7 @@ const PaymentTermsListing = (props) => {
     const loggedInUser = loggedInUserId()
     dispatch(deleteInterestRate(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
-        Toaster.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
+        Toaster.success(MESSAGES.DELETE_PAYMENT_TERMS_SUCESS);
         setState((prevState) => ({ ...prevState, dataCount: 0 }))
         // getTableListData()
         getDataList(null, null, null, null, pageRecord, globalTakes, true, floatingFilterData);
@@ -623,7 +623,7 @@ const PaymentTermsListing = (props) => {
           </div>
 
           {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Payment Terms'} isZBCVBCTemplate={true} messageLabel={'Payment Terms'} anchor={'right'} />}
-          {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />}
+          {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.PAYMENTTERMS_DELETE_ALERT}`} />}
         </div >
       </div >
     </ >
