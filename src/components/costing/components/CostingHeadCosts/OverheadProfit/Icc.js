@@ -258,7 +258,7 @@ function Icc(props) {
             const tempObj = {
                 ...InventoryObj,
                 Remark: getValues('iccRemark'),
-                ICCCostingApplicabilityDetails: includeOverHeadProfitIcc ? state.iccDetails : state.iccDetails?.filter(item => item.Applicability !== 'Overhead' && item.Applicability !== 'Profit')
+                ICCCostingApplicabilityDetails: filteredData
             }
             props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
         }
