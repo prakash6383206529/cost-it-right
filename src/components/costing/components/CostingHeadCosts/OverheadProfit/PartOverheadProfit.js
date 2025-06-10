@@ -86,6 +86,7 @@ function PartOverheadProfit(props) {
         "IsIncludeToolCostWithOverheadAndProfit": props?.IsIncludeToolCost,
         "IsIncludeOverheadAndProfitInICC": props?.IncludeOverheadProfitInIcc,
         "IsIncludeToolCostInCCForICC": props?.IncludeToolcostInCCForICC,
+        // "IsIncludeApplicabilityForChildPartsInICC": props?.IncludeApplicabilityForChildPartsInICC,
         "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost),
         "BasicRate": basicRate,
         "CostingPartDetails": {

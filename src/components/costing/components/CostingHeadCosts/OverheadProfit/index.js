@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isMultiTechnologyCosting, OverheadAndProfitTooltip, } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, filterApplicabilityDetails, getConfigurationKey, isMultiTechnologyCosting, OverheadAndProfitTooltip, } from '../../../../../helper';
 import { fetchModelTypeAPI } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
@@ -67,8 +67,8 @@ function OverheadProfit(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const SurfaceTreatmentCost = useContext(SurfaceCostContext);
   const costingHead = useSelector(state => state.comman.costingHead)
-  
-  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI, currencySource, exchangeRateData } = useSelector(state => state.costing)
+
+  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI, currencySource, exchangeRateData, IsIncludeApplicabilityForChildParts } = useSelector(state => state.costing)
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
 
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -76,7 +76,8 @@ function OverheadProfit(props) {
   const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
   const [showWarning, setShowWarning] = useState('')
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
 
   const [modelType, setModelType] = useState((data?.CostingPartDetails && data?.CostingPartDetails.ModelType !== null) ? { label: data?.CostingPartDetails?.ModelType, value: data?.CostingPartDetails?.ModelTypeId } : [])
 
@@ -109,7 +110,7 @@ function OverheadProfit(props) {
     setOverheadValues(overheadObj, false)
     setProfitValues(profitObj, false)
     setIsSurfaceTreatmentAdded(false)
-  }, [IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, SurfaceTreatmentCost.NetSurfaceTreatmentCost])
+  }, [IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, SurfaceTreatmentCost.NetSurfaceTreatmentCost,IsIncludeApplicabilityForChildParts])
 
   // useEffect(() => {
   //   IncludeSurfaceTreatmentCall()
@@ -154,8 +155,10 @@ function OverheadProfit(props) {
     }
 
   }, [headerCosts && headerCosts.NetTotalRMBOPCC])
-
-
+  
+useEffect(() => {
+  callModelAPI(modelType)
+}, [IsIncludeApplicabilityForChildParts])
 
   const overheadFixedFieldValues = useWatch({
     control,
@@ -174,14 +177,14 @@ function OverheadProfit(props) {
         "OverheadId": overheadObj?.OverheadId || null,
         "OverheadCRMHead": overheadObj?.OverheadCRMHead || "",
         "Remark": overheadObj?.Remark || "",
-        "CostingApplicabilityDetails": overheadObj?.CostingApplicabilityDetails || []
+        "CostingApplicabilityDetails": partType ? filterApplicabilityDetails(overheadObj?.CostingApplicabilityDetails, IsIncludeApplicabilityForChildParts) : overheadObj?.CostingApplicabilityDetails
       }
       let profitTempObj = {
         "ProfitDetailId": profitObj?.ProfitDetailId || null,
         "ProfitId": profitObj?.ProfitId || null,
         "ProfitCRMHead": profitObj?.ProfitCRMHead || "",
         "Remark": profitObj?.Remark || "",
-        "CostingApplicabilityDetails": profitObj?.CostingApplicabilityDetails || []
+        "CostingApplicabilityDetails": partType ? filterApplicabilityDetails(profitObj?.CostingApplicabilityDetails, IsIncludeApplicabilityForChildParts) : profitObj?.CostingApplicabilityDetails || []
       }
       if (!CostingViewMode) {
         props.setOverheadDetail({ overheadObj: tempObj, profitObj: profitTempObj, modelType: modelType }, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
@@ -257,6 +260,60 @@ function OverheadProfit(props) {
     }
 
   }
+  const callModelAPI = (modelType) => {
+    if(modelType && modelType !== '' && modelType.value !== undefined){
+    const reqParams = {
+      ModelTypeId: modelType.value,
+      VendorId: (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? costData.VendorId : EMPTY_GUID,
+      // costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
+      costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : Number(costData.CostingTypeId === WACTypeId) ? ZBCTypeId : costData.CostingTypeId,
+      EffectiveDate: CostingEffectiveDate,
+      plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
+      customerId: costData.CustomerId,
+      rawMaterialGradeId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
+      rawMaterialChildId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
+      technologyId: IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting) ? costData?.TechnologyId : null,
+      partFamilyId: costData?.PartFamilyId ? costData?.PartFamilyId : EMPTY_GUID,
+      IsMultiVendorCosting:IsMultiVendorCosting
+    }
+
+    dispatch(getOverheadProfitDataByModelType(reqParams, res => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data;
+        let showWarning = false
+
+        if (isBreakupBoughtOutPartCostingFromAPI) {
+          showWarning = true
+        } else {
+          showWarning = false
+        }
+        setOverheadObj(Data?.CostingOverheadDetail)
+        if (Data.CostingOverheadDetail) {
+          setTimeout(() => {
+            setOverheadValues(Data.CostingOverheadDetail, true)
+          }, 200)
+        }
+        dispatch(gridDataAdded(true))
+
+        setProfitObj(Data.CostingProfitDetail)
+        if (Data.CostingProfitDetail) {
+          setTimeout(() => {
+            setProfitValues(Data.CostingProfitDetail, true)
+          }, 200)
+        }
+        dispatch(gridDataAdded(true))
+
+        if (showWarning) {
+          setShowWarning(true)
+        } else {
+          setShowWarning(false)
+        }
+        //setRejectionObj(Data.CostingRejectionDetail)
+        // setIsSurfaceTreatmentAdded(false)
+      }
+    }))
+  }
+  }
 
   /**
     * @method handleModelTypeChange
@@ -278,56 +335,8 @@ function OverheadProfit(props) {
       setIsSurfaceTreatmentAdded(false)
       if (newValue && newValue !== '' && newValue.value !== undefined && costData.CostingTypeId !== undefined) {
         setModelType(newValue)
-
-        const reqParams = {
-          ModelTypeId: newValue.value,
-          VendorId: (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? costData.VendorId : EMPTY_GUID,
-          // costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
-          costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : Number(costData.CostingTypeId === WACTypeId) ? ZBCTypeId : costData.CostingTypeId,
-          EffectiveDate: CostingEffectiveDate,
-          plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
-          customerId: costData.CustomerId,
-          rawMaterialGradeId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
-          rawMaterialChildId: initialConfiguration?.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
-          technologyId: IdForMultiTechnology.includes(String(costData?.TechnologyId)) ? costData?.TechnologyId : null,
-          partFamilyId: costData?.PartFamilyId ? costData?.PartFamilyId : EMPTY_GUID,
-        }
-
-        dispatch(getOverheadProfitDataByModelType(reqParams, res => {
-          if (res && res.data && res.data.Data) {
-            let Data = res.data.Data;
-            let showWarning = false
-
-              if (isBreakupBoughtOutPartCostingFromAPI) {
-                showWarning = true
-              } else {
-                showWarning = false
-              }
-              setOverheadObj(Data?.CostingOverheadDetail)
-              if (Data.CostingOverheadDetail) {
-                setTimeout(() => {
-                  setOverheadValues(Data.CostingOverheadDetail, true)
-                }, 200)
-              }
-              dispatch(gridDataAdded(true))
-           
-              setProfitObj(Data.CostingProfitDetail)
-              if (Data.CostingProfitDetail) {
-                setTimeout(() => {
-                  setProfitValues(Data.CostingProfitDetail, true)
-                }, 200)
-              }
-              dispatch(gridDataAdded(true))
-         
-            if (showWarning) {
-              setShowWarning(true)
-            } else {
-              setShowWarning(false)
-            }
-            //setRejectionObj(Data.CostingRejectionDetail)
-            // setIsSurfaceTreatmentAdded(false)
-          }
-        }))
+        callModelAPI(newValue)
+       
       } else {
         setModelType([])
       }
@@ -349,11 +358,12 @@ function OverheadProfit(props) {
     if (!CostingViewMode) {
       const CutOffCost = checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff)
       const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
+      const OverheadDetail = OverheadProfitTabData[0]?.CostingPartDetails || {}
 
       // Process each applicability type
       dataObj?.CostingApplicabilityDetails?.forEach(detail => {
         const { Applicability, Percentage } = detail;
-        
+
         switch (Applicability) {
           case 'Fixed':
             if (IsAPIResponse === false) {
@@ -362,40 +372,42 @@ function OverheadProfit(props) {
               setValue('OverheadFixedTotalCost', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice) || '')
             }
             break;
-          case 'RM':
           case 'Part Cost':
-            const rmCost = IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)
-            const rmTotalCost = rmCost * calculatePercentage(Percentage)
-            setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
-            setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+          case 'RM':
+            const rmCost = IsIncludeApplicabilityForChildParts ? checkForNull(OverheadDetail?.NetChildPartsRawMaterialsCost) : IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost);
+            const rmTotalCost = rmCost * calculatePercentage(Percentage);
+            setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
 
           case 'BOP':
-            const bopCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
-            const bopTotalCost = bopCost * calculatePercentage(Percentage)
+            const bopCost = IsIncludeApplicabilityForChildParts ? (checkForNull(OverheadDetail?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost)) : checkForNull(headerCosts?.NetBoughtOutPartCost);
 
-            setValue('OverheadBOPPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('OverheadBOPCost', checkForDecimalAndNull(bopCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('OverheadBOPTotalCost', checkForDecimalAndNull(bopTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            const bopTotalCost = bopCost * calculatePercentage(Percentage);
+            setValue('OverheadBOPPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('OverheadBOPCost', checkForDecimalAndNull(bopCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('OverheadBOPTotalCost', checkForDecimalAndNull(bopTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
 
           case 'CC':
-            const ccCost = getCCCost('overhead')
-            const ccTotalCost = ccCost * calculatePercentage(Percentage)
+            console.log("OverheadDetail",OverheadDetail)
+          
+            const ccCost = IsIncludeApplicabilityForChildParts ? checkForNull(OverheadDetail?.NetChildPartsOperationCostForOverhead) + checkForNull(OverheadDetail?.NetChildPartsProcessCostForOverhead) + getCCCost('overhead') : getCCCost('overhead');
 
-            setValue('OverheadCCPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('OverheadCCCost', checkForDecimalAndNull(ccCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('OverheadCCTotalCost', checkForDecimalAndNull(ccTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+
+            const ccTotalCost = ccCost * calculatePercentage(Percentage);
+            setValue('OverheadCCPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('OverheadCCCost', checkForDecimalAndNull(ccCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('OverheadCCTotalCost', checkForDecimalAndNull(ccTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
 
           case 'Welding':
-            const weldingCost = checkForNull(headerCosts?.NetWeldingCostForOverhead)
-            const weldingTotalCost = weldingCost * calculatePercentage(Percentage)
-
-            setValue('OverheadWeldingPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('OverheadWeldingCost', checkForDecimalAndNull(weldingCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('OverheadWeldingTotalCost', checkForDecimalAndNull(weldingTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            const weldingCost = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetWeldingCostForOverhead) + checkForNull(OverheadDetail?.NetChildPartsWeldingCostForOverhead) : checkForNull(headerCosts?.NetWeldingCostForOverhead);
+            const weldingTotalCost = weldingCost * calculatePercentage(Percentage);
+            setValue('OverheadWeldingPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('OverheadWeldingCost', checkForDecimalAndNull(weldingCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('OverheadWeldingTotalCost', checkForDecimalAndNull(weldingTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
           default:
             break;
@@ -405,11 +417,29 @@ function OverheadProfit(props) {
       // Update tempOverheadObj with CostingApplicabilityDetails
       const costingApplicabilityDetails = dataObj?.CostingApplicabilityDetails?.map(detail => {
         const { Applicability, Percentage, ApplicabilityDetailsId, ApplicabilityId } = detail;
-        const baseCost = Applicability === 'RM' || Applicability === 'Part Cost' ?
-          (IsCutOffApplicable ? CutOffCost : headerCosts?.NetRawMaterialsCost) :
-          Applicability === 'BOP' ? headerCosts?.NetBoughtOutPartCost :
-            Applicability === 'CC' ? getCCCost('overhead') :
-              Applicability === 'Welding' ? checkForNull(headerCosts?.NetWeldingCostForOverhead) : 0;
+
+        let baseCost = 0;
+        if (Applicability === 'RM' || Applicability === 'Part Cost') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(OverheadDetail?.NetChildPartsRawMaterialsCost)
+            : IsCutOffApplicable
+              ? checkForNull(CutOffCost)
+              : checkForNull(headerCosts?.NetRawMaterialsCost);
+        } else if (Applicability === 'BOP') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(OverheadDetail?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost)
+            : checkForNull(headerCosts?.NetBoughtOutPartCost);
+        } else if (Applicability === 'CC') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(OverheadDetail?.NetChildPartsOperationCostForOverhead) + checkForNull(OverheadDetail?.NetChildPartsProcessCostForOverhead) + getCCCost('overhead')
+            : getCCCost('overhead');
+        } else if (Applicability === 'Welding') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetWeldingCostForOverhead) + checkForNull(OverheadDetail?.NetChildPartsWeldingCostForOverhead)
+            : checkForNull(headerCosts?.NetWeldingCostForOverhead);
+        } else {
+          baseCost = 0;
+        }
 
         const totalCost = baseCost * calculatePercentage(Percentage);
         return {
@@ -438,7 +468,7 @@ function OverheadProfit(props) {
     if (!CostingViewMode) {
       const CutOffCost = checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff)
       const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
-
+      const ProfitDetail = OverheadProfitTabData[0]?.CostingPartDetails ?? {}
       // Process each applicability type
       dataObj?.CostingApplicabilityDetails?.forEach(detail => {
         const { Applicability, Percentage, Cost, TotalCost } = detail;
@@ -453,54 +483,68 @@ function OverheadProfit(props) {
             break;
           case 'RM':
           case 'Part Cost':
-            const rmCost = IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)
-            const rmTotalCost = rmCost * calculatePercentage(Percentage)
-
-            setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
-            setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            const rmCost = IsIncludeApplicabilityForChildParts ? checkForNull(ProfitDetail?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts?.NetRawMaterialsCost);
+            const rmTotalCost = rmCost * calculatePercentage(Percentage);
+            setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(rmCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(rmTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
 
           case 'BOP':
-            const bopCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
-            const bopTotalCost = bopCost * calculatePercentage(Percentage)
-
-            setValue('ProfitBOPPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('ProfitBOPCost', checkForDecimalAndNull(bopCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('ProfitBOPTotalCost', checkForDecimalAndNull(bopTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            const bopCost = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBoughtOutPartCost) + checkForNull(ProfitDetail?.NetChildPartsBoughtOutPartCost) : checkForNull(headerCosts?.NetBoughtOutPartCost);
+            const bopTotalCost = bopCost * calculatePercentage(Percentage);
+            setValue('ProfitBOPPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('ProfitBOPCost', checkForDecimalAndNull(bopCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('ProfitBOPTotalCost', checkForDecimalAndNull(bopTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
 
           case 'CC':
-            const ccCost = getCCCost('profit')
-            const ccTotalCost = ccCost * calculatePercentage(Percentage)
-
-            setValue('ProfitCCPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('ProfitCCCost', checkForDecimalAndNull(ccCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('ProfitCCTotalCost', checkForDecimalAndNull(ccTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            const ccCost = IsIncludeApplicabilityForChildParts ? getCCCost('profit') + checkForNull(ProfitDetail?.NetChildPartsOperationCostForProfit) + checkForNull(ProfitDetail?.NetChildPartsProcessCostForProfit) : getCCCost('profit');
+            const ccTotalCost = ccCost * calculatePercentage(Percentage);
+            setValue('ProfitCCPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('ProfitCCCost', checkForDecimalAndNull(ccCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('ProfitCCTotalCost', checkForDecimalAndNull(ccTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
 
           case 'Welding':
-            const weldingCost = checkForNull(headerCosts?.NetWeldingCostForProfit)
-            const weldingTotalCost = weldingCost * calculatePercentage(Percentage)
-
-            setValue('ProfitWeldingPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('ProfitWeldingCost', checkForDecimalAndNull(weldingCost, initialConfiguration?.NoOfDecimalForPrice))
-            setValue('ProfitWeldingTotalCost', checkForDecimalAndNull(weldingTotalCost, initialConfiguration?.NoOfDecimalForPrice))
+            const weldingCost = IsIncludeApplicabilityForChildParts ?
+              checkForNull(headerCosts?.NetWeldingCostForProfit) + checkForNull(ProfitDetail?.NetChildPartsWeldingCostForProfit) :
+              checkForNull(headerCosts?.NetWeldingCostForProfit);
+            const weldingTotalCost = weldingCost * calculatePercentage(Percentage);
+            setValue('ProfitWeldingPercentage', checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('ProfitWeldingCost', checkForDecimalAndNull(weldingCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('ProfitWeldingTotalCost', checkForDecimalAndNull(weldingTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
           default:
             break;
         }
       });
 
-      // Update tempProfitObj with CostingApplicabilityDetails
-      const costingApplicabilityDetails = dataObj?.CostingApplicabilityDetails?.map(detail => {
-        const { Applicability, Percentage, ApplicabilityDetailsId, ApplicabilityId } = detail;
-        const baseCost = Applicability === 'RM' || Applicability === 'Part Cost' ?
-          (IsCutOffApplicable ? CutOffCost : headerCosts?.NetRawMaterialsCost) :
-          Applicability === 'BOP' ? headerCosts?.NetBoughtOutPartCost :
-            Applicability === 'CC' ? getCCCost('profit') :
-              Applicability === 'Welding' ? checkForNull(headerCosts?.NetWeldingCostForProfit) : 0;
+      const costingApplicabilityDetailsProfit = dataObj?.CostingApplicabilityDetails?.map(detail => {
 
+        const { Applicability, Percentage, ApplicabilityDetailsId, ApplicabilityId } = detail;
+        let baseCost = 0;
+        if (Applicability === 'RM' || Applicability === 'Part Cost') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(ProfitDetail?.NetChildPartsRawMaterialsCost)
+            : IsCutOffApplicable
+              ? checkForNull(CutOffCost)
+              : checkForNull(headerCosts?.NetRawMaterialsCost);
+        } else if (Applicability === 'BOP') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBoughtOutPartCost) + checkForNull(ProfitDetail?.NetChildPartsBoughtOutPartCost)
+            : checkForNull(headerCosts?.NetBoughtOutPartCost);
+        } else if (Applicability === 'CC') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? getCCCost('profit') + checkForNull(ProfitDetail?.NetChildPartsOperationCostForProfit) + checkForNull(ProfitDetail?.NetChildPartsProcessCostForProfit)
+            : getCCCost('profit');
+        } else if (Applicability === 'Welding') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetWeldingCostForProfit) + checkForNull(ProfitDetail?.NetChildPartsWeldingCostForProfit)
+            : checkForNull(headerCosts?.NetWeldingCostForProfit);
+        } else {
+          baseCost = 0;
+        }
 
         const totalCost = baseCost * calculatePercentage(Percentage);
 
@@ -516,7 +560,7 @@ function OverheadProfit(props) {
 
       setProfitObj({
         ...profitObj,
-        CostingApplicabilityDetails: costingApplicabilityDetails
+        CostingApplicabilityDetails: costingApplicabilityDetailsProfit
       });
     }
   }
@@ -795,9 +839,13 @@ function OverheadProfit(props) {
                   </div>
                 </Col>
               } */}
-
               <OverheadProfitTable
-                data={overheadObj}
+                data={{
+                  ...overheadObj,
+                  CostingApplicabilityDetails: (partType) ?
+                    filterApplicabilityDetails(overheadObj?.CostingApplicabilityDetails, IsIncludeApplicabilityForChildParts) :
+                    overheadObj?.CostingApplicabilityDetails
+                }}
                 type="Overhead"
                 Controller={Controller}
                 control={control}
@@ -841,7 +889,13 @@ function OverheadProfit(props) {
                 />
               </Col>}
               <OverheadProfitTable
-                data={profitObj}
+
+                data={{
+                  ...profitObj,
+                  CostingApplicabilityDetails: (partType) ?
+                    filterApplicabilityDetails(profitObj?.CostingApplicabilityDetails, IsIncludeApplicabilityForChildParts) :
+                    profitObj?.CostingApplicabilityDetails
+                }}
                 type="Profit"
                 Controller={Controller}
                 control={control}

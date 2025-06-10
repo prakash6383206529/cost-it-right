@@ -116,7 +116,9 @@ const InterestRatePayment = () => {
     if (type === 'cancel') {
       setState(prevState => ({
         ...prevState,
-        stopApiCallOnCancel: true
+        stopApiCallOnCancel: true,
+        IsInterestRateAssociated: false,
+        IsPaymentTermAssociated: false
       }))
 
     }

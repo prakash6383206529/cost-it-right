@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, fetchRejectionDataFromMaster, getConfigurationKey, removeBOPfromApplicability } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, fetchRejectionDataFromMaster, filterApplicabilityDetails, getConfigurationKey, removeBOPfromApplicability } from '../../../../../helper';
 //MINDA
 // import { removeBOPFromList } from '../../../../../helper';
 import { fetchApplicabilityList, fetchCostingHeadsAPI, fetchModelTypeAPI } from '../../../../../actions/Common';
@@ -41,7 +41,7 @@ function Rejection(props) {
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
     const [showRejectionPopup, setShowRejectionPopup] = useState(false)
     const [percentageLimit, setPercentageLimit] = useState(false)
-    const { IsIncludedSurfaceInRejection, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
+    const { IsIncludedSurfaceInRejection, isBreakupBoughtOutPartCostingFromAPI, IsIncludeApplicabilityForChildParts } = useSelector(state => state.costing)
     const { SurfaceTabData, rejectionRecovery, RMCCTabData, CostingEffectiveDate } = useSelector(state => state.costing)
     const { CostingPartDetails, PartType } = RMCCTabData[0]
     const [errorMessage, setErrorMessage] = useState('')
@@ -59,11 +59,12 @@ function Rejection(props) {
         rejectionCost: '',
         rejectionRecoveryDetails: {},
         isEditMode: false,
-        isViewRejectionRecovery:false
+        isViewRejectionRecovery: false
     })
-    // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+// partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const isFixedRecord = CostingRejectionDetail?.CostingRejectionApplicabilityDetails?.some(item => item?.Applicability === 'Fixed')
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
 
     const dispatch = useDispatch()
 
@@ -82,7 +83,7 @@ function Rejection(props) {
 
 
     useEffect(() => {
-        const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+        const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting)
         dispatch(fetchApplicabilityList(null, conditionTypeId, isRequestForMultiTechnology, res => { }));
         if (fetchRejectionDataFromMaster()) {
             dispatch(fetchModelTypeAPI('rejection', (res) => {
@@ -107,12 +108,12 @@ function Rejection(props) {
         if (!CostingViewMode) {
             checkRejectionApplicability(applicability.label)
         }
-    }, [rejectionFieldValues,IsIncludedSurfaceInRejection]);
+    }, [rejectionFieldValues, IsIncludedSurfaceInRejection]);
     useEffect(() => {
         if (state.modelType && state.modelType.value !== undefined) {
             checkRejectionModelType(CostingRejectionDetail)
         }
-    }, [headerCosts && headerCosts.NetTotalRMBOPCC,IsIncludedSurfaceInRejection])
+    }, [headerCosts && headerCosts.NetTotalRMBOPCC, IsIncludedSurfaceInRejection])
 
 
 
@@ -121,7 +122,9 @@ function Rejection(props) {
             // checkRejectionModelType(applicability.label)
         }
     }, [IsIncludedSurfaceInRejection]);
-
+    useEffect(() => {
+        callGetRejectionDataByModelType(state.modelType)
+    }, [IsIncludeApplicabilityForChildParts])
 
     // useEffect(() => {
     //     setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration?.NoOfDecimalForPrice))
@@ -141,7 +144,7 @@ function Rejection(props) {
                 "RejectionDetailId": rejectionObj?.RejectionDetailId ?? null,
                 "RejectionCRMHead": getValues('crmHeadRejection') ? getValues('crmHeadRejection').label : '',
                 "Remark": rejectionObj?.Remark ? rejectionObj?.Remark : '',
-                "CostingRejectionApplicabilityDetails": state.gridData,
+                "CostingRejectionApplicabilityDetails": (partType ? filterApplicabilityDetails(state.gridData, IsIncludeApplicabilityForChildParts) : state.gridData),
             }
 
             if (!CostingViewMode) {
@@ -182,20 +185,24 @@ function Rejection(props) {
       * @method checkRejectionModelType
       * @description REJECTION APPLICABILITY CALCULATION
       */
-    const checkRejectionModelType = (data) => {
-        const RM = checkForNull(headerCosts.NetRawMaterialsCost);
-        const BOP = checkForNull(headerCosts.NetBoughtOutPartCost);
-        const CCForMachining = checkForNull(headerCosts.NetCCForOtherTechnologyCost)
-        const CC = partType
-            ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) - checkForNull(headerCosts.NetCCForOtherTechnologyCost)
-            : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts.NetCCForOtherTechnologyCost);
+    const checkRejectionModelType = (dataObj) => {
+        const { data } = props
+        const RM = IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts?.NetRawMaterialsCost);
+        const BOP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost)) : checkForNull(headerCosts?.NetBoughtOutPartCost);
+        const CCForMachining = checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
+        const CC = partType ? IsIncludeApplicabilityForChildParts
+            ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) + checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
+            : checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
+            : IsIncludeApplicabilityForChildParts
+                ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) + checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
+                : checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost);
 
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
             : 0;
 
-
-        let prevData = _.cloneDeep(data)
+        
+        let prevData = _.cloneDeep(dataObj)
         let newData = [];
         if (prevData && prevData?.CostingRejectionApplicabilityDetails && prevData?.CostingRejectionApplicabilityDetails.length > 0) {
             newData = prevData?.CostingRejectionApplicabilityDetails.map((item, index) => {
@@ -237,15 +244,17 @@ function Rejection(props) {
                 ...prev,
                 gridData: newData
             }));
-            
+
             dispatch(isOverheadProfitDataChange(true));
         }
     };
     const checkRejectionApplicability = (applicability) => {
-        const RM = checkForNull(headerCosts.NetRawMaterialsCost);
-        const BOP = checkForNull(headerCosts.NetBoughtOutPartCost);
+        const RM = IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts.NetRawMaterialsCost);
+        const BOP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts.NetBoughtOutPartCost)) : checkForNull(headerCosts.NetBoughtOutPartCost);
         const CCForMachining = checkForNull(headerCosts.NetCCForOtherTechnologyCost)
-        const CC = partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly);
+        const CC = IsIncludeApplicabilityForChildParts ?
+            checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) + (partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) :
+            partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly);
 
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
@@ -298,7 +307,7 @@ function Rejection(props) {
                 }))
                 break;
             case "Fixed":
-                 setValue('RejectionCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
+                setValue('RejectionCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
                 setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
                 setValue('NetRejectionCost', checkForDecimalAndNull(getValues('RejectionPercentage'), initialConfiguration?.NoOfDecimalForPrice))
                 setState(prev => ({
@@ -637,21 +646,19 @@ function Rejection(props) {
         }
         resetData();
     }
-    const handleModelTypeChange = (ModelTypeValues, IsDropdownClicked) => {
-        setState(prev => ({
-            ...prev,
-            modelType: ModelTypeValues
-        }))
-        if (ModelTypeValues && ModelTypeValues !== '' && ModelTypeValues.value !== undefined) {
+    const callGetRejectionDataByModelType = (modelTypeValues) => {
+        if (modelTypeValues && modelTypeValues !== '' && modelTypeValues.value !== undefined) {
+
             const reqParams = {
-                ModelTypeId: ModelTypeValues.value,
+                ModelTypeId: modelTypeValues.value,
                 VendorId: (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? costData.VendorId : null,
                 costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : Number(costData.CostingTypeId === WACTypeId) ? ZBCTypeId : costData.CostingTypeId,
                 EffectiveDate: CostingEffectiveDate,
                 plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
                 customerId: costData.CustomerId,
-                technologyId: IdForMultiTechnology.includes(String(costData?.TechnologyId)) ? costData?.TechnologyId : null,
+                technologyId: IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting) ? costData?.TechnologyId : null,
                 partFamilyId: costData?.PartFamilyId,
+                IsMultiVendorCosting:IsMultiVendorCosting
             }
             dispatch(getRejectionDataByModelType(reqParams, (res) => {
                 let data = res?.data?.Data?.CostingRejectionDetail
@@ -660,6 +667,15 @@ function Rejection(props) {
                     checkRejectionModelType(data)
                 }, 500);
             }))
+        }
+    }
+    const handleModelTypeChange = (ModelTypeValues, IsDropdownClicked) => {
+        setState(prev => ({
+            ...prev,
+            modelType: ModelTypeValues
+        }))
+        if (ModelTypeValues && ModelTypeValues !== '' && ModelTypeValues.value !== undefined) {
+            callGetRejectionDataByModelType(ModelTypeValues)
         } else {
             setState(prev => ({
                 ...prev,
@@ -894,13 +910,13 @@ function Rejection(props) {
                                 <th>Rejection (%)</th>
                                 <th>Cost (Applicability)</th>
                                 <th>Rejection</th>
-                                {!IdForMultiTechnology.includes(String(costData?.TechnologyId)) && getConfigurationKey().IsRejectionRecoveryApplicable && <th>Rejection Recovery Cost</th>}
+                                {(!IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable && <th>Rejection Recovery Cost</th>}
                                 <th>Net Rejection</th>
                                 {!CostingViewMode && !fetchRejectionDataFromMaster() && <th className='text-right'>Action</th>}
                             </tr>
                         </thead>
                         <tbody>
-                            {state.gridData && state?.gridData?.length > 0 && state.gridData?.map((item, index) => {
+                            {state.gridData && state?.gridData?.length > 0 && (partType ? filterApplicabilityDetails(state.gridData, IsIncludeApplicabilityForChildParts) : state.gridData)?.map((item, index) => {
                                 return (
                                     <tr key={index}>
                                         <td>{item?.Applicability ?? '-'}</td>

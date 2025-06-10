@@ -5,15 +5,16 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantBySupplier, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
-import { getVBCDetailByVendorId, } from '../actions/Costing';
+import { getVBCDetailByVendorId, setIsMultiVendor, } from '../actions/Costing';
 import { getConfigurationKey } from '../../../helper';
 import WarningMessage from '../../common/WarningMessage';
-import { EMPTY_GUID_0, searchCount, VBC_VENDOR_TYPE, ZBC } from '../../../config/constants';
+import { EMPTY_GUID_0, searchCount, VBC_VENDOR_TYPE, ZBC, SET_IS_MULTI_VENDOR, ASSEMBLY, ASSEMBLYNAME } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
 import TooltipCustom from '../../common/Tooltip';
 import { useLabels } from '../../../helper/core';
+import { IdForMultiTechnology } from '../../../config/masterData';
 
 function AddVendorDrawer(props) {
 
@@ -30,11 +31,14 @@ function AddVendorDrawer(props) {
   const [infoCategory, setInfoCategory] = useState([])
   const [isInfoCategorySelected, setIsInfoCategorySelected] = useState(false)
   const dispatch = useDispatch()
-
+  
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const plantSelectList = useSelector(state => state.comman.plantSelectList);
   const { vendorLabel } = useLabels()
+  const partInfo = useSelector(state => state.costing.partInfo)
+  const technology = useSelector(state => state.costing.technology)
+ const [isMultiVendorSelected, setIsMultiVendorSelected] = useState(IdForMultiTechnology.includes(String(partInfo?.TechnologyId)) ? true : false)
   useEffect(() => {
     const { vbcVendorGrid } = props;
     dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
@@ -54,6 +58,13 @@ function AddVendorDrawer(props) {
     setInfoCategory(initialConfiguration?.InfoCategories)
   }, [initialConfiguration])
 
+ useEffect(() => {
+    if (partInfo?.PartType === ASSEMBLYNAME) {
+      setIsMultiVendorSelected(IdForMultiTechnology.includes(String(partInfo?.TechnologyId)) ? true : false)
+      dispatch(setIsMultiVendor(IdForMultiTechnology.includes(String(partInfo?.TechnologyId)) ? true : false))
+    }
+  }, [partInfo,technology])
+
   /**
   * @method toggleDrawer
   * @description TOGGLE DRAWER
@@ -72,7 +83,8 @@ function AddVendorDrawer(props) {
         DestinationPlant: DestinationPlant,
         VendorName: `${data.VendorName} (${data.VendorCode})`,
         InfoCategory: isInfoCategorySelected === true ? infoCategory[1]?.Text : infoCategory[0]?.Text,
-        InfoCategoryObj: isInfoCategorySelected === true ? infoCategory[1] : infoCategory[0]
+        InfoCategoryObj: isInfoCategorySelected === true ? infoCategory[1] : infoCategory[0],
+        IsMultiVendorCosting: isMultiVendorSelected
       })
   };
 
@@ -185,6 +197,11 @@ function AddVendorDrawer(props) {
     setIsInfoCategorySelected(!isInfoCategorySelected)
   }
 
+  const handleMultiVendorChange = (e) => {
+    setIsMultiVendorSelected(!isMultiVendorSelected)
+    dispatch(setIsMultiVendor(!isMultiVendorSelected))
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -278,6 +295,36 @@ function AddVendorDrawer(props) {
                     />
                   </span>
                 </Col>
+                {partInfo?.PartType === ASSEMBLYNAME && (
+                  <Col md="12">
+                    <span className="d-inline-block">
+                      <label
+                        className={`custom-checkbox mb-0`}
+                        onChange={(e) => !IdForMultiTechnology.includes(String(partInfo?.TechnologyId)) && handleMultiVendorChange(e)}
+                        selected={isMultiVendorSelected}
+                        id={'multiVendor'}
+                      >
+                        Multi-Vendor Costing
+                        <input
+                          type="checkbox"
+                          checked={isMultiVendorSelected}
+                          disabled={IdForMultiTechnology.includes(String(partInfo?.TechnologyId))}
+                          onChange={(e) => !IdForMultiTechnology.includes(String(partInfo?.TechnologyId)) && handleMultiVendorChange(e)}
+                        />
+                        <span
+                          className=" before-box"
+                          onChange={(e) => !IdForMultiTechnology.includes(String(partInfo?.TechnologyId)) && handleMultiVendorChange(e)}
+                          selected={isMultiVendorSelected}
+                        />
+                      </label>
+                      <TooltipCustom
+                        disabledIcon={false}
+                        id={`multiVendor`}
+                        tooltipText="Multi-vendor costing for Assembly parts"
+                      />
+                    </span>
+                  </Col>
+                )}
               </Row>
               {/* //RE */}
               {/* <Row>    

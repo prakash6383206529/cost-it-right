@@ -16,7 +16,8 @@ function BoughtOutPart(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const editBopForAssemblyTechnology = props?.editBop ? true : false
   // partType USED FOR CONDITIONAL RENDERING OF COLUMNS IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING  (TRUE FOR ASSEMBLY TECHNOLOGY)
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId||(costData?.PartType === 'Assembly' && IsMultiVendorCosting))
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -67,7 +68,7 @@ function BoughtOutPart(props) {
           <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
           {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
           <td className='text-right'>
-            {partType && item?.Technology === ASSEMBLYNAME &&
+            {partType &&
               <button
                 type="button"
                 className={'Edit mr-2 align-middle'}

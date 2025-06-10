@@ -891,6 +891,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.isIncludeSurfaceTreatmentWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit
   obj.isIncludeOverheadAndProfitInICC = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeOverheadAndProfitInICC && dataFromAPI?.CostingPartDetails?.IsIncludeOverheadAndProfitInICC
   obj.isIncludeToolCostInCCForICC = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostInCCForICC && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostInCCForICC
+  // obj.isIncludeChildPartsApplicabilityCostInICC = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeApplicabilityForChildPartsInICC && dataFromAPI?.CostingPartDetails?.IsIncludeApplicabilityForChildPartsInICC
   obj.rawMaterialCostWithCutOff = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff ? dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff : ''
   obj.anyOtherCostTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOtherCost ? dataFromAPI?.CostingPartDetails?.NetOtherCost : '-'
   obj.saNumber = dataFromAPI?.SANumber ?? '-'
@@ -2151,9 +2152,9 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
   return totals;
 };
 
-export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = []) => {
+export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = [],IsMultiVendorCosting=false) => {
   const isAssembly = item?.PartType
-  const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))||(costData?.PartType === 'Assembly' && IsMultiVendorCosting)
 
   let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
   let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex(costingItem => costingItem.PartNumber === item?.PartNumber && costingItem.AssemblyPartNumber === item?.AssemblyPartNumber)
@@ -2182,4 +2183,17 @@ export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArr
       conversionCost: checkForNull(objectToGetRMCCData?.CostingPartDetails?.NetConversionCost)
     };
   }
+};
+
+export const filterApplicabilityDetails = (details, isChildParts) => {
+  if (!details) return [];
+  return details.filter(detail => {
+    if (detail.Applicability === 'Part Cost') {
+      return !isChildParts; // Show only if child parts is false
+    }
+    if (detail.Applicability === 'RM') {
+      return isChildParts; // Show only if child parts is true
+    }
+    return true;
+  });
 };

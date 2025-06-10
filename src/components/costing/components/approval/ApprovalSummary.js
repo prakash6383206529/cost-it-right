@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
 import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getConfigurationKey, loggedInUserId, getPOPriceAfterDecimal } from '../../../../helper'
 import { approvalPushedOnSap, getApprovalSummary } from '../../actions/Approval'
-import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingViewData, storePartNumber, updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
+import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setApplicabilityForChildParts, setCostingViewData, setIsMultiVendor, storePartNumber, updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import CostingSummaryTable from '../CostingSummaryTable'
 import DayTime from '../../../common/DayTimeWrapper'
@@ -317,6 +317,8 @@ function ApprovalSummary(props) {
 
         dispatch(getSingleCostingDetails(CostingId, res => {
           let responseData = res?.data?.Data
+          dispatch(setIsMultiVendor(responseData?.IsMultiVendorCosting))
+          dispatch(setApplicabilityForChildParts(responseData?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
           setVendorCodeForSap(responseData.VendorCode)
           let conditionArr = []
           responseData.CostingPartDetails.CostingConditionResponse.forEach((item, index) => {
@@ -387,6 +389,8 @@ function ApprovalSummary(props) {
     if (!isRFQ && uniqueShouldCostingId?.length === 0) {
       dispatch(getSingleCostingDetails(approvalData.CostingId, res => {
         const Data = res.data.Data
+        dispatch(setIsMultiVendor(Data?.IsMultiVendorCosting))
+        dispatch(setApplicabilityForChildParts(Data?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
         const newObj = formViewData(Data, 'New Costing')
         let finalObj = []
         if (approvalData.LastCostingId !== EMPTY_GUID && approvalData.LastCostingId !== undefined && approvalData.LastCostingId !== null) {
@@ -459,6 +463,8 @@ function ApprovalSummary(props) {
     setFgWise(true)
     dispatch(getSingleCostingDetails(CostingApprovalProcessSummaryId, res => {
       const Data = res.data.Data
+      dispatch(setIsMultiVendor(Data?.IsMultiVendorCosting))
+      dispatch(setApplicabilityForChildParts(Data?.CostingPartDetails?.IsIncludeChildPartsApplicabilityCost ?? false))
       const newObj = formViewData(Data)
       dispatch(setCostingViewData(newObj))
       setTimeout(() => {
