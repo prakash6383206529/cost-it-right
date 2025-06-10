@@ -110,7 +110,7 @@ function Rejection(props) {
         }
     }, [rejectionFieldValues, IsIncludedSurfaceInRejection]);
     useEffect(() => {
-        if (state.modelType && state.modelType.value !== undefined) {
+        if (state.modelType && state.modelType.value !== undefined && !CostingViewMode) {
             checkRejectionModelType(CostingRejectionDetail)
         }
     }, [headerCosts && headerCosts.NetTotalRMBOPCC, IsIncludedSurfaceInRejection])
