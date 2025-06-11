@@ -9,7 +9,7 @@ import {
   validateFileName
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, renderNumberInputField, validateForm } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, getExchangeRateSource, getCurrencySelectList, fetchApplicabilityList, } from '../../../actions/Common';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, getExchangeRateSource, getCurrencySelectList, fetchApplicabilityList, getEnergyTypeSelectList, getPowerTypeSelectList } from '../../../actions/Common';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
   getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, getProcessGroupByMachineId, setGroupProcessList, setProcessList,
@@ -54,6 +54,7 @@ import Button from '../../layout/Button';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getPlantUnitAPI } from '../actions/Plant';
 import { LabelsClass } from '../../../helper/core';
+import AddPowerDetails from './AddPowerDetails';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -192,7 +193,8 @@ class AddMoreDetails extends Component {
       MachineRateWithOutInterestAndDepreciation: null,
       MachineRateWithOutInterestAndDepreciationLocalConversion: null,
       MachineRateWithOutInterestAndDepreciationConversion: null,
-      isShowApplicabilityDropdown: false
+      isShowApplicabilityDropdown: false,
+      MachinePowerDetails: []
     }
     this.dropzone = React.createRef();
   }
@@ -211,6 +213,8 @@ class AddMoreDetails extends Component {
     this.props.getShiftTypeSelectList(() => { })
     this.props.getDepreciationTypeSelectList(() => { })
     this.props.getExchangeRateSource(() => { })
+    this.props.getPowerTypeSelectList("machine", (res) => { })
+    this.props.getEnergyTypeSelectList((res) => { })
     const conditionTypeId = getCostingConditionTypes(MACHINEMASTER);
     this.props.fetchApplicabilityList(null, conditionTypeId, false, res => { })
     this.props.change('plantCurrency', editDetails?.fieldsObj?.plantCurrency ?? '')
@@ -450,7 +454,7 @@ class AddMoreDetails extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          this.setState({ DataToChange: Data, labourGrid: Data.MachineLabourRates })
+          this.setState({ DataToChange: Data, labourGrid: Data.MachineLabourRates, MachinePowerDetails: Data.MachinePowerDetailsRequest })
           if (Data.MachineLabourRates && Data.MachineLabourRates.length !== 0) {
             this.setState({ disableMachineType: true })
           }
@@ -673,7 +677,6 @@ class AddMoreDetails extends Component {
     const { technologySelectList, plantSelectList,
       UOMSelectList, machineTypeSelectList, processSelectList, ShiftTypeSelectList,
       DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelDataByPlant, currencySelectList, exchangeRateSourceList, applicabilityList } = this.props;
-    console.log("applicabilityList", applicabilityList)
 
     const temp = [];
     if (label === 'technology') {
@@ -2636,7 +2639,7 @@ class AddMoreDetails extends Component {
       IsIncludeMachineRateDepreciation, CostingTypeId, IsPurchased, depreciationType,
       shiftType, selectedCustomer, selectedVedor, ExchangeSource, plantCurrencyID,
       settlementCurrency, plantCurrency, currency, settlementExchangeRateId, plantExchangeRateId,
-      FuelEntryId, isDateChange
+      FuelEntryId, isDateChange, MachinePowerDetails
     } = this.state;
 
 
@@ -2736,6 +2739,7 @@ class AddMoreDetails extends Component {
       FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
       ConsumptionPerYear: values.ConsumptionPerYear,
       TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear,
+      MachinePowerDetailsRequest: MachinePowerDetails,
 
       // Labour and process details
       MachineLabourRates: labourGrid,
@@ -4507,6 +4511,7 @@ class AddMoreDetails extends Component {
                       </Row>
 
                       {/* POWER */}
+                      {!getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster &&
                       <Row className="mb-3 accordian-container">
                         <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
@@ -4604,7 +4609,7 @@ class AddMoreDetails extends Component {
                                 <Field
                                   name="FuelTypeId"
                                   type="text"
-                                  label="Fuel"
+                                  label="Fuel t"
                                   component={searchableSelect}
                                   placeholder={isEditFlag || disableAllForm ? '-' : 'Select'}
                                   options={this.renderListing('fuel')}
@@ -4779,6 +4784,49 @@ class AddMoreDetails extends Component {
                         </div>
                         }
                       </Row>
+                      }
+
+                      {/* POWER COMBINED */}
+                      {getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster &&
+                      <Row className="mb-3 accordian-container">
+                        <Col md="6" className='d-flex align-items-center'>
+                          <HeaderTitle
+                            // title={'Power:'}
+                            title={'Power:'}
+                            customClass={'Personal-Details'} />
+
+                          {isPowerOpen && (
+                            <div>
+                              <Button
+                                id="addPower_guide"
+                                variant={"ml-2"}
+                                className={`guide-bulb${tourContainer.powerTour ? "-on" : ""} ${false ? "" : "d-none"}`}
+                                onClick={() => this.updateTourContainer('powerTour', 'start')}
+                                title='Guide'
+                              />
+                              {tourContainer.powerTour && <TourWrapper steps={Steps(t).ADD_MACHINE_POWER} stepsEnable={true} start={tourContainer.powerTour}
+                                onExit={() => this.updateTourContainer('powerTour', 'exit')}
+                              />
+                              }
+                            </div>)}
+                        </Col>
+                        <Col md="6">
+                          <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={this.powerToggle} type="button">{isPowerOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
+                          </div>
+                        </Col>
+
+                        {isPowerOpen &&
+                          <AddPowerDetails 
+                            parentState={this.state}
+                            // setParentState={this.setState.bind(this)}
+                            setParentState={updatedState => this.setState(updatedState)}
+                            fieldsObj={this.props.fieldsObj}
+                          />
+                        }
+                      </Row>
+                      }
+
 
                       {/* LABOUR */}
                       <Row className="mb-3 accordian-container child-form-container">
@@ -5638,7 +5686,9 @@ export default connect(mapStateToProps, {
   getPlantUnitAPI,
   getExchangeRateSource,
   getCurrencySelectList,
-  fetchApplicabilityList
+  fetchApplicabilityList,
+  getEnergyTypeSelectList,
+  getPowerTypeSelectList
 })(reduxForm({
   form: 'AddMoreDetails',
   validate: validateForm,

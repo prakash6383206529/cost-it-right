@@ -9,7 +9,7 @@ import {
   maxPercentValue
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, validateForm } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, fetchApplicabilityList } from '../../../actions/Common';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, fetchApplicabilityList, getEnergyTypeSelectList } from '../../../actions/Common';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine,
   checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList, setProcessList
@@ -157,6 +157,7 @@ class AddMachineRate extends Component {
   componentDidMount() {
     const { data, editDetails, initialConfiguration } = this.props;
     this.props.getExchangeRateSource((res) => { })
+    // this.props.getEnergyTypeSelectList((res) => { })
     const conditionTypeId = getCostingConditionTypes(MACHINEMASTER);
     this.props.fetchApplicabilityList(null, conditionTypeId, false, res => { })
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
@@ -2883,6 +2884,7 @@ export default connect(mapStateToProps, {
   getVendorNameByVendorSelectList,
   getPlantUnitAPI,
   getExchangeRateSource,
+  getEnergyTypeSelectList,
   getExchangeRateByCurrency,
   getCurrencySelectList,
   fetchApplicabilityList

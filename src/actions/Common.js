@@ -78,7 +78,8 @@ import {
   SET_LIST_TOGGLE,
   GET_APPLICABILITY_LIST_SUCCESS,
   GET_SEGMENT_SELECTLIST,
-  GET_GROUP_CODE_SELECTLIST
+  GET_GROUP_CODE_SELECTLIST,
+  GET_ENERGY_TYPE_SELECTLIST_SUCCESS
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1011,10 +1012,10 @@ export function getLabourTypeSelectList(callback) {
  * @method getPowerTypeSelectList
  * @description Used to fetch Power type selectlist
  */
-export function getPowerTypeSelectList(callback) {
+export function getPowerTypeSelectList(listFor = "", callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPowerTypeSelectList}`, config());
+    const request = axios.get(`${API.getPowerTypeSelectList}?listFor=${listFor}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1029,6 +1030,30 @@ export function getPowerTypeSelectList(callback) {
       apiErrors(error);
     });
   };
+}
+
+
+/**
+ * @method getEnergyTypeSelectList
+ * @description GET Energy Type SELECTLIST
+ */
+export function getEnergyTypeSelectList(callback) {
+    return (dispatch) => {
+        // const request = axios.get(`${API.getEnergyTypeSelectList}`, config());
+        // request.then((response) => {
+        //     if (response.data.Result) {
+        //         dispatch({
+        //             type: GET_ENERGY_TYPE_SELECTLIST_SUCCESS,
+        //             payload: response?.data?.SelectList || [],
+        //         });
+        //         callback(response);
+        //     }
+        // }).catch((error) => {
+        //     // dispatch({ type: API_FAILURE, });
+        //     // callback(error);
+        //     apiErrors(error);
+        // });
+    };
 }
 
 /**
