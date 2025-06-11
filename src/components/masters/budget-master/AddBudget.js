@@ -1335,6 +1335,7 @@ function AddBudget(props) {
                                                                 <TextFieldHookForm
                                                                     name="plantCurrency"
                                                                     label="Plant Currency"
+                                                                    id="plantCurrency"
                                                                     placeholder={'-'}
                                                                     defaultValue={''}
                                                                     Controller={Controller}
