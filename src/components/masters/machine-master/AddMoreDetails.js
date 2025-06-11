@@ -673,7 +673,6 @@ class AddMoreDetails extends Component {
     const { technologySelectList, plantSelectList,
       UOMSelectList, machineTypeSelectList, processSelectList, ShiftTypeSelectList,
       DepreciationTypeSelectList, labourTypeByMachineTypeSelectList, fuelDataByPlant, currencySelectList, exchangeRateSourceList, applicabilityList } = this.props;
-    console.log("applicabilityList", applicabilityList)
 
     const temp = [];
     if (label === 'technology') {
@@ -4528,7 +4527,7 @@ class AddMoreDetails extends Component {
                               }
                             </div>)}
                           {/* {this.state?.entryType &&  */}<Row>
-                            <Col md="4" className="switch mt-4 mr-3">
+                            <Col md="4" className="switch ml-2">
                               <label className="switch-level mb-0">
                                 <div className="left-title">Domestic</div>
                                 <Switch
