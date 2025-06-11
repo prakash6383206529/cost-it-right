@@ -250,12 +250,11 @@ const CostingSummaryTable = (props) => {
   }, [viewCostingData])
 
   const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
-
-
-
-
-  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId)) || String(viewCostingData[0]?.technologyId) === WACTypeId || (viewCostingData[0]?.CostingPartDetails?.Type === 'Assembly' && IsMultiVendorCosting)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
- 
+  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId)) || String(viewCostingData[0]?.technologyId) === WACTypeId || IsMultiVendorCosting       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+  
+  
+  
+  
 
 
 
@@ -410,7 +409,7 @@ const CostingSummaryTable = (props) => {
         }
         return acc;
       }, []);
-
+      
       labelArray.forEach(item => {
         switch (item) {
           case partType ? 'COST/ASSEMBLY' : 'RM':
@@ -814,7 +813,7 @@ const CostingSummaryTable = (props) => {
       Customer: type === CBCTypeId ? tempData.Customer : '',
       IsMultiVendorCosting: IsMultiVendorCosting
     }
-    if (IdForMultiTechnology.includes(String(props?.technology?.value)) || (type === WACTypeId)) {
+    if (IdForMultiTechnology.includes(String(props?.technology?.value)) || (type === WACTypeId) || IsMultiVendorCosting) {
       Data.Technology = props?.technology.label
       Data.CostingHead = "string"
       Data.IsVendor = true
@@ -830,7 +829,8 @@ const CostingSummaryTable = (props) => {
     if (type === WACTypeId) {
       Data.PlantCode = tempData.PlantCode
     }
-    if (IdForMultiTechnology.includes(String(props?.technology?.value)) || (type === WACTypeId)) {
+    if (IdForMultiTechnology.includes(String(props?.technology?.value)) || (type === WACTypeId) || IsMultiVendorCosting) {
+
       dispatch(createMultiTechnologyCosting(Data, (res) => {
         if (res.data?.Result) {
           dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
@@ -2086,7 +2086,7 @@ const CostingSummaryTable = (props) => {
 
   const highlighter = (key, columnName = '') => {
     const firstInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 1 : 0
-    
+
     const secondInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 0 : 1
     let highlighClass = ''; // The variable to hold the highlight class
     const activeClass = isApproval && !props.isRfqCosting; // Check if main row highlight class is applicable

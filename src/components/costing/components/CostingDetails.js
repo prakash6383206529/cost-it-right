@@ -359,7 +359,7 @@ function CostingDetails(props) {
         if (item.Value === '0') return false
         if (item.Value === PRODUCT_ID) return false
         if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
-        if (IdForMultiTechnology.includes(String(technology?.value)) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
+        if (IdForMultiTechnology.includes(String(technology?.value)||IsMultiVendorCosting) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -1142,7 +1142,7 @@ function CostingDetails(props) {
             InfoCategory: vbcVendorGrid[index]?.InfoCategory ?? 'Standard',
             IsMultiVendorCosting: IdForMultiTechnology.includes(String(technology?.value)) ? true : tempData?.IsMultiVendorCosting
           }
-          if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
+          if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)||tempData?.IsMultiVendorCosting) {
             data.Technology = technology.label
             data.CostingHead = "string"
             data.IsVendor = true

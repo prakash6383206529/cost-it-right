@@ -40,8 +40,9 @@ const PaymentTerms = React.memo((props) => {
     const [errorMessage, setErrorMessage] = useState('')
     const [effectiveDate, setEffectiveDate] = useState("")
     const [loader, setLoader] = useState(false)
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting); 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)||IsMultiVendorCosting
     const { getCostingPaymentDetails } = useSelector(state => state.costing);
 
 

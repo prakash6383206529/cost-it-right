@@ -76,7 +76,8 @@ function Tool(props) {
     ToolInterestCostPerPc: 0,
     ToolMaintenanceCostPerPc: 0
   })
-  const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+  const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)||(costData?.PartType === 'Assembly' && IsMultiVendorCosting)
   const { toolMaintenanceCostLabel, toolMaintenanceCostPerPcLabel, toolInterestRatePercentLabel, toolInterestCostLabel, toolInterestCostPerPcLabel } = useLabels();
 
   const fieldValues = useWatch({

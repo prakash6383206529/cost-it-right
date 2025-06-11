@@ -615,6 +615,8 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetWeldingCostForProfit": tabData?.CostingPartDetails?.NetWeldingCostForProfit,
       "NetOperationCostForOverhead": tabData?.CostingPartDetails?.NetOperationCostForOverhead,
       "NetOperationCostForProfit": tabData?.CostingPartDetails?.NetOperationCostForProfit,
+      "NetCCForOtherTechnologyCostForOverhead": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCostForOverhead,
+      "NetCCForOtherTechnologyCostForProfit": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCostForProfit,
       "PaintConsumptionCost": surfaceTabData?.CostingPartDetails?.PaintConsumptionCost,
       "PaintCost": surfaceTabData?.CostingPartDetails?.PaintCost,
       "TapeCost": surfaceTabData?.CostingPartDetails?.TapeCost,

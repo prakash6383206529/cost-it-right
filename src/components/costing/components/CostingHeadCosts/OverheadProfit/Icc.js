@@ -60,7 +60,7 @@ function Icc(props) {
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
-    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData?.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && !IsMultiVendorCosting))
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData?.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
 
     const dispatch = useDispatch()
 
