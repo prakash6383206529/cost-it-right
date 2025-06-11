@@ -18,7 +18,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel, checkTechnologyIdAndRfq, showRMScrapKeys, getLocalizedCostingHeadValue } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showDynamicKeys, } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showDynamicKeys, PLANTCODELABEL, SUPPLIERCODELABEL, CUSTOMERCODELABEL, DEFAULTCOSTINGSUMMARYLABEL} from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -1835,23 +1835,25 @@ const CostingSummaryTable = (props) => {
 
   //FOR DISPLAY PLANT VENDOR NAME AS A HEADER FOR 
   const heading = (value) => {
-    let heading = { mainHeading: '', subHeading: '' };
+    let heading = { mainHeading: '', subHeading: '', costingHeadName: '' };
     switch (value?.costingTypeId) {
       case ZBCTypeId:
-        heading = { mainHeading: value?.plantName, subHeading: value?.plantCode }
+        heading = { mainHeading: value?.plantName, subHeading: value?.plantCode, costingHeadName: PLANTCODELABEL }
         return heading;
       case VBCTypeId:
+        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode, costingHeadName: SUPPLIERCODELABEL }
+        return heading;
       case PFS2TypeId:
-        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
+        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode, costingHeadName: SUPPLIERCODELABEL }
         return heading;
       case CBCTypeId:
-        heading = { mainHeading: value?.customerName, subHeading: value?.customerCode }
+        heading = { mainHeading: value?.customerName, subHeading: value?.customerCode, costingHeadName: CUSTOMERCODELABEL }
         return heading;
       case NCCTypeId:
-        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
+        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode, costingHeadName: SUPPLIERCODELABEL }
         return heading;
       default:
-        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
+        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode, costingHeadName: DEFAULTCOSTINGSUMMARYLABEL }
         return heading;
     }
   }
@@ -2452,7 +2454,13 @@ const CostingSummaryTable = (props) => {
                     </thead>}
                     <thead>
                       <tr className="main-row">
-                        {isApproval ? <th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : (reactLocalStorage.getObject('CostingTypePermission').cbc) ? 'VBC/ZBC/NCC/CBC' : 'VBC/ZBC/NCC'}</th>}
+                        {/* {isApproval ? <th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : (reactLocalStorage.getObject('CostingTypePermission').cbc) ? 'VBC/ZBC/NCC/CBC' : 'VBC/ZBC/NCC'}</th>} */}
+                        {isApproval ? <th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>
+                          <div>
+                            <span>{[...new Set(viewCostingData?.map((data) => heading(data).costingHeadName).filter(Boolean))].join(' / ')}</span>
+                            <span className='costing-heads-sub-heading'>{[...new Set(viewCostingData?.map((data) => data.costingHeadCheck).filter(Boolean))].join(' / ')}</span>
+                          </div>
+                        </th>}
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
                             const title = data.costingTypeId === ZBCTypeId ?

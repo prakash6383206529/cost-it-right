@@ -3304,6 +3304,12 @@ export const ZBCADDMOREOPERATION = 18
 export const VBCADDMOREOPERATION = 19
 export const CBCADDMOREOPERATION = 20
 
+// Constants for costing head label
+export const PLANTCODELABEL = 'Plant (Code)'
+export const SUPPLIERCODELABEL = 'Supplier (Code)'
+export const CUSTOMERCODELABEL = 'Customer (Code)'
+export const DEFAULTCOSTINGSUMMARYLABEL = 'VBC/ZBC/NCC'
+
 export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 export const NFRAPPROVALTYPEID = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 // export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])

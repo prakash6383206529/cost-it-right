@@ -54,7 +54,7 @@ const FuelListing = (props) => {
     totalRecordCount: 0,
     globalTake: defaultPageSize,
   });
-  const {  vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
   const { fuelDataList } = useSelector((state) => state.fuel);
@@ -262,12 +262,32 @@ const floatingFilterStatus = {
     setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
   }
 };
+
+const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    costingHeadFormatter(props);
+
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
+
+  const costingHeadFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue ? cellValue : ""
+
+  }
+
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
     customNoRowsOverlay: NoContentFound,
     commonCostFormatter: commonCostFormatter,
-        statusFilter: CostingHeadDropdownFilter,
+    statusFilter: CostingHeadDropdownFilter,
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer
 
   };
 

@@ -2363,7 +2363,7 @@ class AddBOPImport extends Component {
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={true}
-                                  disabled={disableAll || isViewMode}
+                                  disabled={disableAll || isViewMode || this.state?.DataToChange?.SourceVendorId}
                                   className=" "
                                   customClassName=" withBorder"
                                   onChange={this.handleBasicRateChange}
