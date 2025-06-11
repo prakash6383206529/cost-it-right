@@ -837,7 +837,7 @@ function Rejection(props) {
                             disabled={true}
                         />
                     </Col>}
-                    {getConfigurationKey().IsRejectionRecoveryApplicable && applicability.label === 'RM' && <Col md="2">
+                    {(!IdForMultiTechnology.includes(String(costData?.TechnologyId))&& (costData?.PartType !== 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable &&  applicability.label === 'RM' && <Col md="2">
                         {/* {RejectionRecoveryUI} */}
                         <div className='d-flex align-items-center'>
                             <TextFieldHookForm
@@ -910,7 +910,7 @@ function Rejection(props) {
                                 <th>Rejection (%)</th>
                                 <th>Cost (Applicability)</th>
                                 <th>Rejection</th>
-                                {(!IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable && <th>Rejection Recovery Cost</th>}
+                                {(!IdForMultiTechnology.includes(String(costData?.TechnologyId))&& (costData?.PartType !== 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable && <th>Rejection Recovery Cost</th>}
                                 <th>Net Rejection</th>
                                 {!CostingViewMode && !fetchRejectionDataFromMaster() && <th className='text-right'>Action</th>}
                                 <th className='text-center'>Remark</th>
@@ -965,7 +965,7 @@ function Rejection(props) {
                                             )}
                                         </td>
                                         <td>{item?.Applicability === 'Fixed' ? checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.TotalCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
-                                        {getConfigurationKey().IsRejectionRecoveryApplicable && !IdForMultiTechnology.includes(String(costData?.TechnologyId)) && <td>
+                                        {getConfigurationKey().IsRejectionRecoveryApplicable && !IdForMultiTechnology.includes(String(costData?.TechnologyId)) && costData?.PartType !== 'Assembly' && <td>
 
                                             <div className='d-flex align-items-center'>
                                                 <span>{checkForDecimalAndNull(item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</span>
