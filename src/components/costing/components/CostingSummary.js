@@ -68,6 +68,7 @@ function CostingSummary(props) {
   const { t } = useTranslation("Costing")
   const { technologyLabel } = useLabels();
   const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
@@ -248,7 +249,7 @@ function CostingSummary(props) {
         if (item.Value === '0') return false
         if (item.Value === PRODUCT_ID) return false
         if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
-        if (IdForMultiTechnology.includes(String(technology?.value)) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
+        if (IdForMultiTechnology.includes(String(technology?.value)||IsMultiVendorCosting) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
