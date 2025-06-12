@@ -113,7 +113,7 @@ const BusinessValueReport = ({ }) => {
 
   const renderListing = (label, text = '', IsProductHierarchy = false) => {
     const temp = []
-    if (label === 'PartGroup') {
+    if (label === 'GroupCode') {
       productGroupSelectList && productGroupSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
@@ -197,7 +197,6 @@ const BusinessValueReport = ({ }) => {
       businessValueReportHeads && businessValueReportHeads.map((item) => {
         if (item.Value === '0') return false
         if (item.Value === "IsRequestedForBudgeting") return false
-        if (item.Value === "PartGroup") return false
         if (item.IsProductHierarchy) return false
           temp.push({ label: item.Text, value: item.Value })
           return null
@@ -332,7 +331,7 @@ const BusinessValueReport = ({ }) => {
       IsRequestedForBudgeting: IsRequestedForBudgeting,
       TechnologyName: _.get(values, 'TechnologyName.value', ''),
       PartType: _.get(values, 'PartType.value', ''),
-      PartGroup: _.get(values, 'PartGroup.value', ''),
+      PartGroup: _.get(values, 'GroupCode.value', ''),
       PartFamilyCode: _.get(values, 'PartFamilyCode.value', ''),
       PartNepNumber: _.get(values, 'NepNumber.value', ''),
       PlantCode: _.get(values, 'PlantCode.value', ''),
