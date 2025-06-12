@@ -642,7 +642,7 @@ function Icc(props) {
                                             className={`CalculatorIcon cr-cl-icon calculatorIcc mt10`}
                                             type={'button'}
                                             onClick={() => toggleWeightCalculator()}
-                                            disabled={CostingViewMode}
+                                            disabled={false}
                                         />
                                     </div>
                                 </Col>

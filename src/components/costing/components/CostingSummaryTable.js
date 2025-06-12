@@ -646,6 +646,8 @@ const CostingSummaryTable = (props) => {
     let isIncludeOverheadAndProfitInICC = viewCostingData[index]?.isIncludeOverheadAndProfitInICC
     let isIncludeToolCostInCCForICC = viewCostingData[index]?.isIncludeToolCostInCCForICC
     let rejectionRecoveryData = viewCostingData[index]?.CostingRejectionRecoveryDetails
+    let rejectionModelType = viewCostingData[index]?.rejectionModelType
+    
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
     setViewRejectionRecoveryData(rejectionRecoveryData)
@@ -660,7 +662,8 @@ const CostingSummaryTable = (props) => {
       isIncludeSurfaceTreatmentWithRejection: isIncludeSurfaceTreatmentWithRejection,
       isIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatmentWithOverheadAndProfit,
       isIncludeOverheadAndProfitInICC: isIncludeOverheadAndProfitInICC,
-      isIncludeToolCostInCCForICC: isIncludeToolCostInCCForICC
+      isIncludeToolCostInCCForICC: isIncludeToolCostInCCForICC,
+      rejectionModelType: rejectionModelType
     }
     setViewRejectAndModelType(obj)
   }
@@ -3183,12 +3186,13 @@ const CostingSummaryTable = (props) => {
                             !drawerDetailPDF ? (
                               <tr>
                                 <td>
-                                  <span className={highlighter("netOperationCost")}>Net Overhead Cost</span>
+                                  <span className={highlighter("netOverheadCost")}>Net Overhead Cost</span>
                                   <span className={highlighter("netProfitCost")}> Net Profit Cost</span>
                                   <span className={highlighter("netRejectionCost")}> Net Rejection Cost </span>
                                 </td>
                                 {viewCostingData &&
                                   viewCostingData?.map((data) => {
+                                    
                                     return (
                                       <td className={tableDataClass(data)}>
                                         <span className={highlighter("netOverheadCost")}>

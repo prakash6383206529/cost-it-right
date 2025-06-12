@@ -953,7 +953,7 @@ const AddInterestRate = (props) => {
                                                     errors={errors.ICCMethod}
                                                     disabled={(state?.selectedInventoryDayType?.length > 0 || state?.selectedWIPMethods?.length > 0)
                                                             ? (state.isEditFlag || state.isViewMode)
-                                                            : false
+                                                            : state.isViewMode
                                                         }
                                                     // disabled={(state?.selectedInventoryDayType?.length > 0 || state?.selectedWIPMethods?.length > 0)}
                                                     value={state.selectedICCMethod}
