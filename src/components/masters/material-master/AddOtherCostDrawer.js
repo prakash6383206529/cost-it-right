@@ -82,7 +82,7 @@ function AddOtherCostDrawer(props) {
 
         // Update state
         setTotalCostBase(isOnlyDiscountCost ? discountNetCostConversion : totalCostBase);
-        setTotalCostCurrency(checkForDecimalAndNull(sumNetCost, initialConfiguration?.NoOfDecimalForPrice));
+        setTotalCostCurrency(sumNetCost);
 
     }, [tableData]);
     useEffect(() => {
