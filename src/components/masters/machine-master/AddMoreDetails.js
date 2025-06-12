@@ -19,7 +19,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelByPlant, getFuelList, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads, GUIDE_BUTTON_SHOW, LOGISTICS, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC, MACHINEMASTER, COSTAPPLICABILITYBASIS, MHRBASIS } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads, GUIDE_BUTTON_SHOW, LOGISTICS, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC, MACHINEMASTER, COSTAPPLICABILITYBASIS, MHRBASIS, FUELANDPOWER_CALCULATION_TYPE } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -4519,7 +4519,7 @@ class AddMoreDetails extends Component {
                       </Row>
 
                       {/* POWER */}
-                      {!getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster &&
+                      {getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Standard &&
                       <Row className="mb-3 accordian-container">
                         <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
@@ -4795,7 +4795,7 @@ class AddMoreDetails extends Component {
                       }
 
                       {/* POWER COMBINED */}
-                      {getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster &&
+                      {getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Custom &&
                       <Row className="mb-3 accordian-container">
                         <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle

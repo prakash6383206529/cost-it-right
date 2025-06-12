@@ -3268,6 +3268,11 @@ export const LANGUAGES = [
   { value: 'mr', label: 'मराठी - MR', },
 ]
 
+export const FUELANDPOWER_CALCULATION_TYPE = {
+  Standard: "Standard",
+  Custom: "Custom"
+}
+
 export const MACHINE_POWER_TYPE = {
   fuel: "1",
   power: "2"

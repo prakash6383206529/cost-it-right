@@ -447,7 +447,7 @@ const AddPowerDetails = ({
                     <TooltipCustom
                         id={`FinalRate`}
                         disabledIcon
-                        tooltipText={'Unit Rate / (Unit Produced * Usage (%))'}
+                        tooltipText={'Final Rate = Unit Rate / (Unit Produced * Usage (%))'}
                     />
                     <Col md="3">
                         <TextFieldHookForm
