@@ -4799,7 +4799,6 @@ class AddMoreDetails extends Component {
                       <Row className="mb-3 accordian-container">
                         <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
-                            // title={'Power:'}
                             title={'Power:'}
                             customClass={'Personal-Details'} />
 
@@ -4817,6 +4816,29 @@ class AddMoreDetails extends Component {
                               />
                               }
                             </div>)}
+                          {/* {this.state?.entryType &&  */}<Row>
+                            <Col md="4" className="switch mt-4 mr-3">
+                              <label className="switch-level mb-0">
+                                <div className="left-title">Domestic</div>
+                                <Switch
+                                  onChange={this.ImportToggle}
+                                  checked={this.state.powerIsImport}
+                                  id="normal-switch"
+                                  disabled={data.isEditFlag || isViewFlag || disableAllForm ? true : false}
+                                  background="#4DC771"
+                                  onColor="#4DC771"
+                                  onHandleColor="#ffffff"
+                                  offColor="#4DC771"
+                                  uncheckedIcon={false}
+                                  checkedIcon={false}
+                                  height={20}
+                                  width={46}
+                                />
+                                <div className="right-title">Import</div>
+                              </label>
+                            </Col>
+                          </Row>
+                          {/* } */}
                         </Col>
                         <Col md="6">
                           <div className={'right-details text-right'}>
