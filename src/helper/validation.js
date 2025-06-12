@@ -333,16 +333,28 @@ export const trimFourDecimalPlace = (floatValue) => {
 }
 
 export const trimDecimalPlace = (floatValue, decimalPlaces) => {
-    if (floatValue !== null && !isNaN(floatValue) && typeof decimalPlaces === 'number' && decimalPlaces >= 0) {
-        try {
-
-            const value = new BigNumber(floatValue ?? 0)
-            const roundedValue = value?.decimalPlaces(decimalPlaces);
-            const finalValue = roundedValue?.toNumber()
-            return finalValue;
-        } catch (error) {
-            return floatValue;  // or handle the error accordingly
+    if (floatValue === null || isNaN(floatValue) || typeof decimalPlaces !== 'number' || decimalPlaces < 0) {
+        return floatValue;
+    }
+    try {
+        // Convert to string for manipulation
+        const valueStr = floatValue.toString();
+        const dotIndex = valueStr.indexOf('.'); 
+        // If it's an integer or requires no decimal adjustment
+        if (dotIndex === -1) {
+            return parseFloat(`${floatValue}.${'0'.repeat(decimalPlaces)}`);
         }
+        // Determine the end index for truncation
+        const cutIndex = dotIndex + decimalPlaces + 1;
+        let truncatedStr = valueStr.slice(0, cutIndex);
+        // Pad with zeros if necessary to ensure the decimalPlaces length is met
+        while ((truncatedStr.length - dotIndex - 1) < decimalPlaces) {
+            truncatedStr += '0';
+        }
+        // Convert back to number
+        return parseFloat(truncatedStr);
+    } catch (error) {
+        return floatValue;  // Return original value on error
     }
 };
 
@@ -350,9 +362,9 @@ export const trimDecimalPlace = (floatValue, decimalPlaces) => {
 
 export const checkForDecimalAndNull = (floatValue, decimalPlaces) => {
     const localStorageConfig = reactLocalStorage.getObject('InitialConfiguration');
-
     // Ensure floatValue is wrapped in a BigNumber, even if null or undefined
     let value = new BigNumber(floatValue ?? 0);
+
 
     if (localStorageConfig && localStorageConfig.IsRoundingVisible) {
         // Make sure decimalPlaces is a valid number before rounding
