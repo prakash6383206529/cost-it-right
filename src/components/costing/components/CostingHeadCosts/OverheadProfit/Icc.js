@@ -90,10 +90,10 @@ function Icc(props) {
     }, [])
     useEffect(() => {
         dispatch(setIccCost({ NetCost: costingDetailForIcc?.NetICC }))
-        if(!CostingViewMode){
+        if (!CostingViewMode) {
             callModelTypeApi(state.modelType)
         }
-    }, [costingDetailForIcc,IsIncludeApplicabilityForChildPartsInICC])
+    }, [costingDetailForIcc, IsIncludeApplicabilityForChildPartsInICC])
 
     /**
      * @method onPressInventory
@@ -161,12 +161,12 @@ function Icc(props) {
                     switch (item.Applicability) {
                         case 'RM':
                         case 'Part Cost':
-                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0); break;
+                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts?.NetRawMaterialsCost); break;
                         case 'BOP':
-                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost) : (checkForNull(headerCosts?.NetBoughtOutPartCost) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0));
+                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost) : checkForNull(headerCosts?.NetBoughtOutPartCost);
                             break;
                         case 'CC':
-                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsConversionCost) + ConversionCostForCalculation : (ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)); break;
+                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsConversionCost) + ConversionCostForCalculation : ConversionCostForCalculation; break;
                         case 'Overhead':
                             cost = checkForNull(includeOverHeadProfitIcc ? TopHeaderValues.OverheadCost : 0)
                             break;
@@ -232,7 +232,7 @@ function Icc(props) {
             JSON.stringify(state.iccDetails) !== JSON.stringify(tempInventoryObj?.ICCCostingApplicabilityDetails);
         if (hasChanges && !CostingViewMode) {
             // Filter ICC details based on conditions
-            const filteredData = state?.iccDetails?.length > 0 
+            const filteredData = state?.iccDetails?.length > 0
                 ? state.iccDetails.filter(item => {
                     const applicability = item?.Applicability;
 
