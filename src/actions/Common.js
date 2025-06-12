@@ -79,7 +79,7 @@ import {
   GET_APPLICABILITY_LIST_SUCCESS,
   GET_SEGMENT_SELECTLIST,
   GET_GROUP_CODE_SELECTLIST,
-  GET_ENERGY_TYPE_SELECTLIST_SUCCESS
+  GET_MACHINE_POWER_TYPE_SELECTLIST_SUCCESS
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1034,25 +1034,25 @@ export function getPowerTypeSelectList(listFor = "", callback) {
 
 
 /**
- * @method getEnergyTypeSelectList
- * @description GET Energy Type SELECTLIST
+ * @method getMachinePowerTypeSelectList
+ * @description GET Machine Power Type SELECTLIST
  */
-export function getEnergyTypeSelectList(callback) {
+export function getMachinePowerTypeSelectList(callback) {
     return (dispatch) => {
-        // const request = axios.get(`${API.getEnergyTypeSelectList}`, config());
-        // request.then((response) => {
-        //     if (response.data.Result) {
-        //         dispatch({
-        //             type: GET_ENERGY_TYPE_SELECTLIST_SUCCESS,
-        //             payload: response?.data?.SelectList || [],
-        //         });
-        //         callback(response);
-        //     }
-        // }).catch((error) => {
-        //     // dispatch({ type: API_FAILURE, });
-        //     // callback(error);
-        //     apiErrors(error);
-        // });
+        const request = axios.get(`${API.getMachinePowerTypeSelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MACHINE_POWER_TYPE_SELECTLIST_SUCCESS,
+                    payload: response?.data?.SelectList || [],
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            // dispatch({ type: API_FAILURE, });
+            // callback(error);
+            apiErrors(error);
+        });
     };
 }
 

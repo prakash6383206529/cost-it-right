@@ -9,7 +9,7 @@ import {
   validateFileName
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, renderNumberInputField, validateForm } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, getExchangeRateSource, getCurrencySelectList, fetchApplicabilityList, getEnergyTypeSelectList, getPowerTypeSelectList } from '../../../actions/Common';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, getExchangeRateSource, getCurrencySelectList, fetchApplicabilityList, getMachinePowerTypeSelectList, getPowerTypeSelectList } from '../../../actions/Common';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
   getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, getProcessGroupByMachineId, setGroupProcessList, setProcessList,
@@ -214,7 +214,7 @@ class AddMoreDetails extends Component {
     this.props.getDepreciationTypeSelectList(() => { })
     this.props.getExchangeRateSource(() => { })
     this.props.getPowerTypeSelectList("machine", (res) => { })
-    this.props.getEnergyTypeSelectList((res) => { })
+    this.props.getMachinePowerTypeSelectList((res) => { })
     const conditionTypeId = getCostingConditionTypes(MACHINEMASTER);
     this.props.fetchApplicabilityList(null, conditionTypeId, false, res => { })
     this.props.change('plantCurrency', editDetails?.fieldsObj?.plantCurrency ?? '')
@@ -2556,6 +2556,14 @@ class AddMoreDetails extends Component {
     } = this.state;
     const { editDetails, isMachineAssociated } = this.props;
 
+    let totalPercentage = (this.state?.MachinePowerDetails || []).reduce((acc, item) => {
+        return acc + (Number(item?.Percentage) || 0);
+    }, 0);
+    if((totalPercentage) < 100){
+      Toaster.warning("Total Usage (%) of Power should be 100%")
+      return;
+    }
+
     // Validate process grid
     if (!this.validateProcessGrid(processGrid)) {
       return false;
@@ -4817,12 +4825,13 @@ class AddMoreDetails extends Component {
                         </Col>
 
                         {isPowerOpen &&
-                          <AddPowerDetails 
-                            parentState={this.state}
-                            // setParentState={this.setState.bind(this)}
-                            setParentState={updatedState => this.setState(updatedState)}
-                            fieldsObj={this.props.fieldsObj}
-                          />
+                          <div className='accordian-content row mx-0 w-100'>
+                            <AddPowerDetails 
+                              parentState={this.state}
+                              setParentState={updatedState => this.setState(updatedState)}
+                              fieldsObj={this.props.fieldsObj}
+                            />
+                          </div>
                         }
                       </Row>
                       }
@@ -5687,7 +5696,7 @@ export default connect(mapStateToProps, {
   getExchangeRateSource,
   getCurrencySelectList,
   fetchApplicabilityList,
-  getEnergyTypeSelectList,
+  getMachinePowerTypeSelectList,
   getPowerTypeSelectList
 })(reduxForm({
   form: 'AddMoreDetails',

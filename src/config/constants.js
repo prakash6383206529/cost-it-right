@@ -979,9 +979,6 @@ export const API = {
   getFuelUnitCost: `${BASE_URL}/masters-machine/get-fuel-unit-cost`,
   getLabourCost: `${BASE_URL}/masters-machine/get-labour-cost`,
   getPowerCostUnit: `${BASE_URL}/masters-machine/get-power-cost`,
-
-  getEnergyTypeSelectList: `${BASE_URL}/masters-machine/get-energy-type`,
-
   createMachineDetails: `${BASE_URL}/masters-machine/create-machine-details`,
   updateMachineDetails: `${BASE_URL}/masters-machine/update-machine-Details`,
   getMachineDetailsData: `${BASE_URL}/masters-machine/get-machine-details`,
@@ -1007,6 +1004,7 @@ export const API = {
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
+  getMachinePowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-machine-power-type`,
   getChargeTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-charges-type`,
   getPowerSupplierTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-supplier-type`,
   getUOMSelectList: `${BASE_URL}/configuration/select-list-get-unit-of-measurement`,
@@ -2083,6 +2081,7 @@ export const STORE_PROCESS_LIST = 'STORE_PROCESS_LIST'
 
 //POWER MASTER
 export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS'
+export const GET_MACHINE_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_MACHINE_POWER_TYPE_SELECTLIST_SUCCESS'
 export const GET_CHARGE_TYPE_SELECTLIST_SUCCESS = 'GET_CHARGE_TYPE_SELECTLIST_SUCCESS'
 export const GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS'
 export const GET_UOM_SELECTLIST_SUCCESS = 'GET_UOM_SELECTLIST_SUCCESS'
@@ -2090,8 +2089,6 @@ export const GET_POWER_DATALIST_SUCCESS = 'GET_POWER_DATALIST_SUCCESS'
 export const GET_POWER_DATA_SUCCESS = 'GET_POWER_DATA_SUCCESS'
 export const GET_UOM_SELECTLIST_BY_UNITTYPE = 'GET_UOM_SELECTLIST_BY_UNITTYPE'
 export const GET_PLANT_CURRENCY_BY_PLANT_IDS = 'GET_PLANT_CURRENCY_BY_PLANT_IDS'
-
-export const GET_ENERGY_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS'
 
 //CURRENCY EXCHANGE
 export const GET_CURRENCY_SELECTLIST_SUCCESS = 'GET_CURRENCY_SELECTLIST_SUCCESS'
@@ -3270,6 +3267,11 @@ export const LANGUAGES = [
   { value: 'hi', label: 'हिन्दी - HI', },
   { value: 'mr', label: 'मराठी - MR', },
 ]
+
+export const MACHINE_POWER_TYPE = {
+  fuel: "1",
+  power: "2"
+}
 
 export const RM_PRESSURE_MAP = {
   "VMQ": [400, 450],

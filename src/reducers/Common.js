@@ -75,7 +75,7 @@ import {
   IS_RESET_COSTING_HEAD,
   SET_LIST_TOGGLE,
   GET_APPLICABILITY_LIST_SUCCESS,
-  GET_ENERGY_TYPE_SELECTLIST_SUCCESS
+  GET_MACHINE_POWER_TYPE_SELECTLIST_SUCCESS
 } from '../config/constants';
 
 const initialState = {
@@ -357,10 +357,10 @@ export default function commanReducer(state = initialState, action) {
         error: true,
         powerTypeSelectList: action.payload
       };
-    case GET_ENERGY_TYPE_SELECTLIST_SUCCESS:
+    case GET_MACHINE_POWER_TYPE_SELECTLIST_SUCCESS:
       return {
         ...state,
-        energyTypeSelectList: action.payload
+        machinePowerTypeSelectList: action.payload
       };
     case GET_CHARGE_TYPE_SELECTLIST_SUCCESS:
       return {
