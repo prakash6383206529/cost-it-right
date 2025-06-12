@@ -81,7 +81,7 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || IsMultiVendorCosting)
   const isPartType = useContext(IsPartType);
   const isNFR = useContext(IsNFR);
 
@@ -294,7 +294,7 @@ function CostingHeaderTabs(props) {
           ...ComponentItemOverheadData?.CostingPartDetails,
           NetOverheadAndProfitCost: checkForNull(ComponentItemOverheadData?.CostingPartDetails?.OverheadCost) +
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) +
-            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) 
+            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost)
         },
         "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
@@ -894,7 +894,7 @@ function CostingHeaderTabs(props) {
           <PreviousTabData.Provider value={previousTab}>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
-                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting) ? <TabAssemblyTechnology
+                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) || IsMultiVendorCosting ? <TabAssemblyTechnology
                   setHeaderCost={props.setHeaderCost}
                   backBtn={props.backBtn}
                   activeTab={activeTab}

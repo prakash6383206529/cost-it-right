@@ -123,8 +123,8 @@ function Rejection(props) {
         }
     }, [IsIncludedSurfaceInRejection]);
     useEffect(() => {
-        callGetRejectionDataByModelType(state.modelType)
-    }, [IsIncludeApplicabilityForChildParts])
+        callGetRejectionDataByModelType(state?.modelType)
+    }, [IsIncludeApplicabilityForChildParts,IsIncludedSurfaceInRejection])
 
     // useEffect(() => {
     //     setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration?.NoOfDecimalForPrice))

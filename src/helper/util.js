@@ -823,6 +823,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.masterBatchRMPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice ? dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice : 0
   obj.masterBatchPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchPercentage ? dataFromAPI?.CostingPartDetails?.MasterBatchPercentage : 0
   obj.isApplyMasterBatch = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch ? dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch : false
+  obj.IsMultiVendorCosting = dataFromAPI?.IsMultiVendorCosting && dataFromAPI?.IsMultiVendorCosting
   obj.IsAssemblyCosting = dataFromAPI?.IsAssemblyCosting ? dataFromAPI?.IsAssemblyCosting : ""
   obj.childPartBOPHandlingCharges = dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMName ? dataFromAPI?.CostingPartDetails?.MasterBatchRMName : '-'
@@ -2110,7 +2111,7 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
       if ("ProcessCost" in item) {
         totals.overheadProcessCost += useExclForOverhead ? processExcl : process;
         if (ProcessTechnologyId !== technologyId) {
-// Initialize if undefined to prevent NaN
+          // Initialize if undefined to prevent NaN
           if (typeof totals.ccForOtherTechnologyCostForOverhead === 'undefined') {
             totals.ccForOtherTechnologyCostForOverhead = 0;
           }
@@ -2154,9 +2155,9 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
   return totals;
 };
 
-export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = [],IsMultiVendorCosting=false) => {
+export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = [], IsMultiVendorCosting = false) => {
   const isAssembly = item?.PartType
-  const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))||(costData?.PartType === 'Assembly' && IsMultiVendorCosting)
+  const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting)
 
   let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
   let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex(costingItem => costingItem.PartNumber === item?.PartNumber && costingItem.AssemblyPartNumber === item?.AssemblyPartNumber)
