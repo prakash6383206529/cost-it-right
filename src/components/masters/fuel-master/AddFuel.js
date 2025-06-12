@@ -1151,6 +1151,7 @@ class AddFuel extends Component {
                               name="plantCurrency"
                               type="text"
                               label="Plant Currency"
+                              id="plantCurrency"
                               placeholder={"-"}
                               validate={[]}
                               component={renderTextInputField}
@@ -1184,7 +1185,7 @@ class AddFuel extends Component {
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
                               customClassName="mb-1"
-                            >{this.state?.currency?.label && this.state?.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
+                            >{this.state?.currency?.label && this.state?.showWarning && <WarningMessage dClass="mt-2" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                             </Field>
                           </Col>}
                           {costingTypeId === CBCTypeId && (
