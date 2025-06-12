@@ -3273,6 +3273,15 @@ export const MACHINE_POWER_TYPE = {
   power: "2"
 }
 
+export const POWER_TYPE = {
+  windPower: "1",
+  solarPower: "2",
+  hydroPower: "3",
+  generatorDiesel: "4",
+  SEBPower: "5",
+  totalPower: "6"
+}
+
 export const RM_PRESSURE_MAP = {
   "VMQ": [400, 450],
   "PVMQ": [400, 450],

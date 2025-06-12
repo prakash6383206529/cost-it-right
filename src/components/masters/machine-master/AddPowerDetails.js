@@ -5,9 +5,9 @@ import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFo
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit8And7, getConfigurationKey, checkForNull, checkForDecimalAndNull } from "../../../helper";
 import { useDispatch, useSelector } from 'react-redux';
 import DayTime from '../../common/DayTimeWrapper';
-import { EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT } from '../../../config/constants';
+import { EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, POWER_TYPE } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
-import { getFuelUnitCost } from '../actions/MachineMaster';
+import { getFuelUnitCost, getPowerCostUnit } from '../actions/MachineMaster';
 import _ from 'lodash';
 import NoContentFound from '../../common/NoContentFound';
 import TooltipCustom from '../../common/Tooltip';
@@ -112,18 +112,41 @@ const AddPowerDetails = ({
         setValue("Source", "");
     }
 
+    const getPowerRateByType = (typeId, data) => {
+        if (!data || !typeId) return null;
+        switch (typeId) {
+            case POWER_TYPE.windPower:
+                return data.WindPowerRatePerUnit;
+            case POWER_TYPE.solarPower:
+                return data.SolarPowerRatePerUnit;
+            case POWER_TYPE.hydroPower:
+                return data.HydroPowerRatePerUnit;
+            case POWER_TYPE.generatorDiesel:
+                return data.GeneratorDieselPowerRatePerUnit;
+            case POWER_TYPE.SEBPower:
+                return data.SEBPowerRatePerUnit;
+            case POWER_TYPE.totalPower:
+                return data.NetPowerCostPerUnit;
+            default:
+            return null;
+        }
+    };
+
     const handleFuelChange = (newValue) => {
-        if(String(energyType?.value) === MACHINE_POWER_TYPE.fuel){
-            setValue("Fuel", newValue);
-            setState(prev => ({...prev, fuel: newValue }));
-        }else{
+        const isPowerType = String(energyType.value) === MACHINE_POWER_TYPE.power
+        const fetchApi = isPowerType ? getPowerCostUnit : getFuelUnitCost;
+        if(isPowerType){
             setValue("Source", newValue);
             setState(prev => ({...prev, source: newValue }));
+        }else{
+            setValue("Fuel", newValue);
+            setState(prev => ({...prev, fuel: newValue })); 
         }
         resetEnableField()
         if (newValue && newValue !== '') {
             const { selectedPlants, ExchangeSource, costingTypeId, selectedCustomer, selectedVedor, effectiveDate, powerIsImport } = parentState;
             const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
+            // const isPowerType = String(energyType.value) === MACHINE_POWER_TYPE.power
             if (selectedPlants) {
               const requestData = {
                 fuelId: newValue.value,
@@ -136,19 +159,21 @@ const AddPowerDetails = ({
                 customerId: selectedCustomer?.value || '',
                 entryType: powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
               }
-
-              dispatch(getFuelUnitCost(requestData, res => {
-                let responseData = res?.data?.Data;
+              dispatch(fetchApi(requestData, res => {
+                let responseData = isPowerType ? res?.data?.DynamicData : res?.data?.Data;
                 if (res && res?.data && res?.data?.Message !== '') {
                   Toaster.warning(res.data.Message)
                 }
                 if(res.status === 204){
                     setState(prev => ({...prev, showUnitRateWarning: true, }));
-                    Toaster.warning(`Unit Rate is missing, Please set a Unit Rate for the selected ${(String(energyType.value) === MACHINE_POWER_TYPE.power) ? 'Source' : "Fuel"}.`);
+                    Toaster.warning(`Unit Rate is missing, Please set a Unit Rate for the selected ${isPowerType ? 'Source' : "Fuel"}.`);
                 }
-                let unitOfMeasurement = (String(energyType.value) === MACHINE_POWER_TYPE.power) ? "KW" : "UOM"
+                let unitOfMeasurement = isPowerType ? "KW" : "UOM"
                 if(responseData){
-                    const newFuelCostPerUnit = responseData?.UnitCost || 0;
+                    let newFuelCostPerUnit = responseData?.UnitCost || 0;
+                    if(isPowerType){
+                        newFuelCostPerUnit = getPowerRateByType(newValue.value, responseData)
+                    }
                     setValue("FuelCostPerUnit", newFuelCostPerUnit)
                     setValue("UOM", responseData?.UOMName || unitOfMeasurement)
                     setState(prev => ({...prev, FuelCostPerUnit: newFuelCostPerUnit, UOM: responseData?.UOMName || unitOfMeasurement, FuelEntryId: responseData?.FuelEntryId || null, showUnitRateWarning: false }));
@@ -248,7 +273,7 @@ const AddPowerDetails = ({
     const editGridItem = (item) => {
         let editEnergyType = ({ label: item?.MachinePowerType, value: item.MachinePowerTypeId })
         let editFuel = ({ label: item.Type, value: item.TypeId })
-        setState(prev => ({...prev, UnitProduced: item?.UnitProduced, UsagePercent: item?.Percentage, finalRate: item?.Cost, energyType: editEnergyType, fuel: editFuel, Source: editFuel, UOM: item?.UOM, FuelCostPerUnit: item?.Rate, editItemId: item.TypeId, editMachinePowerTypeId: item.MachinePowerTypeId, showUnitRateWarning: false }));
+        setState(prev => ({...prev, UnitProduced: item?.UnitProduced, UsagePercent: item?.Percentage, finalRate: item?.Cost, energyType: editEnergyType, fuel: editFuel, source: editFuel, UOM: item?.UOM, FuelCostPerUnit: item?.Rate, editItemId: item.TypeId, editMachinePowerTypeId: item.MachinePowerTypeId, showUnitRateWarning: false }));
         setValue("Type", editEnergyType)
         setValue("Fuel", editFuel)
         setValue("Source", editFuel)
