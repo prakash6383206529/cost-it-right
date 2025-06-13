@@ -1391,7 +1391,7 @@ class AddPower extends Component {
     if (label === 'Source') {
       powerTypeSelectList && powerTypeSelectList.map(item => {
         if (item.Value === '0') return false;
-        if (this.findSourceType(item.Value, this.state.powerGrid)) return false;
+        if (this.findSourceType(item.Text, this.state.powerGrid)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
