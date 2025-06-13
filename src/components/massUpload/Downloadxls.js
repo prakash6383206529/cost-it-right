@@ -1,6 +1,6 @@
 import React from "react";
 import ReactExport from 'react-export-excel';
-import { ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSRFQ, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, RAWMATERIALSRFQ, SAP_PUSH, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from "../../config/constants";
+import { ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSRFQ, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, FUELANDPOWER_CALCULATION_TYPE, RAWMATERIALSRFQ, SAP_PUSH, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from "../../config/constants";
 import {
     Fuel, FuelTempData,
     RMDomesticZBC, RMDomesticZBCTempData, RMDomesticVBC, RMDomesticVBCTempData,
@@ -96,6 +96,13 @@ export const checkRM_Process_OperationConfigurable = (excelData) => {
         }
         if (getConfigurationKey().IsSourceExchangeRateNameVisible === false) {
             if (el.value === 'ExchangeRateSourceName') return false
+        }
+        if (getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Standard) {
+            if (el.value === 'MachinePowerType') return false
+            if (el.value === 'PowerType') return false
+            if (el.value === 'Rate') return false
+            if (el.value === 'UnitProduced') return false
+            if (el.value === 'PowerPercentage') return false
         }
         return true; // Include the element if none of the conditions above are met
     });

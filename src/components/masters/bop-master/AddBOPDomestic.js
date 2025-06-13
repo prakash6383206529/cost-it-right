@@ -1980,7 +1980,7 @@ class AddBOPDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={disableAll || isViewMode || !IsFinancialDataChanged}
+                                disabled={disableAll || isViewMode || !IsFinancialDataChanged || this.state?.DataToCheck?.SourceVendorId}
                                 placeholder={disableAll || isViewMode || !IsFinancialDataChanged ? '-' : 'Select Date'}
                               />
                             </div>

@@ -11,6 +11,7 @@ import { COMMODITYCOST, EMPTY_DATA, RAWMATERIALCOST } from '../../../../src/conf
 import Toaster from '../../../../src/components/common/Toaster';
 import { getCostingCondition } from '../../../actions/Common'
 import { generateCombinations, getCostingConditionTypes } from '../../common/CommonFunctions'
+import { getConfigurationKey } from '../../../helper'
 
 function AddOtherCostDrawer(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -347,7 +348,7 @@ function AddOtherCostDrawer(props) {
 
 
         // If 'Type' is not provided, return false
-        if (!type || !cost || !remark || !costDescription) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
+        if (!type || !cost || (getConfigurationKey()?.IsRMOtherCostRemarkMandatory && !remark) || !costDescription) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
             if (!applicability || !applicabilityBaseCost || !percentage || percentage === 0) {
@@ -699,9 +700,9 @@ function AddOtherCostDrawer(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={!!getConfigurationKey()?.IsRMOtherCostRemarkMandatory}
                                                 rules={{
-                                                    required: true,
+                                                    required:!!getConfigurationKey()?.IsRMOtherCostRemarkMandatory,
                                                     validate: { checkWhiteSpaces, hashValidation, maxLength80 }
 
                                                 }}
