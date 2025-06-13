@@ -490,17 +490,17 @@ class BulkUpload extends Component {
                             else if (this.state.costingTypeId === ZBCADDMORE) {
                                 const localizedMHRMoreZBC = this.localizeHeaders(MHRMoreZBC);
                                 masterDataArray = localizedMHRMoreZBC
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreZBC, MHRMoreZBC), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreZBC, ZBCADDMORE), fileHeads)
                             }
                             else if (this.state.costingTypeId === VBCADDMORE) {
                                 const localizedMHRMoreVBC = this.localizeHeaders(MHRMoreVBC);
                                 masterDataArray = localizedMHRMoreVBC                               
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreVBC, MHRMoreVBC), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreVBC, VBCADDMORE), fileHeads)
                             }
                             else if (this.state.costingTypeId === CBCADDMORE) {
                                 const localizedMHRMoreCBC = this.localizeHeaders(MHRMoreCBC);
                                 masterDataArray = localizedMHRMoreCBC
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreCBC, MHRMoreCBC), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreCBC, CBCADDMORE), fileHeads)
                             }
                             break;
                         case String(VENDORBULKUPLOAD):

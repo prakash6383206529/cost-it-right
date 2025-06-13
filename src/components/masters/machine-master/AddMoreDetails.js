@@ -4519,7 +4519,7 @@ class AddMoreDetails extends Component {
                       </Row>
 
                       {/* POWER */}
-                      {getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Standard &&
+                      {(getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Standard || getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === undefined) &&
                       <Row className="mb-3 accordian-container">
                         <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
