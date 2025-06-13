@@ -4760,6 +4760,13 @@ export const MHRMoreZBC = [
     { label: "PowerCRMHead", value: "PowerCRMHead", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
+    // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+    { label: "MachinePowerType", value: "MachinePowerType" },
+    { label: "PowerType", value: "PowerType" },
+    { label: "Rate", value: "Rate" },
+    { label: "UnitProduced", value: "UnitProduced" },
+    { label: "PowerPercentage", value: "PowerPercentage" },
+    // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
     { label: "LabourCRMHead", value: "LabourCRMHead", },
@@ -4991,6 +4998,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 0,
         "PowerRatingKW": "100",
         "UsesSolarPower": "NO",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Fuel",
+        "PowerType": "Fuel Name",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "10",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
@@ -5061,6 +5075,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 0,
         "PowerRatingKW": "100",
         "UsesSolarPower": "NO",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Total Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "90",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
@@ -5132,6 +5153,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "20",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -5200,6 +5228,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "20",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -5268,6 +5303,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "20",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -5336,6 +5378,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "30",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",

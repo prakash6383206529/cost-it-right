@@ -1680,7 +1680,7 @@ class AddOperation extends Component {
                         <>
                           <Col md="3">
                             <Field
-                              label={`Welding Material Rate/Kg`}
+                              label={`Welding Rate/Kg`}
                               name={"WeldingRate"}
                               type="text"
                               placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
@@ -1711,7 +1711,7 @@ class AddOperation extends Component {
                           </Col>
                         </>}
                       {this.state.isImport && <Col md="3">
-                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Welding Material Rate/Kg * Consumption'} />}
+                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Welding Rate/Kg * Consumption'} />}
                         <Field
                           label={`Rate (${this.state.currency?.label ?? 'Currency'})`}
                           name={"Rate"}
