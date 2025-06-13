@@ -127,6 +127,7 @@ function Simulation(props) {
     const dispatch = useDispatch()
     const [applicabilityMasterId, setApplicabilityMasterId] = useState(findApplicabilityMasterId(masterList, simulationApplicability?.value) ?? null)
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
     useEffect(() => {
         dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
@@ -378,7 +379,7 @@ function Simulation(props) {
         setPlant('')
         setValue('Plant', '')
         setShowDropdown({})
-        if ((IdForMultiTechnology.includes(String(value?.value)) && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS) || (Number(master.value) === Number(RMDOMESTIC) && getConfigurationKey.IsShowMaterialIndexation)) {
+        if (((IdForMultiTechnology.includes(String(value?.value)) || IsMultiVendorCosting) && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS) || (Number(master.value) === Number(RMDOMESTIC) && getConfigurationKey.IsShowMaterialIndexation)) {
             setTechnology(value)
             setShowMasterList(false)
             dispatch(setTechnologyForSimulation(value))
@@ -913,7 +914,7 @@ function Simulation(props) {
                 // IdForMultiTechnology.includes(String(value.value))
                 technologySelectList && technologySelectList.map((item) => {
                     if (item.Value === '0') return false
-                    if (IdForMultiTechnology.includes(String(item?.Value))) temp.push({ label: item.Text, value: item.Value })
+                    if (IdForMultiTechnology.includes(String(item?.Value))||IsMultiVendorCosting) temp.push({ label: item.Text, value: item.Value })
                     return null
                 })
                 return temp

@@ -520,6 +520,7 @@ function AddToComparisonDrawer(props) {
           obj.masterBatchRMPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice ? dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice : 0
           obj.masterBatchPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchPercentage ? dataFromAPI?.CostingPartDetails?.MasterBatchPercentage : 0
           obj.isApplyMasterBatch = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch ? dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch : false
+          obj.IsMultiVendorCosting = dataFromAPI?.IsMultiVendorCosting && dataFromAPI?.IsMultiVendorCosting
           obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
           obj.childPartBOPHandlingCharges = dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges : []
           obj.masterBatchRMName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMName ? dataFromAPI?.CostingPartDetails?.MasterBatchRMName : '-'

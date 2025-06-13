@@ -24,7 +24,8 @@ function ViewOverheadProfit(props) {
   const [viewProfitData, setViewProfitData] = useState(profitData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { viewCostingDetailData } = useSelector((state) => state.costing)
-  const partType = IdForMultiTechnology?.includes(String(viewCostingDetailData[0]?.technologyId) || String(viewCostingDetailData[0]?.costingTypeId) === WACTypeId)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+  const partType = IdForMultiTechnology?.includes(String(viewCostingDetailData[0]?.technologyId) || String(viewCostingDetailData[0]?.costingTypeId) === WACTypeId)||IsMultiVendorCosting      //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
 
   useEffect(() => {
     setViewOverheadData(overheadData)

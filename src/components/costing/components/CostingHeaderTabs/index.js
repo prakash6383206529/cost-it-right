@@ -81,7 +81,7 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || IsMultiVendorCosting)
   const isPartType = useContext(IsPartType);
   const isNFR = useContext(IsNFR);
 
@@ -89,7 +89,7 @@ function CostingHeaderTabs(props) {
   const { nfrDetailsForDiscount, exchangeRateData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
-  const isRequestForMultiTechnology = IdForMultiTechnology?.includes(String(costData?.TechnologyId))
+  const isRequestForMultiTechnology = IdForMultiTechnology?.includes(String(costData?.TechnologyId)||IsMultiVendorCosting)
   const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -294,7 +294,7 @@ function CostingHeaderTabs(props) {
           ...ComponentItemOverheadData?.CostingPartDetails,
           NetOverheadAndProfitCost: checkForNull(ComponentItemOverheadData?.CostingPartDetails?.OverheadCost) +
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) +
-            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) 
+            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost)
         },
         "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
@@ -644,8 +644,8 @@ function CostingHeaderTabs(props) {
         } else {
           const tempStep = [];
           if ((CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid()))) {
-            for (let i = 1; i < Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS.length; i++) {
-              tempStep.push(Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS[i])
+            for (let i = 1; i < Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)||!IsMultiVendorCosting) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS.length; i++) {
+              tempStep.push(Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)||!IsMultiVendorCosting) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS[i])
             }
 
             setTabsTour(prevState => ({
@@ -658,7 +658,7 @@ function CostingHeaderTabs(props) {
           } else {
             setTabsTour(prevState => ({
               ...prevState,
-              steps: Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS,
+              steps: Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)||!IsMultiVendorCosting) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS,
               hints: Steps(t).PART_HINT
             }));
 
@@ -854,7 +854,7 @@ function CostingHeaderTabs(props) {
           <Nav tabs className="subtabs cr-subtabs-head">
             {costingData.TechnologyId !== LOGISTICS && <NavItem>
               <NavLink id='RMC_tabs' className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                {(IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId) ? 'Part Cost' : 'RM + CC'}
+                {(IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId||IsMultiVendorCosting) ? 'Part Cost' : 'RM + CC'}
               </NavLink>
             </NavItem >}
             {
@@ -894,7 +894,7 @@ function CostingHeaderTabs(props) {
           <PreviousTabData.Provider value={previousTab}>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
-                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting) ? <TabAssemblyTechnology
+                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) || IsMultiVendorCosting ? <TabAssemblyTechnology
                   setHeaderCost={props.setHeaderCost}
                   backBtn={props.backBtn}
                   activeTab={activeTab}
