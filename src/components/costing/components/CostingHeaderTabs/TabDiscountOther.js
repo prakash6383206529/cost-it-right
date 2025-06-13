@@ -37,7 +37,7 @@ import { IsNFR, IsPartType, ViewCostingContext } from '../CostingDetails';
 
 import { useMemo } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, required, validateFileName } from "../../../../helper/validation";
+import { checkWhiteSpaces, decimalNumberLimit, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, positiveAndDecimalNumber, required, validateFileName } from "../../../../helper/validation";
 import LoaderCustom from '../../../common/LoaderCustom';
 import TooltipCustom from '../../../common/Tooltip';
 import WarningMessage from '../../../common/WarningMessage';
@@ -679,7 +679,7 @@ function TabDiscountOther(props) {
       }
     };
 
-      dispatch(setComponentDiscountOtherItemData(data, () => { }))
+    dispatch(setComponentDiscountOtherItemData(data, () => { }))
     dispatch(setPaymentTermsDataInDiscountOtherTab(PaymentTermobj, () => { }))
 
     // }, 1000)
@@ -698,7 +698,7 @@ function TabDiscountOther(props) {
       dispatch(getDiscountOtherCostTabData(data, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
-          
+
           if (Data && Data?.CostingPartDetails && Data?.CostingPartDetails?.GrandTotalCost !== null) {
             let costDetail = Data?.CostingPartDetails
             let attachmentList = filterAttachments(Data.Attachements, null)
@@ -1424,14 +1424,14 @@ function TabDiscountOther(props) {
     }
 
     if (!CostingViewMode) {
-      setTimeout(()=>{
+      setTimeout(() => {
         dispatch(saveDiscountOtherCostTab(data, res => {
           setIsLoader(false)
           if (res.data.Result) {
             if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
               dispatch(saveCostingPaymentTermDetail(obj, res => { }))
             }
-  
+
             if (checkIsIccDataChange === true) {
               dispatch(saveCostingDetailForIcc(iccObj, res => { }))
             }
@@ -1450,8 +1450,8 @@ function TabDiscountOther(props) {
           }
           setIsLoader(false)
         }))
-      },500)
-     
+      }, 500)
+
     }
 
     setTimeout(() => {
@@ -2692,7 +2692,10 @@ function TabDiscountOther(props) {
                         control={control}
                         register={register}
                         mandatory={getConfigurationKey().IsBudgetedPriceRequiredForCosting ? true : false}
-                        rules={{ required: getConfigurationKey().IsBudgetedPriceRequiredForCosting ? true : false }}
+                        rules={{
+                          required: getConfigurationKey().IsBudgetedPriceRequiredForCosting ? true : false,
+                          validate: { number, positiveAndDecimalNumber, checkWhiteSpaces /* decimalNumberLimit */ },
+                        }}
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
