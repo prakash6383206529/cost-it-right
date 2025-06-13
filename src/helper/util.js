@@ -912,7 +912,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.TaxCodeList = dataFromAPI?.CostingPartDetails?.TaxCodeList ? dataFromAPI?.CostingPartDetails?.TaxCodeList : []
   obj.ExchangeRateSourceName = dataFromAPI?.ExchangeRateSourceName
   obj.CostingCurrency = dataFromAPI?.CostingCurrency
-
+  obj.CostingIncoTerm = dataFromAPI?.CostingIncoTerm ? dataFromAPI?.CostingIncoTerm : '-'
+  obj.CostingIncoTermDescription = dataFromAPI?.CostingIncoTermDescription ? dataFromAPI?.CostingIncoTermDescription : '-'
   obj.NetRawMaterialsCostLocalConversion = dataFromAPI?.NetRawMaterialsCostLocalConversion
   obj.NetBoughtOutPartCostLocalConversion = dataFromAPI?.NetBoughtOutPartCostLocalConversion
   obj.NetConversionCostLocalConversion = dataFromAPI?.NetConversionCostLocalConversion
