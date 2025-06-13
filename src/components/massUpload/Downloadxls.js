@@ -320,7 +320,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(localizedProductComponentHeaders, ProductComponentTempData);
             case 'BOM':
                 const localizedBOMHeaders = this.localizeHeaders(BOMUpload);
-                return this.returnExcelColumn(localizedBOMHeaders, BOMUploadTempData);
+                return this.returnExcelColumn(checkSAPCodeinExcel(localizedBOMHeaders), checkSAPCodeinExcel(BOMUploadTempData));
 
 
             case BOUGHTOUTPARTSRFQ:
