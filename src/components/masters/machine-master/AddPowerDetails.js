@@ -174,9 +174,14 @@ const AddPowerDetails = ({
                     if(isPowerType){
                         newFuelCostPerUnit = getPowerRateByType(newValue.value, responseData)
                     }
+                    let showUnitWarning = false
+                    if(newFuelCostPerUnit <= 0){
+                        showUnitWarning = true
+                        Toaster.warning(`Unit Rate is missing, Please set a Unit Rate for the selected ${isPowerType ? 'Source' : "Fuel"}.`);
+                    }
                     setValue("FuelCostPerUnit", newFuelCostPerUnit)
                     setValue("UOM", responseData?.UOMName || unitOfMeasurement)
-                    setState(prev => ({...prev, FuelCostPerUnit: newFuelCostPerUnit, UOM: responseData?.UOMName || unitOfMeasurement, FuelEntryId: responseData?.FuelEntryId || null, showUnitRateWarning: false }));
+                    setState(prev => ({...prev, FuelCostPerUnit: newFuelCostPerUnit, UOM: responseData?.UOMName || unitOfMeasurement, FuelEntryId: responseData?.FuelEntryId || null, showUnitRateWarning: showUnitWarning }));
                 }else{
                     setValue("FuelCostPerUnit", "")
                     setValue("UOM", unitOfMeasurement)
@@ -382,8 +387,8 @@ const AddPowerDetails = ({
                             control={control}
                             register={register}
                             placeholder="-"
-                            rules={{ required: true }}
-                            mandatory={true}
+                            rules={{ required: false }}
+                            mandatory={false}
                             disabled={true}
                             className=""
                             customClassName="mb-0 withBorder"
