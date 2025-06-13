@@ -354,7 +354,10 @@ function ViewOverheadProfit(props) {
           <div>
             {viewProfitData?.CostingApplicabilityDetails?.length > 0 ? profitTableData() : ""}
           </div>
-          {rejectData.RejectionApplicability != null && rejectTableData()}
+          <div>
+            {rejectData?.CostingRejectionApplicabilityDetails?.length > 0 ? rejectTableData() : ""}
+          </div>
+          {/* {rejectData.RejectionApplicability != null && rejectTableData()} */}
           {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
           {/* {iccPaymentData.ICCApplicabilityDetail.ICCApplicability != null && iccTableData()} */}
           {/* {iccPaymentData.PaymentTermDetail?.PaymentTermApplicability != null && paymentTableData()} */}
