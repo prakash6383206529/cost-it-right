@@ -142,7 +142,7 @@ function TabDiscountOther(props) {
   const [taxCode, setTaxCode] = useState('')
   const [isShowValuationType, setIsShowValuationType] = useState(false)
   const [incoTerm, setIncoTerm] = useState([])
-  
+
   const taxCodeList = useSelector(state => state.comman.taxCodeList)
   const [count, setCount] = useState(0)
   const [icc, setIcc] = useState(false)
@@ -659,6 +659,7 @@ function TabDiscountOther(props) {
       "IsValuationValid": SAPData?.isValuationValid,
       "Attachements": updatedFiles,
       "IsChanged": true,
+      "BudgetedPrice": getValues("BudgetingPrice")
     }
     let PaymentTermobj = {
       "LoggedInUserId": loggedInUserId(),
@@ -678,7 +679,7 @@ function TabDiscountOther(props) {
       }
     };
 
-    dispatch(setComponentDiscountOtherItemData(data, () => { }))
+      dispatch(setComponentDiscountOtherItemData(data, () => { }))
     dispatch(setPaymentTermsDataInDiscountOtherTab(PaymentTermobj, () => { }))
 
     // }, 1000)
@@ -722,6 +723,7 @@ function TabDiscountOther(props) {
             //MINDA
             setValue('SANumber', Data.SANumber !== null ? Data.SANumber : '')
             setValue('LineNumber', Data.LineNumber !== null ? Data.LineNumber : '')
+            setValue('BudgetingPrice', Data?.BudgetedPrice ? Data?.BudgetedPrice : "")
             setValue("evaluationType", Data?.ValuationType ? { label: Data?.ValuationType, value: Data?.ValuationType } : null)
 
             let taxCodeArray = []
@@ -1380,7 +1382,8 @@ function TabDiscountOther(props) {
       "Attachements": updatedFiles,
       "CostingIncoTermId": incoTerm?.value ?? null,
       "CostingIncoTerm": incoTerm?.IncoTerm ?? null,
-      "CostingIncoTermDescription": incoTerm?.IncoTermDescription ?? null
+      "CostingIncoTermDescription": incoTerm?.IncoTermDescription ?? null,
+      "BudgetedPrice": getValues("BudgetingPrice")
     }
     let obj = {
       "LoggedInUserId": loggedInUserId(),
@@ -1421,31 +1424,34 @@ function TabDiscountOther(props) {
     }
 
     if (!CostingViewMode) {
-      dispatch(saveDiscountOtherCostTab(data, res => {
-        setIsLoader(false)
-        if (res.data.Result) {
-          if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
-            dispatch(saveCostingPaymentTermDetail(obj, res => { }))
+      setTimeout(()=>{
+        dispatch(saveDiscountOtherCostTab(data, res => {
+          setIsLoader(false)
+          if (res.data.Result) {
+            if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
+              dispatch(saveCostingPaymentTermDetail(obj, res => { }))
+            }
+  
+            if (checkIsIccDataChange === true) {
+              dispatch(saveCostingDetailForIcc(iccObj, res => { }))
+            }
+            Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+            // dispatch(setComponentDiscountOtherItemData({}, () => { }))
+            dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+            dispatch(isDiscountDataChange(false))
+            if (gotoNextValue) {
+              props.toggle('2')
+              history.push('/costing-summary')
+            }
+            if (isNFR && gotoNextValue && false) {
+              reactLocalStorage.setObject('isFromDiscountObj', true)
+              setNfrListing(true)
+            }
           }
-
-          if (checkIsIccDataChange === true) {
-            dispatch(saveCostingDetailForIcc(iccObj, res => { }))
-          }
-          Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
-          // dispatch(setComponentDiscountOtherItemData({}, () => { }))
-          dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
-          dispatch(isDiscountDataChange(false))
-          if (gotoNextValue) {
-            props.toggle('2')
-            history.push('/costing-summary')
-          }
-          if (isNFR && gotoNextValue && false) {
-            reactLocalStorage.setObject('isFromDiscountObj', true)
-            setNfrListing(true)
-          }
-        }
-        setIsLoader(false)
-      }))
+          setIsLoader(false)
+        }))
+      },500)
+     
     }
 
     setTimeout(() => {
@@ -2130,7 +2136,7 @@ function TabDiscountOther(props) {
     dispatch(setSAPData({ ...SAPData, evaluationType: value?.label ?? '', isValuationValid: evaluationType.length > 0 ? true : false }))
   }
   const handleIncoTerm = (newValue) => {
-    
+
     if (newValue && newValue !== '') {
       setValue("incoTerms", newValue);
       setIncoTerm(newValue);
@@ -2659,7 +2665,7 @@ function TabDiscountOther(props) {
                       </Col>
                     }
                     {
-                       getConfigurationKey().IsShowIncoTermFieldInCosting && 
+                      getConfigurationKey().IsShowIncoTermFieldInCosting &&
                       <Col md={"2"}>
                         <SearchableSelectHookForm
                           label={"Inco Terms"}
@@ -2677,6 +2683,24 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false} />
                       </Col>
                     }
+                    {/*                     If the key IsFetchBudgetedPriceFromMasterInCosting is true, fetch the data from the API (call the budgeting API)
+ */}                    <Col md="2">
+                      <TextFieldHookForm
+                        label="Budgeting Price"
+                        name={'BudgetingPrice'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={getConfigurationKey().IsBudgetedPriceRequiredForCosting ? true : false}
+                        rules={{ required: getConfigurationKey().IsBudgetedPriceRequiredForCosting ? true : false }}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.BudgetingPrice}
+                        disabled={CostingViewMode || getConfigurationKey()?.IsFetchBudgetedPriceFromMasterInCosting ? true : false}
+                      />
+                    </Col>
 
                   </Row >
                   <Row className="mt-2">
