@@ -128,7 +128,7 @@ const RejectedCostingSummaryTable = (props) => {
     process: false,
     operation: false
   })
-  const partType = IdForMultiTechnology.includes(String(viewCostingData[0]?.technologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+  const partType = IdForMultiTechnology.includes(String(viewCostingData[0]?.technologyId)||IsMultiVendorCosting)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
