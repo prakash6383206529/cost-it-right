@@ -599,7 +599,7 @@ function AssemblyPart(props) {
                 onClick={() => ProcessDrawerToggle(item)}
                 title={'Add Process'}
               >
-                <div className={`${(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ || checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) !== 0) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
+                <div className={`${(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ || checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssembly) !== 0) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
               </button>
             </div >
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
@@ -665,6 +665,7 @@ function AssemblyPart(props) {
             isAssemblyTechnology={false}
             setAssemblyProcessCost={props?.setAssemblyProcessCost}
             itemInState={itemInState}
+            IsLocked={IsLocked}
           />
         )
       }

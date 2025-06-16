@@ -3231,6 +3231,7 @@ const CostingSummaryTable = (props) => {
                               closeDrawer={closeViewDrawer}
                               anchor={'right'}
                               isPDFShow={true}
+                              viewCostingData={viewCostingData}
                             /></td></tr>
                           }
 
@@ -4122,6 +4123,7 @@ const CostingSummaryTable = (props) => {
             iccPaymentData={iccPaymentData}
             closeDrawer={closeViewDrawer}
             anchor={'right'}
+            viewCostingData={viewCostingData}
           />
         )
       }
