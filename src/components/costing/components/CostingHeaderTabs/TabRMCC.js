@@ -515,15 +515,14 @@ function TabRMCC(props) {
         break;
       case 'BOP':
         partObj.CostingPartDetails.CostingBoughtOutPartCost = gridData;
-        console.log(partObj, 'partObj');
         partObj.CostingPartDetails.NetBOPDomesticCost = gridData?.reduce((acc, item) => 
-          item.BOPType === "BOP Domestic" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+          item.BOPType === "BOP Domestic" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0) + checkForNull(checkboxFields?.NetBOPDomesticHandlingCost)
         partObj.CostingPartDetails.NetBOPImportCost = gridData?.reduce((acc, item) => 
-          item.BOPType === "BOP CKD" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+          item.BOPType === "BOP CKD" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0) + checkForNull(checkboxFields?.NetBOPImportHandlingCost) 
         partObj.CostingPartDetails.NetBOPSourceCost = gridData?.reduce((acc, item) => 
-          item.BOPType === "BOP V2V" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+          item.BOPType === "BOP V2V" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0) + checkForNull(checkboxFields?.NetBOPSourceHandlingCost)
         partObj.CostingPartDetails.NetBOPOutsourcedCost = gridData?.reduce((acc, item) => 
-          item.BOPType === "BOP OSP" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+          item.BOPType === "BOP OSP" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0) + checkForNull(checkboxFields?.NetBOPOutsourcedHandlingCost)
         partObj.CostingPartDetails.NetBoughtOutPartCost = checkboxFields?.IsApplyBOPHandlingCharges ? (netBOPCost(gridData) + checkForNull(checkboxFields?.BOPHandlingCharges)) : netBOPCost(gridData);
         partObj.CostingPartDetails.IsApplyBOPHandlingCharges = checkboxFields?.IsApplyBOPHandlingCharges;
         partObj.CostingPartDetails.BOPHandlingCharges = checkForNull(checkboxFields?.BOPHandlingCharges);
