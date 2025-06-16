@@ -127,7 +127,11 @@ function TabRMCC(props) {
           NetCCForOtherTechnologyCost: TopHeaderValues?.NetCCForOtherTechnologyCost ?? 0,
           NetCCForOtherTechnologyCostForOverhead: TopHeaderValues?.NetCCForOtherTechnologyCostForOverhead ?? 0,
           NetCCForOtherTechnologyCostForProfit: TopHeaderValues?.NetCCForOtherTechnologyCostForProfit ?? 0,
-          MinimumMachineTonnageRequired: TopHeaderValues?.MinimumMachineTonnageRequired ? TopHeaderValues.MinimumMachineTonnageRequired : null
+          MinimumMachineTonnageRequired: TopHeaderValues?.MinimumMachineTonnageRequired ? TopHeaderValues.MinimumMachineTonnageRequired : null,
+          NetBOPDomesticCost: TopHeaderValues?.NetBOPDomesticCost ?? 0,
+           NetBOPImportCost: TopHeaderValues?.NetBOPImportCost ?? 0,
+          NetBOPSourceCost: TopHeaderValues?.NetBOPSourceCost ?? 0,
+          NetBOPOutsourcedCost: TopHeaderValues?.NetBOPOutsourcedCost ?? 0,
         }
       }
       props.setHeaderCost(topHeaderData)
@@ -511,19 +515,22 @@ function TabRMCC(props) {
         break;
       case 'BOP':
         partObj.CostingPartDetails.CostingBoughtOutPartCost = gridData;
-
+        console.log(partObj, 'partObj');
+        partObj.CostingPartDetails.NetBOPDomesticCost = gridData?.reduce((acc, item) => 
+          item.BOPType === "BOP Domestic" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+        partObj.CostingPartDetails.NetBOPImportCost = gridData?.reduce((acc, item) => 
+          item.BOPType === "BOP CKD" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+        partObj.CostingPartDetails.NetBOPSourceCost = gridData?.reduce((acc, item) => 
+          item.BOPType === "BOP V2V" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+        partObj.CostingPartDetails.NetBOPOutsourcedCost = gridData?.reduce((acc, item) => 
+          item.BOPType === "BOP OSP" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
         partObj.CostingPartDetails.NetBoughtOutPartCost = checkboxFields?.IsApplyBOPHandlingCharges ? (netBOPCost(gridData) + checkForNull(checkboxFields?.BOPHandlingCharges)) : netBOPCost(gridData);
         partObj.CostingPartDetails.IsApplyBOPHandlingCharges = checkboxFields?.IsApplyBOPHandlingCharges;
-        partObj.CostingPartDetails.BOPHandlingPercentage = checkboxFields?.BOPHandlingChargeType === 'Percentage' ? checkForNull(checkboxFields?.BOPHandlingPercentage) : 0;
         partObj.CostingPartDetails.BOPHandlingCharges = checkForNull(checkboxFields?.BOPHandlingCharges);
-        partObj.CostingPartDetails.BOPHandlingChargeType = checkboxFields?.BOPHandlingChargeType;
-        // partObj?.CostingPartDetails?.BOPHandlingFixed = (gridData?.length !== 0 && checkboxFields?.BOPHandlingChargeType === 'Fixed') ? checkForNull(checkboxFields?.BOPHandlingCharges) : 0;
-
         GrandTotalCost = checkForNull(partObj?.CostingPartDetails?.NetRawMaterialsCost) + checkForNull(partObj?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(partObj?.CostingPartDetails?.NetConversionCost)
         partObj.CostingPartDetails.NetTotalRMBOPCC = GrandTotalCost;
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(GrandTotalCost) * checkForNull(partObj?.CostingPartDetails?.Quantity);
         partObj.CostingPartDetails.BasicRate = checkForNull(GrandTotalCost) * checkForNull(partObj?.CostingPartDetails?.Quantity)
-
         break;
       case 'CC':
         partObj.CostingPartDetails.NetConversionCost = gridData?.NetConversionCost

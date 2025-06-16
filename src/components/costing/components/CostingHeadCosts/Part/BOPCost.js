@@ -3,27 +3,27 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
-import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CRMHeads, EMPTY_DATA, EMPTY_GUID } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean, getConfigurationKey, NoSignNoDecimalMessage, showBopLabel } from '../../../../../helper';
+import {  checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId, NoSignNoDecimalMessage, showBopLabel, showDifferentBOPType } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
 import WarningMessage from '../../../../common/WarningMessage';
-import { MESSAGES } from '../../../../../config/message';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, decimalNumberLimit6, percentageLimitValidation, checkWhiteSpaces, numberLimit6, noDecimal, isNumber } from "../../../../../helper/validation";
 import Button from '../../../../layout/Button';
 import TourWrapper from '../../../../common/Tour/TourWrapper';
 import { Steps } from '../../TourMessages';
 import { useTranslation } from 'react-i18next';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { REMARKMAXLENGTH } from '../../../../../config/masterData';
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { IsNFRContext } from '../../CostingDetailStepTwo';
 import { isLockRMAndBOPForCostAppliacabilityProcess } from '../../../CostingUtil';
+import BOPHandlingDrawer from './BOPHandlingDrawer';
+import { saveBOPHandlingChargesDetails, setBopAddEditDeleteDisable } from '../../../actions/CostWorking';
+import { feTurbulence } from 'react-dom-factories';
 
 let counter = 0;
 function BOPCost(props) {
@@ -49,10 +49,7 @@ function BOPCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item?.CostingPartDetails?.IsApplyBOPHandlingCharges)
   const [oldGridData, setOldGridData] = useState(data)
-  const [BOPHandlingType, setBOPHandlingType] = useState(item?.CostingPartDetails?.BOPHandlingChargeType)
-  const [fixedLimit, setFixedLimit] = useState(false)
   const [headerPinned, setHeaderPinned] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('')
   const [singleProcessRemark, setSingleProcessRemark] = useState(true)
   const [remarkAccept, setRemarkAccept] = useState(false)
   const [currentRemarkIndex, setCurrentRemarkIndex] = useState(null)
@@ -62,13 +59,27 @@ function BOPCost(props) {
       steps: []
     }
   )
+  const [state, setState] = useState({
+    openBOPHandlingDrawer: false,
+    totalBOPHandlingCharges: item?.CostingPartDetails?.BOPHandlingCharges,
+    showHandlingWarning: false,
+    bopDomesticCost: item?.CostingPartDetails?.NetBOPDomesticCost,
+    bopCKDCost: item?.CostingPartDetails?.NetBOPImportCost,
+    bopV2VCost: item?.CostingPartDetails?.NetBOPSourceCost,
+    bopOSPCost: item?.CostingPartDetails?.NetBOPOutsourcedCost,
+    bopDomesticHandlingCost: item?.CostingPartDetails?.NetBOPDomesticHandlingCost,
+    bopCKDHandlingCost: item?.CostingPartDetails?.NetBOPImportHandlingCost,
+    bopV2VHandlingCost: item?.CostingPartDetails?.NetBOPSourceHandlingCost,
+    bopOSPHandlingCost: item?.CostingPartDetails?.NetBOPOutsourcedHandlingCost,
+  })
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
   const IsLockTabInCBCCostingForCustomerRFQ = useContext(IsNFRContext);
   const { t } = useTranslation("Costing")
   const { currencySource, exchangeRateData } = useSelector((state) => state?.costing);
-  const processArr = item && Object.keys(item).length>0 ? item?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse:[]
+  const processArr = item && Object.keys(item).length > 0 ? item?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse : []
+  const { bopAddEditDeleteDisable } = useSelector(state => state.costWorking)
   useEffect(() => {
     setTimeout(() => {
       const Params = {
@@ -76,30 +87,63 @@ function BOPCost(props) {
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
-      let totalBOPCost = netBOPCost(gridData)
-      let bopHandlingPercentage = BOPHandlingType === 'Percentage' ? item?.CostingPartDetails?.BOPHandlingPercentage : 0
-      let BOPHandlingCharges = BOPHandlingType === 'Percentage' ? calculatePercentageValue(totalBOPCost, bopHandlingPercentage) : item?.CostingPartDetails?.BOPHandlingCharges
-      setValue('BOPHandlingType', item?.CostingPartDetails?.BOPHandlingChargeType ? { label: item?.CostingPartDetails?.BOPHandlingChargeType, value: item?.CostingPartDetails?.BOPHandlingChargeType } : {})
-      if (BOPHandlingType === 'Percentage') {
-        setValue('BOPHandlingCharges', checkForDecimalAndNull((gridData?.length !== 0) ? calculatePercentageValue(totalBOPCost, bopHandlingPercentage) : 0, initialConfiguration?.NoOfDecimalForPrice))
-        setValue('BOPHandlingPercentage', checkForDecimalAndNull(((gridData?.length !== 0) ? bopHandlingPercentage : 0), initialConfiguration?.NoOfDecimalForPrice))
-      } else {
-        setValue('BOPHandlingCharges', checkForDecimalAndNull(((gridData?.length !== 0) ? item?.CostingPartDetails?.BOPHandlingCharges : 0), initialConfiguration?.NoOfDecimalForPrice))
-        setValue('BOPHandlingFixed', checkForDecimalAndNull(((gridData?.length !== 0) ? item?.CostingPartDetails?.BOPHandlingCharges : 0), initialConfiguration?.NoOfDecimalForPrice))
-      }
+      setValue('BOPHandlingCharges', checkForDecimalAndNull(state.totalBOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice))
+      setValue('bopDomesticHandlingCharges', checkForDecimalAndNull(state.bopDomesticHandlingCost, initialConfiguration?.NoOfDecimalForPrice))
+      setValue('bopCKDHandlingCharges', checkForDecimalAndNull(state.bopCKDHandlingCost, initialConfiguration?.NoOfDecimalForPrice))
+      setValue('bopV2VHandlingCharges', checkForDecimalAndNull(state.bopV2VHandlingCost, initialConfiguration?.NoOfDecimalForPrice))
+      setValue('bopOSPHandlingCharges', checkForDecimalAndNull(state.bopOSPHandlingCost, initialConfiguration?.NoOfDecimalForPrice))
       if (!CostingViewMode && !IsLocked) {
         const BOPHandlingFields = {
           IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
-          BOPHandlingPercentage: bopHandlingPercentage,
-          BOPHandlingCharges: gridData?.length !== 0 ? BOPHandlingCharges : 0,
-          // BOPHandlingFixed: (gridData?.length !== 0 && BOPHandlingType === 'Fixed') ? item?.CostingPartDetails?.BOPHandlingFixed : 0,
-          BOPHandlingChargeType: BOPHandlingType
+          BOPHandlingCharges: state.totalBOPHandlingCharges,
         }
 
         if (gridData?.length === 0) {
-          setIsApplyBOPHandlingCharges(false)
+          setIsApplyBOPHandlingCharges(false);
+          setValue('BOPHandlingCharges', 0)
+          setState(prevState => ({
+            ...prevState,
+            bopDomesticCost: 0,
+            bopCKDCost: 0,
+            bopV2VCost: 0,
+            bopOSPCost: 0
+          }));
+        } else {
+          // Initialize variables outside the loop
+          let bopDomesticCost = 0;
+          let bopCKDCost = 0;
+          let bopV2VCost = 0;
+          let bopOSPCost = 0;
+
+          gridData.forEach(el => {
+            const cost = el.NetBoughtOutPartCost || 0;
+            switch (el.BOPType) {
+              case "BOP Domestic":
+                bopDomesticCost += cost;
+                break;
+              case "BOP CKD":
+                bopCKDCost += cost;
+                break;
+              case "BOP V2V":
+                bopV2VCost += cost;
+                break;
+              case "BOP OSP":
+                bopOSPCost += cost;
+                break;
+              default:
+                break;
+            }
+          });
+
+          setState(prevState => ({
+            ...prevState,
+            bopDomesticCost,
+            bopCKDCost,
+            bopV2VCost,
+            bopOSPCost
+          }));
         }
-        
+
         props.setBOPCost(gridData, Params, item, BOPHandlingFields)
         if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
           dispatch(isDataChange(true))
@@ -107,8 +151,29 @@ function BOPCost(props) {
       }
     }, 100)
     selectedIds(gridData)
-  }, [gridData]);
-
+    if (IsApplyBOPHandlingCharges && gridData && gridData?.length > 0) {
+      dispatch(setBopAddEditDeleteDisable(true))
+    } else {
+      let data = {
+        "BaseCostingId": item?.CostingId,
+        "LoggedInUserId": loggedInUserId(),
+        "CostingPartWiseDetailsId": item?.CostingPartDetails?.CostingDetailId,
+        "CostingBoughtOutPartHandlingCharges": []
+    }
+    dispatch(saveBOPHandlingChargesDetails(data, (res) => {  }))
+    setValue('BOPHandlingCharges', 0)
+    setState(prevState => ({
+      ...prevState,
+      totalBOPHandlingCharges: 0,
+      bopDomesticHandlingCost: 0,
+      bopCKDHandlingCost: 0,
+      bopV2VHandlingCost: 0,
+      bopOSPHandlingCost: 0,
+    }))
+      dispatch(setBopAddEditDeleteDisable(false))
+    }
+  }, [gridData,IsApplyBOPHandlingCharges]);
+  
   /**
    * @method netBOPCost
    * @description GET BOP COST
@@ -139,6 +204,7 @@ function BOPCost(props) {
     if (rowData.length > 0) {
 
       let rowArray = rowData && rowData.map(el => {
+
         return {
           BoughtOutPartId: el.BoughtOutPartId,
           BOPPartNumber: el.BoughtOutPartNumber,
@@ -149,7 +215,8 @@ function BOPCost(props) {
           NetBoughtOutPartCost: el.NetLandedCost,
           BoughtOutPartUOM: el.UOM,
           ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
-          CurrencyExchangeRate: el.CurrencyExchangeRate
+          CurrencyExchangeRate: el.CurrencyExchangeRate,
+          BOPType: el.BOPType
         }
       })
 
@@ -267,40 +334,20 @@ function BOPCost(props) {
   */
   const onPressApplyBOPCharges = () => {
     setIsApplyBOPHandlingCharges(!IsApplyBOPHandlingCharges)
-    setValue('BOPHandlingPercentage', 0)
     setValue('BOPHandlingCharges', 0)
-    setValue('BOPHandlingFixed', 0)
 
-    let bopHandlingPercentage = item?.CostingPartDetails?.BOPHandlingPercentage
     setTimeout(() => {
       const Params = {
         index: props.index,
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
-      let totalBOPCost = netBOPCost(gridData)
-
-      if (BOPHandlingType === 'Percentage') {
-        if (bopHandlingPercentage > 100) {
-          setValue('BOPHandlingPercentage', 0)
-          setValue('BOPHandlingCharges', 0)
-          return false;
-        }
-        setValue('BOPHandlingCharges', checkForDecimalAndNull(calculatePercentageValue(netBOPCost(gridData), bopHandlingPercentage), initialConfiguration?.NoOfDecimalForPrice))
-        setValue('BOPHandlingPercentage', checkForDecimalAndNull(item?.CostingPartDetails?.BOPHandlingPercentage, initialConfiguration?.NoOfDecimalForPrice))     //////////
-      } else {
-        setValue('BOPHandlingCharges', checkForDecimalAndNull(item?.CostingPartDetails?.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice))     //////////
-        setValue('BOPHandlingFixed', checkForDecimalAndNull(item?.CostingPartDetails?.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice))     //////////
-      }
       if (!CostingViewMode && !IsLocked) {
         const BOPHandlingFields = {
           IsApplyBOPHandlingCharges: !IsApplyBOPHandlingCharges,
-          BOPHandlingPercentage: bopHandlingPercentage,
-          BOPHandlingCharges: BOPHandlingType === 'Percentage' ? calculatePercentageValue(totalBOPCost, bopHandlingPercentage) : item?.CostingPartDetails?.BOPHandlingCharges,         // TEST
-          BOPHandlingFixed: (gridData?.length !== 0 && BOPHandlingType === 'Fixed') ? item?.CostingPartDetails?.BOPHandlingCharges : 0,
-          BOPHandlingChargeType: BOPHandlingType
+          BOPHandlingCharges: state.totalBOPHandlingCharges,
         }
-        
+
         props.setBOPCost(gridData, Params, item, BOPHandlingFields)
       }
     }, 100)
@@ -309,124 +356,8 @@ function BOPCost(props) {
     dispatch(isDataChange(true))
   }
 
-  /**
-  * @method handleBOPPercentageChange
-  * @description HANDLE BOP % CHANGE
-  */
-  const handleBOPPercentageChange = (value) => {
-    if (!isNaN(value)) {
-      let BOPHandling = 0
-      if (BOPHandlingType === 'Percentage') {
-        BOPHandling = calculatePercentageValue(netBOPCost(gridData), value)
-      } else {
-        let message = ''
-        if (decimalAndNumberValidationBoolean(value)) {
-          setFixedLimit(true)
-          errors.BOPHandlingPercentage = {
-            "type": "max",
-            "message": "Percentage cannot be greater than 100",
-            "ref": {
-              "name": "BOPHandlingPercentage",
-              "value": ""
-            }
-          }
-          message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
-        } else {
-          setFixedLimit(false)
-          errors.BOPHandlingPercentage = {}
-          message = ''
-        }
-        BOPHandling = value
-        setErrorMessage(message)
-      }
-      setValue('BOPHandlingCharges', checkForDecimalAndNull(BOPHandling, initialConfiguration?.NoOfDecimalForPrice))
-      setTimeout(() => {
-        const Params = {
-          BOMLevel: item.BOMLevel,
-          PartNumber: item.PartNumber,
-        }
-
-        const BOPHandlingFields = {
-          IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
-          BOPHandlingPercentage: BOPHandlingType === 'Percentage' ? value : 0,
-          BOPHandlingCharges: BOPHandling,         // TEST
-          // BOPHandlingFixed: (gridData?.length !== 0 && BOPHandlingType === 'Fixed') ? value : 0,
-          BOPHandlingChargeType: BOPHandlingType
-        }
-        if (!CostingViewMode && !IsLocked) {
-          
-          props.setBOPCost(gridData, Params, item, BOPHandlingFields)
-          dispatch(isDataChange(true))
-        }
-
-      }, 200)
-
-    } else {
-      let message = ''
-      if (!isNumber(value)) {
-        setFixedLimit(true)
-        errors.BOPHandlingPercentage = {
-          "type": "max",
-          "message": "Percentage cannot be greater than 100",
-          "ref": {
-            "name": "BOPHandlingPercentage",
-            "value": ""
-          }
-        }
-        message = NoSignNoDecimalMessage
-      } else {
-        errors.BOPHandlingPercentage = {}
-        setFixedLimit(false)
-        message = ''
-      }
-      setErrorMessage(message)
-    }
-  }
-
-  /**
-  * @method renderListing
-  * @description Used show listing of unit of measurement
-  */
-  const renderListing = (label) => {
-    if (label === 'BOPHandlingType') {
-      return [
-        { label: 'Fixed', value: 'Fixed' },
-        { label: 'Percentage', value: 'Percentage' },
-      ];
-    }
-  }
-
-  /**
-    * @method handleBOPHandlingType
-    * @description  HANDLE OTHER COST TYPE CHANGE
-    */
-  const handleBOPHandlingType = (newValue) => {
-    setFixedLimit(false)
-    setTimeout(() => {
-      setBOPHandlingType(newValue?.label)
-      setValue('BOPHandlingPercentage', '')
-      setValue('BOPHandlingFixed', '')
-      setValue('BOPHandlingCharges', 0)
-    }, 200);
-    const Params = {
-      index: props.index,
-      BOMLevel: props.item?.BOMLevel,
-      PartNumber: props.item?.PartNumber,
-    }
-    const BOPHandlingFields = {
-      IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
-      BOPHandlingPercentage: 0,
-      BOPHandlingCharges: 0,
-      // BOPHandlingFixed: 0,
-      BOPHandlingChargeType: newValue?.label
-    }
-    
-    props.setBOPCost(gridData, Params, item, BOPHandlingFields)
-    clearErrors('');
-  }
-
   const bopGridFields = 'bopGridFields';
-  
+
   /**
    * @method popupInputData
    * @description Handle input data from the popup
@@ -468,7 +399,7 @@ function BOPCost(props) {
       onRemarkPopUpClose();
       return;
     }
-    
+
     let tempData = gridData[currentRemarkIndex];
     tempData = {
       ...tempData,
@@ -481,7 +412,7 @@ function BOPCost(props) {
     if (remark) {
       Toaster.success('Remark saved successfully');
     }
-    
+
     onRemarkPopUpClose();
   };
 
@@ -509,6 +440,49 @@ function BOPCost(props) {
   const tourStart = () => {
 
   }
+  const addBOPHandlingCharges = () => {
+    setState(prev => ({
+      ...prev,
+      openBOPHandlingDrawer: true
+    }))
+  }
+  const closeBOPHandlingDrawer = (type, totalBOPHandlingCharges, tableData) => {
+    const bopCKDHandling = tableData?.find(item => item.BOPType === 'BOP CKD')?.BOPHandlingCharges || 0;
+    const bopDomesticHandling = tableData?.find(item => item.BOPType === 'BOP Domestic')?.BOPHandlingCharges || 0;
+    const bopV2VHandling = tableData?.find(item => item.BOPType === 'BOP V2V')?.BOPHandlingCharges || 0;
+    const bopOSPHandling = tableData?.find(item => item.BOPType === 'BOP OSP')?.BOPHandlingCharges || 0;
+    setValue('bopCKDHandlingCharges', checkForDecimalAndNull(bopCKDHandling, initialConfiguration.NoOfDecimalForPrice));
+    setValue('bopDomesticHandlingCharges', checkForDecimalAndNull(bopDomesticHandling, initialConfiguration.NoOfDecimalForPrice));
+    setValue('bopV2VHandlingCharges', checkForDecimalAndNull(bopV2VHandling, initialConfiguration.NoOfDecimalForPrice));
+    setValue('bopOSPHandlingCharges', checkForDecimalAndNull(bopOSPHandling, initialConfiguration.NoOfDecimalForPrice));
+    setValue('BOPHandlingCharges', checkForDecimalAndNull(totalBOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice))
+    setState(prev => ({
+      ...prev,
+      openBOPHandlingDrawer: false,
+      totalBOPHandlingCharges: totalBOPHandlingCharges,
+      bopDomesticHandlingCost: bopDomesticHandling,
+      bopCKDHandlingCost: bopCKDHandling,
+      bopV2VHandlingCost: bopV2VHandling,
+      bopOSPHandlingCost: bopOSPHandling
+    }))
+    const Params = {
+      index: props.index,
+      BOMLevel: props.item?.BOMLevel,
+      PartNumber: props.item?.PartNumber,
+    }
+    const BOPHandlingFields = {
+      IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
+      BOPHandlingCharges: totalBOPHandlingCharges,
+    }
+    props.setBOPCost(gridData, Params, item, BOPHandlingFields)
+    clearErrors('');
+  }
+  const bopHandlingfields = [
+    { label: `${showBopLabel()} Domestic handling Charges`, name: 'bopDomesticHandlingCharges', mandatory: false, disabled: true },
+    { label: `${showBopLabel()} CKD handling Charges`, name: 'bopCKDHandlingCharges', mandatory: false, disabled: true },
+    { label: `${showBopLabel()} V2V handling Charges`, name: 'bopV2VHandlingCharges', mandatory: false, disabled: true },
+    { label: `${showBopLabel()} OSP handling Charges`, name: 'bopOSPHandlingCharges', mandatory: false, disabled: true },
+  ]
 
   /**
   * @method render
@@ -519,7 +493,7 @@ function BOPCost(props) {
       <div className="user-page p-0">
         <div>
           <Row className="align-items-center">
-            <Col md="10">
+            <Col md="3">
               <div className="left-border">
                 {`${showBopLabel()} Cost:`}{gridData && gridData.length !== 0 &&
                   <TourWrapper
@@ -529,16 +503,26 @@ function BOPCost(props) {
                     }} />}
               </div>
             </Col>
-            <Col md={'2'}>
+            <Col md="8">
+            {true && bopAddEditDeleteDisable && <WarningMessage dClass={'d-flex justify-content-end'} message={'To add, edit and delete BOP, please remove BOP handling charges by unticking "Apply BOP Handling Charges" checkbox.'} />}
+            </Col>
+            <Col md={'1'}>
               {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) &&
                 <Button
                   id="Costing_addBOP"
                   onClick={DrawerToggle}
                   icon={"plus"}
                   buttonName={`${showBopLabel()}`}
+                  disabled={bopAddEditDeleteDisable}
                 />}
             </Col>
           </Row>
+          {showDifferentBOPType() && <Row className="cr-innertool-cost">
+            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`${showBopLabel()} Domestic Cost: ${state.bopDomesticCost !== null ? checkForDecimalAndNull(state.bopDomesticCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
+            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`${showBopLabel()} CKD Cost: ${state.bopCKDCost !== null ? checkForDecimalAndNull(state.bopCKDCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
+            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`${showBopLabel()} V2V Cost: ${state.bopV2VCost !== null ? checkForDecimalAndNull(state.bopV2VCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
+            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`${showBopLabel()} OSP Cost: ${state.bopOSPCost !== null ? checkForDecimalAndNull(state.bopOSPCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
+          </Row>}
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
             <Row>
               {/*BOP COST GRID */}
@@ -641,8 +625,8 @@ function BOPCost(props) {
                               </td>}
                               <td>
                                 <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
-                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ  && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} disabled={bopAddEditDeleteDisable} />}
+                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ  && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} disabled={bopAddEditDeleteDisable} />}
                                   <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
                                 </div>
                               </td>
@@ -679,8 +663,8 @@ function BOPCost(props) {
                               </td>}
                               <td>
                                 <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} />}
-                                   {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} />} 
+                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr)  && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} disabled={bopAddEditDeleteDisable} />}
+                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr)  && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} disabled={bopAddEditDeleteDisable} />}
                                   <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
                                 </div>
                               </td>
@@ -721,111 +705,67 @@ function BOPCost(props) {
                   </label>
                 </span>
               </div>
-              {IsApplyBOPHandlingCharges &&
-                <Col md="2" >
-                  <SearchableSelectHookForm
-                    label={`${showBopLabel()} Handling Type`}
-                    name={"BOPHandlingType"}
-                    placeholder={"Select"}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: false }}
-                    register={register}
-                    // defaultValue={BOPHandlingType.length !== 0 ? BOPHandlingType : ""}
-                    options={renderListing("BOPHandlingType")}
-                    mandatory={false}
-                    handleChange={handleBOPHandlingType}
-                    errors={errors.BOPHandlingType}
-                    disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
-                    isClearable={true}
-                  />
-                </Col>}
-              {IsApplyBOPHandlingCharges && BOPHandlingType &&
-                <Col md="2" >
-                  {BOPHandlingType === 'Fixed' ?
-                    <div className='p-relative error-wrapper'>
+
+              {IsApplyBOPHandlingCharges && (
+                <>
+                  <Col md="2">
+                    <div className='d-flex align-items-center'>
                       <TextFieldHookForm
-                        label={'Fixed'}
-                        name={"BOPHandlingFixed"}
+                        label="Handling Charges"
+                        name={'BOPHandlingCharges'}
                         Controller={Controller}
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.'
-                          }
-                        }}
-                        handleChange={(e) => {
-                          e.preventDefault();
-                          handleBOPPercentageChange(e.target.value);
-                        }}
+                        rules={{}}
+                        handleChange={() => { }}
                         defaultValue={""}
                         className=""
-                        customClassName={"withBorder"}
-                        // errors={errors.BOPHandlingPercentage}
-                        disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                        id={'bop-handling-charges'}
+                        customClassName={'withBorder'}
+                        errors={errors.BOPHandlingCharges}
+                        disabled={true}
                       />
-                      {fixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                      <Button
+                        id="addBOPHandlingCharges"
+                        onClick={addBOPHandlingCharges}
+                        className={" mt-3 mb-2 "}
+                        variant={CostingViewMode ? "view-icon-primary" : "plus-icon-square"}
+                        title={CostingViewMode ? "View" : "Add"}
+                        disabled={false}
+                      />
                     </div>
-                    :
-                    <TextFieldHookForm
-                      label={'Percentage'}
-                      name={"BOPHandlingPercentage"}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: true,
-                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                        max: {
-                          value: 100,
-                          message: 'Percentage cannot be greater than 100'
-                        },
-                      }}
-                      disableErrorOverflow={true}
-                      handleChange={(e) => {
-                        e.preventDefault();
-                        handleBOPPercentageChange(e.target.value);
-                      }}
-                      defaultValue={""}
-                      className=""
-                      customClassName={"withBorder"}
-                      errors={errors.BOPHandlingPercentage}
-                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
-                    />}
-                </Col>
-              }
+                  </Col>
 
-              {IsApplyBOPHandlingCharges &&
-                <Col md="2">
-                  {BOPHandlingType !== 'Fixed' && <TooltipCustom disabledIcon={true} id={'bop-handling-charges'} tooltipText={`Handling Charges = Net ${showBopLabel()} Cost * Percentage / 100`} />}
-                  <TextFieldHookForm
-                    label="Handling Charges"
-                    name={'BOPHandlingCharges'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    rules={{}}
-                    handleChange={() => { }}
-                    defaultValue={""}
-                    className=""
-                    id={'bop-handling-charges'}
-                    customClassName={'withBorder'}
-                    errors={errors.BOPHandlingCharges}
-                    disabled={true}
-                  />
-                </Col>}
-
+                  {showDifferentBOPType() && bopHandlingfields.map(item => {
+                    const { name, label } = item ?? {};
+                    return (
+                      <Col md="2" key={name}>
+                        <TextFieldHookForm
+                          label={label}
+                          name={name}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          rules={{}}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors[name]}
+                          disabled={true}
+                        />
+                      </Col>
+                    );
+                  })}
+                </>
+              )}
             </Row>
           </form>
         </div>
       </div >
-      {remarkAccept && 
+      {remarkAccept &&
         <PopupMsgWrapper
           setInputData={popupInputData}
           isOpen={remarkAccept}
@@ -845,6 +785,19 @@ function BOPCost(props) {
         anchor={'right'}
         Ids={Ids}
       />}
+      {
+        state.openBOPHandlingDrawer && <BOPHandlingDrawer
+          isOpen={state.openBOPHandlingDrawer}
+          closeDrawer={closeBOPHandlingDrawer}
+          isEditFlag={false}
+          anchor={'right'}
+          applicabilityCost={state}
+          ViewMode={CostingViewMode}
+          item={item}
+          bopData={gridData}
+          netBOPCost={netBOPCost(gridData)}
+        />
+      }
     </ >
   );
 }

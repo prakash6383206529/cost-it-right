@@ -8,7 +8,7 @@ import {
   SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET, RUBBER_CALCULATOR_RESET, GET_CARRIER_TYPE_LIST_SUCCESS,
   SET_PACKAGING_CALCULATOR_AVAILABLE,
   SET_FREIGHT_CALCULATOR_AVAILABLE,
-  GET_TYPE_OF_COST_SUCCESS,GET_CALCULATION_CRITERIA_LIST_SUCCESS
+  GET_TYPE_OF_COST_SUCCESS,GET_CALCULATION_CRITERIA_LIST_SUCCESS,SET_BOP_ADD_EDIT_DELETE_DISABLE
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -1685,6 +1685,7 @@ export function ElectricalStampingCostingBulkImport(data, callback) {
     });
   }
 }
+
 /**
  * @method MonocartonBulkUploadCosting
  * @description Monocarton bulk upload.
@@ -1966,5 +1967,67 @@ export function getCalculationCriteriaList(callback) {
       dispatch({ type: API_FAILURE });
       callback(error);
     });
+  };
+}
+
+/**
+ * @method saveBOPHandlingChargesDetails
+ * @description Save BOP Handling Charges Details
+ */
+export function saveBOPHandlingChargesDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveBOPHandlingChargesDetails, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
+/**
+ * @method getBOPHandlingChargesDetails
+ * @description Get BOP Handling Charges Details
+ */
+export function getBOPHandlingChargesDetails(costingId, callback) {
+
+  return (dispatch) => {
+    const queryParams = `costingId=${costingId}`
+    const request = axios.get(`${API.getBOPHandlingChargesDetails}?${queryParams}`, config());
+    request.then((response) => {
+      if (response) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+export function getBopTypeList(callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getBopTypeList}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
+
+export function setBopAddEditDeleteDisable(data) {
+  return {
+    type: SET_BOP_ADD_EDIT_DELETE_DISABLE,
+    payload: data
   };
 }

@@ -215,6 +215,10 @@ function CostingDetailStepTwo(props) {
         NetCCForOtherTechnologyCost: data?.NetCCForOtherTechnologyCost,
         NetCCForOtherTechnologyCostForOverhead: data?.NetCCForOtherTechnologyCostForOverhead,
         NetCCForOtherTechnologyCostForProfit: data?.NetCCForOtherTechnologyCostForProfit,
+        NetBOPDomesticCost: data?.NetBOPDomesticCost,
+        NetBOPImportCost: data?.NetBOPImportCost,
+        NetBOPSourceCost: data?.NetBOPSourceCost,
+        NetBOPOutsourcedCost: data?.NetBOPOutsourcedCost,
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 

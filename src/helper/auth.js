@@ -113,3 +113,7 @@ export function fetchRejectionDataFromMaster() {
   const configurationKey = getConfigurationKey()?.IsShowRejectionMaster
   return configurationKey
 }
+//FUNCTION TO SHOW DIFFERENT BOP TYPE 
+export function showDifferentBOPType() {
+  return getConfigurationKey().IsShowDifferentBOPType
+}
