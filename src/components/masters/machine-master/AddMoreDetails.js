@@ -2673,13 +2673,13 @@ class AddMoreDetails extends Component {
       ? selectedPlants?.map(plant => ({
         PlantId: plant?.value,
         PlantName: plant?.label,
-        PlantCode: ''
+        PlantCode: plant.label.match(/\((.*?)\)/)?.[1] || ''
       }))
       : selectedPlants
         ? [{
           PlantId: selectedPlants?.value,
           PlantName: selectedPlants?.label,
-          PlantCode: ''
+          PlantCode: selectedPlants.label.match(/\((.*?)\)/)?.[1] || ''
         }]
         : [];
 

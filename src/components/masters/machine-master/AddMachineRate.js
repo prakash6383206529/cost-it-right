@@ -1637,13 +1637,13 @@ class AddMachineRate extends Component {
         ? selectedPlants.map(plant => ({
           PlantId: plant.value,
           PlantName: plant.label,
-          PlantCode: ''
+          PlantCode: plant.label.match(/\((.*?)\)/)?.[1] || ''
         }))
         : selectedPlants
           ? [{
             PlantId: selectedPlants.value,
             PlantName: selectedPlants.label,
-            PlantCode: ''
+            PlantCode: selectedPlants.label.match(/\((.*?)\)/)?.[1] || ''
           }]
           : [],
       Remark: remarks,
@@ -1927,6 +1927,31 @@ class AddMachineRate extends Component {
         : ''}<p>{this.state?.hidePlantCurrency ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}` : `Exchange Rate: 1 ${plantCurrencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`}</p>
     </>;
   };
+
+  isTonnageRequired = () => {
+    const { selectedTechnology } = this.state;
+    const machineTonnageTechnologyList = getConfigurationKey().MachineTonnageTechnologyList;
+  
+    if (!selectedTechnology || !machineTonnageTechnologyList) {
+      return false;
+    }
+  
+    // Split the string by comma and trim each value
+    let technologyList = [];
+    if (typeof machineTonnageTechnologyList === 'string') {
+      technologyList = machineTonnageTechnologyList.split(',').map(item => item.trim());
+    } else {
+      return false;
+    }
+  
+    // Check if the selected technology's label exists in the list
+    // We check the label because the format is like "Plastic=8", "Machining=3"
+    return technologyList.some(tech => {
+      // Split each technology string by '=' and trim the technology name part
+      const techName = typeof tech === 'string' ? tech.split('=')[0].trim() : '';
+      return techName === selectedTechnology.label;
+    });
+  }
   /**
   * @method render
   * @description Renders the component
@@ -2219,9 +2244,16 @@ class AddMachineRate extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={isViewMode ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
+                            validate={[
+                              acceptAllExceptSingleSpecialCharacter,
+                              checkWhiteSpaces,
+                              maxLength80,
+                              checkSpacesInString,
+                              hashValidation,
+                              (this.state.selectedTechnology?.label === "Machining" || this.state.selectedTechnology?.label === "Forging") ? required : null
+                            ].filter(Boolean)}
                             component={renderText}
-                            required={false}
+                            required={(this.state.selectedTechnology?.label === "Machining" || this.state.selectedTechnology?.label === "Forging")}
                             disabled={(isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -2238,8 +2270,9 @@ class AddMachineRate extends Component {
                                 placeholder={isEditFlag ? '-' : 'Select'}
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [] : []}
-                                required={false}
+                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ?
+                                  (this.state.selectedTechnology?.label === "Plastic" ? [required] : []) : []}
+                                required={this.state.selectedTechnology?.label === "Plastic" ? true : false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
                                 disabled={isEditFlag}
@@ -2253,9 +2286,16 @@ class AddMachineRate extends Component {
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={isViewMode ? '-' : 'Enter'}
-                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, checkSpacesInString, hashValidation, required]}
+                            validate={[
+                              checkWhiteSpaces, 
+                              postiveNumber, 
+                              maxLength10, 
+                              checkSpacesInString, 
+                              hashValidation,
+                              this.isTonnageRequired() ? required : null
+                            ].filter(Boolean)}
                             component={renderText}
-                            required={true}
+                            required={this.isTonnageRequired()}
                             disabled={(isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
                             className=" "
                             customClassName="withBorder"
