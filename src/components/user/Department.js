@@ -284,8 +284,8 @@ class Department extends Component {
 					if (res && res.data && res.data.Result) {
 						Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
 						reset();
-						this.toggleDrawer('', 'submit')
 					}
+					this.toggleDrawer('', 'submit')
 				})
 			}
 		}
