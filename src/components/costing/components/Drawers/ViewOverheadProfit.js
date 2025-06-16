@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux'
 import TooltipCustom from '../../../common/Tooltip'
 import { IdForMultiTechnology } from '../../../../config/masterData'
 function ViewOverheadProfit(props) {
-  const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow, viewRejectionRecovery } = props
+  const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow, viewRejectionRecovery, viewCostingData } = props
 
   const { rejectData, modelType, isRmCutOffApplicable, rawMaterialCostWithCutOff, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit, isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC, rejectionModelType } = rejectAndModelType;
   const showTooltipForOH = [isRmCutOffApplicable, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithOverheadAndProfit]
@@ -135,6 +135,20 @@ function ViewOverheadProfit(props) {
                   <td>{overheadData.Remark || '-'}</td>
                 </tr>
               ))}
+              {overheadData?.CostingApplicabilityDetails?.length && (
+                <tr class="background-light-blue">
+                  <td className={'text-start'} colSpan={4}>Total Overhead Cost</td>
+                    {viewCostingData?.map((data) => (
+                      <>
+                        <td>
+                          <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}>
+                            {checkForDecimalAndNull(data?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
+                        </td>
+                      </>
+                      )
+                    )}
+                  </tr>
+              )}
               {!overheadData?.CostingApplicabilityDetails?.length && (
                 <tr>
                   <td colSpan={12}>
@@ -188,6 +202,20 @@ function ViewOverheadProfit(props) {
                   <td>{profitData.Remark || '-'}</td>
                 </tr>
               ))}
+              {profitData?.CostingApplicabilityDetails?.length && (
+                <tr class="background-light-blue">
+                  <td className={'text-start'} colSpan={4}>Total Profit Cost</td>
+                    {viewCostingData?.map((data) => (
+                      <>
+                        <td>
+                          <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}>
+                            {checkForDecimalAndNull(data?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
+                        </td>
+                      </>
+                      )
+                    )}
+                  </tr>
+              )}
               {!profitData?.CostingApplicabilityDetails?.length && (
                 <tr>
                   <td colSpan={12}>
@@ -261,6 +289,20 @@ function ViewOverheadProfit(props) {
                     </tr>
                   ))
               }
+              {rejectData?.CostingRejectionApplicabilityDetails?.length && (
+                <tr class="background-light-blue">
+                  <td className={'text-start'} colSpan={6}>Total Rejection Cost</td>
+                    {viewCostingData?.map((data) => (
+                      <>
+                        <td>
+                          <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}>
+                            {checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
+                        </td>
+                      </>
+                      )
+                    )}
+                  </tr>
+              )}
             </tbody>
           </Table>
         </Col>
