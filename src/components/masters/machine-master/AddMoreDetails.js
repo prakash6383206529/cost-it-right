@@ -4541,7 +4541,7 @@ class AddMoreDetails extends Component {
                               }
                             </div>)}
                           {/* {this.state?.entryType &&  */}<Row>
-                            <Col md="4" className="switch mr-3 ml-4 col-md-4 col-md-4">
+                            <Col md="4" className="switch ml-2">
                               <label className="switch-level mb-0">
                                 <div className="left-title">Domestic</div>
                                 <Switch

@@ -1487,7 +1487,7 @@ function AddMoreOperation(props) {
                                         />
                                     </div>
                                     {state.isImport && <Col className="col-md-15">
-                                        <TooltipCustom id="currency" tooltipText={getTooltipTextForCurrency()} />
+                                        <TooltipCustom id="currency" width="280px" tooltipText={getTooltipTextForCurrency()} />
                                         <SearchableSelectHookForm
                                             name="currency"
                                             label="Currency"
