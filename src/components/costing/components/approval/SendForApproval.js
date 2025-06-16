@@ -51,7 +51,7 @@ const SendForApproval = (props) => {
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { IsMultipleUserAllowForApproval,IsApprovalLevelFilterByPlant } = initialConfiguration
+  const { IsMultipleUserAllowForApproval, IsApprovalLevelFilterByPlant } = initialConfiguration
 
   const [selectedDepartment, setSelectedDepartment] = useState([])
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -1077,67 +1077,128 @@ const SendForApproval = (props) => {
                         </Col>
 
                         {
-                          viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
-                            <Col md="4">
-                              <div className="form-group">
-                                <TooltipCustom disabledIcon={true} id={"consumed-quantity"} tooltipText={`Consumed Quantity is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
-                                <label>Consumed Quantity</label>
-                                <div className="d-flex align-items-center">
-                                  <label id={"consumed-quantity"} className="form-control bg-grey input-form-control">
-                                    {checkForDecimalAndNull(data.consumptionQty, initialConfiguration?.NoOfDecimalForPrice)}
-                                  </label>
+                          viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && (
+                            <>
+                              {getConfigurationKey().IsShowImpactAndQuantityFieldsInCostingApprovalDetails && (
+                                <>
+                                  <Col md="4">
+                                    <div className="form-group">
+                                      <TooltipCustom
+                                        disabledIcon={true}
+                                        id={"consumed-quantity"}
+                                        tooltipText={`Consumed Quantity is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`}
+                                      />
+                                      <label>Consumed Quantity</label>
+                                      <div className="d-flex align-items-center">
+                                        <label id={"consumed-quantity"} className="form-control bg-grey input-form-control">
+                                          {checkForDecimalAndNull(data.consumptionQty, initialConfiguration?.NoOfDecimalForPrice)}
+                                        </label>
                                   {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
+                                      </div>
+                                    </div>
+                                  </Col>
+                                  <Col md="4">
+                                    <div className="form-group">
+                                      <TooltipCustom
+                                        id={"remaining-budgeted-quantity-formula"}
+                                        disabledIcon={true}
+                                        tooltipText={`Budgeted Quantity (Refer From Volume Master) - Consumed Quantity`}
+                                      />
+                                      <label>Remaining Budgeted Quantity</label>
+                                      <label id={"remaining-budgeted-quantity-formula"} className="form-control bg-grey input-form-control">
+                                        {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration?.NoOfDecimalForPrice) : 0}
+                                      </label>
+                                    </div>
+                                  </Col>
+                                  <Col md="4">
+                                    <div className="form-group">
+                                      <TooltipCustom
+                                        id={"costing-approval"}
+                                        tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`}
+                                      />
+                                      <TooltipCustom id={"annual-formula"} disabledIcon={true} tooltipText={`Total Budget Quantity (Refer From Volume Master) * Variance`} />
+                                      <label>Annual Impact</label>
+                                      <label
+                                        id={"annual-formula"}
+                                        className={
+                                          data.oldPrice === 0
+                                            ? `form-control bg-grey input-form-control`
+                                            : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? "green-value" : "red-value"}`
+                                        }
+                                      >
+                                        {data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration?.NoOfDecimalForPrice) : 0}
+                                      </label>
+                                    </div>
+                                  </Col>
+
+                                  <Col md="4">
+                                    <div className="form-group">
+                                      <TooltipCustom
+                                        id={"impact-for-year-formula"}
+                                        disabledIcon={true}
+                                        tooltipText={`(Total Budget Quantity (Refer From Volume Master) - Consumed Quantity) * Variance`}
+                                      />
+                                      <label>Impact for the Year</label>
+                                      <label
+                                        id={"impact-for-year-formula"}
+                                        className={
+                                          data.oldPrice === 0
+                                            ? `form-control bg-grey input-form-control`
+                                            : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? "green-value" : "red-value"}`
+                                        }
+                                      >
+                                        {data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration?.NoOfDecimalForPrice) : 0}
+                                      </label>
+                                    </div>
+                                  </Col>
+                                </>
+                              )}
+
+                              <Col md="4">
+                                <div className="form-group">
+                                <label>Budgeting Price</label>
+                                  <label
+                                    id={"budgeting_Price"}
+                                    className={
+                                      data.oldPrice === 0
+                                        ? `form-control bg-grey input-form-control`
+                                        : `form-control bg-grey input-form-control ${data?.BudgetedPrice < 0 ? "green-value" : "red-value"}`
+                                    }
+                                  >
+                                    {data?.BudgetedPrice
+                                      ? checkForDecimalAndNull(data?.BudgetedPrice, initialConfiguration?.NoOfDecimalForPrice)
+                                      : 0}
+                                  </label>
                                 </div>
-                              </div>
-                            </Col>
-                            <Col md="4">
-                              <div className="form-group">
-                                <TooltipCustom id={"remaining-budgeted-quantity-formula"} disabledIcon={true} tooltipText={`Budgeted Quantity (Refer From Volume Master) - Consumed Quantity`} />
-                                <label>Remaining Budgeted Quantity</label>
-                                <label id={"remaining-budgeted-quantity-formula"} className="form-control bg-grey input-form-control">
-                                  {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration?.NoOfDecimalForPrice) : 0}
-                                </label>
-                              </div>
-                            </Col>
-                            <Col md="4">
-                              <div className="form-group">
-                                <TooltipCustom id={"costing-approval"} tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
-                                <TooltipCustom id={"annual-formula"} disabledIcon={true} tooltipText={`Total Budget Quantity (Refer From Volume Master) * Variance`} />
-                                <label>Annual Impact</label>
-                                <label id={"annual-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                  {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration?.NoOfDecimalForPrice) : 0}
-                                </label>
-                              </div>
-                            </Col>
+                              </Col>
 
-                            <Col md="4">
-                              <div className="form-group">
-                                <TooltipCustom id={"impact-for-year-formula"} disabledIcon={true} tooltipText={`(Total Budget Quantity (Refer From Volume Master) - Consumed Quantity) * Variance`} />
-                                <label>Impact for the Year</label>
-                                <label id={"impact-for-year-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                  {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration?.NoOfDecimalForPrice) : 0}
-                                </label>
-                              </div>
-                            </Col>
+                              <Col md="4">
+                                <div className="form-group">
+                                  <TooltipCustom
+                                    id={"budgeting_Variance"}
+                                    disabledIcon={true}
+                                    tooltipText={`Budgeting Price- Revised Price`}
+                                  />
+                                  <label>Variance (w.r.t. Budgeting)</label>
+                                  <label
+                                    id={"budgeting_Variance"}
+                                    className={
+                                      data?.oldPrice === 0
+                                        ? `form-control bg-grey input-form-control`
+                                        : `form-control bg-grey input-form-control ${data?.BudgetedPriceVariance < 0 ? "green-value" : "red-value"}`
+                                    }
+                                  >
+                                    {data.BudgetedPriceVariance
+                                      ? checkForDecimalAndNull(data?.BudgetedPriceVariance, initialConfiguration?.NoOfDecimalForPrice)
+                                      : 0}
+                                  </label>
+                                </div>
+                              </Col>
 
-                            {data.oldPrice > 0 && <Col md="4">
-                              <div className="form-group">
-                                <label>Budgeted Price</label>
-                                <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                  {data.BudgetedPrice && data.BudgetedPrice ? checkForDecimalAndNull(data.BudgetedPrice, initialConfiguration?.NoOfDecimalForPrice) : 0}
-                                </label>
-                              </div>
-                            </Col>}
-                            {data.oldPrice > 0 && <Col md="4">
-                              <div className="form-group">
-                                <label>Impact/Quarter (w.r.t. Budgeted Price)</label>
-                                <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                  {data.BudgetedPriceVariance && data.BudgetedPriceVariance ? checkForDecimalAndNull(data.BudgetedPriceVariance, initialConfiguration?.NoOfDecimalForPrice) : 0}
-                                </label>
-                              </div>
-                            </Col>}
-                          </>
+                            </>
+                          )
                         }
+
                       </Row >
                     </div >
                   </div >
@@ -1238,7 +1299,7 @@ const SendForApproval = (props) => {
                       <Col md="6">
                         {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                           <AllApprovalField
-                            label="Approver1"
+                            label="Approver"
                             approverList={approvalDropDown}
                             popupButton="View all"
                           />
