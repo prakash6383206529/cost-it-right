@@ -499,6 +499,7 @@ export const RMImportZBC = [
     { label: "SourceLocation", value: "SourceLocation" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
+    { label: 'IncoTerm', value: 'IncoTerm' },
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "CostTypeForOtherCost", value: "CostTypeForOtherCost" },
     { label: "DescriptionForOtherCost", value: "DescriptionForOtherCost" },
@@ -546,6 +547,7 @@ export const RMImportZBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
+        'IncoTerm': 'CFR',
         "BasicRate": "500",
         "CostTypeForOtherCost": "Import Freight",
         "DescriptionForOtherCost": "Test",
@@ -905,6 +907,7 @@ export const RMImportVBC = [
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
+    { label: 'IncoTerm', value: 'IncoTerm' },
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "CostTypeForOtherCost", value: "CostTypeForOtherCost" },
     { label: "DescriptionForOtherCost", value: "DescriptionForOtherCost" },
@@ -952,6 +955,7 @@ export const RMImportVBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
+        'IncoTerm': 'CFR',
         "BasicRate": "500",
         "CostTypeForOtherCost": "Import Freight",
         "DescriptionForOtherCost": "Test",
@@ -1111,6 +1115,7 @@ export const RMImportCBC = [
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
+    { label: 'IncoTerm', value: 'IncoTerm' },
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "CostTypeForOtherCost", value: "CostTypeForOtherCost" },
     { label: "DescriptionForOtherCost", value: "DescriptionForOtherCost" },
@@ -1155,6 +1160,7 @@ export const RMImportCBCTempData = [
         "CustomerCode": "C-10008",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
+        'IncoTerm': 'CFR',
         "BasicRate": "500",
         "CostTypeForOtherCost": "Import Freight",
         "DescriptionForOtherCost": "Test",
@@ -8736,6 +8742,7 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
+    { label: "Inco Terms", value: "IncoTerm" },
     { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName" },
     { label: "Currency", value: "Currency", },
