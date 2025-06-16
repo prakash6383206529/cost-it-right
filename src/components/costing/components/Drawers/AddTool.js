@@ -744,7 +744,7 @@ function AddTool(props) {
 
                   <Col md="4">
                     <TextFieldHookForm
-                      label="Tool Rate"
+                      label="Tool Cost"
                       name={'ToolCost'}
                       Controller={Controller}
                       control={control}
@@ -784,7 +784,7 @@ function AddTool(props) {
                     />
                   </Col>
                   <Col md="4">
-                    <TooltipCustom disabledIcon={true} id={'tool-amortization-cost'} tooltipText={'Tool Amortization Cost = Tool Rate * Part Quantity * Process Run Count / Tool Life'} />
+                    <TooltipCustom disabledIcon={true} id={'tool-amortization-cost'} tooltipText={'Tool Amortization Cost = Tool Cost * Part Quantity * Process Run Count / Tool Life'} />
                     <TextFieldHookForm
                       label="Tool Amortization Cost"
                       name={'ToolAmortizationCost'}
@@ -924,7 +924,7 @@ function AddTool(props) {
                         />
                   </Col>
                   <Col md="4">
-                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-interest-cost"} tooltipText={`${toolInterestCostLabel}= (Tool Rate * ${toolInterestRatePercentLabel} / 100)`} />
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-interest-cost"} tooltipText={`${toolInterestCostLabel}= (Tool Cost * ${toolInterestRatePercentLabel} / 100)`} />
                   <TextFieldHookForm
                           label={toolInterestCostLabel}
                           name={'ToolInterestCost'}
