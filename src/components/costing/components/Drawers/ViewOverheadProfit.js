@@ -137,10 +137,10 @@ function ViewOverheadProfit(props) {
               ))}
               {overheadData?.CostingApplicabilityDetails?.length && (
                 <tr class="background-light-blue">
-                  <td className={'text-start'} colSpan={4}>Total Overhead Cost</td>
+                  <td className={'text-start'} colSpan={3}>Total Overhead Cost</td>
                     {viewCostingData?.map((data) => (
                       <>
-                        <td>
+                        <td className={'text-start'} colSpan={2}>
                           <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}>
                             {checkForDecimalAndNull(data?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
                         </td>
@@ -204,10 +204,10 @@ function ViewOverheadProfit(props) {
               ))}
               {profitData?.CostingApplicabilityDetails?.length && (
                 <tr class="background-light-blue">
-                  <td className={'text-start'} colSpan={4}>Total Profit Cost</td>
+                  <td className={'text-start'} colSpan={3}>Total Profit Cost</td>
                     {viewCostingData?.map((data) => (
                       <>
-                        <td>
+                        <td className={'text-start'} colSpan={2}>
                           <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}>
                             {checkForDecimalAndNull(data?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
                         </td>
@@ -291,10 +291,10 @@ function ViewOverheadProfit(props) {
               }
               {rejectData?.CostingRejectionApplicabilityDetails?.length && (
                 <tr class="background-light-blue">
-                  <td className={'text-start'} colSpan={6}>Total Rejection Cost</td>
+                  <td className={'text-start'} colSpan={5}>Total Rejection Cost</td>
                     {viewCostingData?.map((data) => (
                       <>
-                        <td>
+                        <td className={'text-start'} colSpan={2}>
                           <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}>
                             {checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
                         </td>
