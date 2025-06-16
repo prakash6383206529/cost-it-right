@@ -2594,7 +2594,8 @@ export const VIEW_COSTING_DATA = {
   // otherDiscountApplicablity: 'Hundi/Discount Applicability',
   // otherDiscountValuePercent: 'Hundi/Discount Value',
   BudgetedPrice: 'Budgeting Price',
-  CostingIncoTerm: 'Inco Term',
+  BudgetedPriceVariance: 'Budgeted Price Variance',
+  CostingIncoTermWithDescription: 'Inco Term',
   otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostTotal: 'Any Other Cost',
   saNumber: 'SA Number',
@@ -2804,7 +2805,19 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     label: `Net Tool Cost`,
     value: 'totalToolCost'
   },
-
+  {
+    label: 'Inco Term',
+    value: 'CostingIncoTermWithDescription'
+  },
+  {
+    label: 'Budgeting Price',
+    value: 'BudgetedPrice'
+  },
+  {
+    label: 'Budgeted Price Variance',
+    value: 'BudgetedPriceVariance'
+  },
+  
   {
     label: 'Hundi/Discount Applicability',
     value: 'otherDiscountApplicablity'

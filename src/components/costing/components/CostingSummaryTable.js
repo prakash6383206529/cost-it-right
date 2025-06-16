@@ -1752,7 +1752,7 @@ const CostingSummaryTable = (props) => {
       item.netCost = item?.nPoPriceCurrency
       item.CostingIncoTerm = item?.CostingIncoTerm ? item?.CostingIncoTerm : '-'
       item.CostingIncoTermDescription = item?.CostingIncoTermDescription ? item?.CostingIncoTermDescription : '-'
-      // item.CostingIncoTermWithDescription = (item?.CostingIncoTermDescription || item?.CostingIncoTerm) ? `${item?.CostingIncoTermDescription || ''} ${item?.CostingIncoTerm ? `(${item?.CostingIncoTerm})` : ''}`.trim() : '-'
+      item.CostingIncoTermWithDescription = (item?.CostingIncoTermDescription || item?.CostingIncoTerm) ? `${item?.CostingIncoTermDescription} (${item?.CostingIncoTerm})` : "-"
       item.BudgetedPrice = item?.BudgetedPrice ? checkForDecimalAndNull(item?.BudgetedPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'
 
     })
@@ -1834,7 +1834,7 @@ const CostingSummaryTable = (props) => {
       finalData = VIEW_COSTING_DATA_TEMPLATE
       temp = viewCostingData
     }
-
+    
     return (
       <ExcelSheet data={temp} name={"Costing Summary"}>
         {finalData && finalData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
