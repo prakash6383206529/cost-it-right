@@ -518,9 +518,9 @@ class BOMViewer extends Component {
                               </p>
                               <p>
                                 {this.props.t('TechnologyLabel', { defaultValue: 'Technology' })}:
-                                <strong title={el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology}>{el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology || '-'}</strong>
+                                <strong title={el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology?.label}>{el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology?.label || '-'}</strong>
                               </p>
-                              <p>
+                             <p>
                                 Revision No:<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo || '-'}</strong>
                               </p>
                               {/* {`X=:${el.Position.x}`}

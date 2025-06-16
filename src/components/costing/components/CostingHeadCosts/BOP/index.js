@@ -17,8 +17,8 @@ function BoughtOutPart(props) {
   const editBopForAssemblyTechnology = props?.editBop ? true : false
   // partType USED FOR CONDITIONAL RENDERING OF COLUMNS IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING  (TRUE FOR ASSEMBLY TECHNOLOGY)
   const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId||(costData?.PartType === 'Assembly' && IsMultiVendorCosting))
-
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || IsMultiVendorCosting)
+  
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {

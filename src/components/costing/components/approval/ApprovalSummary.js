@@ -669,8 +669,13 @@ function ApprovalSummary(props) {
                       <th>{`Existing Price:`}</th>
                       <th>{`Revised Price:`}</th>
                       <th>{`Variance (w.r.t. Existing):`}</th>
-                      {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Consumption Quantity:`}</th>}
-                      {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Remaining Quantity:`}</th>}
+                      {getConfigurationKey().IsShowImpactAndQuantityFieldsInCostingApprovalDetails && approvalDetails.CostingTypeId !== NCCTypeId && (
+                        <>
+                          <th>Consumption Quantity:</th>
+                          <th>Remaining Quantity:</th>
+                        </>
+                      )}
+
                       {approvalDetails.CostingTypeId === NCCTypeId && (
                         <th>{`Quantity:`}</th>
                       )}
@@ -678,8 +683,14 @@ function ApprovalSummary(props) {
                         <th>{`Is Regularized:`}</th>
                       )}
                       <th>{`Effective Date:`}</th>
-                      {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Annual Impact:`}</th>}
-                      {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Impact of The Year:`}</th>}
+                      {getConfigurationKey().IsShowImpactAndQuantityFieldsInCostingApprovalDetails && approvalDetails.CostingTypeId !== NCCTypeId && (
+                        <>
+                          <th>Annual Impact:</th>
+                          <th>Impact of The Year:</th>
+                        </>
+                      )}
+                      <th>Budgeting Price</th>
+                      <th>Variance (w.r.t. Budgeting)</th>
 
                     </tr>
                   </thead>
@@ -737,11 +748,11 @@ function ApprovalSummary(props) {
                       <td>
                         {approvalDetails.Variance !== null ? checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
-                      {approvalDetails.CostingTypeId !== NCCTypeId && <td>
-                        {approvalDetails.ConsumptionQuantity !== null ? approvalDetails.ConsumptionQuantity : '-'}
+                      {getConfigurationKey()?.IsShowImpactAndQuantityFieldsInCostingApprovalDetails && approvalDetails?.CostingTypeId !== NCCTypeId && <td>
+                        {approvalDetails?.ConsumptionQuantity !== null ? approvalDetails?.ConsumptionQuantity : '-'}
                       </td>}
-                      {approvalDetails.CostingTypeId !== NCCTypeId && <td>
-                        {approvalDetails.RemainingQuantity !== null ? approvalDetails.RemainingQuantity : '-'}
+                      {getConfigurationKey()?.IsShowImpactAndQuantityFieldsInCostingApprovalDetails && approvalDetails?.CostingTypeId !== NCCTypeId && <td>
+                        {approvalDetails?.RemainingQuantity !== null ? approvalDetails?.RemainingQuantity : '-'}
                       </td>}
 
                       {approvalDetails.CostingTypeId === NCCTypeId &&
@@ -758,12 +769,14 @@ function ApprovalSummary(props) {
                       <td>
                         {approvalDetails.EffectiveDate !== null ? DayTime(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
                       </td>
-                      {approvalDetails.CostingTypeId !== NCCTypeId && <td>
+                      {getConfigurationKey().IsShowImpactAndQuantityFieldsInCostingApprovalDetails && approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.AnnualImpact !== null ? checkForDecimalAndNull(approvalDetails.AnnualImpact, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}
                       </td>}
-                      {approvalDetails.CostingTypeId !== NCCTypeId && <td>
+                      {getConfigurationKey().IsShowImpactAndQuantityFieldsInCostingApprovalDetails && approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}
                       </td>}
+                      <td>{approvalDetails?.BudgetedPrice ? checkForDecimalAndNull(approvalDetails?.BudgetedPrice, getConfigurationKey()?.NoOfDecimalForPrice) : "-"}</td>
+                      <td>{approvalDetails?.BudgetedPriceVariance ? checkForDecimalAndNull(approvalDetails?.BudgetedPriceVariance, getConfigurationKey()?.NoOfDecimalForPrice) : "-"}</td>
                     </tr>
 
                     {/* {Object.keys(approvalDetails).length === 0 && (

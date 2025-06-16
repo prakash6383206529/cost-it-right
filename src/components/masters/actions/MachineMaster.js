@@ -464,7 +464,7 @@ export function getFuelUnitCost(data, callback) {
         const queryParams = `loggedInUserId=${loggedInUserId()}&fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.ExchangeSource}&costingTypeId=${data?.costingTypeId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&entryType=${data?.entryType}`
         axios.get(`${API.getFuelUnitCost}?${queryParams}`, config())
             .then((response) => {
-                if (response && response.data && response.data.Result === true) {
+                if ((response && response.data && response.data.Result === true) || response.status === 204) {
                     callback(response);
                 }
             }).catch((error) => {

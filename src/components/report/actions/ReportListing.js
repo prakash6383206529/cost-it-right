@@ -731,7 +731,7 @@ export function getBusinessValueReportData(data, callback) {
     addParam("isRequestForBudgetedVolume", data?.IsRequestedForBudgeting)
     addParam("technologyId", data?.TechnologyName)
     addParam("partTypeId", data?.PartType)
-    addParam("partGroupId", data?.PartGroup)
+    addParam("groupCodeId", data?.PartGroup)
     addParam("partFamilyId", data?.PartFamilyCode)
     addParam("nepNumber", data?.PartNepNumber)
     addParam("plantId", data?.PlantCode)

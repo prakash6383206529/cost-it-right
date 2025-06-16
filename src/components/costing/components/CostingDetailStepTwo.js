@@ -64,8 +64,8 @@ function CostingDetailStepTwo(props) {
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate, breakupBOP, UpdatePaymentTermCost, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, checkIsDiscountChange, checkIsDataChange,IccCost } = useSelector(state => state.costing)
-
-  const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId))
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+    const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId)||IsMultiVendorCosting)
   const isNFR = useContext(IsNFR);
   const IsLockTabInCBCCosting = getConfigurationKey('IsLockTabInCBCCosting') ? true : false;
   const { currencySource } = useSelector((state) => state?.costing);
@@ -596,7 +596,7 @@ function CostingDetailStepTwo(props) {
                       }
 
                       {costingData.CostingTypeId !== NCCTypeId && < td > <div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent ?? 0}%</span></p></div></td>}
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue"> {`${costingData.CostingNumber} ${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}`}</span></p></div></td>
                     </tbody >
                   </Table >
 
