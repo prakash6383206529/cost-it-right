@@ -2593,6 +2593,8 @@ export const VIEW_COSTING_DATA = {
   // otherDiscountValue: '',
   // otherDiscountApplicablity: 'Hundi/Discount Applicability',
   // otherDiscountValuePercent: 'Hundi/Discount Value',
+  BudgetedPrice: 'Budgeting Price',
+  CostingIncoTerm: 'Inco Term',
   otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostTotal: 'Any Other Cost',
   saNumber: 'SA Number',
@@ -3470,7 +3472,7 @@ export const MACHINEMASTER = "Machine Master"
 export const COSTAPPLICABILITYBASIS = "Cost Applicability Basis"
 export const MHRBASIS = "MHR Basis"
 export const ICCMASTER = "ICC Master"
-export const PAYMENTTERMMASTER='PaymentTerm Master'
+export const PAYMENTTERMMASTER = 'PaymentTerm Master'
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"
