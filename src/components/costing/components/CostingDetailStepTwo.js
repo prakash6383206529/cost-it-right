@@ -64,8 +64,8 @@ function CostingDetailStepTwo(props) {
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate, breakupBOP, UpdatePaymentTermCost, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, checkIsDiscountChange, checkIsDataChange,IccCost } = useSelector(state => state.costing)
-
-  const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId))
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+    const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId)||IsMultiVendorCosting)
   const isNFR = useContext(IsNFR);
   const IsLockTabInCBCCosting = getConfigurationKey('IsLockTabInCBCCosting') ? true : false;
   const { currencySource } = useSelector((state) => state?.costing);

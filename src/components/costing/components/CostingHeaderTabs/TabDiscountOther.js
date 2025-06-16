@@ -37,7 +37,7 @@ import { IsNFR, IsPartType, ViewCostingContext } from '../CostingDetails';
 
 import { useMemo } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, required, validateFileName } from "../../../../helper/validation";
+import { checkWhiteSpaces, decimalNumberLimit, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, positiveAndDecimalNumber, required, validateFileName } from "../../../../helper/validation";
 import LoaderCustom from '../../../common/LoaderCustom';
 import TooltipCustom from '../../../common/Tooltip';
 import WarningMessage from '../../../common/WarningMessage';
@@ -52,6 +52,7 @@ import { setSAPData } from '../../actions/Approval';
 import { useLabels } from '../../../../helper/core';
 import YOYCost from '../CostingHeadCosts/AdditionalOtherCost/YOYCost';
 import Icc from '../CostingHeadCosts/OverheadProfit/Icc';
+import { getIncoTermSelectList } from '../../../masters/actions/BoughtOutParts';
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -91,7 +92,7 @@ function TabDiscountOther(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType, IccDataDiscountTab, checkIsIccDataChange, costingDetailForIcc, IccCost, includeOverHeadProfitIcc, includeToolCostIcc,disableIccCheckBox } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType, IccDataDiscountTab, checkIsIccDataChange, costingDetailForIcc, IccCost, includeOverHeadProfitIcc, includeToolCostIcc, disableIccCheckBox } = useSelector(state => state.costing)
 
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
@@ -140,11 +141,13 @@ function TabDiscountOther(props) {
   })
   const [taxCode, setTaxCode] = useState('')
   const [isShowValuationType, setIsShowValuationType] = useState(false)
+  const [incoTerm, setIncoTerm] = useState([])
+
   const taxCodeList = useSelector(state => state.comman.taxCodeList)
   const [count, setCount] = useState(0)
   const [icc, setIcc] = useState(false)
-
-const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC ?? false)
+  const { IncoTermsSelectList } = useSelector((state) => state.boughtOutparts);
+  const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC ?? false)
   const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(costingDetailForIcc?.IsIncludeToolCostInCCForICC ?? false)
   const [IsIncludeApplicabilityForChildPartsInICC, setIsIncludeApplicabilityForChildPartsInICC] = useState(costingDetailForIcc?.IsIncludeApplicabilityForChildPartsInICC ?? false)
   const npvDrawerCondition = (
@@ -229,10 +232,14 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
       let isCalculatorExist = res?.data?.Data?.IsCalculatorExist
       dispatch(setIsCalculatorExist(isCalculatorExist))
     }))
-    if(initialConfiguration?.IsShowPaymentTerm){
-      dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => {}))
+    if (initialConfiguration?.IsShowPaymentTerm) {
+      dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => { }))
     }
   }, [costData])
+  useEffect(() => {
+    dispatch(getIncoTermSelectList(() => { }))
+
+  }, [/* getConfigurationKey().IsIncoTermRequiredForCosting */])
   useEffect(() => {
     dispatch(setIncludeToolCostIcc(costingDetailForIcc?.IsIncludeToolCostInCCForICC, () => { }))
     dispatch(setIncludeOverheadProfitIcc(costingDetailForIcc?.IsIncludeOverheadAndProfitInICC, () => { }))
@@ -320,6 +327,20 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
         return null
       })
       return temp
+    }
+    if (label === 'incoTerms') {
+      IncoTermsSelectList && IncoTermsSelectList.map(item => {
+        if (!item?.BoughtOutPartIncoTermId) return false;
+        temp.push({
+          label: `${item.IncoTermDescription} (${item.IncoTerm})`,
+          value: item.BoughtOutPartIncoTermId,
+          IncoTerm: item.IncoTerm,
+          IncoTermDescription: item.IncoTermDescription,
+          IncoTermsValue: item.IncoTermsValue
+        });
+        return null;
+      });
+      return temp;
     }
   }
   const otherCostUI = useMemo(() => {
@@ -535,7 +556,6 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
     if (CostingDataList && CostingDataList.length > 0) {
       let dataList = CostingDataList[0]
 
-
       const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
       setTotalCost(total)
       const discountValues = {
@@ -639,6 +659,7 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
       "IsValuationValid": SAPData?.isValuationValid,
       "Attachements": updatedFiles,
       "IsChanged": true,
+      "BudgetedPrice": getValues("BudgetingPrice")
     }
     let PaymentTermobj = {
       "LoggedInUserId": loggedInUserId(),
@@ -702,6 +723,7 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
             //MINDA
             setValue('SANumber', Data.SANumber !== null ? Data.SANumber : '')
             setValue('LineNumber', Data.LineNumber !== null ? Data.LineNumber : '')
+            setValue('BudgetingPrice', Data?.BudgetedPrice ? Data?.BudgetedPrice : "")
             setValue("evaluationType", Data?.ValuationType ? { label: Data?.ValuationType, value: Data?.ValuationType } : null)
 
             let taxCodeArray = []
@@ -711,6 +733,8 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
             })
             setTaxCode(taxCodeArray)
             setValue('TaxCode', taxCodeArray)
+            setValue('incoTerms', Data?.CostingIncoTerm ? { label: `${Data?.CostingIncoTermDescription} (${Data?.CostingIncoTerm})}`, value: Data?.CostingIncoTermId } : null)
+            setIncoTerm(Data?.CostingIncoTerm ? { label: `${Data?.CostingIncoTermDescription} (${Data?.CostingIncoTerm})`, value: Data?.CostingIncoTermId } : null)
             dispatch(setSAPData({ ...SAPData, evaluationType: Data?.ValuationType ?? '', isValuationValid: Data?.IsValuationValid ?? false }))
 
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
@@ -1355,7 +1379,11 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
       "LineNumber": getValues('LineNumber'),
       "ValuationType": SAPData?.evaluationType,
       "IsValuationValid": SAPData?.isValuationValid,
-      "Attachements": updatedFiles
+      "Attachements": updatedFiles,
+      "CostingIncoTermId": incoTerm?.value ?? null,
+      "CostingIncoTerm": incoTerm?.IncoTerm ?? null,
+      "CostingIncoTermDescription": incoTerm?.IncoTermDescription ?? null,
+      "BudgetedPrice": getValues("BudgetingPrice")
     }
     let obj = {
       "LoggedInUserId": loggedInUserId(),
@@ -1396,31 +1424,34 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
     }
 
     if (!CostingViewMode) {
-      dispatch(saveDiscountOtherCostTab(data, res => {
-        setIsLoader(false)
-        if (res.data.Result) {
-          if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
-            dispatch(saveCostingPaymentTermDetail(obj, res => { }))
-          }
+      setTimeout(() => {
+        dispatch(saveDiscountOtherCostTab(data, res => {
+          setIsLoader(false)
+          if (res.data.Result) {
+            if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
+              dispatch(saveCostingPaymentTermDetail(obj, res => { }))
+            }
 
-          if (checkIsIccDataChange === true) {
-            dispatch(saveCostingDetailForIcc(iccObj, res => { })) 
+            if (checkIsIccDataChange === true) {
+              dispatch(saveCostingDetailForIcc(iccObj, res => { }))
+            }
+            Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+            // dispatch(setComponentDiscountOtherItemData({}, () => { }))
+            dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+            dispatch(isDiscountDataChange(false))
+            if (gotoNextValue) {
+              props.toggle('2')
+              history.push('/costing-summary')
+            }
+            if (isNFR && gotoNextValue && false) {
+              reactLocalStorage.setObject('isFromDiscountObj', true)
+              setNfrListing(true)
+            }
           }
-          Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
-          // dispatch(setComponentDiscountOtherItemData({}, () => { }))
-          dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
-          dispatch(isDiscountDataChange(false))
-          if (gotoNextValue) {
-            props.toggle('2')
-            history.push('/costing-summary')
-          }
-          if (isNFR && gotoNextValue && false) {
-            reactLocalStorage.setObject('isFromDiscountObj', true)
-            setNfrListing(true)
-          }
-        }
-        setIsLoader(false)
-      }))
+          setIsLoader(false)
+        }))
+      }, 500)
+
     }
 
     setTimeout(() => {
@@ -1429,7 +1460,7 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscountsCost = DiscountCostData.HundiOrDiscountValue
-        const totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) /* + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.PaymentTermCost) */ )
+        const totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) /* + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.PaymentTermCost) */)
         let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetTotalRMBOPCC) +
           checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
           checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
@@ -2104,7 +2135,16 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
     }
     dispatch(setSAPData({ ...SAPData, evaluationType: value?.label ?? '', isValuationValid: evaluationType.length > 0 ? true : false }))
   }
+  const handleIncoTerm = (newValue) => {
 
+    if (newValue && newValue !== '') {
+      setValue("incoTerms", newValue);
+      setIncoTerm(newValue);
+    } else {
+      setValue("incoTerms", null);
+      setIncoTerm(null)
+    }
+  }
   const showBasicRateTooltip = () => {
     let basicrate = `Basic Price = Total Cost + Other Cost`
     let netCost = `Net Cost = Basic Price`
@@ -2401,7 +2441,7 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
                         </Col>
                       </Row>
                     </Col>}
-                  { initialConfiguration?.IsShowPaymentTerm && <Col md="12">
+                    {initialConfiguration?.IsShowPaymentTerm && <Col md="12">
                       <Row>
                         <Col md="8"><div className="left-border mt-1">Payment Terms:</div></Col>
                         <Col md="4" className="text-right">
@@ -2624,6 +2664,47 @@ const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(cos
                           disabled={CostingViewMode ? true : false} />
                       </Col>
                     }
+                    {
+                      getConfigurationKey().IsShowIncoTermFieldInCosting &&
+                      <Col md={"2"}>
+                        <SearchableSelectHookForm
+                          label={"Inco Terms"}
+                          name={"incoTerms"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: getConfigurationKey().IsIncoTermRequiredForCosting ? true : false }}
+                          register={register}
+                          options={renderListing("incoTerms")}
+                          mandatory={getConfigurationKey().IsIncoTermRequiredForCosting ? true : false}
+                          handleChange={handleIncoTerm}
+                          errors={errors.incoTerms}
+                          isClearable={true}
+                          disabled={CostingViewMode ? true : false} />
+                      </Col>
+                    }
+                    {/*                     If the key IsFetchBudgetedPriceFromMasterInCosting is true, fetch the data from the API (call the budgeting API)
+ */}                    <Col md="2">
+                      <TextFieldHookForm
+                        label="Budgeting Price"
+                        name={'BudgetingPrice'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={getConfigurationKey().IsBudgetedPriceRequiredForCosting ? true : false}
+                        rules={{
+                          required: getConfigurationKey().IsBudgetedPriceRequiredForCosting ? true : false,
+                          validate: { number, positiveAndDecimalNumber, checkWhiteSpaces /* decimalNumberLimit */ },
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.BudgetingPrice}
+                        disabled={CostingViewMode || getConfigurationKey()?.IsFetchBudgetedPriceFromMasterInCosting ? true : false}
+                      />
+                    </Col>
+
                   </Row >
                   <Row className="mt-2">
                     <Col md="3" className={`mt20 pt-3`}>

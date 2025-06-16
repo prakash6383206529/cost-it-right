@@ -28,10 +28,10 @@ function AssemblyOverheadProfit(props) {
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const partType = (IdForMultiTechnology.includes(String(costData.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+  const partType = (IdForMultiTechnology.includes(String(costData.TechnologyId)) || costData.CostingTypeId === WACTypeId)||IsMultiVendorCosting
   const previousTab = useContext(PreviousTabData) || 0;
   const dispatch = useDispatch()
-  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
   const toggle = (BOMLevel, PartNumber, IsCollapse) => {
     const Params = {
       index: props.index,
@@ -200,7 +200,6 @@ function AssemblyOverheadProfit(props) {
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.OverheadCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.OverheadCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ProfitCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ProfitCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.RejectionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.RejectionCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ICCCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ICCCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={8} className="cr-innerwrap-td overhead-profit-container">

@@ -2329,7 +2329,7 @@ class AddBOPImport extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={disableAll || isViewMode || !this.state.IsFinancialDataChanged}
+                                disabled={disableAll || isViewMode || !this.state.IsFinancialDataChanged || this.state?.DataToCheck?.SourceVendorId}
                                 placeholder={isEditFlag ? '-' : "Select Date"}
                               />
                             </div>

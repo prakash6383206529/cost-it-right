@@ -31,7 +31,8 @@ function AddBOPHandling(props) {
   const [BOPHandlingType, setBOPHandlingType] = useState({})
   const [BOPCost, setBOPCost] = useState(0);
   const { costingData } = useSelector(state => state.costing)
-  const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costingData.CostingTypeId === WACTypeId)
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+  const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costingData.CostingTypeId === WACTypeId)||(costingData?.PartType === 'Assembly' && IsMultiVendorCosting)
 
   const { register, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
