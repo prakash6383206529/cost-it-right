@@ -578,6 +578,25 @@ const AddInterestRate = (props) => {
         const { data } = props;
         const userDetail = userDetails();
         const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'));
+        if(state?.selectedICCMethod?.value === ICC_METHODS.CreditBased){
+            if (state?.selectedInventoryDayType?.length === 0 && state?.selectedWIPMethods?.length === 0) {
+                Toaster.warning('Please add at least one Inventory Day Type and one WIP Composition entry.');
+                return;
+            }
+            if (state?.selectedInventoryDayType?.length === 0) {
+                Toaster.warning('Please add at least one Inventory Day Type entry.');
+                return;
+            }
+            if (state?.selectedWIPMethods?.length === 0) {
+                Toaster.warning('Please add at least one WIP Composition entry.');
+                return;
+            }
+        }else{
+            if (state?.ApplicabilityDetails?.length === 0) {
+                Toaster.warning('Please add at least one Applicability entry.');
+                return;
+            }
+        }
 
         let plantArray = [];
         if (costingTypeId === VBCTypeId) {
