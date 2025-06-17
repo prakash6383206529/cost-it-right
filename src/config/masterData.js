@@ -8742,7 +8742,7 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
-    { label: "Inco Terms", value: "IncoTerm" },
+    { label: "Inco Terms", value: "IncoTermDescriptionAndIncoTerm" },
     { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName" },
     { label: "Currency", value: "Currency", },
