@@ -11,7 +11,5 @@
     "HeightLabel": "Height (mm)",
     "VendorCodeLabel": "Supplier(Code)",
     "FinishedWeightLabel": "Net",
-    "FinishWeightLabel": "Net",
-    "RevisionNoLabel": "Revision No.",
-    "DrawingNoLabel": "Drawing No."
+    "FinishWeightLabel": "Net"
 }

@@ -33,7 +33,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
-    const { vendorLabel, finishWeightLabel } = useLabels()
+    const { vendorLabel, finishWeightLabel, revisionNoLabel } = useLabels()
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
@@ -704,7 +704,7 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={110} field="PartNo" tooltipField='PartNo' headerName='Part No.'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PartName" tooltipField='PartName' headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RevisionNumber" headerName={revisionNoLabel} cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="VendorName" tooltipField='VendorName' cellRenderer='vendorFormatter' headerName={vendorLabel}></AgGridColumn>
                                                     {<AgGridColumn width={185} field="DivisionCode" tooltipField="DivisionCode" headerName="Division"></AgGridColumn>}
 

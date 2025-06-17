@@ -87,7 +87,7 @@ function BudgetListing(props) {
     const [isImport, setIsImport] = useState(listToggle.Budget);
     const dispatch = useDispatch();
     const { t } = useTranslation("common")
-    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, revisionNoLabel } = useLabels()
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
         if (!props?.isMasterSummaryDrawer) {
@@ -686,7 +686,7 @@ function BudgetListing(props) {
                                     {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>
                                     <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="partNoWithRevNo" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
+                                    <AgGridColumn field="partNoWithRevNo" headerName={`Part No. (${revisionNoLabel})`} width={200}></AgGridColumn>
                                     <AgGridColumn field="FinancialYear" headerName="Financial Year"></AgGridColumn>
                                     {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="Currency" headerName="Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn>

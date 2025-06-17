@@ -19,6 +19,7 @@ import { getComparisionSimulationData, setTechnologyForSimulation } from '../act
 import { setCostingViewData } from '../../costing/actions/Costing';
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer';
 import { Link } from 'react-scroll';
+import { useLabels } from '../../../helper/core';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -27,6 +28,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function AssemblyWiseImpactSummary(props) {
     const { impactType, isImpactDrawer, DisplayCompareCosting } = props;
+    const { revisionNoLabel } = useLabels()
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [textFilterSearch, setTextFilterSearch] = useState('')
@@ -195,7 +197,7 @@ function AssemblyWiseImpactSummary(props) {
                                 frameworkComponents={frameworkComponents}
                             >
                                 <AgGridColumn field="PartNumber" headerName='Assembly Number' cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="RevisionNumber" headerName='Revision No.' cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="RevisionNumber" headerName={revisionNoLabel} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartName" headerName='Name' cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Level" headerName="Child's Level" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity' cellRenderer={'hyphenFormatter'}></AgGridColumn>}

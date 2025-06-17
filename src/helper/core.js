@@ -46,7 +46,8 @@ export const useLabels = () => {
     finishedWeightLabel: tMasterLabels('FinishedWeightLabel', { defaultValue: 'Finished' }),
     toolCostLabel: tCosting('ToolCostLabel', { defaultValue: 'Tool Cost' }),
     revisionNoLabel: tMasterLabels('RevisionNoLabel', { defaultValue: 'Revision No.' }),
-    drawingNoLabel: tMasterLabels('DrawingNoLabel', { defaultValue: 'Drawing No.' })
+    drawingNoLabel: tMasterLabels('DrawingNoLabel', { defaultValue: 'Drawing No.' }),
+    revision : tMasterLabels('Revision', { defaultValue: 'Revision' }),
   };
 };
 
@@ -61,6 +62,7 @@ export const LabelsClass = (t, ns) => {
 
 
 export const useWithLocalization = (dataArray, ns) => {
+
   const { t } = useTranslation(ns);
   const labels = useLabels();
   return dataArray.map(item => ({
@@ -68,6 +70,7 @@ export const useWithLocalization = (dataArray, ns) => {
     label: t(item.label, { defaultValue: item.defaultValue })
       .replace(/Technology/g, labels.technologyLabel) //       THIS CODE FOR THE TECHNOLOGY LABEL WILL USE FURTHER IN FUTURE .
       .replace(/Vendor/g, labels.vendorLabel)
+      .replace(/Revision/g, labels.revision)
     // .replace(/Category/g, labels.RMCategoryLabel)
     // Add more .replace() calls for other labels as needed
   }));
