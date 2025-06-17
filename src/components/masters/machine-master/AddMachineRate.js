@@ -5,8 +5,9 @@ import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
   checkWhiteSpaces, maxLength80, maxLength10, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting, number,
-  validateFileName,
-  maxPercentValue
+  isTonnageRequired,
+  maxPercentValue,
+  validateFileName
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, validateForm } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, fetchApplicabilityList } from '../../../actions/Common';
@@ -1929,27 +1930,7 @@ class AddMachineRate extends Component {
   };
 
   isTonnageRequired = () => {
-    const { selectedTechnology } = this.state;
-    const machineTonnageTechnologyList = getConfigurationKey().MachineTonnageTechnologyList;
-  
-    if (!selectedTechnology || !machineTonnageTechnologyList) {
-      return false;
-    }
-  
-    // Split the string by comma and create array of technology objects
-    let arrayOfTechnology = [];
-    const myArray = machineTonnageTechnologyList.split(",");
-    myArray && myArray.map((item) => {
-      let tempObj = {};
-      let temp = item.split('=');
-      tempObj.label = temp[0];
-      tempObj.value = temp[1];
-      arrayOfTechnology.push(tempObj);
-      return null;
-    });
-  
-    // Check if the selected technology's value exists in the list
-    return arrayOfTechnology.some(tech => tech.value === selectedTechnology.value);
+    return isTonnageRequired(this.state.selectedTechnology);
   }
   /**
   * @method render

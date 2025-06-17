@@ -6,6 +6,7 @@ import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3, decimalNumberLimit,
   maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, percentageLimitValidation, maxPercentValue, hashValidation, maxValue24, getNameBySplitting,
+  isTonnageRequired,
   validateFileName
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, renderNumberInputField, validateForm } from "../../layout/FormInputs";
@@ -55,6 +56,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { getPlantUnitAPI } from '../actions/Plant';
 import { LabelsClass } from '../../../helper/core';
 import AddPowerDetails from './AddPowerDetails';
+
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -3217,27 +3219,7 @@ class AddMoreDetails extends Component {
   };
 
   isTonnageRequired = () => {
-    const { selectedTechnology } = this.state;
-    const machineTonnageTechnologyList = getConfigurationKey().MachineTonnageTechnologyList;
-  
-    if (!selectedTechnology || !machineTonnageTechnologyList) {
-      return false;
-    }
-  
-    // Split the string by comma and create array of technology objects
-    let arrayOfTechnology = [];
-    const myArray = machineTonnageTechnologyList.split(",");
-    myArray && myArray.map((item) => {
-      let tempObj = {};
-      let temp = item.split('=');
-      tempObj.label = temp[0];
-      tempObj.value = temp[1];
-      arrayOfTechnology.push(tempObj);
-      return null;
-    });
-  
-    // Check if the selected technology's value exists in the list
-    return arrayOfTechnology.some(tech => tech.value === selectedTechnology.value);
+    return isTonnageRequired(this.state.selectedTechnology);
   }
   /**
    * @method render
