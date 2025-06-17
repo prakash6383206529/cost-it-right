@@ -73,7 +73,6 @@ class BOMViewer extends Component {
           //CONDITION TO CHECK BOMViewerData STATE HAS FORM DATA
           let isAvailable = tempArray && tempArray.findIndex(el => el.Level === 'L0')
           tempArray = Object.assign([...tempArray], { [isAvailable]: Object.assign({}, tempArray[isAvailable], { Outputs: outputArray, }) })
-
           setTimeout(() => {
             this.setState({ flowpoints: tempArray, ActualBOMData: tempArray, isSaved: avoidAPICall })
             this.props.setActualBOMData(tempArray)
@@ -82,6 +81,7 @@ class BOMViewer extends Component {
         }
       })
     } else {
+      
       this.setState({
         flowpoints: this.props.BOMViewerData,
         ActualBOMData: this.props.BOMViewerData,
@@ -217,7 +217,7 @@ class BOMViewer extends Component {
 
 
     } else if (Object.keys(childData).length > 0) {
-
+      const technologyLabel = childData?.Technology == null ? '' : typeof childData.Technology === 'string' ? childData.Technology : childData.Technology.label || '';
       tempArray.push(...flowpoints, {
         PartType: childData && childData.PartType ? childData.PartType : '',
         PartTypeId: childData && childData.PartTypeId ? childData.PartTypeId : '',
@@ -231,10 +231,9 @@ class BOMViewer extends Component {
         selectedPartType: childData.selectedPartType,
         PartId: childData.PartId,
         Input: childData.Input,
-        Technology: childData && childData?.Technology !== undefined ? childData?.Technology ?? childData?.Technology?.label : '',
+        Technology: technologyLabel,
         RevisionNo: childData?.RevisionNo || null,
         IsBreakupBoughtOutPart: childData?.IsBreakupBoughtOutPart
-
       })
 
       tempArray && tempArray.map((el, i) => {
@@ -357,6 +356,7 @@ class BOMViewer extends Component {
   render() {
     const { handleSubmit, isEditFlag, isFromVishualAd, initialConfiguration } = this.props;
     const { isOpenChildDrawer, isOpenVisualDrawer, flowpoints } = this.state;
+    
     return (
       <>
         <Drawer
@@ -518,9 +518,9 @@ class BOMViewer extends Component {
                               </p>
                               <p>
                                 {this.props.t('TechnologyLabel', { defaultValue: 'Technology' })}:
-                                <strong title={el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology}>{el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology || '-'}</strong>
+                                <strong title={el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology?.label}>{el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology?.label || '-'}</strong>
                               </p>
-                              <p>
+                             <p>
                                 Revision No:<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo || '-'}</strong>
                               </p>
                               {/* {`X=:${el.Position.x}`}

@@ -1977,7 +1977,7 @@ class AddBOPDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={disableAll || isViewMode || !IsFinancialDataChanged}
+                                disabled={disableAll || isViewMode || !IsFinancialDataChanged || this.state?.DataToCheck?.SourceVendorId}
                                 placeholder={disableAll || isViewMode || !IsFinancialDataChanged ? '-' : 'Select Date'}
                               />
                             </div>
@@ -2007,7 +2007,7 @@ class AddBOPDomestic extends Component {
                                 validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                 component={renderTextInputField}
                                 required={true}
-                                disabled={isViewMode || disableAll}
+                                disabled={isViewMode || disableAll || this.state?.DataToCheck?.SourceVendorId}
                                 className=" "
                                 customClassName=" withBorder"
                                 onChange={(e) => { this.state.isEditFlag && this.debouncedCompareRate() }}

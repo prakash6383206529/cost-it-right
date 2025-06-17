@@ -7,7 +7,7 @@ import {
   setComponentToolItemData, saveDiscountOtherCostTab, saveAssemblyPartRowCostingCalculation, isToolDataChange, saveCostingPaymentTermDetail
 } from '../../actions/Costing';
 import { costingInfoContext, IsNFRContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
 import Toaster from '../../../common/Toaster';
@@ -313,7 +313,7 @@ function TabToolCost(props) {
  
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetToolCost = ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost
-        let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost)
+        let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) 
         let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetTotalRMBOPCC) +
           checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
           checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
@@ -366,7 +366,7 @@ function TabToolCost(props) {
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     } else if (partType) {
-      let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
+      let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost))
       basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(totalOverheadPrice) +
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
@@ -668,7 +668,7 @@ function TabToolCost(props) {
                                 <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation" ></AgGridColumn>
                                 <AgGridColumn field="ProcessOrOperationType" headerName="Process/Operation Type" ></AgGridColumn>
                                 <AgGridColumn field="ProcessRunCount" headerName="Process Run Count" cellRenderer={'valueFormatter'}></AgGridColumn>
-                                <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
+                                {getConfigurationKey().IsShowToolCategory && <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>}
                                 <AgGridColumn field="ToolName" headerName="Tool Name" ></AgGridColumn>
                                 <AgGridColumn field="ToolCost" headerName="Tool Rate" cellRenderer={'decimalFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Life" headerName="Life/Amortization" cellRenderer={'valueFormatter'}></AgGridColumn>

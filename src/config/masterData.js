@@ -499,6 +499,7 @@ export const RMImportZBC = [
     { label: "SourceLocation", value: "SourceLocation" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
+    { label: 'IncoTerm', value: 'IncoTerm' },
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "CostTypeForOtherCost", value: "CostTypeForOtherCost" },
     { label: "DescriptionForOtherCost", value: "DescriptionForOtherCost" },
@@ -546,6 +547,7 @@ export const RMImportZBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
+        'IncoTerm': 'CFR',
         "BasicRate": "500",
         "CostTypeForOtherCost": "Import Freight",
         "DescriptionForOtherCost": "Test",
@@ -905,6 +907,7 @@ export const RMImportVBC = [
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
+    { label: 'IncoTerm', value: 'IncoTerm' },
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "CostTypeForOtherCost", value: "CostTypeForOtherCost" },
     { label: "DescriptionForOtherCost", value: "DescriptionForOtherCost" },
@@ -952,6 +955,7 @@ export const RMImportVBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
+        'IncoTerm': 'CFR',
         "BasicRate": "500",
         "CostTypeForOtherCost": "Import Freight",
         "DescriptionForOtherCost": "Test",
@@ -1111,6 +1115,7 @@ export const RMImportCBC = [
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
+    { label: 'IncoTerm', value: 'IncoTerm' },
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "CostTypeForOtherCost", value: "CostTypeForOtherCost" },
     { label: "DescriptionForOtherCost", value: "DescriptionForOtherCost" },
@@ -1155,6 +1160,7 @@ export const RMImportCBCTempData = [
         "CustomerCode": "C-10008",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
+        'IncoTerm': 'CFR',
         "BasicRate": "500",
         "CostTypeForOtherCost": "Import Freight",
         "DescriptionForOtherCost": "Test",
@@ -3250,9 +3256,9 @@ export const Plant = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_DOMESTIC = [
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3364,9 +3370,9 @@ export const BOP_ZBC_DOMESTIC_TempData = [
 */
 export const BOP_VBC_DOMESTIC = [
     { label: 'Note', value: 'Note', },
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3376,7 +3382,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'ClientApprovedVendor', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'SourceVendorCode', value: 'SourceVendorCode', },
-    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
+    { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
@@ -3504,9 +3510,9 @@ export const BOP_VBC_DOMESTIC_TempData = [
 
 export const BOP_DETAILED_DOMESTIC = [
     { label: 'Note', value: 'Note', },
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3515,7 +3521,7 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'SourceVendorCode', value: 'SourceVendorCode', },
-    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
+    { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
     { label: "TechnologyName", value: 'TechnologyName' }, //NOUI
     { label: 'Source', value: 'Source', },
@@ -3598,9 +3604,9 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_IMPORT = [
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3722,9 +3728,9 @@ export const BOP_ZBC_IMPORT_TempData = [
     }
 ]
 export const BOP_CBC_DOMESTIC = [
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3836,9 +3842,9 @@ export const BOP_CBC_DOMESTIC_TempData = [
 */
 export const BOP_DETAILED_IMPORT = [
     { label: 'Note', value: 'Note', },
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3847,7 +3853,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'SourceVendorCode', value: 'SourceVendorCode', },
-    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
+    { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
     { label: "TechnologyName", value: 'TechnologyName' }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
@@ -3946,9 +3952,9 @@ export const BOP_DETAILED_IMPORT_TempData = [
 */
 export const BOP_VBC_IMPORT = [
     { label: 'Note', value: 'Note', },
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -3958,7 +3964,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'ClientApprovedVendor', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'SourceVendorCode', value: 'SourceVendorCode', },
-    { label: 'Outsourced BOP', value: 'IsPartOutsourced', },
+    { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
@@ -4092,9 +4098,9 @@ export const BOP_VBC_IMPORT_TempData = [
     }
 ]
 export const BOP_CBC_IMPORT = [
-    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
-    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
-    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
     { label: "SAPCode", value: "SAPPartNumber", },
@@ -4760,6 +4766,13 @@ export const MHRMoreZBC = [
     { label: "PowerCRMHead", value: "PowerCRMHead", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
+    // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+    { label: "MachinePowerType", value: "MachinePowerType" },
+    { label: "PowerType", value: "PowerType" },
+    { label: "Rate", value: "Rate" },
+    { label: "UnitProduced", value: "UnitProduced" },
+    { label: "PowerPercentage", value: "PowerPercentage" },
+    // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
     { label: "LabourCRMHead", value: "LabourCRMHead", },
@@ -4834,6 +4847,13 @@ export const MHRMoreVBC = [
     { label: "PowerCRMHead", value: "PowerCRMHead", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
+    // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+    { label: "MachinePowerType", value: "MachinePowerType" },
+    { label: "PowerType", value: "PowerType" },
+    { label: "Rate", value: "Rate" },
+    { label: "UnitProduced", value: "UnitProduced" },
+    { label: "PowerPercentage", value: "PowerPercentage" },
+    // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
     { label: "LabourCRMHead", value: "LabourCRMHead", },
@@ -4908,6 +4928,13 @@ export const MHRMoreCBC = [
     { label: "PowerCRMHead", value: "PowerCRMHead", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
+    // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+    { label: "MachinePowerType", value: "MachinePowerType" },
+    { label: "PowerType", value: "PowerType" },
+    { label: "Rate", value: "Rate" },
+    { label: "UnitProduced", value: "UnitProduced" },
+    { label: "PowerPercentage", value: "PowerPercentage" },
+    // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
     { label: "LabourCRMHead", value: "LabourCRMHead", },
@@ -4991,6 +5018,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 0,
         "PowerRatingKW": "100",
         "UsesSolarPower": "NO",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Fuel",
+        "PowerType": "Fuel Name",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "10",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
@@ -5061,6 +5095,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 0,
         "PowerRatingKW": "100",
         "UsesSolarPower": "NO",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Total Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "90",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
@@ -5132,6 +5173,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "20",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -5200,6 +5248,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "20",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -5268,6 +5323,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "20",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -5336,6 +5398,13 @@ export const MHRMoreZBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "30",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -5409,6 +5478,13 @@ export const MHRMoreVBCTempData = [
         "Efficiency (%)": 0,
         "PowerRatingKW": "100",
         "UsesSolarPower": "NO",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Fuel",
+        "PowerType": "Fuel Name",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "10",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
@@ -5480,6 +5556,13 @@ export const MHRMoreVBCTempData = [
         "Efficiency (%)": 0,
         "PowerRatingKW": "100",
         "UsesSolarPower": "NO",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Total Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "90",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
@@ -5552,6 +5635,13 @@ export const MHRMoreVBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "20",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -5621,6 +5711,13 @@ export const MHRMoreVBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "20",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -5694,6 +5791,13 @@ export const MHRMoreCBCTempData = [
         "Efficiency (%)": 0,
         "PowerRatingKW": "100",
         "UsesSolarPower": "NO",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Fuel",
+        "PowerType": "Fuel Name",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "10",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
@@ -5765,6 +5869,13 @@ export const MHRMoreCBCTempData = [
         "Efficiency (%)": 0,
         "PowerRatingKW": "100",
         "UsesSolarPower": "NO",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Total Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "90",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
@@ -5837,6 +5948,13 @@ export const MHRMoreCBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "20",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -5906,6 +6024,13 @@ export const MHRMoreCBCTempData = [
         "Efficiency (%)": 75,
         "PowerRatingKW": "100",
         "UsesSolarPower": "YES",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
+        "MachinePowerType": "Power",
+        "PowerType": "Generator Diesel/Hydro Power/SEB Power/Solar Power/Wind Power",
+        "Rate": "20",
+        "UnitProduced": "2",
+        "PowerPercentage": "20",
+        // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
         "ProcessName": "Turning",
@@ -8339,7 +8464,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "SAP Code", value: "SAPPartNumber", },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor", },
-    { label: 'Sourced Vendor (Code)', value: 'SourceVendorName', },
+    { label: 'Source Vendor (Code)', value: 'SourceVendorName', },
     { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
@@ -8381,7 +8506,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },
     { label: "BOP Part Name", value: "BoughtOutPartName" },
-    { label: "BOP Category", value: "BoughtOutPartCategory" },
+    { label: "BOP Part Category", value: "BoughtOutPartCategory" },
     { label: "Part Family", value: "PartFamily" },
     { label: "Division", value: "Division", },
     { label: "UOM", value: "UOM" },
@@ -8389,7 +8514,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "SAP Code", value: "SAPPartNumber", },
     { label: "Plant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "Vendor" },
-    { label: 'Sourced Vendor (Code)', value: 'SourceVendorName', },
+    { label: 'Source Vendor (Code)', value: 'SourceVendorName', },
     { label: 'IsPartOutsourced', value: 'IsPartOutsourced', },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
@@ -8617,6 +8742,7 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
+    { label: "Inco Terms", value: "IncoTerm" },
     { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName" },
     { label: "Currency", value: "Currency", },

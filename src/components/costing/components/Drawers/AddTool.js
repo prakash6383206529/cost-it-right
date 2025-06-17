@@ -22,7 +22,7 @@ function AddTool(props) {
 
   const costData = useContext(costingInfoContext)
   const { RMCCTabData, IsIncludedToolCost, includeToolCostIcc } = useSelector(state => state.costing)
-  const { toolMaintenanceCostLabel, toolMaintenanceCostPerPcLabel, toolInterestRatePercentLabel, toolInterestCostLabel, toolInterestCostPerPcLabel } = useLabels();
+  const { toolMaintenanceCostLabel, toolMaintenanceCostPerPcLabel, toolInterestRatePercentLabel, toolInterestCostLabel, toolInterestCostPerPcLabel, toolCostLabel } = useLabels();
 
   const defaultValues = {
     ToolOperationId: rowObjData?.ToolOperationId ? rowObjData.ToolOperationId : '',
@@ -655,7 +655,7 @@ function AddTool(props) {
                   </Col>
                   <Col md="4">
                     <TextFieldHookForm
-                      label="Process Run Count"
+                      label="Process Run Count/No. of Tools"
                       name={'Quantity'}
                       Controller={Controller}
                       control={control}
@@ -696,23 +696,27 @@ function AddTool(props) {
                                             title={'Tool Details'}
                                             customClass={'underLine-title'}
                                         />
-                  <Col md="4">
-                    <SearchableSelectHookForm
-                      label={'Tool Category'}
-                      name={'ToolCategory'}
-                      placeholder={'Select'}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={tool.length !== 0 ? tool : ''}
-                      options={renderListing('ToolCategory')}
-                      mandatory={true}
-                      handleChange={handleToolChange}
-                      errors={errors.ToolCategory}
-                      disabled={isEditFlag || CostingViewMode ? true : false}
-                    />
-                  </Col>
+
+
+                  {getConfigurationKey().IsShowToolCategory &&
+                    <Col md="4">
+                      <SearchableSelectHookForm
+                        label={'Tool Category'}
+                        name={'ToolCategory'}
+                        placeholder={'Select'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={tool.length !== 0 ? tool : ''}
+                        options={renderListing('ToolCategory')}
+                        mandatory={true}
+                        handleChange={handleToolChange}
+                        errors={errors.ToolCategory}
+                        disabled={isEditFlag || CostingViewMode ? true : false}
+                      />
+                    </Col>
+                  } 
 
                   <Col md="4">
                     <TextFieldHookForm
@@ -740,7 +744,7 @@ function AddTool(props) {
 
                   <Col md="4">
                     <TextFieldHookForm
-                      label="Tool Rate"
+                      label={`${toolCostLabel}`}
                       name={'ToolCost'}
                       Controller={Controller}
                       control={control}
@@ -780,7 +784,7 @@ function AddTool(props) {
                     />
                   </Col>
                   <Col md="4">
-                    <TooltipCustom disabledIcon={true} id={'tool-amortization-cost'} tooltipText={'Tool Amortization Cost = Tool Rate * Part Quantity * Process Run Count / Tool Life'} />
+                    <TooltipCustom disabledIcon={true} id={'tool-amortization-cost'} tooltipText={`Tool Amortization Cost = ${toolCostLabel} * Part Quantity * Process Run Count / Tool Life`} />
                     <TextFieldHookForm
                       label="Tool Amortization Cost"
                       name={'ToolAmortizationCost'}
@@ -920,7 +924,7 @@ function AddTool(props) {
                         />
                   </Col>
                   <Col md="4">
-                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-interest-cost"} tooltipText={`${toolInterestCostLabel}= (Tool Rate * ${toolInterestRatePercentLabel} / 100)`} />
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-interest-cost"} tooltipText={`${toolInterestCostLabel}= (${toolCostLabel} * ${toolInterestRatePercentLabel} / 100)`} />
                   <TextFieldHookForm
                           label={toolInterestCostLabel}
                           name={'ToolInterestCost'}

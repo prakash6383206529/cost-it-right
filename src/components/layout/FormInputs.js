@@ -395,7 +395,7 @@ export function renderTextInputField(field) {
     ...others
   } = field;
   const inputbox = `${active ? "active" : ""}`;
-  const className = `form-group inputbox  withBorder ${field.customClassName ?? ""}
+  const className = `${field.id==="plantCurrency" ? "" : "form-group inputbox"}  withBorder ${field.customClassName ?? ""}
  ${touched && error ? "has-danger" : ""}`;
   const inputStyle = field.inputStyle ? field.inputStyle : "";
   const inputIconStyle = field.inputIconStyle ? field.inputIconStyle : "";
@@ -433,7 +433,7 @@ export function renderTextInputField(field) {
       </div>
       {children}
       {(touched || error) && (                 //fixed warning message
-        <div className="text-help mb-2">
+        <div className={field.id==="plantCurrency" ? "mt-2" : "text-help mb-2"}>
           {touched ? (validateSpecialChars(input.value) || error) : ""}
         </div>
       )}
@@ -668,9 +668,9 @@ export function renderText(field) {
         />
       </div>
       {children}
-      {(touched || error) && (
-        <div className="text-help mb-2">
-          {touched && error}
+      {(touched && (validateSpecialChars(input.value) || error)) && (  //fixed warning message
+        <div className={field.id==="plantCurrency" ? "mt-2" : "text-help mb-2"}>
+          {validateSpecialChars(input.value) || error}
         </div>
       )}
       {field?.warningMessage && (

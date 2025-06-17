@@ -16,7 +16,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../../../config/message";
 import LoaderCustom from "../../../common/LoaderCustom";
 import NoContentFound from "../../../common/NoContentFound";
-import { getBusinessValueReportHeads, getBusinessValueReportData } from '../../actions/ReportListing';
+import { getBusinessValueReportHeads, getSurfaceTreatmentBusinessValueReportData } from '../../actions/ReportListing';
 import { getProductGroupSelectList } from "../../../masters/actions/Part"
 import { FinancialQuarterOptions } from "../../../../config/masterData";
 import { getClientSelectList } from '../../../masters/actions/Client';
@@ -30,7 +30,7 @@ import { colorArray } from "../../../dashboard/ChartsDashboard";
 import { PaginationWrapper } from "../../../common/commonPagination";
 import ReactExport from 'react-export-excel';
 
-const BusinessValueReport = ({ }) => { 
+const SurfaceTreatmentBusinessValueReport = ({ }) => { 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const gridOptions = {}
   const { control, register, getValues, setValue, handleSubmit, formState: { errors } } = useForm();
@@ -56,7 +56,7 @@ const BusinessValueReport = ({ }) => {
   const [reportDetailsByGroup, setReportDetailsByGroup] = useState([])
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   // const [partTypeList, setPartTypeList] = useState([])
-  const { businessValueReportHeads, businessValueReportData } = useSelector(state => state.report);
+  const { businessValueReportHeads, surfaceTreatmentBusinessValueReportData } = useSelector(state => state.report);
   const productGroupSelectList = useSelector(state => state.part.productGroupSelectList)
   const clientSelectList = useSelector((state) => state.client.clientSelectList)
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -70,12 +70,12 @@ const BusinessValueReport = ({ }) => {
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
   
   useEffect(() => {
-    if (businessValueReportData) {
-      setTableData(businessValueReportData.ReportDetails)
-      setTableHeaderColumnDefs(businessValueReportData.TableHeads)
-      setReportDetailsByGroup(businessValueReportData.ReportDetailsByGroup)
+    if (surfaceTreatmentBusinessValueReportData) {
+      setTableData(surfaceTreatmentBusinessValueReportData.ReportDetails)
+      setTableHeaderColumnDefs(surfaceTreatmentBusinessValueReportData.TableHeads)
+      setReportDetailsByGroup(surfaceTreatmentBusinessValueReportData.ReportDetailsByGroup)
     }
-  }, [businessValueReportData])
+  }, [surfaceTreatmentBusinessValueReportData])
 
   useEffect(() => {
     if (!businessValueReportHeads || !group) return;
@@ -88,9 +88,10 @@ const BusinessValueReport = ({ }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
+
     dispatch(getPlantSelectListByType('', '', '', () => { }))
     dispatch(getBusinessValueReportHeads(() => { }))
-    dispatch(getBusinessValueReportData({}, () => { }))
+    dispatch(getSurfaceTreatmentBusinessValueReportData({}, () => { }))
     dispatch(getProductGroupSelectList(() => { }))
     dispatch(getClientSelectList(() => { }))
     dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
@@ -350,7 +351,7 @@ const BusinessValueReport = ({ }) => {
     const segmentKeys = _.map(validKeys, key => data[key].value)
     const segmentId = segmentKeys.join(',')
     data.SegmentId = segmentId
-    dispatch(getBusinessValueReportData(data, (res) => {
+    dispatch(getSurfaceTreatmentBusinessValueReportData(data, (res) => {
       if (res?.status === 200) {
         setIsLoader(false)
       }
@@ -426,7 +427,7 @@ const BusinessValueReport = ({ }) => {
  
   const renderColumn = () => {
     return (
-      <ExcelSheet data={tableData} name={"Business Value Summary Report"}>
+      <ExcelSheet data={tableData} name={"Surface Treatment Report"}>
         {tableHeaderColumnDefs && tableHeaderColumnDefs.map((ele, index) => {
           return <ExcelColumn key={index} label={ele?.headerName} value={ele?.field} style={ele?.style} /> 
         })}
@@ -701,7 +702,7 @@ const BusinessValueReport = ({ }) => {
                 {detailAccordian ? (<i className="fa fa-minus" ></i>) : (<i className="fa fa-plus"></i>)}
               </button>
             </Col>
-             <ExcelFile filename={'Business Value Summary Report'} fileExtension={'.xls'} element={
+             <ExcelFile filename={'Surface Treatment Report'} fileExtension={'.xls'} element={
                 <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
                 </button>}>
                 {renderColumn()}
@@ -745,5 +746,5 @@ const BusinessValueReport = ({ }) => {
 
 }
 
-export default BusinessValueReport
+export default SurfaceTreatmentBusinessValueReport
 

@@ -61,7 +61,7 @@ function Rejection(props) {
         isEditMode: false,
         isViewRejectionRecovery: false
     })
-// partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
+    // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const isFixedRecord = CostingRejectionDetail?.CostingRejectionApplicabilityDetails?.some(item => item?.Applicability === 'Fixed')
     const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
@@ -110,7 +110,7 @@ function Rejection(props) {
         }
     }, [rejectionFieldValues, IsIncludedSurfaceInRejection]);
     useEffect(() => {
-        if (state.modelType && state.modelType.value !== undefined) {
+        if (state.modelType && state.modelType.value !== undefined && !CostingViewMode) {
             checkRejectionModelType(CostingRejectionDetail)
         }
     }, [headerCosts && headerCosts.NetTotalRMBOPCC, IsIncludedSurfaceInRejection])
@@ -123,8 +123,8 @@ function Rejection(props) {
         }
     }, [IsIncludedSurfaceInRejection]);
     useEffect(() => {
-        callGetRejectionDataByModelType(state.modelType)
-    }, [IsIncludeApplicabilityForChildParts])
+        callGetRejectionDataByModelType(state?.modelType)
+    }, [IsIncludeApplicabilityForChildParts,IsIncludedSurfaceInRejection])
 
     // useEffect(() => {
     //     setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration?.NoOfDecimalForPrice))
@@ -189,19 +189,17 @@ function Rejection(props) {
         const { data } = props
         const RM = IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts?.NetRawMaterialsCost);
         const BOP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost)) : checkForNull(headerCosts?.NetBoughtOutPartCost);
-        const CCForMachining = checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
-        const CC = partType ? IsIncludeApplicabilityForChildParts
-            ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) + checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
+        const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetCCForOtherTechnologyCost) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
+        const CC = partType ? IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
             : checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
-            : IsIncludeApplicabilityForChildParts
-                ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) + checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
+            : IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
                 : checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost);
 
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
             : 0;
 
-        
+
         let prevData = _.cloneDeep(dataObj)
         let newData = [];
         if (prevData && prevData?.CostingRejectionApplicabilityDetails && prevData?.CostingRejectionApplicabilityDetails.length > 0) {
@@ -251,10 +249,10 @@ function Rejection(props) {
     const checkRejectionApplicability = (applicability) => {
         const RM = IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts.NetRawMaterialsCost);
         const BOP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts.NetBoughtOutPartCost)) : checkForNull(headerCosts.NetBoughtOutPartCost);
-        const CCForMachining = checkForNull(headerCosts.NetCCForOtherTechnologyCost)
+        const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts.NetCCForOtherTechnologyCost) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts.NetCCForOtherTechnologyCost)
         const CC = IsIncludeApplicabilityForChildParts ?
-            checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) + (partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) :
-            partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly);
+            checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + (partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts.NetCCForOtherTechnologyCost)) :
+            partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts.NetCCForOtherTechnologyCost);
 
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
@@ -658,7 +656,7 @@ function Rejection(props) {
                 customerId: costData.CustomerId,
                 technologyId: IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting) ? costData?.TechnologyId : null,
                 partFamilyId: costData?.PartFamilyId,
-                IsMultiVendorCosting:IsMultiVendorCosting
+                IsMultiVendorCosting: IsMultiVendorCosting
             }
             dispatch(getRejectionDataByModelType(reqParams, (res) => {
                 let data = res?.data?.Data?.CostingRejectionDetail
@@ -837,7 +835,7 @@ function Rejection(props) {
                             disabled={true}
                         />
                     </Col>}
-                    {getConfigurationKey().IsRejectionRecoveryApplicable && applicability.label === 'RM' && <Col md="2">
+                    {(!IdForMultiTechnology.includes(String(costData?.TechnologyId))&& (costData?.PartType !== 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable &&  applicability.label === 'RM' && <Col md="2">
                         {/* {RejectionRecoveryUI} */}
                         <div className='d-flex align-items-center'>
                             <TextFieldHookForm
@@ -902,7 +900,7 @@ function Rejection(props) {
                     </Col>
                 </Row>}
 
-                <Col md="11">
+                <Col md="12">
                     <Table className="table mb-0 forging-cal-table mt-2" size="sm">
                         <thead>
                             <tr>
@@ -910,9 +908,10 @@ function Rejection(props) {
                                 <th>Rejection (%)</th>
                                 <th>Cost (Applicability)</th>
                                 <th>Rejection</th>
-                                {(!IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable && <th>Rejection Recovery Cost</th>}
+                                {(!IdForMultiTechnology.includes(String(costData?.TechnologyId))&& (costData?.PartType !== 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable && <th>Rejection Recovery Cost</th>}
                                 <th>Net Rejection</th>
                                 {!CostingViewMode && !fetchRejectionDataFromMaster() && <th className='text-right'>Action</th>}
+                                <th className='text-center'>Remark</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -964,7 +963,7 @@ function Rejection(props) {
                                             )}
                                         </td>
                                         <td>{item?.Applicability === 'Fixed' ? checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.TotalCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
-                                        {getConfigurationKey().IsRejectionRecoveryApplicable && !IdForMultiTechnology.includes(String(costData?.TechnologyId)) && <td>
+                                        {getConfigurationKey().IsRejectionRecoveryApplicable && !IdForMultiTechnology.includes(String(costData?.TechnologyId)) && costData?.PartType !== 'Assembly' && <td>
 
                                             <div className='d-flex align-items-center'>
                                                 <span>{checkForDecimalAndNull(item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</span>
@@ -991,54 +990,53 @@ function Rejection(props) {
                                                 onClick={() => editDeleteData(index, 'delete')}
                                             />
                                         </td>}
+                                        {index === 0 && (
+                                            <td className='text-center align-middle border-start' rowSpan={state?.gridData?.length === 0 || state?.gridData === null || state?.gridData === undefined ? 1 : state?.gridData?.length}>
+                                                <Popup trigger={<button id={`popUpTriggerRejection`} title="Remark" className="Comment-box" type={'button'} />}
+                                                    position="top center">
+                                                    <TextAreaHookForm
+                                                        label="Remark:"
+                                                        name={`rejectionRemark`}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            maxLength: REMARKMAXLENGTH
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        className=""
+                                                        customClassName={"withBorder"}
+                                                        errors={errors.rejectionRemark}
+                                                        disabled={CostingViewMode}
+                                                        hidden={false}
+                                                        validateWithRemarkValidation={true}
+                                                    />
+                                                    <Row>
+                                                        <Col md="12" className='remark-btn-container'>
+                                                            <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickRejection()} > <div className='save-icon'></div> </button>
+                                                            <button className='reset' onClick={() => onRemarkPopUpCloseRejection()} > <div className='cancel-icon'></div></button>
+                                                        </Col>
+                                                    </Row>
+                                                </Popup>
+                                            </td>
+                                        )}
                                     </tr>
                                 );
                             })}
 
                             {(state.gridData && state.gridData.length === 0) && (
                                 <tr>
-                                    <td colSpan={7}><NoContentFound title={EMPTY_DATA} /></td>
+                                    <td colSpan={7} className="text-center">
+                                        <NoContentFound title={EMPTY_DATA} />
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
                     </Table>
                 </Col>
-                <Col md="1" className='second-section pr-2'>
-                    <div className='costing-border-inner-section'>
-                        <Col md="12" className='text-center'>Remark</Col>
-                        <Col md="12">
-                            <Popup trigger={<button id={`popUpTriggerRejection`} title="Remark" className="Comment-box" type={'button'} />}
-                                position="top center">
-                                <TextAreaHookForm
-                                    label="Remark:"
-                                    name={`rejectionRemark`}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    rules={{
-                                        maxLength: REMARKMAXLENGTH
-                                    }}
-                                    handleChange={() => { }}
-                                    className=""
-                                    customClassName={"withBorder"}
-                                    errors={errors.rejectionRemark}
-                                    disabled={CostingViewMode}
-                                    hidden={false}
-                                    validateWithRemarkValidation={true}
-                                />
-                                <Row>
-                                    <Col md="12" className='remark-btn-container'>
-                                        <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickRejection()} > <div className='save-icon'></div> </button>
-                                        <button className='reset' onClick={() => onRemarkPopUpCloseRejection()} > <div className='cancel-icon'></div></button>
-                                    </Col>
-                                </Row>
-                            </Popup>
-                        </Col>
-                        {showRejectionPopup && <PopupMsgWrapper isOpen={showRejectionPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`If 'RM' is not selected in the applicability, you will loss rejection recovery cost.`} />}
-                    </div>
-                </Col>
             </Row>
+            {showRejectionPopup && <PopupMsgWrapper isOpen={showRejectionPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`If 'RM' is not selected in the applicability, you will loss rejection recovery cost.`} />}
             {isOpenRecoveryDrawer && <AddRejectionRecovery
                 isOpen={isOpenRecoveryDrawer}
                 rejectionPercentage={!fetchRejectionDataFromMaster() ? getValues('RejectionPercentage') : state.gridData?.find(item => item.Applicability === 'RM')?.Percentage || ''}

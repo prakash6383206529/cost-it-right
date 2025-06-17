@@ -41,6 +41,7 @@ function OverheadProfit(props) {
 
   const defaultValues = {
     overHeadRemark: CostingOverheadDetail?.Remark ? CostingOverheadDetail?.Remark : '',
+    profitRemark: CostingProfitDetail?.Remark ? CostingProfitDetail?.Remark : '',
     crmHeadOverhead: CostingOverheadDetail && CostingOverheadDetail.OverheadCRMHead && { label: CostingOverheadDetail.OverheadCRMHead, value: 1 },
     //REJECTION FIELDS
     Applicability: CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : '',
@@ -70,9 +71,9 @@ function OverheadProfit(props) {
 
   const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI, currencySource, exchangeRateData, IsIncludeApplicabilityForChildParts } = useSelector(state => state.costing)
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
-
+  
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
-
+  
   const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
   const [showWarning, setShowWarning] = useState('')
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
@@ -103,6 +104,14 @@ function OverheadProfit(props) {
       })
       setValue('profitremark', CostingProfitDetail && CostingProfitDetail.Remark ? CostingProfitDetail.Remark : '')
     }
+    if (CostingOverheadDetail && Object?.keys(CostingOverheadDetail)?.length > 0) {
+      setOverheadValues(CostingOverheadDetail, false)
+      setValue('crmHeadOverhead', CostingOverheadDetail && CostingOverheadDetail.OverheadCRMHead && {
+        label: CostingOverheadDetail.OverheadCRMHead, value: 1
+      })
+      setValue('overheadRemark', CostingOverheadDetail && CostingOverheadDetail.Remark ? CostingOverheadDetail.Remark : '')
+    }
+
   }, []);
 
 
@@ -606,6 +615,9 @@ useEffect(() => {
   * @description Used to Submit the form
   */
   const onSubmit = debounce(handleSubmit((values) => {
+    // Add profit remarks to the values before saving
+    values.profitRemark = profitObj?.Remark || '';
+    values.overHeadRemark = overheadObj?.Remark || '';
     props.saveCosting(values)
   }), 500);
 
@@ -638,27 +650,27 @@ useEffect(() => {
   }
 
   const onRemarkPopUpClickOverHead = () => {
-
+    
     if (errors.overheadRemark !== undefined) {
       return false
     }
+    
+    const remarkValue = getValues('overheadRemark');
+    setOverheadObj(prev => ({
+      ...prev,
+      Remark: remarkValue
+    }));
 
-    setOverheadObj({
-      ...overheadObj,
-      Remark: getValues('overheadRemark')
-    })
-
-    if (getValues(`overheadRemark`)) {
+    if (remarkValue) {
       Toaster.success('Remark saved successfully')
     }
     var button = document.getElementById(`popUpTriggerOverhead`)
     button.click()
   }
 
-
   const onRemarkPopUpCloseOverHead = () => {
     let button = document.getElementById(`popUpTriggerOverhead`)
-    setValue(`overheadRemark`, overheadObj.Remark)
+    setValue(`overheadRemark`, overheadObj?.Remark || '')
     if (errors.overheadRemark) {
       delete errors.overheadRemark;
     }
@@ -666,17 +678,17 @@ useEffect(() => {
   }
 
   const onRemarkPopUpClickProfit = () => {
-
     if (errors.profitRemark !== undefined) {
       return false
     }
+    
+    const remarkValue = getValues('profitRemark');
+    setProfitObj(prev => ({
+      ...prev,
+      Remark: remarkValue
+    }));
 
-    setProfitObj({
-      ...profitObj,
-      Remark: getValues('profitremark')
-    })
-
-    if (getValues(`profitremark`)) {
+    if (remarkValue) {
       Toaster.success('Remark saved successfully')
     }
     var button = document.getElementById(`popUpTriggerProfit`)
@@ -685,9 +697,9 @@ useEffect(() => {
 
   const onRemarkPopUpCloseProfit = () => {
     let button = document.getElementById(`popUpTriggerProfit`)
-    setValue(`profitremark`, profitObj.Remark)
-    if (errors.profitremark) {
-      delete errors.profitremark;
+    setValue(`profitRemark`, profitObj?.Remark || '')
+    if (errors.profitRemark) {
+      delete errors.profitRemark;
     }
     button.click()
   }
@@ -714,7 +726,7 @@ useEffect(() => {
         ...prev,
         CostingApplicabilityDetails: prev.CostingApplicabilityDetails.map(detail =>
           detail.ApplicabilityDetailsId === item?.ApplicabilityDetailsId
-            ? { ...detail, Cost: checkForNull(value), TotalCost: checkForNull(value)}
+            ? { ...detail, Cost: checkForNull(value), TotalCost: checkForNull(value) }
             : detail
         )
       }));
@@ -723,7 +735,7 @@ useEffect(() => {
         ...prev,
         CostingApplicabilityDetails: prev?.CostingApplicabilityDetails.map(detail =>
           detail.ApplicabilityDetailsId === item?.ApplicabilityDetailsId
-            ? { ...detail, Cost: checkForNull(value) , TotalCost: checkForNull(value)}
+            ? { ...detail, Cost: checkForNull(value), TotalCost: checkForNull(value) }
             : detail
         )
       }));

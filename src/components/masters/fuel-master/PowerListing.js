@@ -15,7 +15,7 @@ import { POWERLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, getLocalizedCostingHeadValue } from "../../../helper";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -57,7 +57,7 @@ const PowerListing = (props) => {
   const permissions = useContext(ApplyPermission);
   const { powerDataList } = useSelector((state) => state.fuel);
   const { initialConfiguration } = useSelector((state) => state.auth);
-  const { vendorLabel } = useLabels()
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   useEffect(() => {
     if (permissions) {
       getDataList(state.isImport);
@@ -311,12 +311,32 @@ const PowerListing = (props) => {
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: isFirstColumn,
   };
+
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    costingHeadFormatter(props);
+
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
+
+  const costingHeadFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue ? cellValue : ""
+
+  }
+
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
     costFormatter: costFormatter,
     effectiveDateFormatter: effectiveDateFormatter,
     statusFilter: CostingHeadDropdownFilter,
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer
   };
 
   return (

@@ -275,7 +275,7 @@ const AddFreight = (props) => {
           const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: getValuesMainForm("plantCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: getValuesMainForm("plantCurrency") });
           callAPI(fromCurrency, getValuesMainForm("plantCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
             // Second API call
-            const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: getValuesMainForm("plantCurrency") });
+            const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: getValuesMainForm("plantCurrency"), toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: getValuesMainForm("plantCurrency") });
             callAPI(getValuesMainForm("plantCurrency"), reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
               setState(prev => ({
                 ...prev,

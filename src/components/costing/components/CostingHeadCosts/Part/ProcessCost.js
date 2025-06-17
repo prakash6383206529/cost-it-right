@@ -19,7 +19,7 @@ import { MACHINING, REMARKMAXLENGTH, } from '../../../../../config/masterData'
 import { findProcessCost, findProductionPerHour, swappingLogicCommon, handleRemarkPopup, calculateProcessCostUsingCostApplicabilityBasis, findApplicabilityCost } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip';
-import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
+import { number, nonZero, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 import Button from '../../../../layout/Button';
 import TourWrapper from '../../../../common/Tour/TourWrapper';
 import { Steps } from '../../TourMessages';
@@ -1381,7 +1381,7 @@ function ProcessCost(props) {
   }
   const calculateProductionPerHour = (quantity) => {
     // Check if quantity is valid number and not zero
-    if (!quantity || isNaN(quantity) || quantity === 0) {
+    if (!quantity || isNaN(quantity) || parseInt(quantity) === 0) {
       return '-';
     }
     const production = 3600 / Number(quantity);
@@ -1406,37 +1406,45 @@ function ProcessCost(props) {
   const ProcessGridFields = 'ProcessGridFields'
   const SingleProcessGridField = 'SingleProcessGridField'
 
-  const processNetCostFormula = (value, type) => {
+  const processNetCostFormula = (value, type, costWithoutInterestAndDepreciation, isDetailed) => {
     let processNetCostFormulaText;
+    let isDetailedText = isDetailed ? `Net Cost (Without Interest and Depreciation) = ${checkForDecimalAndNull(costWithoutInterestAndDepreciation, getConfigurationKey().NoOfDecimalForPrice)}` : ''
     if (type === COSTAPPLICABILITYBASIS) {
-      processNetCostFormulaText = 'Net Cost = (MHR * Percentage/100)'
+      processNetCostFormulaText = `Net Cost = (MHR * Percentage/100)
+${isDetailedText}`
     }
     else {
 
       switch (value) {
         case HOUR:
-          processNetCostFormulaText = 'Net Cost = Machine Rate / Part per Hour'
+          processNetCostFormulaText = <><p>Net Cost = (Machine Rate / Part per Hour)</p><p>{isDetailedText}</p></>
           break;
         case MINUTES:
-          processNetCostFormulaText = 'Net Cost = (Machine Rate * 60) / Part per Hour'
+          processNetCostFormulaText = <><p>Net Cost = ((Machine Rate * 60) / Part per Hour)</p><p>{isDetailedText}</p></>
           break;
         case SECONDS:
-          processNetCostFormulaText = 'Net Cost = (Machine Rate * 3600) / Part per Hour'
+          processNetCostFormulaText = `Net Cost = ((Machine Rate * 3600) / Part per Hour)
+${isDetailedText}`
           break;
         case MILLISECONDS:
-          processNetCostFormulaText = 'Net Cost = (Machine Rate * 3600000) / Part per Hour'
+          processNetCostFormulaText = `Net Cost = ((Machine Rate * 3600000) / Part per Hour)
+${isDetailedText}`
           break;
         case MICROSECONDS:
-          processNetCostFormulaText = 'Net Cost = (Machine Rate * 3600000000) / Part per Hour'
+          processNetCostFormulaText = `Net Cost = ((Machine Rate * 3600000000) / Part per Hour)
+${isDetailedText}`
           break;
         case undefined:
-          processNetCostFormulaText = 'Net Cost = Total cost of the sub process net cost'
+          processNetCostFormulaText = `Net Cost = (Total cost of the sub process net cost)
+${isDetailedText}`
           break;
         case null:
-          processNetCostFormulaText = 'Net Cost = Total cost of the sub process net cost'
+          processNetCostFormulaText = `Net Cost = (Total cost of the sub process net cost)
+${isDetailedText}`
           break;
         default:
-          processNetCostFormulaText = 'Net Cost = (Quantity * Machine Rate)'
+          processNetCostFormulaText = `Net Cost = (Quantity * Machine Rate)
+${isDetailedText}`
           break;
       }
     }
@@ -1501,7 +1509,7 @@ function ProcessCost(props) {
             <td style={{ width: 100 }}>
               {
                 <>
-                  <TooltipCustom disabledIcon={true} id={`process-net-cost-single${index}`} tooltipText={processNetCostFormula(item.UOM)} />
+                  <TooltipCustom disabledIcon={true} id={`process-net-cost-single${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type, item?.ProcessCostWithOutInterestAndDepreciation, item?.IsDetailed)} />
                   <TextFieldHookForm
                     label=""
                     name={`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`}
@@ -1835,7 +1843,7 @@ function ProcessCost(props) {
                                         mandatory={false}
                                         rules={{
                                           required: true,
-                                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                          validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
                                         }}
                                         errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
                                         defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}
@@ -1871,7 +1879,7 @@ function ProcessCost(props) {
                             <td>
                               {
                                 <>
-                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type)} />
+                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type, item?.ProcessCostWithOutInterestAndDepreciation,item?.IsDetailed)} />
                                   <TextFieldHookForm
                                     label=""
                                     name={`${ProcessGridFields}.${index}.ProcessCost`}

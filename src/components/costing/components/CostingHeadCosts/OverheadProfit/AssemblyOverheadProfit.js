@@ -28,10 +28,10 @@ function AssemblyOverheadProfit(props) {
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const partType = (IdForMultiTechnology.includes(String(costData.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+  const partType = (IdForMultiTechnology.includes(String(costData.TechnologyId)) || costData.CostingTypeId === WACTypeId)||IsMultiVendorCosting
   const previousTab = useContext(PreviousTabData) || 0;
   const dispatch = useDispatch()
-  const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
   const toggle = (BOMLevel, PartNumber, IsCollapse) => {
     const Params = {
       index: props.index,
@@ -126,11 +126,10 @@ function AssemblyOverheadProfit(props) {
       "CostingNumber": costData.CostingNumber,
       "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) +
         checkForNull(item?.CostingPartDetails?.ProfitCost) +
-        checkForNull(item?.CostingPartDetails?.RejectionCost) +
-        checkForNull(item?.CostingPartDetails?.ICCCost),
+        checkForNull(item?.CostingPartDetails?.RejectionCost),
       "CostingPartDetails": {
         ...item?.CostingPartDetails,
-        NetOverheadAndProfitCost: checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost),
+        NetOverheadAndProfitCost: checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost),
       },
       "EffectiveDate": CostingEffectiveDate,
       "TotalCost": netPOPrice,
@@ -145,8 +144,8 @@ function AssemblyOverheadProfit(props) {
       }
       if (partType) {
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
-        tempsubAssemblyTechnologyArray.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost)
-        setTimeout(() => {
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) 
+         setTimeout(() => {
           let totalCost = ((checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetTotalRMBOPCC) +
             checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
             checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
@@ -201,7 +200,6 @@ function AssemblyOverheadProfit(props) {
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.OverheadCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.OverheadCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ProfitCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ProfitCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.RejectionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.RejectionCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ICCCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ICCCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={8} className="cr-innerwrap-td overhead-profit-container">

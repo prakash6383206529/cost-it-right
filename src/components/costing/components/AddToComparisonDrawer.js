@@ -343,6 +343,7 @@ function AddToComparisonDrawer(props) {
           obj.ForgingScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].ForgingScrapWeight : '-'
           obj.MachiningScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapWeight : '-'
           obj.modelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ModelType ? dataFromAPI?.CostingPartDetails?.ModelType : '-'
+          obj.rejectionModelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RejectionModelType ? dataFromAPI?.CostingPartDetails?.RejectionModelType : '-'
           obj.BasicRate = (dataFromAPI && dataFromAPI.BasicRate) ? dataFromAPI.BasicRate : 0
           obj.BudgetedPrice = (dataFromAPI && dataFromAPI.BudgetedPrice) ? dataFromAPI.BudgetedPrice : 0
           obj.BudgetedPriceVariance = (dataFromAPI && dataFromAPI.BudgetedPriceVariance) ? dataFromAPI.BudgetedPriceVariance : 0
@@ -386,11 +387,11 @@ function AddToComparisonDrawer(props) {
           }
 
           obj.iccOn = {
-            iccTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-',
-            iccValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0,
-            iccPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.InterestRate !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.InterestRate : '-',
-            ICCCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCCRMHead !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCCRMHead : '-',
-            ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
+            iccTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.ICCApplicability : '-',
+            iccValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.NetCost : 0,
+            iccPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.InterestRate !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.InterestRate : '-',
+            ICCCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.ICCCRMHead !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.ICCCRMHead : '-',
+            ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.Remark : '-',
           }
           obj.netOverheadCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : 0
           obj.netProfitCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : 0
@@ -519,6 +520,7 @@ function AddToComparisonDrawer(props) {
           obj.masterBatchRMPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice ? dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice : 0
           obj.masterBatchPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchPercentage ? dataFromAPI?.CostingPartDetails?.MasterBatchPercentage : 0
           obj.isApplyMasterBatch = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch ? dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch : false
+          obj.IsMultiVendorCosting = dataFromAPI?.IsMultiVendorCosting && dataFromAPI?.IsMultiVendorCosting
           obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
           obj.childPartBOPHandlingCharges = dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges : []
           obj.masterBatchRMName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMName ? dataFromAPI?.CostingPartDetails?.MasterBatchRMName : '-'
@@ -543,8 +545,8 @@ function AddToComparisonDrawer(props) {
           obj.ProfitApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-'
           obj.rejectionApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability : '-'
           obj.rejectionApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0
-          obj.iccApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-'
-          obj.iccApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0
+          obj.iccApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.ICCApplicability : '-'
+          obj.iccApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.ICCApplicabilityDetail?.NetCost : 0
           obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability : '-'
           obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.NetCost ? dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.NetCost : 0
           obj.toolMaintenanceCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0

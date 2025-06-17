@@ -230,10 +230,11 @@ const AddOverheadMasterDetails = (props) => {
 
     const deleteApplicability = (id) => {
         const filteredApplicability = state.ApplicabilityDetails.filter((item, ind) => item.ApplicabilityId !== id)
-        setState(prev => ({ ...prev, ApplicabilityDetails: filteredApplicability, OverheadApplicability: {}, OverheadPercentage: "", RepaymentPeriod: "" }));
+        setState(prev => ({ ...prev, ApplicabilityDetails: filteredApplicability, OverheadApplicability: {}, OverheadPercentage: "", ...(state?.IsPaymentTermsRecord && { RepaymentPeriod: "" }) }));
         setValue("OverheadPercentage", "");
         setValue("OverheadApplicability", {});
         setValue("RepaymentPeriod", "");
+        setEditItemId("");
     }
 
     const editApplicability = (editItem) => {

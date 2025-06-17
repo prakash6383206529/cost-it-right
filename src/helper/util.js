@@ -640,6 +640,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.netSurfaceTreatmentCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost : 0
   obj.RawMaterialCalculatorId = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId ? dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ModelType ? dataFromAPI?.CostingPartDetails?.ModelType : '-'
+  obj.rejectionModelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RejectionModelType ? dataFromAPI?.CostingPartDetails?.RejectionModelType : '-'
   obj.aValue = { applicability: 'Applicability', percentage: 'Percentage (%)', value: 'Value' }
   obj.ForgingScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].ForgingScrapWeight : '-'
   obj.MachiningScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapWeight : '-'
@@ -816,11 +817,13 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.destinationPlantId = dataFromAPI?.DestinationPlantId ? dataFromAPI?.DestinationPlantId : '-'
   obj.CostingHeading = header
   obj.partName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.PartName ? dataFromAPI?.CostingPartDetails?.PartName : '-'
+  obj.partFamily = dataFromAPI && dataFromAPI?.PartFamily ? dataFromAPI?.PartFamily : '-'
   obj.netOtherOperationCost = dataFromAPI && dataFromAPI?.CostingPartDetails?.NetOtherOperationCost ? dataFromAPI?.CostingPartDetails?.NetOtherOperationCost : 0
   obj.masterBatchTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchTotal ? dataFromAPI?.CostingPartDetails?.MasterBatchTotal : 0
   obj.masterBatchRMPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice ? dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice : 0
   obj.masterBatchPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchPercentage ? dataFromAPI?.CostingPartDetails?.MasterBatchPercentage : 0
   obj.isApplyMasterBatch = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch ? dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch : false
+  obj.IsMultiVendorCosting = dataFromAPI?.IsMultiVendorCosting && dataFromAPI?.IsMultiVendorCosting
   obj.IsAssemblyCosting = dataFromAPI?.IsAssemblyCosting ? dataFromAPI?.IsAssemblyCosting : ""
   obj.childPartBOPHandlingCharges = dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMName ? dataFromAPI?.CostingPartDetails?.MasterBatchRMName : '-'
@@ -909,7 +912,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.TaxCodeList = dataFromAPI?.CostingPartDetails?.TaxCodeList ? dataFromAPI?.CostingPartDetails?.TaxCodeList : []
   obj.ExchangeRateSourceName = dataFromAPI?.ExchangeRateSourceName
   obj.CostingCurrency = dataFromAPI?.CostingCurrency
-
+  obj.CostingIncoTerm = dataFromAPI?.CostingIncoTerm ? dataFromAPI?.CostingIncoTerm : '-'
+  obj.CostingIncoTermDescription = dataFromAPI?.CostingIncoTermDescription ? dataFromAPI?.CostingIncoTermDescription : '-'
   obj.NetRawMaterialsCostLocalConversion = dataFromAPI?.NetRawMaterialsCostLocalConversion
   obj.NetBoughtOutPartCostLocalConversion = dataFromAPI?.NetBoughtOutPartCostLocalConversion
   obj.NetConversionCostLocalConversion = dataFromAPI?.NetConversionCostLocalConversion
@@ -1924,14 +1928,14 @@ export const getExchangeRateParams = ({ toCurrency, defaultCostingTypeId, vendor
     toCurrency === reactLocalStorage.getObject("baseCurrency");
 
   // Handle base currency conversion only for settlement currency, not when both are INR
-  if (toCurrency === reactLocalStorage.getObject("baseCurrency") &&
-    !isPlantAndTargetBothBase) {
-    return {
-      costingHeadTypeId: ZBCTypeId,
-      vendorId: null,
-      clientId: null
-    };
-  }
+  // if (toCurrency === reactLocalStorage.getObject("baseCurrency") &&
+  //   !isPlantAndTargetBothBase) {
+  //   return {
+  //     costingHeadTypeId: ZBCTypeId,
+  //     vendorId: null,
+  //     clientId: null
+  //   };
+  // }
 
   // Handle Raw Material case
   if (master === RAWMATERIAL && defaultCostingTypeId === ZBCTypeId) {
@@ -2108,7 +2112,7 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
       if ("ProcessCost" in item) {
         totals.overheadProcessCost += useExclForOverhead ? processExcl : process;
         if (ProcessTechnologyId !== technologyId) {
-// Initialize if undefined to prevent NaN
+          // Initialize if undefined to prevent NaN
           if (typeof totals.ccForOtherTechnologyCostForOverhead === 'undefined') {
             totals.ccForOtherTechnologyCostForOverhead = 0;
           }
@@ -2152,9 +2156,9 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
   return totals;
 };
 
-export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = [],IsMultiVendorCosting=false) => {
+export const getCostValues = (item = {}, costData = {}, subAssemblyTechnologyArray = [], IsMultiVendorCosting = false) => {
   const isAssembly = item?.PartType
-  const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId))||(costData?.PartType === 'Assembly' && IsMultiVendorCosting)
+  const isRequestForMultiTechnology = IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting)
 
   let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
   let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex(costingItem => costingItem.PartNumber === item?.PartNumber && costingItem.AssemblyPartNumber === item?.AssemblyPartNumber)

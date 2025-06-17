@@ -33,6 +33,7 @@ import { useLabels } from "../../../helper/core";
 import { useQueryClient } from "react-query";
 import { fetchDivisionId } from "../../costing/CostingUtil";
 import { checkEffectiveDate } from "../masterUtil";
+import { getIncoTermSelectList } from "../actions/BoughtOutParts";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE,isRMAssociated } = props
@@ -198,6 +199,7 @@ function AddRMMaster(props) {
 
     useEffect(() => {
         getDetails(data)
+        dispatch(getIncoTermSelectList(() => { }));
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
 
         return () => {
@@ -423,6 +425,7 @@ function AddRMMaster(props) {
             "BasicRatePerUOMLocalConversion": state?.isImport ? basicRatePerUOMLocalConversion : values?.BasicRate,
             "BasicRatePerUOMConversion": state?.isImport ? convertIntoCurrency(basicRatePerUOMLocalConversion, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.BasicRate, exchangeRateDetails?.CurrencyExchangeRate),
             "CalculatedFactor": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? rawMaterailDetails?.states?.CalculatedFactor : '',
+            "RawMaterialIncoTermId": values?.incoTerm?.value,
             "Category": values?.RawMaterialCategory?.value,
             "CommodityNetCost": rawMaterailDetails?.states?.totalBasicRate,
             "CommodityNetCostLocalConversion": state?.isImport ? commodityNetCostLocalConversion : rawMaterailDetails?.states?.totalBasicRate,
@@ -685,6 +688,7 @@ function AddRMMaster(props) {
                             disableAll={state?.disableAll}
                             reset={reset}
                             onWarningChange={onWarningChange}
+                            costingTypeId={state?.costingTypeId}
                         />
                         <RemarksAndAttachments states={state}
                             Controller={Controller}

@@ -700,3 +700,14 @@ export const parseConfigurationString = () => {
         isDataFromWebConfig: true
     };
 } 
+
+
+export const isValidNumber = (val) => {
+    return val !== null &&
+        val !== undefined &&
+        val !== '' &&
+        !isNaN(val) &&
+        val !== 0 && 
+        typeof val === 'number' &&
+        isFinite(val);
+};

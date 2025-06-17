@@ -1,9 +1,9 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Label, Button, Tooltip } from 'reactstrap'
-import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
+import { checkForDecimalAndNull, checkForNull, number } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
-import { getCurrencySelectList, getExchangeRateSource, getPlantSelectListByType, getVendorNameByVendorSelectList, plantSelectList } from '../../../actions/Common'
+import { getCurrencySelectList, getExchangeRateSource, getPlantSelectListByType, getVendorNameByVendorSelectList, plantSelectList, setListToggle } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId, userDetails } from '../../../helper/auth'
@@ -116,6 +116,8 @@ function AddBudget(props) {
     const [showPlantWarning, setShowPlantWarning] = useState(false)
     const { vendorLabel } = useLabels()
     const [budgetingId, setBudgetingId] = useState(0)
+    // const [isImport, setIsImport] = useState(listToggle.RawMaterial);
+
     useEffect(() => {
         setCostingTypeId(getCostingTypeIdByCostingPermission())
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
@@ -143,6 +145,10 @@ function AddBudget(props) {
         }
     }, [currency, year, ExchangeSource, fromCurrencyRef, costConverSionInLocalCurrency, vendorName, client]);
 
+    useEffect(() => {
+        setBudgetedEntryType(props?.isImport)
+    }, [props?.isImport])
+
     // ... existing code ...
     useEffect(() => {
         fromCurrencyRef.current = fromCurrencyRef
@@ -156,7 +162,7 @@ function AddBudget(props) {
             approvalTypeId: costingTypeId,
             plantId: plantId,
         }
-        if (initialConfiguration?.IsMasterApprovalAppliedConfigure) {
+        if (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BUDGET_ID) === true) {
             dispatch(checkFinalUser(obj, res => {
                 if (res.data?.Result) {
                     setIsFinalApprover(res.data?.Data?.IsFinalApprover)
@@ -278,16 +284,18 @@ function AddBudget(props) {
             Mode: 'master',
             approvalTypeId: costingHeadFlag
         }
-        dispatch(checkFinalUser(obj, res => {
-            if (res.data?.Result) {
-                setIsFinalApprover(res.data?.Data?.IsFinalApprover)
-                if (res.data?.Data?.IsUserInApprovalFlow === false) {
-                    setDisableSendForApproval(true)
-                } else {
-                    setDisableSendForApproval(false)
+        if (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BUDGET_ID) === true) {
+            dispatch(checkFinalUser(obj, res => {
+                if (res.data?.Result) {
+                    setIsFinalApprover(res.data?.Data?.IsFinalApprover)
+                    if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                        setDisableSendForApproval(true)
+                    } else {
+                        setDisableSendForApproval(false)
+                    }
                 }
-            }
-        }))
+            }))
+        }
     }
 
     /**
@@ -411,10 +419,9 @@ function AddBudget(props) {
 
     const budgetedQuantity = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const value = beforeSave(cell)
         return (
             <>
-                <span>{value ? Number(cell) : 0}</span>
+                <span>{cell !== undefined && cell !== null && !isNaN(Number(cell)) ? Number(cell) : 0}</span>
             </>
         )
     }
@@ -438,40 +445,29 @@ function AddBudget(props) {
         );
     };
 
-    const beforeSave = (props) => {
-
-        if (props !== undefined) {
-            const cellValue = props
-            if (cellValue[0] === '-') {
-                let newValue = cellValue.slice(1);
-                if (!/^\d{0,4}(\.\d{0,6})?$/.test(newValue)) {
-                    Toaster.warning('Maximum length for integer is 4 and for decimal is 6.')
-                    return false
-                } else {
-                    return props
-                }
-
-            } else if (cellValue[0] === '+') {
-                let newValue = cellValue.slice(1);
-                if (!/^\d{0,4}(\.\d{0,6})?$/.test(newValue)) {
-                    Toaster.warning('Maximum length for integer is 4 and for decimal is 6.')
-                    return false
-                }
-
-                setCount(Number(count) + Number(newValue))
-                return true
-            } else {
-                if (!/^\d{0,4}(\.\d{0,6})?$/.test(cellValue)) {
-                    Toaster.warning('Maximum length for integer is 4 and for decimal is 6.')
-                    return false
-                } else {
-                    setCount(Number(count) + Number(cellValue))
-                    return true
-                }
-            }
+    const validateCellValue = (params) => {
+        const cellValue = params.newValue;    
+        // Handle empty values
+        if (cellValue === undefined || cellValue === null || cellValue === '') {
+            params.data[params.colDef.field] = 0;
+            return true;
         }
-    }
+    
+        const strValue = cellValue.toString().trim();
+    
+        if (number(strValue)) {
+            Toaster.warning('Invalid value. Only positive numbers are allowed.');
+            return false;
+        }
+    
+        if (!/^\d{0,4}(\.\d{0,6})?$/.test(strValue)) {
+            Toaster.warning('Maximum length for integer is 4 and for decimal is 6.');
+            return false
+        }
 
+        params.data[params.colDef.field] = Number(strValue)
+        return true
+    }
 
 
     /**
@@ -526,6 +522,7 @@ function AddBudget(props) {
 
     }
     const ImportToggle = () => {
+        dispatch(setListToggle({ Budget: !budgetedEntryType }));
         setBudgetedEntryType(!budgetedEntryType)
     }
     /**
@@ -719,7 +716,7 @@ function AddBudget(props) {
                                 setShowWarning(false)
                             }
                             resolve({
-                                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                                rate: res?.data?.Data.CurrencyExchangeRate !== 0 && res?.data?.Data.CurrencyExchangeRate !== null && res?.data?.Data.CurrencyExchangeRate !== undefined ? checkForNull(res?.data?.Data.CurrencyExchangeRate) : 1,
                                 exchangeRateId: res?.data?.Data?.ExchangeRateId,
                                 showWarning: Object.keys(res.data.Data).length === 0,
                                 showPlantWarning: Object.keys(res.data.Data).length === 0
@@ -732,7 +729,7 @@ function AddBudget(props) {
 
             if (costConverSionInLocalCurrency && Object.keys(currency).length !== 0) {
                 const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: plantCurrency, defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
-                
+
                 if (currency?.label === plantCurrency) {
                     setPlantCurrency(1);
                     setPlantExchangeRateId(null);
@@ -740,7 +737,7 @@ function AddBudget(props) {
                 } else {
                     callAPI(currency?.label, plantCurrency, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
                         const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: costingTypeId, vendorId: vendorName?.value, clientValue: client?.value, plantCurrency: plantCurrency });
-                        
+
                         if (plantCurrency === reactLocalStorage.getObject("baseCurrency")) {
                             setSettlementCurrency(1);
                             setSettlementExchangeRateId(null);
@@ -1100,10 +1097,10 @@ function AddBudget(props) {
             toolTipTextNetCostBaseCurrency: hidePlantCurrency ? `Total Sum (${currency.label}) * Currency Rate (${plantCurrency})` : `Total Sum (${getValues("plantCurrency")}) * Currency Rate (${settlementCurrency})`,
         };
     };
-    
+
 
     const getTooltipTextForCurrency = () => {
-        const plantCurrencyLabel = (getValues("plantCurrency")===null || getValues("plantCurrency")===undefined || getValues("plantCurrency")==='') ? 'Plant Currency' : getValues("plantCurrency");
+        const plantCurrencyLabel = (getValues("plantCurrency") === null || getValues("plantCurrency") === undefined || getValues("plantCurrency") === '') ? 'Plant Currency' : getValues("plantCurrency");
         const baseCurrency = reactLocalStorage.getObject("baseCurrency");
         const currencyLabel = currency?.label ?? 'Currency';
 
@@ -1338,6 +1335,7 @@ function AddBudget(props) {
                                                                 <TextFieldHookForm
                                                                     name="plantCurrency"
                                                                     label="Plant Currency"
+                                                                    id="plantCurrency"
                                                                     placeholder={'-'}
                                                                     defaultValue={''}
                                                                     Controller={Controller}
@@ -1577,17 +1575,17 @@ function AddBudget(props) {
                                                                 >
                                                                     <AgGridColumn field="Text" headerName="Net Cost" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={310} headerComponent={'costHeader'} ></AgGridColumn>
                                                                     <AgGridColumn width={115} field="April" headerName="April" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="May" headerName="May" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="June" headerName="June" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="July" headerName="July" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="August" headerName="August" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="September" headerName="September" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="October" headerName="October" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="November" headerName="November" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="December" headerName="December" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="January" headerName="January" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="February" headerName="February" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="March" headerName="March" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="May" headerName="May" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="June" headerName="June" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="July" headerName="July" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="August" headerName="August" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="September" headerName="September" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="October" headerName="October" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="November" headerName="November" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="December" headerName="December" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="January" headerName="January" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="February" headerName="February" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="March" headerName="March" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity' valueSetter={validateCellValue}></AgGridColumn>
                                                                     <AgGridColumn width={130} field="Sum" headerName="Sum" cellRenderer='actualQuantity' editable={false} valueGetter='(Number(data.March?data.March:0) + Number(data.January?data.January:0) + Number(data.February?data.February:0)+ Number(data.April?data.April:0)+ Number(data.May?data.May:0)+ Number(data.June?data.June:0)+ Number(data.July?data.July:0)+ Number(data.August?data.August:0)+ Number(data.September?data.September:0)+ Number(data.October?data.October:0)+ Number(data.November?data.November:0)+ Number(data.December?data.December:0))'></AgGridColumn>
                                                                 </AgGridReact>
                                                             </div>
@@ -1657,7 +1655,7 @@ function AddBudget(props) {
                                                                 disabled={true}
                                                                 customClassName={'withBorder'}
                                                             />
-                                                        </div>  
+                                                        </div>
                                                         {/* } */}
                                                     </Col>}
 

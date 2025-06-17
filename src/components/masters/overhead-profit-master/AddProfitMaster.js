@@ -141,7 +141,7 @@ const AddProfitMaster = (props) => {
       );
       const { plantArray, cbcPlantArray } = getPlants();
       let data = {
-        profitId: state?.ProfitID ?? null,
+        profitId: null,
         modelTypeId: state?.ModelType?.value,
         costingHeadId: state?.costingTypeId,
         plantId: state?.costingTypeId === CBCTypeId ? cbcPlantArray[0]?.PlantId : plantArray[0]?.PlantId,
@@ -152,7 +152,7 @@ const AddProfitMaster = (props) => {
         partFamilyId: state?.selectedPartFamily?.value
       }
       let showPartFamily = getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily
-      if(hasRequiredFields && data?.modelTypeId && data?.plantId && (!showPartFamily || data?.partFamilyId) && data?.effectiveDate){
+      if(hasRequiredFields && data?.modelTypeId && data?.plantId && (!showPartFamily || data?.partFamilyId) && DayTime(data?.effectiveDate).isValid()){
         dispatch(getProfitDataCheck(data, (res) => {
           if (res?.status === 200) {
             let Data = res?.data?.Data;

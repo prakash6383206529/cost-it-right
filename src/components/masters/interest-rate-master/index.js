@@ -212,6 +212,7 @@ const InterestRatePayment = () => {
                           DeleteAccessibility={state.DeleteAccessibility}
                           DownloadAccessibility={state.DownloadAccessibility}
                           ViewAccessibility={state.ViewAccessibility}
+                          BulkUploadAccessibility={state.BulkUploadAccessibility}
                           stopApiCallOnCancel={state.stopApiCallOnCancel}
                         />
                       </TabPane>
@@ -227,6 +228,7 @@ const InterestRatePayment = () => {
                           DeleteAccessibility={state.DeleteAccessibility}
                           DownloadAccessibility={state.DownloadAccessibility}
                           ViewAccessibility={state.ViewAccessibility}
+                          BulkUploadAccessibility={state.BulkUploadAccessibility}
                           stopApiCallOnCancel={state.stopApiCallOnCancel}
                         />
                       </TabPane>

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, TextFieldHookForm, AsyncSearchableSelectHookForm } from '../../../components/layout/HookFormInputs'
 import { useForm, Controller, useWatch } from "react-hook-form";
@@ -157,7 +156,7 @@ function AddMoreOperation(props) {
         fromCurrencyRef.current = fromCurrencyRef
         settlementCurrencyRef.current = settlementCurrencyRef
         plantCurrencyRef.current = plantCurrencyRef
-        localCurrencyLabel.current = localCurrencyLabel
+        // localCurrencyLabel.current = localCurrencyLabel
     }, [fromCurrencyRef, settlementCurrencyRef, plantCurrencyRef, localCurrencyLabel]);
     useEffect(() => {
         callExchangeRateAPI()
@@ -219,9 +218,9 @@ function AddMoreOperation(props) {
                     const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: localCurrencyLabel?.current, defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: props?.fieldsObj?.plantCurrency });
 
                     callAPI(fromCurrency, localCurrencyLabel?.current, costingHeadTypeId, vendorId, clientId).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-                        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: fromCurrency, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: props?.fieldsObj?.plantCurrency });
+                        const { costingHeadTypeId, vendorId, clientId } = getExchangeRateParams({ fromCurrency: localCurrencyLabel?.current, toCurrency: reactLocalStorage.getObject("baseCurrency"), defaultCostingTypeId: addMoreDetailObj.costingTypeId, vendorId: vendor.value, clientValue: client?.value, plantCurrency: props?.fieldsObj?.plantCurrency });
 
-                        callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+                        callAPI(localCurrencyLabel?.current, reactLocalStorage.getObject("baseCurrency"), costingHeadTypeId, vendorId, clientId).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
                             setState(prevState => ({
                                 ...prevState,
                                 plantCurrency: rate1!==0 ? rate1 : 1,
@@ -1488,7 +1487,7 @@ function AddMoreOperation(props) {
                                         />
                                     </div>
                                     {state.isImport && <Col className="col-md-15">
-                                        <TooltipCustom id="currency" tooltipText={getTooltipTextForCurrency()} />
+                                        <TooltipCustom id="currency" width="280px" tooltipText={getTooltipTextForCurrency()} />
                                         <SearchableSelectHookForm
                                             name="currency"
                                             label="Currency"

@@ -207,7 +207,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "NetConversionCost": tabData && tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
       "NetTotalRMBOPCC": tabData && tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "NetSurfaceTreatmentCost": surfaceTabData && surfaceTabData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys,
-      "NetOverheadAndProfitCost": overHeadAndProfitTabData?.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost)) : 0,
+      "NetOverheadAndProfitCost": overHeadAndProfitTabData?.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost)) : 0,
       "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
       "NetToolCost": ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
       "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
@@ -558,7 +558,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
   })
 
   let basicRate = 0
-  let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost)
+  let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) 
   basicRate = checkForNull(tabData?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(totalOverheadPrice) +
     checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
     checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) + (IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
@@ -615,6 +615,9 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetWeldingCostForProfit": tabData?.CostingPartDetails?.NetWeldingCostForProfit,
       "NetOperationCostForOverhead": tabData?.CostingPartDetails?.NetOperationCostForOverhead,
       "NetOperationCostForProfit": tabData?.CostingPartDetails?.NetOperationCostForProfit,
+      "NetCCForOtherTechnologyCost":tabData?.CostingPartDetails?.NetCCForOtherTechnologyCost,
+      "NetCCForOtherTechnologyCostForOverhead": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCostForOverhead,
+      "NetCCForOtherTechnologyCostForProfit": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCostForProfit,
       "PaintConsumptionCost": surfaceTabData?.CostingPartDetails?.PaintConsumptionCost,
       "PaintCost": surfaceTabData?.CostingPartDetails?.PaintCost,
       "TapeCost": surfaceTabData?.CostingPartDetails?.TapeCost,

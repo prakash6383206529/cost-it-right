@@ -45,6 +45,7 @@ const gridOptions = {};
 
 const InterestRateListing = (props) => {
   const dispatch = useDispatch();
+  const { AddAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, ViewAccessibility, BulkUploadAccessibility } = props;
   const [state, setState] = useState({
     tableData: [],
     vendorName: [],
@@ -54,12 +55,6 @@ const InterestRateListing = (props) => {
     data: { isEditFlag: false, ID: '', IsAssociatedData: false },
     toggleForm: false,
     isBulkUpload: false,
-    ViewAccessibility: false,
-    AddAccessibility: false,
-    EditAccessibility: false,
-    DeleteAccessibility: false,
-    BulkUploadAccessibility: false,
-    DownloadAccessibility: false,
     gridColumnApi: null,
     rowData: null,
     sideBar: { toolPanels: ['columns'] },
@@ -71,7 +66,9 @@ const InterestRateListing = (props) => {
     noData: false,
     showExtraData: false,
     totalRecordCount: 0,
-    globalTake: defaultPageSize
+    globalTake: defaultPageSize,
+    disableDownload: false,
+
   })
   const [dataCount, setDataCount] = useState(0)
   const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, technologyLabel } = useLabels()
@@ -94,14 +91,12 @@ const InterestRateListing = (props) => {
   const { selectedRowForPagination } = useSelector((state => state.simulation))
 
   useEffect(() => {
-    applyPermission(topAndLeftMenuData);
-    setState((prevState) => ({ ...prevState, isLoader: true }))
+    !props.stopApiCallOnCancel && setState((prevState) => ({ ...prevState, isLoader: true }))
     dispatch(agGridStatus("", ""))
     dispatch(setSelectedRowForPagination([]))
     dispatch(resetStatePagination());
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
-        // setState((prevState) => ({ ...prevState, isLoader: true }))
         getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
       }
     }, 500);
@@ -109,7 +104,6 @@ const InterestRateListing = (props) => {
         dispatch(setResetCostingHead(true, "costingHead"))
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
   }, []);
   useEffect(() => {
     if (statusColumnData) {
@@ -123,14 +117,6 @@ const InterestRateListing = (props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusColumnData, costingHeadFilter]);
-
-  useEffect(() => {
-    if (topAndLeftMenuData) {
-      applyPermission(topAndLeftMenuData);
-      setTimeout(() => {
-      }, 200);
-    }
-  }, [topAndLeftMenuData,]);
 
   useEffect(() => {
     if (statusColumnData?.id) {
@@ -149,26 +135,32 @@ const InterestRateListing = (props) => {
     dispatch(getGridHeight({ value: interestRateDataList?.length, component: 'interestRate' }))
   }, [interestRateDataList])
 
-  const applyPermission = (topAndLeftMenuData) => {
-    if (topAndLeftMenuData !== undefined) {
-      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
-      const accessData = Data && Data.Pages.find(el => el.PageName === INTEREST_RATE)
-      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+  const filterParams = {
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+        setFloatingFilterData({ ...floatingFilterData, EffectiveDateNew: newDate })
+        if (dateAsString == null) return -1;
+        var dateParts = dateAsString.split('/');
+        var cellDate = new Date(
+            Number(dateParts[2]),
+            Number(dateParts[1]) - 1,
+            Number(dateParts[0])
+        );
+        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+            return 0;
+        }
+        if (cellDate < filterLocalDateAtMidnight) {
+            return -1;
+        }
+        if (cellDate > filterLocalDateAtMidnight) {
+            return 1;
+        }
+    },
+    browserDatePicker: true,
+    minValidYear: 2000,
+  };
 
-      if (permmisionData !== undefined) {
-        setState((prevState) => ({
-          ...prevState,
-          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-        }))
-      }
-
-    }
-  }
 
   /**
    * @method getDataList
@@ -205,6 +197,7 @@ const InterestRateListing = (props) => {
           dispatch(updatePageNumber(0))
       }
 
+      // CODE FOR DOWNLOAD BUTTON LOGIC
       if (res && isPagination === false) {
           setDisableDownload(false)
           dispatch(disabledClass(false))
@@ -317,10 +310,8 @@ const InterestRateListing = (props) => {
   }
 
   const buttonFormatter = (props) => {
-    const IsAssociatedData = props?.data?.IsAssociated
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
         {ViewAccessibility && <Button id={`interesetRateListing_view${props.rowIndex}`} className={"View mr-2 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
@@ -545,7 +536,7 @@ const InterestRateListing = (props) => {
     dispatch(resetStatePagination())
     setDataCount(0)
 }
-  const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = state;
+  const { toggleForm, data, isBulkUpload, noData } = state;
   const ExcelFile = ReactExport.ExcelFile;
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -610,7 +601,6 @@ const InterestRateListing = (props) => {
                             {onBtExport()}
                         </ExcelFile>
                       </>
-
                     }
                     <Button id={"interestRateListing_refresh"} className={"Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                   </div>
@@ -657,8 +647,8 @@ const InterestRateListing = (props) => {
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                {/* <AgGridColumn field="ICCModelType" headerName="Model Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="ICCMethod" headerName="ICC Method" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                 {/* <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn> */}
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                 {/* <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}

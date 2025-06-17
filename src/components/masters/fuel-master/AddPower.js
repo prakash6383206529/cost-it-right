@@ -372,7 +372,7 @@ class AddPower extends Component {
     const { fieldsObj, initialConfiguration } = this.props;
 
     //CALCULATION OF SELF GENERATOR COST PER UNIT
-    if (source && source.value === GENERATOR_DIESEL) {
+    if (source && source.label === GENERATOR_DIESEL) {
       const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? checkForNull(fieldsObj.CostPerUnitOfMeasurement) : 0;
       const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerUnitOfFuel) : 0;
       if (!CostPerUnitOfMeasurement || !UnitGeneratedPerUnitOfFuel) {
@@ -899,16 +899,18 @@ class AddPower extends Component {
   */
   resetData = () => {
     this.setState({
-      effectiveDate: new Date()
+      effectiveDate: new Date(),
+      errorObj: this.initialState.errorObj,
+    }, () => {
+      this.props.change('SEBPowerContributaion', '')
+      this.props.change('DutyChargesAndFCA', '')
+      this.props.change('MeterRentAndOtherChargesPerAnnum', '')
+      this.props.change('MinDemandKWPerMonth', '')
+      this.props.change('DemandChargesPerKW', '')
+      this.props.change('AvgUnitConsumptionPerMonth', '')
+      this.props.change('MaxDemandChargesKW', '')
+      this.props.reset()
     })
-    this.props.change('SEBPowerContributaion', '')
-    this.props.change('DutyChargesAndFCA', '')
-    this.props.change('MeterRentAndOtherChargesPerAnnum', '')
-    this.props.change('MinDemandKWPerMonth', '')
-    this.props.change('DemandChargesPerKW', '')
-    this.props.change('AvgUnitConsumptionPerMonth', '')
-    this.props.change('MaxDemandChargesKW', '')
-    this.props.change('UnitConsumptionPerAnnum', '')
   }
   /**
   * @method updateSEBGrid
@@ -1030,7 +1032,8 @@ class AddPower extends Component {
 
       tempArray.push(...powerGrid, {
         PowerSGPCId: '',
-        SourcePowerType: source.value,
+        // SourcePowerType: source.value,
+        SourcePowerType: source.label,
         AssetCost: AssetCost,
         AnnualCost: AnnualCost,
         UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
@@ -1038,10 +1041,14 @@ class AddPower extends Component {
         PowerContributionPercentage: SelfPowerContribution,
 
         //DIESEL
-        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM?.value : '',
-        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM?.label : '',
-        CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
-        UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
+        // UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM?.value : '',
+        // UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM?.label : '',
+        // CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
+        // UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
+        UnitOfMeasurementId: source && source.label === GENERATOR_DIESEL ? UOM?.value : '', // Prior the Label and Value was same
+        UnitOfMeasurementName: source && source.label === GENERATOR_DIESEL ? UOM?.label : '',
+        CostPerUnitOfMeasurement: source && source.label === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
+        UnitGeneratedPerUnitOfFuel: source && source.label === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
         OtherCharges: 0,
         isSelfPowerGenerator: isSelfGenerator,
       })
@@ -1129,16 +1136,21 @@ class AddPower extends Component {
       let tempData = powerGrid[powerGridEditIndex];
       tempData = {
         PowerSGPCId: '',
-        SourcePowerType: source.value,
+        // SourcePowerType: source.value,
+        SourcePowerType: source.label, // Prior The Label & Value Was same
         AssetCost: AssetCost,
         AnnualCost: AnnualCost,
         UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
         CostPerUnit: SelfGeneratedCostPerUnit,
         PowerContributionPercentage: SelfPowerContribution,
-        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM?.value : '',
-        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM?.label : '',
-        CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
-        UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
+        // UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM?.value : '',
+        // UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM?.label : '',
+        // CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
+        // UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
+        UnitOfMeasurementId: source && source.label === GENERATOR_DIESEL ? UOM?.value : '',
+        UnitOfMeasurementName: source && source.label === GENERATOR_DIESEL ? UOM?.label : '',
+        CostPerUnitOfMeasurement: source && source.label === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
+        UnitGeneratedPerUnitOfFuel: source && source.label === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
         OtherCharges: 0
       }
 
@@ -1179,6 +1191,19 @@ class AddPower extends Component {
       UOM: [],
       powerGridEditIndex: '',
       isEditIndex: false,
+      errorObj: {
+        source: false,
+        unitGenerated: false,
+        selfPowerCont: false,
+        unitGeneratedDiesel: false,
+        minDemand: false,
+        demandCharges: false,
+        avgUnitConsumption: false,
+        maxDemandCharges: false,
+        meterRent: false,
+        dutyCharges: false,
+        sebPowerContribution: false
+      }
     }, () => {
       this.props.change('AssetCost', '')
       this.props.change('AnnualCost', '')
@@ -1366,7 +1391,7 @@ class AddPower extends Component {
     if (label === 'Source') {
       powerTypeSelectList && powerTypeSelectList.map(item => {
         if (item.Value === '0') return false;
-        if (this.findSourceType(item.Value, this.state.powerGrid)) return false;
+        if (this.findSourceType(item.Text, this.state.powerGrid)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -2495,7 +2520,7 @@ class AddPower extends Component {
                                 </div>
                               </div>
                             </Col>
-                            {source && source.value === GENERATOR_DIESEL &&
+                            {source && source.label === GENERATOR_DIESEL && //Prior the label and Value was same
                               <>
                                 <Col md="3">
                                   <div className="d-flex justify-space-between align-items-center inputwith-icon">

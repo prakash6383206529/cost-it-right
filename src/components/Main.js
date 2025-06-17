@@ -118,6 +118,7 @@ import {
   REJECTION,
   CUSTOMER_RFQ_LISTING,
   BUSINESS_VALUE_REPORT,
+  SURFACE_TREATMENT_BUSINESS_VALUE_REPORT,
 } from "../config/constants";
 import ApprovalSummary from "./costing/components/approval/ApprovalSummary";
 import CostingSummaryBulkUpload from "./costing/components/CostingSummaryBulkUpload";
@@ -167,6 +168,7 @@ import CostVariance from "./report/components/CostVariance/CostVariance";
 import BusinessValueReport from "./report/components/BusinessSalesReport/BusinessValueReport";
 import setupAxiosInterceptors from "../axiosInterceptor";
 import CostDeviation from "./report/components/CostVariance/CostDeviation";
+import SurfaceTreatmentBusinessValueReport from "./report/components/BusinessSalesReport/SurfaceTreatmentBusinessValueReport";
 
 const CustomHeader = {
   "Content-Type": "application/x-www-form-urlencoded",
@@ -713,6 +715,7 @@ class Main extends Component {
                     />
                     <Route path="/cost-variance" component={AuthMiddleware(CostVariance, COST_VARIANCE_REPORT)} />
                     <Route path="/business-value-summary" component={AuthMiddleware(BusinessValueReport, BUSINESS_VALUE_REPORT)} />
+                    <Route path="/surface-treatment-business-value-summary" component={AuthMiddleware(SurfaceTreatmentBusinessValueReport, SURFACE_TREATMENT_BUSINESS_VALUE_REPORT)} />
                     <Route path="/sap-push-detail" component={SAPDetailList} />
                     <Route
                       path="/nfr-insights-details"

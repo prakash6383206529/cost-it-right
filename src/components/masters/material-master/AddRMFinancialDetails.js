@@ -38,12 +38,14 @@ function AddRMFinancialDetails(props) {
 
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const exchangeRateDetails = useSelector((state) => state.material.exchangeRateDetails)
+    const IncoTermsSelectList = useSelector((state) => state.boughtOutparts.IncoTermsSelectList)
 
     const initialState = {
         inputLoader: false,
         showErrorOnFocus: false,
         isDropDownChanged: false,
         IsFinancialDataChanged: false,
+        incoTerm: [],
         UOM: [],
         effectiveDate: '',
         conditionTableData: [],
@@ -178,6 +180,14 @@ function AddRMFinancialDetails(props) {
             }
         })
     }, [states.costingTypeId])
+
+    useEffect(() => {
+        setTimeout(() => {
+            setState(initialState)
+        }, 300)
+    }, [props.costingTypeId])
+
+
     useEffect(() => {
         const plantValue = getValues('Plants');
         if (plantValue && (plantValue?.value || plantValue[0]?.value)) {
@@ -289,6 +299,7 @@ function AddRMFinancialDetails(props) {
             setValue('FinalConditionCost', checkForDecimalAndNull(Data?.NetConditionCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('scrapRatePercentageOfRMRate', Data?.ScrapRatePercentageOfRMRate)
             setValue('machineScrapRatePercentageOfRMRate', Data?.MachineScrapRatePercentageOfRMRate)
+            setValue('incoTerm', Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription ? Data.IncoTermDescription : ''} ${Data.IncoTerm ? `(${Data.IncoTerm})` : '-'}`, value: Data.RawMaterialIncoTermId } : [])
             let updatedState = {
                 ...state,
                 effectiveDate: Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '',
@@ -315,7 +326,8 @@ function AddRMFinancialDetails(props) {
                 NetConditionCost: Data?.NetConditionCost,
                 totalOtherCost: Data?.OtherNetCost,
                 NetLandedCost: Data?.NetLandedCost,
-                hidePlantCurrency: Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency") ? false : true
+                hidePlantCurrency: Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency") ? false : true,
+                incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription ? Data.IncoTermDescription : ''} ${Data.IncoTerm ? `(${Data.IncoTerm})` : '-'}`, value: Data.RawMaterialIncoTermId } : [],
             }
             setState(updatedState)
             let obj = showRMScrapKeys(Data?.TechnologyId)
@@ -398,6 +410,13 @@ function AddRMFinancialDetails(props) {
                 return null
             })
             return temp
+        }
+        if (label === 'IncoTerms') {
+            IncoTermsSelectList && IncoTermsSelectList.map(item => {
+                temp.push({ label: `${item.IncoTermDescription} (${item.IncoTerm})`, value: item.BoughtOutPartIncoTermId })
+                return null
+            })
+            return temp;
         }
 
     }
@@ -1235,6 +1254,22 @@ function AddRMFinancialDetails(props) {
         }
         return show
     }
+
+    const handleIncoTerm = (newValue) => {
+        setState(prevState => {
+            const updatedState = {
+                ...prevState,
+                incoTerm: newValue && newValue !== '' ? newValue : [],
+            };
+            if (isEditFlag) {
+                updatedState.IsFinancialDataChanged = 
+                    props?.DataToChange?.BoughtOutPartIncoTermId !== newValue?.value;
+            }
+            return updatedState;
+        });
+        setValue('incoTerm', newValue && newValue !== '' ? newValue : []);
+    };
+
     const getTooltipTextForCurrency = () => {
         const currencyLabel = getValues('currency')?.label ?? 'Currency';
         const plantCurrency = getValues('plantCurrency') ?? 'Plant Currency';
@@ -1487,6 +1522,25 @@ function AddRMFinancialDetails(props) {
                             />
                             {state.showPlantWarning && !isViewFlag && <WarningMessage dClass="mt-1" message={`${getValues('plantCurrency')} rate is not present in the Exchange Master`} />}
                         </Col>
+                        {(states.isImport && getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial) &&
+                            <Col className="col-md-15">
+                                <SearchableSelectHookForm
+                                    label={"Inco Terms"}
+                                    name={"incoTerm"}
+                                    placeholder={"Select"}
+                                    Controller={Controller}
+                                    control={control}
+                                    rules={{ required: getConfigurationKey()?.IsIncoTermRequiredForRawMaterial ?? false }}
+                                    register={register}
+                                    options={renderListing("IncoTerms")}
+                                    mandatory={getConfigurationKey()?.IsIncoTermRequiredForRawMaterial ?? false}
+                                    handleChange={handleIncoTerm}
+                                    disabled={isViewFlag}
+                                    errors={errors?.incoTerm}
+                                />
+                            </Col>
+                        }
+
                         <Col className="col-md-15">
                             <div className="inputbox date-section mb-5">
                                 <DatePickerHookForm

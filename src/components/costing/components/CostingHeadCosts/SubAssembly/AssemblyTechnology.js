@@ -453,6 +453,7 @@ function AssemblyTechnology(props) {
                 "NetOperationCostForProfit": checkForNull(item?.CostingPartDetails?.NetOperationCostForProfit),
                 "NetWeldingCostForOverhead": checkForNull(item?.CostingPartDetails?.NetWeldingCostForOverhead),
                 "NetWeldingCostForProfit": checkForNull(item?.CostingPartDetails?.NetWeldingCostForProfit),
+                "NetCCForOtherTechnologyCost":checkForNull(item?.CostingPartDetails?.NetCCForOtherTechnologyCost),
                 "NetCCForOtherTechnologyCostForOverhead": checkForNull(item?.CostingPartDetails?.NetCCForOtherTechnologyCostForOverhead),
                 "NetCCForOtherTechnologyCostForProfit": checkForNull(item?.CostingPartDetails?.NetCCForOtherTechnologyCostForProfit),
                 "CostingPartDetails": {

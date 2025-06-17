@@ -983,7 +983,6 @@ export const API = {
   getFuelUnitCost: `${BASE_URL}/masters-machine/get-fuel-unit-cost`,
   getLabourCost: `${BASE_URL}/masters-machine/get-labour-cost`,
   getPowerCostUnit: `${BASE_URL}/masters-machine/get-power-cost`,
-
   createMachineDetails: `${BASE_URL}/masters-machine/create-machine-details`,
   updateMachineDetails: `${BASE_URL}/masters-machine/update-machine-Details`,
   getMachineDetailsData: `${BASE_URL}/masters-machine/get-machine-details`,
@@ -1009,6 +1008,7 @@ export const API = {
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
+  getMachinePowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-machine-power-type`,
   getChargeTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-charges-type`,
   getPowerSupplierTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-supplier-type`,
   getUOMSelectList: `${BASE_URL}/configuration/select-list-get-unit-of-measurement`,
@@ -1197,6 +1197,7 @@ export const API = {
   getCostDeviationReport: `${BASE_URL}/reports/get-weight-comparison-report`,
   getBusinessValueReportHeads: `${BASE_URL}/configuration/select-business-value-summary-report-heads`,
   getBusinessValueReportData: `${BASE_URL}/reports/get-business-value-summary-report`,
+  getSurfaceTreatmentBusinessValueReportData: `${BASE_URL}/reports/get-business-value-surface-treatment-report`,
 
 
   //RFQ
@@ -2086,6 +2087,7 @@ export const STORE_PROCESS_LIST = 'STORE_PROCESS_LIST'
 
 //POWER MASTER
 export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS'
+export const GET_MACHINE_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_MACHINE_POWER_TYPE_SELECTLIST_SUCCESS'
 export const GET_CHARGE_TYPE_SELECTLIST_SUCCESS = 'GET_CHARGE_TYPE_SELECTLIST_SUCCESS'
 export const GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS'
 export const GET_UOM_SELECTLIST_SUCCESS = 'GET_UOM_SELECTLIST_SUCCESS'
@@ -2194,6 +2196,7 @@ export const GET_PRODUCT_PART_DATA_LIST = 'GET_PRODUCT_PART_DATA_LIST'
 export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
 export const GET_BUSINESS_VALUE_REPORT_HEADS = 'GET_BUSINESS_VALUE_REPORT_HEADS'
 export const GET_BUSINESS_VALUE_REPORT_DATA = 'GET_BUSINESS_VALUE_REPORT_DATA'
+export const SURFACE_TREATMENT_BUSINESS_VALUE_REPORT_DATA = 'SURFACE_TREATMENT_BUSINESS_VALUE_REPORT_DATA'
 
 //MINDA
 export const GET_NFR_INSIGHT_DETAILS = 'GET_NFR_INSIGHT_DETAILS'
@@ -2400,6 +2403,7 @@ export const SALES_PROVISION_REPORT = 'Sales Provision Report'
 export const COST_DEVIATION_REPORT = 'Cost Deviation'
 export const COST_VARIANCE_REPORT = 'Cost Variance'
 export const BUSINESS_VALUE_REPORT = 'Business Value Report'
+export const SURFACE_TREATMENT_BUSINESS_VALUE_REPORT = 'Surface Treatment Business Value Report'
 //RE
 // export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'          						//RE
 export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'
@@ -2597,6 +2601,9 @@ export const VIEW_COSTING_DATA = {
   // otherDiscountValue: '',
   // otherDiscountApplicablity: 'Hundi/Discount Applicability',
   // otherDiscountValuePercent: 'Hundi/Discount Value',
+  BudgetedPrice: 'Budgeting Price',
+  BudgetedPriceVariance: 'Budgeted Price Variance',
+  CostingIncoTermWithDescription: 'Inco Term',
   otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostTotal: 'Any Other Cost',
   saNumber: 'SA Number',
@@ -2806,7 +2813,19 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     label: `Net Tool Cost`,
     value: 'totalToolCost'
   },
-
+  {
+    label: 'Inco Term',
+    value: 'CostingIncoTermWithDescription'
+  },
+  {
+    label: 'Budgeting Price',
+    value: 'BudgetedPrice'
+  },
+  {
+    label: 'Budgeted Price Variance',
+    value: 'BudgetedPriceVariance'
+  },
+  
   {
     label: 'Hundi/Discount Applicability',
     value: 'otherDiscountApplicablity'
@@ -3272,6 +3291,25 @@ export const LANGUAGES = [
   { value: 'mr', label: 'मराठी - MR', },
 ]
 
+export const FUELANDPOWER_CALCULATION_TYPE = {
+  Standard: "Standard",
+  Custom: "Custom"
+}
+
+export const MACHINE_POWER_TYPE = {
+  fuel: "1",
+  power: "2"
+}
+
+export const POWER_TYPE = {
+  windPower: "1",
+  solarPower: "2",
+  hydroPower: "3",
+  generatorDiesel: "4",
+  SEBPower: "5",
+  totalPower: "6"
+}
+
 export const RM_PRESSURE_MAP = {
   "VMQ": [400, 450],
   "PVMQ": [400, 450],
@@ -3308,6 +3346,12 @@ export const CBCADDMORE = 17
 export const ZBCADDMOREOPERATION = 18
 export const VBCADDMOREOPERATION = 19
 export const CBCADDMOREOPERATION = 20
+
+// Constants for costing head label
+export const PLANTCODELABEL = 'Plant (Code)'
+export const SUPPLIERCODELABEL = 'Supplier (Code)'
+export const CUSTOMERCODELABEL = 'Customer (Code)'
+export const DEFAULTCOSTINGSUMMARYLABEL = 'VBC/ZBC/NCC'
 
 export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 export const NFRAPPROVALTYPEID = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
@@ -3468,7 +3512,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.54";
+export const VERSION = "V4.2.55";
 
 
 

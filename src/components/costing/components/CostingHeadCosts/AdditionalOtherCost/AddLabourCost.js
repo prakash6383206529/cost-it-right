@@ -4,7 +4,7 @@ import { Drawer } from '@material-ui/core'
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
-import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull, noDecimal, blockInvalidNumberKeys } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull, noDecimal, blockInvalidNumberKeys, isValidNumber } from "../../../../../helper/validation";
 import Toaster from '../../../../common/Toaster'
 import LabourCost from './LabourCost'
 import { getCostingLabourDetails, getLabourDetailsByFilter } from '../../../actions/Costing'
@@ -142,15 +142,25 @@ function AddLabourCost(props) {
         calculateLabourCost()
     }, [fieldValues])
 
+    const getRemainingTotalBasedOnValue = (efficiency, cycleTime, workingHours) => {
+        const hasValidEfficiency = isValidNumber(efficiency)
+        const hasValidCycleTime = isValidNumber(cycleTime)
+        if (hasValidEfficiency && hasValidCycleTime) {           
+            return workingHours * (efficiency / 100 / cycleTime)
+        } else {
+            return  workingHours / cycleTime;
+        }
+    }
+
     const calculateLabourCost = () => {
         let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
         let absentism = Number(checkForNull(getValues('absentism'))) / 100
         let labourRate = Number(getValues('LabourRatePerShift'))
         let workingHours = Number(getValues('workingHours')) * 3600;
         let efficiency = Number(getValues('efficiency'))
-        efficiency = efficiency / 100
         let cycleTime = Number(checkForNull(getValues('cycleTime')))
-        const labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
+        const remainingTotal = getRemainingTotalBasedOnValue(efficiency, cycleTime, workingHours)  
+        const labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (remainingTotal)))
         setTotalCost(labourCost)
         setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
     }
@@ -164,9 +174,9 @@ function AddLabourCost(props) {
             let labourRate = Number(getValues('LabourRatePerShift'))
             let workingHours = Number(getValues('workingHours')) * 3600;
             let efficiency = Number(getValues('efficiency'))
-            efficiency = efficiency / 100
             let cycleTime = Number(e?.target?.value)
-            labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
+            const remainingTotal = getRemainingTotalBasedOnValue(efficiency, cycleTime, workingHours)  
+            labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (remainingTotal)))
             setTotalCost(labourCost)
             setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
         }
@@ -180,9 +190,9 @@ function AddLabourCost(props) {
         let labourRate = Number(getValues('LabourRatePerShift'))
         let workingHours = Number(getValues('workingHours')) * 3600;
         let efficiency = Number(getValues('efficiency'))
-        efficiency = efficiency / 100
         let cycleTime = Number(checkForNull(getValues('cycleTime')))
-        labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
+        const remainingTotal = getRemainingTotalBasedOnValue(efficiency, cycleTime, workingHours)
+        labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (remainingTotal)))
         setTotalCost(labourCost)
         setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
     }
@@ -195,9 +205,9 @@ function AddLabourCost(props) {
             let labourRate = Number(getValues('LabourRatePerShift'))
             let workingHours = Number(getValues('workingHours')) * 3600;
             let efficiency = Number(getValues('efficiency'))
-            efficiency = efficiency / 100
             let cycleTime = Number(checkForNull(getValues('cycleTime')))
-            labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
+            const remainingTotal = getRemainingTotalBasedOnValue(efficiency, cycleTime, workingHours)
+            labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (remainingTotal)))
             setTotalCost(labourCost)
             setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
         } else {
@@ -257,7 +267,7 @@ function AddLabourCost(props) {
             // 'description': 'Description',
             'labourType': 'Labour Type',
             'noOfLabour': 'No. of Labour',
-            'absentism': 'Absenteeism %',
+            // 'absentism': 'Absenteeism %',
             'labourRate': 'Labour Rate',
             'workingHours': 'Working Hours',
             'cycleTime': 'Cycle Time'
@@ -462,7 +472,7 @@ function AddLabourCost(props) {
         obj.partId = null
         obj.vendorId = item?.VendorId ?? null
         obj.customerId = item?.CustomerId ?? null
-        obj.effectiveDate = DayTime(item?.CostingDate).format('DD/MM/YYYY')
+        obj.effectiveDate = DayTime(item?.CostingDate).format('YYYY-MM-DD')
         obj.costingHeadId = costingData.CostingTypeId === WACTypeId ? ZBCTypeId : costingData.CostingTypeId
         obj.plantId = (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId || costData.CostingTypeId === WACTypeId) ? costData.PlantId : EMPTY_GUID
         obj.labour_type_id = e?.value
@@ -770,7 +780,7 @@ function AddLabourCost(props) {
                                     </Col>
 
                                     <Col md="3">
-                                        <TooltipCustom disabledIcon={true} id={`labour-cost`} tooltipClass='weight-of-sheet' width={'300px'} tooltipText={"Labour Cost = (Rate per Person/Shift * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time))+(Labour Rate * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time)*Absenteeism %)"} />
+                                        <TooltipCustom disabledIcon={true} id={`labour-cost`} tooltipClass='weight-of-sheet' width={'300px'} tooltipText={"Labour Cost = (Rate per Person/Shift * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time))+((Rate per Person/Shift * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time)*Absenteeism %)"} />
                                         <NumberFieldHookForm
                                             label={`Labour Cost ${currencySource?.label}/Pcs`}
                                             name={'labourCost'}

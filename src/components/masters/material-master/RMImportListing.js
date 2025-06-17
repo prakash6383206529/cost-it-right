@@ -30,7 +30,7 @@ import _ from 'lodash';
 import { disabledClass, setResetCostingHead, useFetchAPICall } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
-import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideColumnFromExcel, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import RMSimulation from '../../simulation/components/SimulationPages/RMSimulation';
@@ -349,28 +349,20 @@ function RMImportListing(props) {
         }
 
         if (res) {
-          let isReset = true
           setTimeout(() => {
-            for (var prop in floatingFilterData) {
-
-              if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
-                isReset = false
-              }
-            }
-            // Sets the filter model via the grid API
-            isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+              isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
           }, 300);
 
           setTimeout(() => {
-            setWarningMessage(false)
-            dispatch(setResetCostingHead(false, "costingHead"))
+              setWarningMessage(false)
+              dispatch(setResetCostingHead(false, "costingHead"))
 
           }, 330);
 
           setTimeout(() => {
-            setIsFilterButtonClicked(false)
+              setIsFilterButtonClicked(false)
           }, 600);
-        }
+      }
       }))
     }
   }
@@ -778,6 +770,9 @@ function RMImportListing(props) {
       }
       return item
     })
+    if (!getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial) {
+      excelData = hideColumnFromExcel(data, "IncoTerm");
+    }
     return (
 
       <ExcelSheet data={temp} name={'RM Import'}>
@@ -1163,6 +1158,7 @@ function RMImportListing(props) {
                     {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
+                    {getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial && <AgGridColumn field="IncoTerm" headerName="Inco Terms"></AgGridColumn>}
                     {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                     <AgGridColumn field="Currency" headerName="Currency/Settlement Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
                     <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>

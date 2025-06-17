@@ -118,7 +118,7 @@ const AddRejectionMaster = (props) => {
         (state.costingTypeId === VBCTypeId && state?.vendorName)
       );
       let data = {
-        overheadId: state?.OverheadID ?? null,
+        overheadId: null,
         modelTypeId: state?.ModelType?.value,
         costingHeadId: state?.costingTypeId,
         plantId: state?.singlePlantSelected?.value ?? null,
@@ -130,7 +130,7 @@ const AddRejectionMaster = (props) => {
         partFamilyId: state?.selectedPartFamily?.value
       }
       let showPartFamily = getConfigurationKey()?.PartAdditionalMasterFields?.IsShowPartFamily
-      if(hasRequiredFields && data?.modelTypeId && data?.plantId && (!showPartFamily || data?.partFamilyId) && data?.effectiveDate){ 
+      if(hasRequiredFields && data?.modelTypeId && data?.plantId && (!showPartFamily || data?.partFamilyId) && DayTime(data?.effectiveDate).isValid()){ 
         dispatch(getOverheadDataCheck(data, (res) => {
           if (res?.status === 200) {
             let Data = res?.data?.Data;

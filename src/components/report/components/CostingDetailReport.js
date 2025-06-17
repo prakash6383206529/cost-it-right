@@ -79,6 +79,7 @@ function ReportListing(props) {
     const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
     const { technologyLabel, discountLabel, toolMaintenanceCostLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, finishWeightLabel } = useLabels();
     const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -200,14 +201,14 @@ function ReportListing(props) {
     const combinedCostingHeadRenderer = (props) => {
         // Call the existing checkBoxRenderer
         hyphenFormatter(props);
-      
+
         // Get and localize the cell value
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-      
+
         // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
         return localizedValue;
-      };
+    };
     // @method hyperLinkFormatter( This function will make the first column details into hyperlink )
 
     const hyperLinkableFormatter = (props) => {
@@ -387,7 +388,7 @@ function ReportListing(props) {
         const cellValue = props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const costingID = row.BaseCostingId;
-        const partType = IdForMultiTechnology.includes(String(row.TechnologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+        const partType = IdForMultiTechnology.includes(String(row.TechnologyId)) || IsMultiVendorCosting      //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && !partType) ? <>
             {row.Status !== "CreatedByAssembly" ?
                 <div
@@ -398,7 +399,7 @@ function ReportListing(props) {
     const partCostFormatter = (props) => {
         const cellValue = props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const partType = IdForMultiTechnology.includes(String(row.TechnologyId))
+        const partType = IdForMultiTechnology.includes(String(row.TechnologyId)) || IsMultiVendorCosting
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && partType) ? <>
             {<div>{cellValue}</div>} </> : '-';
     }
@@ -935,7 +936,7 @@ function ReportListing(props) {
         suppressFilterButton: true,
         component: CostingHeadDropdownFilter,
         onFilterChange: (originalValue, value) => {
-            
+
             setEnableSearchFilterButton(false);
             setFloatingFilterData(prevState => ({
                 ...prevState,
@@ -1080,12 +1081,12 @@ function ReportListing(props) {
                         >
 
                             <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
-                            <AgGridColumn field="CostingHead" 
-                                            headerName='Costing Head' 
-                                            floatingFilterComponentParams={floatingFilterCostingHead} 
-                                            floatingFilterComponent="statusFilter"
-                                            cellRenderer={combinedCostingHeadRenderer} 
-                                        />
+                            <AgGridColumn field="CostingHead"
+                                headerName='Costing Head'
+                                floatingFilterComponentParams={floatingFilterCostingHead}
+                                floatingFilterComponent="statusFilter"
+                                cellRenderer={combinedCostingHeadRenderer}
+                            />
                             <AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Plant' headerName='Plant (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Vendor' headerName={vendorLabel + " (Code)"} cellRenderer='hyphenFormatter'></AgGridColumn>
