@@ -108,7 +108,7 @@ class AddMoreDetails extends Component {
       remarks: '',
       files: [],
       powerId: '',
-      manufactureYear: new Date(),
+      manufactureYear: '',
       machineFullValue: {},
       isLoanOpen: false,
       isWorkingOpen: false,
@@ -3491,7 +3491,7 @@ class AddMoreDetails extends Component {
                                 dropdownMode='select'
                                 dateFormat="yyyy"
                                 //maxDate={new Date()}
-                                placeholderText="Enter"
+                                placeholderText={this.state.isViewFlag ? '-' : 'Enter'}
                                 className="withBorder"
                                 autoComplete={'off'}
                                 disabledKeyboardNavigation
