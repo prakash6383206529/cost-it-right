@@ -59,7 +59,6 @@ function AddRejectionRecovery(props) {
         if (label === 'recoveryApplicability') {
             costingHead && costingHead?.map(item => {
                 if (item.Value === '0') return false;
-                if (isPartType?.label === ASSEMBLYNAME && item.value === '24') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
