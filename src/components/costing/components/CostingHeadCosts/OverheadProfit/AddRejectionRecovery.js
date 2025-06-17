@@ -17,7 +17,7 @@ import { useLabels } from '../../../../../helper/core';
 
 function AddRejectionRecovery(props) {
 
-    const { rejectionPercentage, isOpen, closeDrawer, rejectionTotalCost, isViewRejectionRecovery } = props;
+    const { rejectionPercentage, isOpen, closeDrawer, rejectionTotalCost, isViewRejectionRecovery, partType, IsMultiVendorCosting } = props;
 
     const defaultValues = {
 
@@ -56,9 +56,12 @@ function AddRejectionRecovery(props) {
     const renderListing = (label) => {
         const temp = [];
 
+        const normalize = (str) => str.replace(/\s+/g, ' ').trim();
         if (label === 'recoveryApplicability') {
             costingHead && costingHead?.map(item => {
                 if (item.Value === '0') return false;
+                if (partType === ASSEMBLYNAME && normalize(item.Text) === "ScrapRate * NetWeight" && !IsMultiVendorCosting)
+                    return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });

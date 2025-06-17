@@ -124,7 +124,7 @@ function Rejection(props) {
     }, [IsIncludedSurfaceInRejection]);
     useEffect(() => {
         callGetRejectionDataByModelType(state?.modelType)
-    }, [IsIncludeApplicabilityForChildParts,IsIncludedSurfaceInRejection])
+    }, [IsIncludeApplicabilityForChildParts, IsIncludedSurfaceInRejection])
 
     // useEffect(() => {
     //     setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration?.NoOfDecimalForPrice))
@@ -1044,6 +1044,8 @@ function Rejection(props) {
                 calculateRecoveryCost={calculateRecoveryCost}
                 rejectionTotalCost={!fetchRejectionDataFromMaster() ? getValues('RejectionTotalCost') : state.gridData?.find(item => item.Applicability === 'RM')?.TotalCost || ''}
                 isViewRejectionRecovery={state?.isViewRejectionRecovery}
+                partType={costData?.PartType}
+                IsMultiVendorCosting={IsMultiVendorCosting}
             />}
 
 
