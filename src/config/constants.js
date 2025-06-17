@@ -979,7 +979,6 @@ export const API = {
   getFuelUnitCost: `${BASE_URL}/masters-machine/get-fuel-unit-cost`,
   getLabourCost: `${BASE_URL}/masters-machine/get-labour-cost`,
   getPowerCostUnit: `${BASE_URL}/masters-machine/get-power-cost`,
-
   createMachineDetails: `${BASE_URL}/masters-machine/create-machine-details`,
   updateMachineDetails: `${BASE_URL}/masters-machine/update-machine-Details`,
   getMachineDetailsData: `${BASE_URL}/masters-machine/get-machine-details`,
@@ -1005,6 +1004,7 @@ export const API = {
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
+  getMachinePowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-machine-power-type`,
   getChargeTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-charges-type`,
   getPowerSupplierTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-supplier-type`,
   getUOMSelectList: `${BASE_URL}/configuration/select-list-get-unit-of-measurement`,
@@ -2082,6 +2082,7 @@ export const STORE_PROCESS_LIST = 'STORE_PROCESS_LIST'
 
 //POWER MASTER
 export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS'
+export const GET_MACHINE_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_MACHINE_POWER_TYPE_SELECTLIST_SUCCESS'
 export const GET_CHARGE_TYPE_SELECTLIST_SUCCESS = 'GET_CHARGE_TYPE_SELECTLIST_SUCCESS'
 export const GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_SUPPLIER_TYPE_SELECTLIST_SUCCESS'
 export const GET_UOM_SELECTLIST_SUCCESS = 'GET_UOM_SELECTLIST_SUCCESS'
@@ -2595,6 +2596,9 @@ export const VIEW_COSTING_DATA = {
   // otherDiscountValue: '',
   // otherDiscountApplicablity: 'Hundi/Discount Applicability',
   // otherDiscountValuePercent: 'Hundi/Discount Value',
+  BudgetedPrice: 'Budgeting Price',
+  BudgetedPriceVariance: 'Budgeted Price Variance',
+  CostingIncoTermWithDescription: 'Inco Term',
   otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostTotal: 'Any Other Cost',
   saNumber: 'SA Number',
@@ -2804,7 +2808,19 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     label: `Net Tool Cost`,
     value: 'totalToolCost'
   },
-
+  {
+    label: 'Inco Term',
+    value: 'CostingIncoTermWithDescription'
+  },
+  {
+    label: 'Budgeting Price',
+    value: 'BudgetedPrice'
+  },
+  {
+    label: 'Budgeted Price Variance',
+    value: 'BudgetedPriceVariance'
+  },
+  
   {
     label: 'Hundi/Discount Applicability',
     value: 'otherDiscountApplicablity'
@@ -3270,6 +3286,25 @@ export const LANGUAGES = [
   { value: 'mr', label: 'मराठी - MR', },
 ]
 
+export const FUELANDPOWER_CALCULATION_TYPE = {
+  Standard: "Standard",
+  Custom: "Custom"
+}
+
+export const MACHINE_POWER_TYPE = {
+  fuel: "1",
+  power: "2"
+}
+
+export const POWER_TYPE = {
+  windPower: "1",
+  solarPower: "2",
+  hydroPower: "3",
+  generatorDiesel: "4",
+  SEBPower: "5",
+  totalPower: "6"
+}
+
 export const RM_PRESSURE_MAP = {
   "VMQ": [400, 450],
   "PVMQ": [400, 450],
@@ -3453,7 +3488,7 @@ export const MACHINEMASTER = "Machine Master"
 export const COSTAPPLICABILITYBASIS = "Cost Applicability Basis"
 export const MHRBASIS = "MHR Basis"
 export const ICCMASTER = "ICC Master"
-export const PAYMENTTERMMASTER='PaymentTerm Master'
+export const PAYMENTTERMMASTER = 'PaymentTerm Master'
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"

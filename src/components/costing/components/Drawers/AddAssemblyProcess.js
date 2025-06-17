@@ -16,7 +16,7 @@ import { PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
 import { createSaveAssemblyRMCCObject } from '../../CostingUtilSaveObjects';
 
 function AddAssemblyProcess(props) {
-  const { item, isAssemblyTechnology, itemInState } = props;
+  const { item, isAssemblyTechnology, itemInState, IsLocked } = props;
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   // const [processGrid, setProcessGrid] = useState(subAssemblyTechnologyArray ? { CostingProcessCostResponse: subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingProcessCostResponse, NetProcessCost: subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost } : []);
   const [processGrid, setProcessGrid] = useState();
@@ -323,7 +323,7 @@ function AddAssemblyProcess(props) {
                 </button>
                 <button
                   id="AddAssemblyProcess_Save"
-                    disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ? true : false}
+                    disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ || IsLocked ? true : false}
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >

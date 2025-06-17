@@ -156,9 +156,20 @@ function Icc(props) {
             const ConversionCostForCalculation = costData?.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) + checkForNull(includeToolCostIcc ? toolCost : 0) : headerCosts.NetProcessCost + headerCosts.NetOperationCost + checkForNull(includeToolCostIcc ? toolCost : 0);
             let totalCost = 0;
             if (Array.isArray(dataObj)) {
+                // Create a map of existing data using unique identifier
+                const existingData = {};
+                dataObj.forEach(item => {
+                    const uniqueId = `${item?.Applicability}_${item?.Percentage}`;
+                    existingData[uniqueId] = {
+                        NoOfDays: item?.NoOfDays,
+                        Cost: item?.Cost,
+                        TotalCost: item?.TotalCost
+                    };
+                });
+
                 const updatedData = dataObj.map(item => {
                     let cost = 0;
-                    switch (item.Applicability) {
+                    switch (item?.Applicability) {
                         case 'RM':
                         case 'Part Cost':
                             cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts?.NetRawMaterialsCost); break;
@@ -168,32 +179,37 @@ function Icc(props) {
                         case 'CC':
                             cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsConversionCost) + ConversionCostForCalculation : ConversionCostForCalculation; break;
                         case 'Overhead':
-                            cost = checkForNull(includeOverHeadProfitIcc ? TopHeaderValues.OverheadCost : 0)
+                            cost = checkForNull(includeOverHeadProfitIcc ? TopHeaderValues?.OverheadCost : 0)
                             break;
                         case 'Profit':
-                            cost = checkForNull(includeOverHeadProfitIcc ? TopHeaderValues.ProfitCost : 0)
+                            cost = checkForNull(includeOverHeadProfitIcc ? TopHeaderValues?.ProfitCost : 0)
                             break;
                         case 'Fixed':
                             cost = item.Cost;
-                            totalCost = item.TotalCost;
+                            totalCost = item?.TotalCost;
                             break;
                         default:
                             cost = 0;
                     }
 
-                    // Calculate total cost using item's own NoOfDays
-                    if (item.Applicability === 'Fixed') {
-                        totalCost = item.TotalCost;
-                    } else if (IsApplyInventoryDay) {
-                        totalCost = (cost * item.Percentage * item?.NoOfDays) / (365 * 100);
+                    const uniqueId = `${item?.Applicability}_${item?.Percentage}`;
+                    const existingItem = existingData[uniqueId];
 
+                    // Calculate total cost using item's own NoOfDays
+                    if (item?.Applicability === 'Fixed') {
+                        totalCost = item?.TotalCost;
+                    } else if (IsApplyInventoryDay) {
+                        const noOfDays = existingItem?.NoOfDays ?? 0;
+                        totalCost = (cost * item?.Percentage * noOfDays) / (365 * 100);
                     } else {
-                        totalCost = (cost * item.Percentage) / (100);
+                        totalCost = (cost * item?.Percentage) / (100);
                     }
+
                     return {
                         ...item,
                         Cost: cost,
-                        TotalCost: totalCost
+                        TotalCost: totalCost,
+                        NoOfDays: existingItem?.NoOfDays ?? 0
                     };
                 });
                 setState(prev => ({
@@ -231,7 +247,14 @@ function Icc(props) {
         const hasChanges = JSON.stringify(InventoryObj) !== JSON.stringify(tempInventoryObj) ||
             JSON.stringify(state.iccDetails) !== JSON.stringify(tempInventoryObj?.ICCCostingApplicabilityDetails);
         if (hasChanges && !CostingViewMode) {
-            // Filter ICC details based on conditions
+            // Create a map of existing ICC details using unique identifier
+            const existingDetails = {};
+            state?.iccDetails?.forEach(item => {
+                const uniqueId = `${item?.Applicability}_${item?.Percentage}`;
+                existingDetails[uniqueId] = item;
+            });
+
+            // Filter ICC details based on conditions while preserving existing data
             const filteredData = state?.iccDetails?.length > 0
                 ? state.iccDetails.filter(item => {
                     const applicability = item?.Applicability;
@@ -252,6 +275,10 @@ function Icc(props) {
                     }
 
                     return true;
+                }).map(item => {
+                    const uniqueId = `${item?.Applicability}_${item?.Percentage}`;
+                    const existingItem = existingDetails[uniqueId];
+                    return existingItem ? { ...existingItem } : item;
                 })
                 : [];
 
@@ -264,7 +291,19 @@ function Icc(props) {
         }
     }, [InventoryObj, state.iccDetails, tempInventoryObj, CostingViewMode])
 
-
+    useEffect(() => {
+        if (ICCApplicabilityDetail?.ICCCostingApplicabilityDetails?.length > 0) {
+            setState(prev => ({
+                ...prev,
+                iccDetails: ICCApplicabilityDetail?.ICCCostingApplicabilityDetails?.map(item => ({
+                    ...item,
+                    NoOfDays: item?.NoOfDays || 0,
+                    Cost: item?.Cost || 0,
+                    TotalCost: item?.TotalCost || 0
+                }))
+            }));
+        }
+    }, [ICCApplicabilityDetail]);
 
     const handleCrmHeadChange = (e) => {
         if (e) {
@@ -323,9 +362,25 @@ function Icc(props) {
                 setValue('ICCMethod', data?.ICCMethod)
                 setValue('InventoryDayType', data?.ApplicabilityBasedInventoryDayType)
                 setValue('CreditBasedAnnualIcc', data?.CreditBasedAnnualICCPercent)
+
+                // Preserve existing NoOfDays values
+                const existingNoOfDays = {};
+                state.iccDetails?.forEach(item => {
+                    const uniqueId = `${item?.Applicability}_${item?.Percentage}`;
+                    existingNoOfDays[uniqueId] = item?.NoOfDays;
+                });
+
+                const updatedIccDetails = data?.ICCCostingApplicabilityDetails?.map(item => {
+                    const uniqueId = `${item?.Applicability}_${item?.Percentage}`;
+                    return {
+                        ...item,
+                        NoOfDays: existingNoOfDays[uniqueId] ?? item?.NoOfDays
+                    };
+                });
+
                 setState(prev => ({
                     ...prev,
-                    iccDetails: data?.ICCCostingApplicabilityDetails,
+                    iccDetails: updatedIccDetails,
                     isApplyInventoryDay: data?.IsApplyInventoryDay,
                     iccMethod: data?.ICCMethod
                 }))
@@ -335,7 +390,7 @@ function Icc(props) {
                     dispatch(setDisableIccCheckBox(false))
                 }
                 setICCInterestRateId(data?.InterestRateId)
-                checkInventoryApplicability(data?.ICCCostingApplicabilityDetails, data?.IsApplyInventoryDay)
+                checkInventoryApplicability(updatedIccDetails, data?.IsApplyInventoryDay)
             }))
             dispatch(isIccDataChange(true))
         }

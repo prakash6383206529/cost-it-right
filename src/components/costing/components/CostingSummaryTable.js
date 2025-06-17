@@ -18,7 +18,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel, checkTechnologyIdAndRfq, showRMScrapKeys, getLocalizedCostingHeadValue } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showDynamicKeys, PLANTCODELABEL, SUPPLIERCODELABEL, CUSTOMERCODELABEL, DEFAULTCOSTINGSUMMARYLABEL} from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showDynamicKeys, PLANTCODELABEL, SUPPLIERCODELABEL, CUSTOMERCODELABEL, DEFAULTCOSTINGSUMMARYLABEL } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -251,10 +251,10 @@ const CostingSummaryTable = (props) => {
 
   const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
   const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId)) || String(viewCostingData[0]?.technologyId) === WACTypeId || IsMultiVendorCosting       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
-  
-  
-  
-  
+
+
+
+
 
 
 
@@ -409,7 +409,7 @@ const CostingSummaryTable = (props) => {
         }
         return acc;
       }, []);
-      
+
       labelArray.forEach(item => {
         switch (item) {
           case partType ? 'COST/ASSEMBLY' : 'RM':
@@ -646,7 +646,7 @@ const CostingSummaryTable = (props) => {
     let isIncludeToolCostInCCForICC = viewCostingData[index]?.isIncludeToolCostInCCForICC
     let rejectionRecoveryData = viewCostingData[index]?.CostingRejectionRecoveryDetails
     let rejectionModelType = viewCostingData[index]?.rejectionModelType
-    
+
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
     setViewRejectionRecoveryData(rejectionRecoveryData)
@@ -1662,6 +1662,9 @@ const CostingSummaryTable = (props) => {
     if (!getConfigurationKey()?.IsTaxCodeVisible) {
       delete templateObj?.TaxCode
     }
+    if (!getConfigurationKey().IsShowIncoTermFieldInCosting) {
+      delete templateObj.CostingIncoTerm
+    }
     if (props?.isRfqCosting) {
       templateObj.costingHeadCheck = 'VBC'
     }
@@ -1725,6 +1728,7 @@ const CostingSummaryTable = (props) => {
       templateObj.nPoPriceCurrency = `Net Cost (${getConfigurationKey().BaseCurrency})`
     }
     viewCostingData && viewCostingData?.map((item) => {
+
       item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost?.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost?.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.ScrapRecoveryPercentage : 0) : 0
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
@@ -1746,6 +1750,11 @@ const CostingSummaryTable = (props) => {
       item.rejectionRecoveryApplicablityValue = item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? "-"
       item.currencyTitle = viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-' && viewCostingData?.[0]?.currency?.currencyTitle !== '' ? (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? `${item?.CostingCurrency}/${item?.currency.currencyTitle} ${item?.currency.currencyValue}` : '') : '-'
       item.netCost = item?.nPoPriceCurrency
+      item.CostingIncoTerm = item?.CostingIncoTerm ? item?.CostingIncoTerm : '-'
+      item.CostingIncoTermDescription = item?.CostingIncoTermDescription ? item?.CostingIncoTermDescription : '-'
+      item.CostingIncoTermWithDescription = (item?.CostingIncoTermDescription || item?.CostingIncoTerm) ? `${item?.CostingIncoTermDescription} (${item?.CostingIncoTerm})` : "-"
+      item.BudgetedPrice = item?.BudgetedPrice ? checkForDecimalAndNull(item?.BudgetedPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'
+
     })
 
     let masterDataArray = []
@@ -1825,7 +1834,7 @@ const CostingSummaryTable = (props) => {
       finalData = VIEW_COSTING_DATA_TEMPLATE
       temp = viewCostingData
     }
-
+    
     return (
       <ExcelSheet data={temp} name={"Costing Summary"}>
         {finalData && finalData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -3192,7 +3201,7 @@ const CostingSummaryTable = (props) => {
                                 </td>
                                 {viewCostingData &&
                                   viewCostingData?.map((data) => {
-                                    
+
                                     return (
                                       <td className={tableDataClass(data)}>
                                         <span className={highlighter("netOverheadCost")}>
@@ -3222,6 +3231,7 @@ const CostingSummaryTable = (props) => {
                               closeDrawer={closeViewDrawer}
                               anchor={'right'}
                               isPDFShow={true}
+                              viewCostingData={viewCostingData}
                             /></td></tr>
                           }
 
@@ -3545,6 +3555,56 @@ const CostingSummaryTable = (props) => {
                                 )
                               })}
                           </tr>}
+                          {getConfigurationKey()?.IsShowIncoTermFieldInCosting && <tr>
+                            <td>
+                              <span className="d-block small-grey-text"> Inco Term</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span
+                                      title={`${data?.CostingIncoTermDescription} (${data?.CostingIncoTerm})`}
+                                      className={`w-fit ${highlighter("incoTerm")}`}
+                                    >
+                                      {data?.bestCost === true
+                                        ? ' '
+                                        : (data?.CostingHeading !== VARIANCE
+                                          ? `${data?.CostingIncoTermDescription} (${data?.CostingIncoTerm})`
+                                          : ''
+                                        )
+                                      }
+
+                                    </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>}
+                          <tr>
+                            <td>
+                              <span className="d-block small-grey-text"> Budgeting Price</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span
+                                      title={`${data?.BudgetedPrice}`}
+                                      className={`w-fit ${highlighter("BudetedPrice")}`}
+                                    >
+                                      {data?.bestCost === true
+                                        ? ' '
+                                        : (data?.CostingHeading !== VARIANCE
+                                          ? `${data?.BudgetedPrice}`
+                                          : ''
+                                        )
+                                      }
+
+                                    </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("BasicRate", "main-row")}`}>
                               <th>Basic Price {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} </th>
@@ -4063,6 +4123,7 @@ const CostingSummaryTable = (props) => {
             iccPaymentData={iccPaymentData}
             closeDrawer={closeViewDrawer}
             anchor={'right'}
+            viewCostingData={viewCostingData}
           />
         )
       }
