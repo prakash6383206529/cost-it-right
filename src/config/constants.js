@@ -1193,6 +1193,7 @@ export const API = {
   getCostDeviationReport: `${BASE_URL}/reports/get-weight-comparison-report`,
   getBusinessValueReportHeads: `${BASE_URL}/configuration/select-business-value-summary-report-heads`,
   getBusinessValueReportData: `${BASE_URL}/reports/get-business-value-summary-report`,
+  getSurfaceTreatmentBusinessValueReportData: `${BASE_URL}/reports/get-business-value-surface-treatment-report`,
 
 
   //RFQ
@@ -2190,6 +2191,7 @@ export const GET_PRODUCT_PART_DATA_LIST = 'GET_PRODUCT_PART_DATA_LIST'
 export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
 export const GET_BUSINESS_VALUE_REPORT_HEADS = 'GET_BUSINESS_VALUE_REPORT_HEADS'
 export const GET_BUSINESS_VALUE_REPORT_DATA = 'GET_BUSINESS_VALUE_REPORT_DATA'
+export const SURFACE_TREATMENT_BUSINESS_VALUE_REPORT_DATA = 'SURFACE_TREATMENT_BUSINESS_VALUE_REPORT_DATA'
 
 //MINDA
 export const GET_NFR_INSIGHT_DETAILS = 'GET_NFR_INSIGHT_DETAILS'
@@ -2396,6 +2398,7 @@ export const SALES_PROVISION_REPORT = 'Sales Provision Report'
 export const COST_DEVIATION_REPORT = 'Cost Deviation'
 export const COST_VARIANCE_REPORT = 'Cost Variance'
 export const BUSINESS_VALUE_REPORT = 'Business Value Report'
+export const SURFACE_TREATMENT_BUSINESS_VALUE_REPORT = 'Surface Treatment Business Value Report'
 //RE
 // export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'          						//RE
 export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'
@@ -3503,7 +3506,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.54";
+export const VERSION = "V4.2.55";
 
 
 
