@@ -25,7 +25,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { AcceptableMachineUOM, LOGISTICS } from '../../../config/masterData'
+import { AcceptableMachineUOM, LOGISTICS, PLASTIC , MACHINING, FORGING } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import attachClose from '../../../assests/images/red-cross.png'
@@ -1936,21 +1936,20 @@ class AddMachineRate extends Component {
       return false;
     }
   
-    // Split the string by comma and trim each value
-    let technologyList = [];
-    if (typeof machineTonnageTechnologyList === 'string') {
-      technologyList = machineTonnageTechnologyList.split(',').map(item => item.trim());
-    } else {
-      return false;
-    }
-  
-    // Check if the selected technology's label exists in the list
-    // We check the label because the format is like "Plastic=8", "Machining=3"
-    return technologyList.some(tech => {
-      // Split each technology string by '=' and trim the technology name part
-      const techName = typeof tech === 'string' ? tech.split('=')[0].trim() : '';
-      return techName === selectedTechnology.label;
+    // Split the string by comma and create array of technology objects
+    let arrayOfTechnology = [];
+    const myArray = machineTonnageTechnologyList.split(",");
+    myArray && myArray.map((item) => {
+      let tempObj = {};
+      let temp = item.split('=');
+      tempObj.label = temp[0];
+      tempObj.value = temp[1];
+      arrayOfTechnology.push(tempObj);
+      return null;
     });
+  
+    // Check if the selected technology's value exists in the list
+    return arrayOfTechnology.some(tech => tech.value === selectedTechnology.value);
   }
   /**
   * @method render
@@ -2250,10 +2249,10 @@ class AddMachineRate extends Component {
                               maxLength80,
                               checkSpacesInString,
                               hashValidation,
-                              (this.state.selectedTechnology?.label === "Machining" || this.state.selectedTechnology?.label === "Forging") ? required : null
+                              (this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? required : null
                             ].filter(Boolean)}
                             component={renderText}
-                            required={(this.state.selectedTechnology?.label === "Machining" || this.state.selectedTechnology?.label === "Forging")}
+                            required={(this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING)}
                             disabled={(isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -2271,8 +2270,8 @@ class AddMachineRate extends Component {
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={(this.state.machineType == null || this.state.machineType.length === 0) ?
-                                  (this.state.selectedTechnology?.label === "Plastic" ? [required] : []) : []}
-                                required={this.state.selectedTechnology?.label === "Plastic" ? true : false}
+                                  (this.state.selectedTechnology?.value == PLASTIC ? [required] : []) : []}
+                                required={this.state.selectedTechnology?.value == PLASTIC ? true : false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
                                 disabled={isEditFlag}
