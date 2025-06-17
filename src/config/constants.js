@@ -2593,6 +2593,9 @@ export const VIEW_COSTING_DATA = {
   // otherDiscountValue: '',
   // otherDiscountApplicablity: 'Hundi/Discount Applicability',
   // otherDiscountValuePercent: 'Hundi/Discount Value',
+  BudgetedPrice: 'Budgeting Price',
+  BudgetedPriceVariance: 'Budgeted Price Variance',
+  CostingIncoTermWithDescription: 'Inco Term',
   otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostTotal: 'Any Other Cost',
   saNumber: 'SA Number',
@@ -2802,7 +2805,19 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     label: `Net Tool Cost`,
     value: 'totalToolCost'
   },
-
+  {
+    label: 'Inco Term',
+    value: 'CostingIncoTermWithDescription'
+  },
+  {
+    label: 'Budgeting Price',
+    value: 'BudgetedPrice'
+  },
+  {
+    label: 'Budgeted Price Variance',
+    value: 'BudgetedPriceVariance'
+  },
+  
   {
     label: 'Hundi/Discount Applicability',
     value: 'otherDiscountApplicablity'
@@ -3470,7 +3485,7 @@ export const MACHINEMASTER = "Machine Master"
 export const COSTAPPLICABILITYBASIS = "Cost Applicability Basis"
 export const MHRBASIS = "MHR Basis"
 export const ICCMASTER = "ICC Master"
-export const PAYMENTTERMMASTER='PaymentTerm Master'
+export const PAYMENTTERMMASTER = 'PaymentTerm Master'
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"
