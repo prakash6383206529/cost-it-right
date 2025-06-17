@@ -43,6 +43,7 @@ import { AcceptableBOPUOM, LOGISTICS } from '../../../config/masterData';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
 import AddModel from './AddModel';
+import { LabelsClass } from '../../../helper/core';
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
 
@@ -1102,6 +1103,8 @@ class AddAssemblyPart extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData } = this.state;
     const PartMasterConfigurable = initialConfiguration?.PartAdditionalMasterFields
+    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNo;
+    const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNo;
     const filterList = async (inputValue) => {
       const { partName, selectedParts } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1294,7 +1297,7 @@ class AddAssemblyPart extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Revision No.`}
+                            label={RevisionNoLabel}
                             name={"RevisionNumber"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
@@ -1308,16 +1311,17 @@ class AddAssemblyPart extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Drawing No.`}
+                            label={DrawingNoLabel}
                             name={"DrawingNumber"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation, ...(PartMasterConfigurable?.IsDrawingRevisionNoMandatory ? [required] : [])]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
                             disabled={isViewMode}
                             onChange={e => this.isFieldChange(e.target.value, 'Drawing')}
+                            required={PartMasterConfigurable?.IsDrawingRevisionNoMandatory}
                           />
                         </Col>
                         {initialConfiguration?.IsProductMasterConfigurable ? (

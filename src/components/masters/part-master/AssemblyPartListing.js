@@ -53,7 +53,7 @@ const AssemblyPartListing = React.memo((props) => {
   const [searchText, setSearchText] = useState("");
   const { t } = useTranslation("common")
   const tourStartData = useSelector(state => state?.comman?.tourStartData);
-  const { technologyLabel } = useLabels();
+  const { technologyLabel, revisionNo, drawingNo } = useLabels();
   const [state, setState] = useState({
     isEditFlag: false,
     isOpen: false,
@@ -930,8 +930,8 @@ const AssemblyPartListing = React.memo((props) => {
                   <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"              ></AgGridColumn>
                   <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count" ></AgGridColumn>
                   <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
-                  <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
-                  <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                  <AgGridColumn field="RevisionNumber" headerName={revisionNo} cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                  <AgGridColumn field="DrawingNumber" headerName={drawingNo} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                   {PartMasterConfigurable?.IsShowPartModel && <AgGridColumn field="PartsModelMaster" headerName="Parts Model" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowNepNumber && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}
