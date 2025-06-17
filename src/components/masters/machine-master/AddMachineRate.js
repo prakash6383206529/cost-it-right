@@ -1637,13 +1637,13 @@ class AddMachineRate extends Component {
         ? selectedPlants.map(plant => ({
           PlantId: plant.value,
           PlantName: plant.label,
-          PlantCode: plant.label.match(/\((.*?)\)/)?.[1] || ''
+          PlantCode: ''
         }))
         : selectedPlants
           ? [{
             PlantId: selectedPlants.value,
             PlantName: selectedPlants.label,
-            PlantCode: selectedPlants.label.match(/\((.*?)\)/)?.[1] || ''
+            PlantCode: ''
           }]
           : [],
       Remark: remarks,
@@ -2252,7 +2252,7 @@ class AddMachineRate extends Component {
                               (this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? required : null
                             ].filter(Boolean)}
                             component={renderText}
-                            required={(this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING)}
+                            required={(this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? true : false}
                             disabled={(isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -2294,7 +2294,7 @@ class AddMachineRate extends Component {
                               this.isTonnageRequired() ? required : null
                             ].filter(Boolean)}
                             component={renderText}
-                            required={this.isTonnageRequired()}
+                            required={this.isTonnageRequired() ? true : false}
                             disabled={(isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
                             className=" "
                             customClassName="withBorder"

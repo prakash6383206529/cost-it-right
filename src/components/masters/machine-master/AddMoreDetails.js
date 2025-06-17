@@ -34,7 +34,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { calculatePercentage, CheckApprovalApplicableMaster, compareObjects, displayUOM, userTechnologyDetailByMasterId } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
-import { AcceptableMachineUOM } from '../../../config/masterData'
+import { AcceptableMachineUOM, FORGING, MACHINING, PLASTIC } from '../../../config/masterData'
 import imgRedcross from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { animateScroll as scroll } from 'react-scroll';
@@ -2673,13 +2673,13 @@ class AddMoreDetails extends Component {
       ? selectedPlants?.map(plant => ({
         PlantId: plant?.value,
         PlantName: plant?.label,
-        PlantCode: plant.label.match(/\((.*?)\)/)?.[1] || ''
+        PlantCode: ''
       }))
       : selectedPlants
         ? [{
           PlantId: selectedPlants?.value,
           PlantName: selectedPlants?.label,
-          PlantCode: selectedPlants.label.match(/\((.*?)\)/)?.[1] || ''
+          PlantCode: ''
         }]
         : [];
 
@@ -3216,6 +3216,29 @@ class AddMoreDetails extends Component {
     </>;
   };
 
+  isTonnageRequired = () => {
+    const { selectedTechnology } = this.state;
+    const machineTonnageTechnologyList = getConfigurationKey().MachineTonnageTechnologyList;
+  
+    if (!selectedTechnology || !machineTonnageTechnologyList) {
+      return false;
+    }
+  
+    // Split the string by comma and create array of technology objects
+    let arrayOfTechnology = [];
+    const myArray = machineTonnageTechnologyList.split(",");
+    myArray && myArray.map((item) => {
+      let tempObj = {};
+      let temp = item.split('=');
+      tempObj.label = temp[0];
+      tempObj.value = temp[1];
+      arrayOfTechnology.push(tempObj);
+      return null;
+    });
+  
+    // Check if the selected technology's value exists in the list
+    return arrayOfTechnology.some(tech => tech.value === selectedTechnology.value);
+  }
   /**
    * @method render
    * @description Renders the component
@@ -3409,11 +3432,18 @@ class AddMoreDetails extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
+                            validate={[
+                              acceptAllExceptSingleSpecialCharacter,
+                              checkWhiteSpaces,
+                              maxLength80,
+                              checkSpacesInString,
+                              hashValidation,
+                              (this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? required : null
+                            ].filter(Boolean)}
                             //RE SPECIFIC MACHINE NAME REQUIRED
                             //  validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
-                            required={false}
+                            required={(this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? true : false}
                             disabled={this.state.isViewFlag ? true : false}
                             // disabled={(this.state.isViewFlag || this.state.isEditFlag) ? true : false}  //RE 
                             className=" "
@@ -3460,8 +3490,9 @@ class AddMoreDetails extends Component {
                                 placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
-                                required={true}
+                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ?
+                                  (this.state.selectedTechnology?.value == PLASTIC ? [required] : []) : []}
+                                required={this.state.selectedTechnology?.value == PLASTIC ? true : false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
                                 disabled={this.state.isViewFlag}
@@ -3557,8 +3588,16 @@ class AddMoreDetails extends Component {
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, hashValidation, required]}
+                            validate={[
+                              checkWhiteSpaces, 
+                              postiveNumber, 
+                              maxLength10, 
+                              checkSpacesInString, 
+                              hashValidation,
+                              this.isTonnageRequired() ? required : null
+                            ].filter(Boolean)}
                             component={renderText}
+                            required={this.isTonnageRequired() ? true : false}
                             disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
