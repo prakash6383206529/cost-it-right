@@ -45,8 +45,8 @@ export const useLabels = () => {
     finishWeightLabel: tMasterLabels('FinishWeightLabel', { defaultValue: 'Finish' }),
     finishedWeightLabel: tMasterLabels('FinishedWeightLabel', { defaultValue: 'Finished' }),
     toolCostLabel: tCosting('ToolCostLabel', { defaultValue: 'Tool Cost' }),
-    revisionNo: tMasterLabels('RevisionNoLabel', { defaultValue: 'Revision No.' }),
-    drawingNo: tMasterLabels('DrawingNoLabel', { defaultValue: 'Drawing No.' })
+    revisionNoLabel: tMasterLabels('RevisionNoLabel', { defaultValue: 'Revision No.' }),
+    drawingNoLabel: tMasterLabels('DrawingNoLabel', { defaultValue: 'Drawing No.' })
   };
 };
 
@@ -54,8 +54,8 @@ export const LabelsClass = (t, ns) => {
   return {
     vendorLabel: t('VendorLabel', { ns, defaultValue: 'Vendor' }),
     BOPVendorLabel: t('BOPVendorLabel', { ns, defaultValue: 'BOP Vendor' }),
-    revisionNo: t('RevisionNoLabel', { ns, defaultValue: 'Revision No.' }),
-    drawingNo: t('DrawingNoLabel', { ns, defaultValue: 'Drawing No.' })
+    revisionNoLabel: t('RevisionNoLabel', { ns, defaultValue: 'Revision No.' }),
+    drawingNoLabel: t('DrawingNoLabel', { ns, defaultValue: 'Drawing No.' })
   }
 }
 

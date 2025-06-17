@@ -669,8 +669,8 @@ class AddIndivisualPart extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const PartMasterConfigurable = initialConfiguration?.PartAdditionalMasterFields
     const { isEditFlag, isViewMode, setDisable } = this.state;
-    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNo;
-    const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNo;
+    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
+    const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
 
 
     return (

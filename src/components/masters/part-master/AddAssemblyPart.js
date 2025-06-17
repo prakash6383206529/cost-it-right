@@ -1103,8 +1103,8 @@ class AddAssemblyPart extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData } = this.state;
     const PartMasterConfigurable = initialConfiguration?.PartAdditionalMasterFields
-    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNo;
-    const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNo;
+    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
+    const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
     const filterList = async (inputValue) => {
       const { partName, selectedParts } = this.state
       const resultInput = inputValue.slice(0, searchCount)
