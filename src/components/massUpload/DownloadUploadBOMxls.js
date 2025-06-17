@@ -15,6 +15,7 @@ export const checkSAPCodeinExcel = (excelData) => {
   return excelData.filter((el) => {
     if (getConfigurationKey().IsSAPCodeRequired === false) {
       if (el.value === 'SAPPartNumber') return false;
+      if (el.value === 'SAPCode') return false;
     }
     if(!partMasterConfigurable?.IsShowPartModel){
       if(el.value === 'PartsModelMaster') return false;

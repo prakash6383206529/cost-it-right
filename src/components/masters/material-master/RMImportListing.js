@@ -30,7 +30,7 @@ import _ from 'lodash';
 import { disabledClass, setResetCostingHead, useFetchAPICall } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
-import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideColumnFromExcel, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import RMSimulation from '../../simulation/components/SimulationPages/RMSimulation';
@@ -84,7 +84,7 @@ function RMImportListing(props) {
   // const [currentRowIndex, setCurrentRowIndex] = useState(0)
   // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({
-    CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", NetLandedCostConversion: "", EffectiveDate: isSimulation && props?.minDate ? props?.minDate : '', DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "", LocalCurrency: "", VendorId: isSimulation ? (props?.FromExchangeRate ? props?.vendorLabel?.value :
+    CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", IncoTermDescriptionAndIncoTerm: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", NetLandedCostConversion: "", EffectiveDate: isSimulation && props?.minDate ? props?.minDate : '', DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "", LocalCurrency: "", VendorId: isSimulation ? (props?.FromExchangeRate ? props?.vendorLabel?.value :
       (filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : '')
     ) : ''
   })
@@ -770,6 +770,9 @@ function RMImportListing(props) {
       }
       return item
     })
+    if (!getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial) {
+      excelData = hideColumnFromExcel(data, "IncoTermDescriptionAndIncoTerm");
+    }
     return (
 
       <ExcelSheet data={temp} name={'RM Import'}>
@@ -1155,6 +1158,7 @@ function RMImportListing(props) {
                     {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
+                    {getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial && <AgGridColumn field="IncoTermDescriptionAndIncoTerm" headerName="Inco Terms" tooltipField='IncoTermDescriptionAndIncoTerm'></AgGridColumn>}
                     {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                     <AgGridColumn field="Currency" headerName="Currency/Settlement Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
                     <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>

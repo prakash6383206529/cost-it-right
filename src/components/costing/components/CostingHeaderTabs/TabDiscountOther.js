@@ -1418,45 +1418,20 @@ function TabDiscountOther(props) {
     if (costData.IsAssemblyPart === true && !partType) {
       let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
       if (!CostingViewMode) {
-        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => {
+          handleCommonSaveDiscountTab({ data, obj, iccObj, gotoNextValue, isNFR })
+        }))
         dispatch(isDiscountDataChange(false))
       }
-    }
-
-    if (!CostingViewMode) {
-      setTimeout(() => {
-        dispatch(saveDiscountOtherCostTab(data, res => {
-          setIsLoader(false)
-          if (res.data.Result) {
-            if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
-              dispatch(saveCostingPaymentTermDetail(obj, res => { }))
-            }
-
-            if (checkIsIccDataChange === true) {
-              dispatch(saveCostingDetailForIcc(iccObj, res => { }))
-            }
-            Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
-            // dispatch(setComponentDiscountOtherItemData({}, () => { }))
-            dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
-            dispatch(isDiscountDataChange(false))
-            if (gotoNextValue) {
-              props.toggle('2')
-              history.push('/costing-summary')
-            }
-            if (isNFR && gotoNextValue && false) {
-              reactLocalStorage.setObject('isFromDiscountObj', true)
-              setNfrListing(true)
-            }
-          }
-          setIsLoader(false)
-        }))
-      }, 500)
+    } else if (costData.IsAssemblyPart !== true && !partType) {
+      handleCommonSaveDiscountTab({ data, obj, iccObj, gotoNextValue, isNFR })
 
     }
+
+
 
     setTimeout(() => {
       if (partType) {
-
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscountsCost = DiscountCostData.HundiOrDiscountValue
@@ -1470,7 +1445,9 @@ function TabDiscountOther(props) {
           checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
         let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
-        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
+          handleCommonSaveDiscountTab({ data, obj, iccObj, gotoNextValue, isNFR })
+        }))
         dispatch(gridDataAdded(true))
         dispatch(isDiscountDataChange(false))
         dispatch(setComponentDiscountOtherItemData({}, () => { }))
@@ -1478,6 +1455,36 @@ function TabDiscountOther(props) {
 
       }
     }, 500);
+    // if (!CostingViewMode) {
+    //   setTimeout(() => {
+    //     dispatch(saveDiscountOtherCostTab(data, res => {
+    //       setIsLoader(false)
+    //       if (res.data.Result) {
+    //         if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
+    //           dispatch(saveCostingPaymentTermDetail(obj, res => { }))
+    //         }
+
+    //         if (checkIsIccDataChange === true) {
+    //           dispatch(saveCostingDetailForIcc(iccObj, res => { }))
+    //         }
+    //         Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+    //         // dispatch(setComponentDiscountOtherItemData({}, () => { }))
+    //         dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+    //         dispatch(isDiscountDataChange(false))
+    //         if (gotoNextValue) {
+    //           props.toggle('2')
+    //           history.push('/costing-summary')
+    //         }
+    //         if (isNFR && gotoNextValue && false) {
+    //           reactLocalStorage.setObject('isFromDiscountObj', true)
+    //           setNfrListing(true)
+    //         }
+    //       }
+    //       setIsLoader(false)
+    //     }))
+    //   }, 2000)
+
+    // }
 
   }, 500)
 
@@ -2146,7 +2153,7 @@ function TabDiscountOther(props) {
     }
   }
   const showBasicRateTooltip = () => {
-    let basicrate = `Basic Price = Total Cost + Other Cost`
+    let basicrate = `Basic Price = Total Cost +ICC+ Other Cost`
     let netCost = `Net Cost = Basic Price`
     if (initialConfiguration?.IsAddNPVInNetCost) {
       basicrate = basicrate + ' + NPV Cost'
@@ -2184,6 +2191,34 @@ function TabDiscountOther(props) {
   const onPressApplicableForChildParts = () => {
     setIsIncludeApplicabilityForChildPartsInICC(!IsIncludeApplicabilityForChildPartsInICC)
     dispatch(setIncludeApplicabilityForChildPartsInICC(!IsIncludeApplicabilityForChildPartsInICC))
+  }
+
+  const handleCommonSaveDiscountTab = (params) => {
+    const { data, obj, iccObj, gotoNextValue, isNFR } = params;
+    dispatch(saveDiscountOtherCostTab(data, res => {
+      setIsLoader(false)
+      if (res.data.Result) {
+        if (checkIsPaymentTermsDataChange === true && initialConfiguration?.IsShowPaymentTerm) {
+          dispatch(saveCostingPaymentTermDetail(obj, res => { }))
+        }
+
+        if (checkIsIccDataChange === true) {
+          dispatch(saveCostingDetailForIcc(iccObj, res => { }))
+        }
+        Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+        dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+        dispatch(isDiscountDataChange(false))
+        if (gotoNextValue) {
+          props.toggle('2')
+          history.push('/costing-summary')
+        }
+        if (isNFR && gotoNextValue && false) {
+          reactLocalStorage.setObject('isFromDiscountObj', true)
+          setNfrListing(true)
+        }
+      }
+      setIsLoader(false)
+    }))
   }
 
   return (

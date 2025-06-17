@@ -19,7 +19,7 @@ import { MACHINING, REMARKMAXLENGTH, } from '../../../../../config/masterData'
 import { findProcessCost, findProductionPerHour, swappingLogicCommon, handleRemarkPopup, calculateProcessCostUsingCostApplicabilityBasis, findApplicabilityCost } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip';
-import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
+import { number, nonZero, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 import Button from '../../../../layout/Button';
 import TourWrapper from '../../../../common/Tour/TourWrapper';
 import { Steps } from '../../TourMessages';
@@ -1381,7 +1381,7 @@ function ProcessCost(props) {
   }
   const calculateProductionPerHour = (quantity) => {
     // Check if quantity is valid number and not zero
-    if (!quantity || isNaN(quantity) || quantity === 0) {
+    if (!quantity || isNaN(quantity) || parseInt(quantity) === 0) {
       return '-';
     }
     const production = 3600 / Number(quantity);
@@ -1843,7 +1843,7 @@ ${isDetailedText}`
                                         mandatory={false}
                                         rules={{
                                           required: true,
-                                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                          validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
                                         }}
                                         errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
                                         defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}

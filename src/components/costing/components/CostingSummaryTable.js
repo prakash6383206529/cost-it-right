@@ -1728,7 +1728,7 @@ const CostingSummaryTable = (props) => {
       templateObj.nPoPriceCurrency = `Net Cost (${getConfigurationKey().BaseCurrency})`
     }
     viewCostingData && viewCostingData?.map((item) => {
-      
+
       item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost?.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost?.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.ScrapRecoveryPercentage : 0) : 0
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
@@ -1752,6 +1752,8 @@ const CostingSummaryTable = (props) => {
       item.netCost = item?.nPoPriceCurrency
       item.CostingIncoTerm = item?.CostingIncoTerm ? item?.CostingIncoTerm : '-'
       item.CostingIncoTermDescription = item?.CostingIncoTermDescription ? item?.CostingIncoTermDescription : '-'
+      item.CostingIncoTermWithDescription = (item?.CostingIncoTermDescription || item?.CostingIncoTerm) ? `${item?.CostingIncoTermDescription} (${item?.CostingIncoTerm})` : "-"
+      item.BudgetedPrice = item?.BudgetedPrice ? checkForDecimalAndNull(item?.BudgetedPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'
 
     })
 
@@ -1832,7 +1834,7 @@ const CostingSummaryTable = (props) => {
       finalData = VIEW_COSTING_DATA_TEMPLATE
       temp = viewCostingData
     }
-
+    
     return (
       <ExcelSheet data={temp} name={"Costing Summary"}>
         {finalData && finalData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -3229,6 +3231,7 @@ const CostingSummaryTable = (props) => {
                               closeDrawer={closeViewDrawer}
                               anchor={'right'}
                               isPDFShow={true}
+                              viewCostingData={viewCostingData}
                             /></td></tr>
                           }
 
@@ -3577,6 +3580,31 @@ const CostingSummaryTable = (props) => {
                                 )
                               })}
                           </tr>}
+                          <tr>
+                            <td>
+                              <span className="d-block small-grey-text"> Budgeting Price</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span
+                                      title={`${data?.BudgetedPrice}`}
+                                      className={`w-fit ${highlighter("BudetedPrice")}`}
+                                    >
+                                      {data?.bestCost === true
+                                        ? ' '
+                                        : (data?.CostingHeading !== VARIANCE
+                                          ? `${data?.BudgetedPrice}`
+                                          : ''
+                                        )
+                                      }
+
+                                    </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("BasicRate", "main-row")}`}>
                               <th>Basic Price {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} </th>
@@ -4095,6 +4123,7 @@ const CostingSummaryTable = (props) => {
             iccPaymentData={iccPaymentData}
             closeDrawer={closeViewDrawer}
             anchor={'right'}
+            viewCostingData={viewCostingData}
           />
         )
       }
