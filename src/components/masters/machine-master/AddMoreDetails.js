@@ -2556,7 +2556,7 @@ class AddMoreDetails extends Component {
     } = this.state;
     const { editDetails, isMachineAssociated } = this.props;
 
-    if(getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Custom){
+    if((this.state?.MachinePowerDetails?.length > 0) && getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Custom){
       let totalPercentage = (this.state?.MachinePowerDetails || []).reduce((acc, item) => {
           return acc + (Number(item?.Percentage) || 0);
       }, 0);
