@@ -46,7 +46,7 @@ const gridOptions = {};
 function ProfitListing(props) {
 
     const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, technologyLabel } = useLabels()
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility, BulkUploadAccessibility } = props
     const [showExtraData, setShowExtraData] = useState(false)
     const { t } = useTranslation("common")
     const [tableData, setTableData] = useState([])
@@ -708,15 +708,17 @@ function ProfitListing(props) {
                                                 {/* ADD */}
                                             </button>
                                         )}
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5 Tour_List_Add"}
-                                            onClick={bulkToggle}
-                                            title="Bulk Upload"
-                                        >
-                                            <div className={"upload mr-0"}></div>
+                                        {BulkUploadAccessibility &&
+                                            <button
+                                                type="button"
+                                                className={"user-btn mr5 Tour_List_Add"}
+                                                onClick={bulkToggle}
+                                                title="Bulk Upload"
+                                            >
+                                                <div className={"upload mr-0"}></div>
 
-                                        </button>
+                                            </button>
+                                        }
                                         {
                                             DownloadAccessibility &&
                                             <>
