@@ -193,7 +193,7 @@ const AddOverheadMasterDetails = (props) => {
             if (!isPercentageValid) return;
         }
         if (!checkForNull(percentage) && state?.OverheadApplicability?.label != "Fixed") {
-            Toaster.warning('Percentage should be Positive number.');
+            Toaster.warning('Percentage should be positive number.');
             setValue("OverheadPercentage", "")
             return false
         }
