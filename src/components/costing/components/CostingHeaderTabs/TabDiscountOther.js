@@ -555,7 +555,7 @@ function TabDiscountOther(props) {
   useEffect(() => {
     if (CostingDataList && CostingDataList.length > 0) {
       let dataList = CostingDataList[0]
-      
+
       const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
       setTotalCost(total)
       const discountValues = {
@@ -849,7 +849,7 @@ function TabDiscountOther(props) {
       totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
       totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
     }
-    
+
     dispatch(setDiscountCost(discountValues, () => { }))
 
     setTimeout(() => {
@@ -1423,6 +1423,9 @@ function TabDiscountOther(props) {
         }))
         dispatch(isDiscountDataChange(false))
       }
+    } else if (costData.IsAssemblyPart !== true && !partType) {
+      handleCommonSaveDiscountTab({ data, obj, iccObj, gotoNextValue, isNFR })
+
     }
 
 
