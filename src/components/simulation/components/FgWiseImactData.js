@@ -8,8 +8,10 @@ import LoaderCustom from '../../common/LoaderCustom'
 import { Link } from 'react-scroll';
 import { getExternalIntegrationFgWiseImpactData } from '../../costing/actions/Costing';
 import TooltipCustom from '../../common/Tooltip'
+import { useLabels } from '../../../helper/core'
 
 export function Fgwiseimactdata(props) {
+    const { revisionNoLabel } = useLabels()
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
     const dispatch = useDispatch()
@@ -77,7 +79,7 @@ export function Fgwiseimactdata(props) {
                                 {loader && <LoaderCustom />}
                                 <tr>
                                     <th><span></span></th>
-                                    <th className="text-center"><span>Revision No.</span></th>
+                                    <th className="text-center"><span>{revisionNoLabel}</span></th>
                                     <th className='fg-name-heading'><span>Name</span></th>
                                     <th><span>Old Cost/Pc</span></th>
                                     <th><span>New Cost/pc</span></th>

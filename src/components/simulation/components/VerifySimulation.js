@@ -68,7 +68,7 @@ function VerifySimulation(props) {
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
     const gridRef = useRef();
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, revisionNoLabel } = useLabels()
     const verifyList = useSelector(state => state?.simulation?.simulationVerifyList)
 
     // const isAssemblyCosting = true
@@ -965,7 +965,7 @@ function VerifySimulation(props) {
                                             {isMasterAssociatedWithCosting && <AgGridColumn minWidth={90} field="PartNo" tooltipField="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="PartName" tooltipField="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="PartType" tooltipField="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
-                                            {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="RevisionNumber" tooltipField="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="RevisionNumber" tooltipField="RevisionNumber" cellRenderer='revisionFormatter' headerName={revisionNoLabel}></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn minWidth={80} field="InfoCategory" tooltipField="InfoCategory" cellRenderer='hyphenFormatter' headerName="Category"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn minWidth={120} field="RMName" tooltipField="RMName" headerName="RM Name" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn minWidth={120} field="RMGrade" tooltipField="RMGrade" headerName="Grade" ></AgGridColumn>}

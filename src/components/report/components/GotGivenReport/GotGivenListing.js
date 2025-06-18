@@ -22,7 +22,7 @@ const gridOptions = {};
 function GotGivenListing(props) {
 
     const { part, product } = props
-    const { vendorLabel } = useLabels();
+    const { vendorLabel, revisionNoLabel } = useLabels();
 
     const simulationInsights = []
     const [gridApi, setGridApi] = useState(null);
@@ -200,7 +200,7 @@ function GotGivenListing(props) {
                                 rowSelection={'multiple'}
                             >
                                 <AgGridColumn field="PartNumber" width={160} headerName="Part No." cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
-                                <AgGridColumn field="PartRevisionNumber" width={130} headerName="Revision No." cellRenderer={hyphenFormatter}></AgGridColumn>
+                                <AgGridColumn field="PartRevisionNumber" width={130} headerName={revisionNoLabel} cellRenderer={hyphenFormatter}></AgGridColumn>
 
                                 <AgGridColumn field="PartDescription" headerName="Part Description" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="PartType" width={130} headerName="Type" cellRenderer={hyphenFormatter}></AgGridColumn>

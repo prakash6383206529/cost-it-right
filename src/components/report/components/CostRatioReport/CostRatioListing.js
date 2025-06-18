@@ -32,7 +32,7 @@ const CostRatioListing = (props) => {
     let gridData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
     let startDate = costReportFormData && costReportFormData.fromDate
     let endDate = costReportFormData && costReportFormData.toDate
-    const { technologyLabel, vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel, revisionNoLabel } = useLabels();
 
 
     useEffect(() => {
@@ -217,7 +217,7 @@ const CostRatioListing = (props) => {
                                     <div className='column-data'>{technologyLabel}</div>
                                     <div className='column-data'>Effective Date</div>
                                     <div className='column-data'>Part No.</div>
-                                    <div className='column-data'>Revision No.</div>
+                                    <div className='column-data'>{revisionNoLabel}</div>
                                     <div className='column-data'> {vendorLabel} (Code)</div>
                                     <div className='column-data'>Plant (Code)</div>
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <div className='column-data'>Basic Price</div>}

@@ -55,7 +55,7 @@ function CostReportForm(props) {
     const [partTypeList, setPartTypeList] = useState([])
 
     const dispatch = useDispatch()
-    const { technologyLabel, vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel, revisionNoLabel } = useLabels();
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
     const DestinationplantSelectList = useSelector(state => state.comman.plantSelectList);
@@ -841,7 +841,7 @@ function CostReportForm(props) {
                             {<AgGridColumn field="TechnologyName" headerName="Tehnology"></AgGridColumn>}
                             {customerPoamSummary && <AgGridColumn field="productCategory" headerName="Product Category"></AgGridColumn>}
                             {<AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>}
-                            {!customerPoamSummary && <AgGridColumn field="ShowRevisionNumber" headerName="Revision No."></AgGridColumn>}
+                            {!customerPoamSummary && <AgGridColumn field="ShowRevisionNumber" headerName={revisionNoLabel}></AgGridColumn>}
                             {(!customerPoamSummary && showVendor) && <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
                             {<AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>}
                             {(!showVendor || customerPoamSummary) && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
