@@ -236,20 +236,38 @@ function AddFreight(props) {
       tempList = [...temp]
       return tempList;
     }
+    console.log(gridData, 'gridData');
 
     if (label === 'Applicability') {
+      // Build initial list from costingHead
       costingHead && costingHead.map(item => {
         if (item.Value === '0' || item.Text === 'Fixed') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
+
+      // Filter BOP variants based on gridData
+      const hasBOP = gridData?.some(entry => entry.Criteria === "BOP");
+      const hasBOPVariant = gridData?.some(entry => 
+        ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(entry.Criteria)
+      );
+
+      // Remove BOP variants if BOP exists, or remove BOP if any variant exists
+      tempList = temp.filter(item => {
+        if (hasBOP && ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(item.label)) {
+          return false;
+        }
+        if (hasBOPVariant && item.label === "BOP") {
+          return false;
+        }
+        return true;
+      });
+
+      // Apply additional filters if needed
       if (isBreakupBoughtOutPartCostingFromAPI) {
-        tempList = removeBOPfromApplicability([...temp])
-        //MINDA
-        // tempList = removeBOPFromList([...temp])
-      } else {
-        tempList = [...temp]
+        tempList = removeBOPfromApplicability([...tempList])
       }
+
       return tempList;
     }
     if (label === 'TruckDimensions') {
@@ -366,13 +384,8 @@ function AddFreight(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateCost = (Text) => {
-    const { NetRawMaterialsCost, NetBoughtOutPartCost } = headCostData;
-
-    const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.NetProcessCost + headCostData.NetOperationCost
-    const RMBOPCC = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
-    const RMBOP = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost);
-    const RMCC = checkForNull(NetRawMaterialsCost) + checkForNull(ConversionCostForCalculation);
-    const BOPCC = checkForNull(NetBoughtOutPartCost) + checkForNull(ConversionCostForCalculation)
+    const { NetRawMaterialsCost, NetBoughtOutPartCost , NetBOPDomesticCost ,NetBOPImportCost, NetBOPOutsourcedCost, NetBOPSourceCost} = headCostData;
+   
     const RateAsPercentage = getValues('Rate');
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
     const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost)
@@ -392,35 +405,23 @@ function AddFreight(props) {
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
-
-      case 'RM + CC':
-      case 'Part Cost + CC':
-        totalFreightCost = checkForNull(RMCC) * calculatePercentage(RateAsPercentage)
+      case 'BOP Domestic':
+        totalFreightCost = checkForNull(NetBOPDomesticCost) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
-
-      case 'BOP + CC':
-        totalFreightCost = checkForNull(BOPCC) * calculatePercentage(RateAsPercentage)
+      case 'BOP CKD': 
+        totalFreightCost = checkForNull(NetBOPImportCost) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
-      case 'CC':
-        totalFreightCost = checkForNull(ConversionCostForCalculation) * calculatePercentage(RateAsPercentage)
+      case 'BOP V2V':
+        totalFreightCost = checkForNull(NetBOPSourceCost) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
-
-      case 'RM + CC + BOP':
-      case 'Part Cost + CC + BOP':
-        totalFreightCost = checkForNull(RMBOPCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
-        setFreightCost(totalFreightCost)
-        break;
-
-      case 'RM + BOP':
-      case 'Part Cost + BOP':
-        totalFreightCost = checkForNull(RMBOP) * calculatePercentage(RateAsPercentage)
+      case 'BOP OSP':     
+        totalFreightCost = checkForNull(NetBOPOutsourcedCost) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;

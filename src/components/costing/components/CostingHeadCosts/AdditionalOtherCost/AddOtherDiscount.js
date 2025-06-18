@@ -71,17 +71,39 @@ function AddOtherDiscount(props) {
         const temp = [];
         let tempList = [];
         if (label === 'Applicability') {
-            costingHead && costingHead.map(item => {
-                if (item.Value === '0' || item.Value === '24') return false;                  // 24 IS FOR ScrapRate * NetWeight
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            if (isBreakupBoughtOutPartCostingFromAPI) {
-                tempList = removeBOPfromApplicability([...temp])
-            } else {
-                tempList = [...temp]
+            if (!costingHead) return [];
 
+            // Check if BOP or BOP variants exist in current entries
+            const hasBOP = state.tableData?.some(entry => entry.ApplicabilityType === "BOP");
+            const hasBOPVariant = state.tableData?.some(entry => 
+                ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(entry.ApplicabilityType)
+            );
+
+            const filtered = costingHead.filter(item => {
+                if (item.Value === '0' || item.Value === '24') return false; // 24 IS FOR ScrapRate * NetWeight
+
+                // Remove BOP variants if BOP exists
+                if (hasBOP && ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(item.Text)) {
+                    return false;
+                }
+
+                // Remove BOP if any BOP variant exists  
+                if (hasBOPVariant && item.Text === "BOP") {
+                    return false;
+                }
+
+                return true;
+            });
+
+            let tempList = filtered.map(item => ({
+                label: item.Text,
+                value: item.Value
+            }));
+
+            if (isBreakupBoughtOutPartCostingFromAPI) {
+                tempList = removeBOPfromApplicability(tempList);
             }
+
             return tempList;
         }
     }
@@ -265,10 +287,6 @@ function AddOtherDiscount(props) {
     }
     const findApplicabilityCost = () => {
         const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.NetProcessCost + headerCosts?.NetOperationCost
-        const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
-        const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-        const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
-        const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
         let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
         const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
         const percent = getValues('PercentageOtherCost')
@@ -288,33 +306,30 @@ function AddOtherDiscount(props) {
                 setApplicabilityCost(headerCosts.NetBoughtOutPartCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
-            case 'RM + CC':
-            case 'Part Cost + CC':
-                totalCost = (RMCC) * calculatePercentage(percent)
-                setApplicabilityCost(RMCC)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(RMCC, initialConfiguration?.NoOfDecimalForPrice))
+            case 'BOP Domestic':
+                totalCost = headerCosts.NetBOPDomesticCost * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPDomesticCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPDomesticCost, initialConfiguration?.NoOfDecimalForPrice))
+                break;      
+            case 'BOP CKD':
+                totalCost = headerCosts.NetBOPImportCost * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPImportCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPImportCost, initialConfiguration?.NoOfDecimalForPrice))
+                    break;
+            case 'BOP V2V':
+                totalCost = headerCosts.NetBOPSourceCost * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPSourceCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPSourceCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
-            case 'BOP + CC':
-                totalCost = BOPCC * calculatePercentage(percent)
-                setApplicabilityCost(BOPCC)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(BOPCC, initialConfiguration?.NoOfDecimalForPrice))
+            case 'BOP OSP':
+                totalCost = headerCosts.NetBOPOutsourcedCost * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPOutsourcedCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPOutsourcedCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'CC':
                 totalCost = (ConversionCostForCalculation) * calculatePercentage(percent)
                 setApplicabilityCost(ConversionCostForCalculation)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration?.NoOfDecimalForPrice))
-                break;
-            case 'RM + CC + BOP':
-            case 'Part Cost + CC + BOP':
-                totalCost = (RMBOPCC) * calculatePercentage(percent)
-                setApplicabilityCost(RMBOPCC)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration?.NoOfDecimalForPrice))
-                break;
-            case 'RM + BOP':
-            case 'Part Cost + BOP':
-                totalCost = (RMBOP) * calculatePercentage(percent)
-                setApplicabilityCost(RMBOP)
-                setValue('ApplicabilityCost', checkForDecimalAndNull(RMBOP, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'Net Cost':
                 totalCost = (totalTabCost) * calculatePercentage(percent)

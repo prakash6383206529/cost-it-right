@@ -22,7 +22,7 @@ function PartOverheadProfit(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { ComponentItemDiscountData, CostingEffectiveDate, checkIsOverheadProfitChange, OverheadProfitTabData, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
-  const { DiscountCostData, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, ToolTabData } = useSelector(state => state.costing)
+  const { DiscountCostData, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, ToolTabData, IsIncludedSurfaceInOverhead, IsIncludedSurfaceInProfit, IsIncludedToolCostInOverhead, IsIncludedToolCostInProfit } = useSelector(state => state.costing)
 
 
   const costData = useContext(costingInfoContext);
@@ -81,12 +81,15 @@ function PartOverheadProfit(props) {
         "IsSurfaceTreatmentApplicable": true,
         "IsApplicableForChildParts": false,
         "CostingNumber": costData.CostingNumber,
-        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props?.IsIncludeSurfaceTreatment,
         "IsIncludeSurfaceTreatmentWithRejection": props?.IsIncludedSurfaceInRejection,
-        "IsIncludeToolCostWithOverheadAndProfit": props?.IsIncludeToolCost,
         "IsIncludeOverheadAndProfitInICC": props?.IncludeOverheadProfitInIcc,
         "IsIncludeToolCostInCCForICC": props?.IncludeToolcostInCCForICC,
-        "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) ,
+        "IsIncludeSurfaceTreatmentWithOverhead": IsIncludedSurfaceInOverhead,
+        "IsIncludeSurfaceTreatmentWithProfit": IsIncludedSurfaceInProfit,
+        "IsIncludeToolCostWithOverhead": IsIncludedToolCostInOverhead,
+        "IsIncludeToolCostWithProfit": IsIncludedToolCostInProfit,
+        // "IsIncludeApplicabilityForChildPartsInICC": props?.IncludeApplicabilityForChildPartsInICC,
+        "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost),
         "BasicRate": basicRate,
         "CostingPartDetails": {
           ...item?.CostingPartDetails,

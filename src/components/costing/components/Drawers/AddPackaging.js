@@ -158,24 +158,41 @@ function AddPackaging(props) {
     let tempList = [];
 
     if (label === 'Applicability') {
+      // Build initial list from costingHead
       costingHead && costingHead.map(item => {
         if (!isEditFlag && removeApplicability?.includes(item.Text)) return false;
         if (item.Value === '0') return false;
-
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
+
+      // Filter BOP variants based on gridData
+      const hasBOP = gridData?.some(entry => entry.Applicability === "BOP");
+      const hasBOPVariant = gridData?.some(entry => 
+        ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(entry.Applicability)
+      );
+
+      // Remove BOP variants if BOP exists, or remove BOP if any variant exists
+      tempList = temp.filter(item => {
+        if (hasBOP && ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(item.label)) {
+          return false;
+        }
+        if (hasBOPVariant && item.label === "BOP") {
+          return false;
+        }
+        return true;
+      });
+
+      // Apply additional filters if needed
       if (isBreakupBoughtOutPartCostingFromAPI) {
-        tempList = removeBOPfromApplicability([...temp])
-        //MINDA
-        // tempList = removeBOPFromList([...temp])
-      } else {
-        tempList = [...temp]
+        tempList = removeBOPfromApplicability([...tempList])
       }
+
+      // Add PACK_AND_FREIGHT_PER_KG if not in removeApplicability
       if (!removeApplicability?.includes(PACK_AND_FREIGHT_PER_KG)) {
         tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
       }
-      // tempList.push({ label: 'Crate/Trolley', value: 'Crate/Trolley' })
+
       return tempList;
     }
     if (label === 'FrieghtType') {
@@ -232,13 +249,9 @@ function AddPackaging(props) {
   const calculateApplicabilityCost = (Text, applicablityDropDownChange = false) => {
 
 
-    const { NetRawMaterialsCost, NetBoughtOutPartCost, } = headCostData;
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetBOPDomesticCost ,NetBOPImportCost, NetBOPOutsourcedCost, NetBOPSourceCost} = headCostData;
 
     const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.NetProcessCost + headCostData.NetOperationCost
-    const RMBOPCC = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
-    const RMBOP = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost);
-    const RMCC = checkForNull(NetRawMaterialsCost) + ConversionCostForCalculation;
-    const BOPCC = checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
     const PackagingCostPercentage = getValues('PackagingCostPercentage');
 
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
@@ -271,30 +284,6 @@ function AddPackaging(props) {
         }
         break;
 
-      case 'RM + CC':
-      case 'Part Cost + CC':
-
-        if (!PackageType) {
-          setValue('PackagingCost', '')
-          setPackagingCost('')
-        } else {
-          totalPackagingCost = RMCC * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
-          setPackagingCost(totalPackagingCost)
-        }
-        break;
-      case 'BOP + CC':
-
-        if (!PackageType) {
-          setValue('PackagingCost', '')
-          setPackagingCost('')
-        } else {
-          totalPackagingCost = BOPCC * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
-          setPackagingCost(totalPackagingCost)
-        }
-        break;
-
       case 'CC':
 
         if (!PackageType) {
@@ -306,36 +295,49 @@ function AddPackaging(props) {
           setPackagingCost(totalPackagingCost)
         }
         break;
-
-      case 'RM + CC + BOP':
-      case 'Part Cost + CC + BOP':
-
-        if (!PackageType) {
-          setValue('PackagingCost', '')
-        } else {
-          totalPackagingCost = (RMBOPCC) * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
-          setPackagingCost(totalPackagingCost)
-        }
-        break;
-
-      case 'RM + BOP':
-      case 'Part Cost + BOP':
-
-        if (!PackageType) {
-          setValue('PackagingCost', '')
-        } else {
-          totalPackagingCost = (RMBOP) * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
-          setPackagingCost(totalPackagingCost)
-        }
-        break;
       case 'Net Cost':
 
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (totalTabCost) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
+        }
+        break;
+        case 'BOP Domestic':
+          
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (NetBOPDomesticCost) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
+        }
+        break;
+        case 'BOP CKD':
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (NetBOPImportCost) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
+        }
+        break;
+        case 'BOP V2V':
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (NetBOPSourceCost) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
+        }
+        break;
+        case 'BOP OSP':
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (NetBOPOutsourcedCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
