@@ -581,7 +581,7 @@ function StandardRub(props) {
         saveRawMaterialCalculationForRubberStandardFunction(pendingObj)
     }
 
-    let volumeFormula = <div>Volume = (π/4) * (Outer Diameter<sup>2</sup> - Inner Diameter <sup>2</sup>) * Total Length</div>
+    let volumeFormula = <div>Volume = 0.7853982 * (Outer Diameter<sup>2</sup> - Inner Diameter <sup>2</sup>) * Total Length</div>
     return (
         <Fragment>
             <Row>
