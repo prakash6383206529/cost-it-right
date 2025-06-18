@@ -671,7 +671,21 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                             disabledIcon
                                             tooltipText="Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM..."
                                         /> */}
-                                        <div className="w-fit" id="totalGSM">
+                                        <TooltipCustom
+                                            id="consumptionCost"
+                                            className="mt-n1 pb-4"
+                                            tooltipClass="text-start"
+                                            disabledIcon
+                                            tooltipText={
+                                                <span className='text-start'>
+                                                    Total Norm (Consumption) Cost = <br />
+                                                    ((<span className='text-start'>Consumption (ml/dm<sup>2</sup>)</span> × RM Rate ({state?.rawMaterialList[0]?.CostingCurrency || 'Currency'})) / 1000) + <br />
+                                                    ((<span>Consumption (ml/dm<sup>2</sup>)</span> × RM Rate ({state?.rawMaterialList[0]?.CostingCurrency || 'Currency'})) / 1000) + <br />
+                                                    ...
+                                                </span>
+                                            }
+                                        />
+                                        <div className="w-fit" id="consumptionCost">
                                             {checkForDecimalAndNull(calculateState?.PaintConsumptionCost, NoOfDecimalForPrice)}
                                         </div>
                                     </td>
