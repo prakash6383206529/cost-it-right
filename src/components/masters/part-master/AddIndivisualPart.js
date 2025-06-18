@@ -28,6 +28,7 @@ import TooltipCustom from '../../common/Tooltip';
 import Button from '../../layout/Button';
 import AddModel from './AddModel';
 import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { LabelsClass } from '../../../helper/core';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -668,6 +669,8 @@ class AddIndivisualPart extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const PartMasterConfigurable = initialConfiguration?.PartAdditionalMasterFields
     const { isEditFlag, isViewMode, setDisable } = this.state;
+    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
+    const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
 
 
     return (
@@ -875,7 +878,7 @@ class AddIndivisualPart extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Revision No.`}
+                              label={RevisionNoLabel}
                               name={"RevisionNumber"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
@@ -888,15 +891,16 @@ class AddIndivisualPart extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Drawing No.`}
+                              label={DrawingNoLabel}
                               name={"DrawingNumber"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, ...(PartMasterConfigurable?.IsDrawingRevisionNoMandatory ? [required] : [])]}
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
                               disabled={isViewMode}
+                              required={PartMasterConfigurable?.IsDrawingRevisionNoMandatory}
                             />
                           </Col>
                           {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <Col md="3">

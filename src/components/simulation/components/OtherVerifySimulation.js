@@ -17,10 +17,12 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { useLabels } from '../../../helper/core';
 const gridOptions = {};
 
 function OtherVerifySimulation(props) {
     const { cancelVerifyPage, isExchangeRate } = props
+    const { revisionNoLabel } = useLabels()
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
@@ -273,7 +275,7 @@ function OtherVerifySimulation(props) {
                                                 <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
                                                 <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
                                                 <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
-                                                <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
+                                                <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName={revisionNoLabel}></AgGridColumn>
                                                 {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
                                                 <AgGridColumn width={130} field="POPrice" headerName="Existing Net Cost"></AgGridColumn>
 
