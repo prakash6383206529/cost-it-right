@@ -127,7 +127,7 @@ function ApprovalSummary(props) {
       impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
     if (lastRevisionDataAcc && check) {
-      Toaster.warning(`There is no data for the Last ${revisionNoLabel}`)
+      Toaster.warning(`There is no data for the Last Revision.`)
       setEditWarning(true)
     } else {
       setEditWarning(false)
