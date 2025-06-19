@@ -644,7 +644,7 @@ function CostReportForm(props) {
 
                         {!customerPoamSummary && !props.partWithRevision && !plantWiseGotGiven && <Col md="3">
                             <SearchableSelectHookForm
-                                label={"Revision Number"}
+                                label={revisionNoLabel}
                                 name={"Revision"}
                                 placeholder={"Select"}
                                 Controller={Controller}
