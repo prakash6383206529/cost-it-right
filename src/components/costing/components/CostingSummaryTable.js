@@ -61,7 +61,7 @@ import AddLabourCost from './CostingHeadCosts/AdditionalOtherCost/AddLabourCost'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, revisionNoLabel } = useLabels()
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -2577,7 +2577,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Part Family (Code)</span>
-                              <span className="d-block">Revision Number</span>
+                              <span className="d-block">{revisionNoLabel}</span>
                               <span className="d-block">Plant (Code)</span>
                               {(props?.isRfqCosting && !checkTechnologyIdAndRfq(viewCostingData)) && <span className="d-block">SOB</span>}
 
