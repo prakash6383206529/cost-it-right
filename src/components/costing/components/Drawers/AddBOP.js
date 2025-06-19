@@ -8,7 +8,7 @@ import { CBCTypeId, defaultPageSize, EMPTY_GUID, NCCTypeId, NCC, NFRTypeId, PFS1
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
-import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter, showBopLabel } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter, showBopLabel, showDifferentBOPType } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -290,6 +290,7 @@ function AddBOP(props) {
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName={`${showBopLabel()} Type`} ></AgGridColumn>
+                        {showDifferentBOPType() && <AgGridColumn field="BOPType" headerName={`Sourcing Type`} ></AgGridColumn>}
                         <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
