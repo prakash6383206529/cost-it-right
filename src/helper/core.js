@@ -49,6 +49,7 @@ export const useLabels = () => {
     drawingNoLabel: tMasterLabels('DrawingNoLabel', { defaultValue: 'Drawing No.' }),
     revision : tMasterLabels('Revision', { defaultValue: 'Revision' }),
     weldingMaterialRate: tMasterLabels('WeldingMaterialRate', { defaultValue: 'Welding Material Rate' }),
+    drawing : tMasterLabels('Drawing', { defaultValue: 'Drawing' }),
   };
 };
 
@@ -73,6 +74,7 @@ export const useWithLocalization = (dataArray, ns) => {
       .replace(/Technology/g, labels.technologyLabel) //       THIS CODE FOR THE TECHNOLOGY LABEL WILL USE FURTHER IN FUTURE .
       .replace(/Vendor/g, labels.vendorLabel)
       .replace(/Revision/g, labels.revision)
+      .replace(/Drawing/g, labels.drawing)
     // .replace(/Category/g, labels.RMCategoryLabel)
     // Add more .replace() calls for other labels as needed
   }));

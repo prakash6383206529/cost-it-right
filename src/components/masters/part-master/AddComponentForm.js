@@ -13,6 +13,7 @@ import { onFocus } from '../../../helper';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { LabelsClass } from '../../../helper/core';
+import { withTranslation } from 'react-i18next';
 
 class AddComponentForm extends Component {
   static contextType = PartEffectiveDate
@@ -449,4 +450,4 @@ export default connect(mapStateToProps, {
   validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
-})(AddComponentForm));
+})(withTranslation(['MasterLabels'])(AddComponentForm)));
