@@ -13,6 +13,7 @@ import AsyncSelect from 'react-select/async';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { LabelsClass } from '../../../helper/core';
+import { withTranslation } from 'react-i18next';
 
 class AddAssemblyForm extends Component {
 
@@ -433,4 +434,4 @@ export default connect(mapStateToProps, {
     validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
-})(AddAssemblyForm));
+})(withTranslation(['MasterLabels'])(AddAssemblyForm)));

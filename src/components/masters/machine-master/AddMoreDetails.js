@@ -194,7 +194,8 @@ class AddMoreDetails extends Component {
       MachineRateWithOutInterestAndDepreciationLocalConversion: null,
       MachineRateWithOutInterestAndDepreciationConversion: null,
       isShowApplicabilityDropdown: false,
-      MachinePowerDetails: []
+      MachinePowerDetails: [],
+      depreciationYearToggle: false,
     }
     this.dropzone = React.createRef();
   }
@@ -454,6 +455,7 @@ class AddMoreDetails extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          
           this.setState({ DataToChange: Data, labourGrid: Data.MachineLabourRates, MachinePowerDetails: Data.MachinePowerDetailsRequest })
           if (Data.MachineLabourRates && Data.MachineLabourRates.length !== 0) {
             this.setState({ disableMachineType: true })
@@ -639,6 +641,7 @@ class AddMoreDetails extends Component {
               plantCurrencyID: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
               entryType: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
+              depreciationYearToggle: Data?.IsSlmForPercentage || false
               //currency: Data?.Currency
               // selectedPlants: Data?.Plant ? { label: Data?.Plant[0]?.PlantName, value: Data?.Plant[0]?.PlantId } : null
 
@@ -986,18 +989,18 @@ class AddMoreDetails extends Component {
    * @method handleDereciationType
    * @description HANDLE DEPRICIATION CHANGES
   */
-  handleDereciationType = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ depreciationType: newValue });
+  handleDereciationType = (newValue, key) => {    
+    if (newValue !== '') {
+      this.setState({ [key]: newValue });
       setTimeout(() => {
         this.props.change('DepreciationAmount', 0)
         this.props.change('DepreciationRatePercentage', 0)
         this.props.change('LifeOfAssetPerYear', 0)
         this.props.change('CastOfScrap', 0)
+        if (key === 'depreciationYearToggle' && newValue) {
+          this.setState({ 'DateOfPurchase': null })
+        }
       }, 400);
-
-    } else {
-      this.setState({ depreciationType: [], })
     }
   }
 
@@ -1463,7 +1466,7 @@ class AddMoreDetails extends Component {
   */
   calculateDepreciation = (dateOfPurchase = "") => {
     const { fieldsObj, initialConfiguration } = this.props;
-    const { depreciationType, machineFullValue } = this.state;
+    const { depreciationType, machineFullValue, depreciationYearToggle } = this.state;
 
     // const TotalCost = fieldsObj && fieldsObj.TotalCost !== undefined ? checkForNull(fieldsObj.TotalCost) : 0;
     const TotalCost = checkForNull(machineFullValue?.totalCost)
@@ -1474,9 +1477,12 @@ class AddMoreDetails extends Component {
     let depreciationAmount = 0;
     if (depreciationType.value === SLM) {
       //depreciationAmount = (TotalCost - CastOfScrap) / LifeOfAssetPerYear Or (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage)
-      depreciationAmount = checkForNull((TotalCost - checkForNull(CastOfScrap)) / checkForNull(LifeOfAssetPerYear));
-
       // depreciationAmount = (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage) //TODO
+      if (depreciationYearToggle) {
+        depreciationAmount = checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage))
+      } else {
+        depreciationAmount = checkForNull((TotalCost - checkForNull(CastOfScrap)) / checkForNull(LifeOfAssetPerYear))
+      }
     }
 
     if (depreciationType.value === WDM) {
@@ -1499,6 +1505,7 @@ class AddMoreDetails extends Component {
       //let rateOfDep = ((1 - checkForNull(CastOfScrap)) / (machinecost)) ^ i
     }
     //this.props.change('DepreciationAmount', Math.round(depreciationAmount))
+    
     machineFullValue.depreciationAmount = depreciationAmount
     this.setState({ machineFullValue: { ...machineFullValue, depreciationAmount: machineFullValue.depreciationAmount } })
     this.props.change('DepreciationAmount', checkForDecimalAndNull(depreciationAmount, initialConfiguration?.NoOfDecimalForPrice))
@@ -2649,7 +2656,7 @@ class AddMoreDetails extends Component {
       IsIncludeMachineRateDepreciation, CostingTypeId, IsPurchased, depreciationType,
       shiftType, selectedCustomer, selectedVedor, ExchangeSource, plantCurrencyID,
       settlementCurrency, plantCurrency, currency, settlementExchangeRateId, plantExchangeRateId,
-      FuelEntryId, isDateChange, MachinePowerDetails
+      FuelEntryId, isDateChange, MachinePowerDetails, depreciationYearToggle
     } = this.state;
 
 
@@ -2702,6 +2709,7 @@ class AddMoreDetails extends Component {
       LifeOfAssetPerYear: values.LifeOfAssetPerYear,
       CostOfScrap: values.CastOfScrap,
       DepreciationAmount: machineFullValue.depreciationAmount,
+      IsSlmForPercentage: depreciationYearToggle,
 
       // Working details
       WorkingShift: shiftType?.value || '',
@@ -4049,30 +4057,53 @@ class AddMoreDetails extends Component {
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={(this.state.depreciationType == null || this.state.depreciationType.length === 0) ? [] : []}
                                 required={false}
-                                handleChangeDescription={this.handleDereciationType}
+                                handleChangeDescription={(e) => this.handleDereciationType(e, 'depreciationType')}
                                 valueDescription={this.state.depreciationType}
                                 disabled={disableAllForm}
                               />
                             </Col>
+                            { this.state.depreciationType && this.state.depreciationType.value === SLM &&
+                            <Col md="3" className="switch mt-4">
+                              <label className="switch-level mt-3 ml-2 mb-0">
+                                <div className="left-title">Year</div>
+                                <Switch
+                                  onChange={(e) => this.handleDereciationType(e, 'depreciationYearToggle')}
+                                  checked={this.state.depreciationYearToggle}
+                                  id="normal-switch"
+                                  disabled={data.isEditFlag || isViewFlag || disableAllForm ? true : false}
+                                  background="#4DC771"
+                                  onColor="#4DC771"
+                                  onHandleColor="#ffffff"
+                                  offColor="#4DC771"
+                                  uncheckedIcon={false}
+                                  checkedIcon={false}
+                                  height={20}
+                                  width={46}
+                                />
+                                <div className="right-title">Percentage</div>
+                              </label>
+                            </Col>
+                            }
                             {
-                              this.state.depreciationType &&
-                              this.state.depreciationType.value !== SLM &&
+                              this.state.depreciationType && (this.state.depreciationYearToggle || this.state.depreciationType.value === WDM) &&
                               <Col md="3">
                                 <Field
                                   label={`Depreciation Rate (%)`}
                                   name={"DepreciationRatePercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
-                                  validate={this.state.depreciationType.value === WDM ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : [hashValidation, decimalLengthThree]}
+                                  // validate={this.state.depreciationType.value === WDM ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : [hashValidation, decimalLengthThree]}
+                                  validate={[required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
                                   component={renderText}
-                                  required={this.state.depreciationType.value === WDM ? true : false}
+                                  // required={this.state.depreciationType.value === WDM ? true : false}
+                                  required={true}
                                   disabled={disableAllForm}
                                   className=" "
                                   customClassName="withBorder"
                                 />
                               </Col>
                             }
-                            {this.state.depreciationType && this.state.depreciationType.value === SLM &&
+                            {this.state.depreciationType && this.state.depreciationType.value === SLM && !this.state.depreciationYearToggle &&
                               <Col md="3">
                                 <Field
                                   label={`Life of Asset(Years)`}
@@ -4102,6 +4133,7 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+                            {this.state.depreciationType && ((this.state.depreciationType.value === SLM && !this.state.depreciationYearToggle) || (this.state.depreciationType.value === WDM )) &&
                             <Col md="3">
                               <div className="form-group">
                                 <label>
@@ -4129,8 +4161,10 @@ class AddMoreDetails extends Component {
                                 </div>
                               </div>
                             </Col>
+                            }
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'350px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap / ${this.state.depreciationType && this.state.depreciationType.value === SLM ? 'Life of Asset(Years)' : '(Depreciation Rate %) * Day of Purchase / 365'}`} />
+                            {this.state.depreciationType && this.state.depreciationType.value === SLM && <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'350px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap ${this.state.depreciationYearToggle ? '* (Depreciation Rate %)' : '/ Life of Asset(Years)'}`} />}
+                            {this.state.depreciationType && this.state.depreciationType.value === WDM && <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'350px'} tooltipText={'Depreciation Amount = Total Cost - Cost of Scrap * (Depreciation Rate %) * Day of Purchase / 365'} />}
                               <Field
                                 label={`Depreciation Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
                                   (this?.state?.currency?.label || 'Currency')})`}

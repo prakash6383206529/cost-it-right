@@ -716,4 +716,4 @@ export default connect(mapStateToProps, {
   form: 'AddIndivisualProduct',
   validate: validateForm,
   enableReinitialize: true,
-})(AddIndivisualProduct));
+})(withTranslation(['MasterLabels'])(AddIndivisualProduct)));
