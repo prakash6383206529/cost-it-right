@@ -35,7 +35,7 @@ export const NetPOPriceContext = React.createContext()
 export const IsNFRContext = React.createContext()
 
 function CostingDetailStepTwo(props) {
-  const { vendorLabel } = useLabels()
+  const { vendorLabel, revisionNoLabel } = useLabels()
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -575,7 +575,7 @@ function CostingDetailStepTwo(props) {
                     <tbody>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Technology:</span><span className="dark-blue"> {costingData.TechnologyName}</span></p></div></td>
                       <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue" title={costingData.PartName}> {costingData.PartName}</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Revision No:</span><span className="dark-blue"> {costingData.RevisionNumber !== null ? costingData.RevisionNumber : '-'}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">{revisionNoLabel.replace('.', ':')}</span><span className="dark-blue"> {costingData.RevisionNumber !== null ? costingData.RevisionNumber : '-'}</span></p></div></td>
 
                       {
                         (costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId ||

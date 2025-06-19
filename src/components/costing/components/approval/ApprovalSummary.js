@@ -37,7 +37,7 @@ function ApprovalSummary(props) {
   const loggedInUser = loggedInUserId()
 
   const dispatch = useDispatch()
-  const { vendorLabel } = useLabels()
+  const { vendorLabel, revisionNoLabel, drawingNoLabel } = useLabels()
 
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -127,7 +127,7 @@ function ApprovalSummary(props) {
       impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
     if (lastRevisionDataAcc && check) {
-      Toaster.warning('There is no data for the Last Revision.')
+      Toaster.warning(`There is no data for the Last ${revisionNoLabel}`)
       setEditWarning(true)
     } else {
       setEditWarning(false)
@@ -598,8 +598,8 @@ function ApprovalSummary(props) {
                       <th>Assembly/Part Name:</th>
                       <th>Assembly/Part Description:</th>
                       <th>ECN No:</th>
-                      <th>Drawing No:</th>
-                      <th>Revision No:</th>
+                      <th>{drawingNoLabel.replace('.', ':')}</th>
+                      <th>{revisionNoLabel.replace('.', ':')}</th>
                       <th>Effective Date:</th>
                     </tr>
                   </thead>

@@ -794,8 +794,8 @@ class AddAssemblyPart extends Component {
       return false;
     }
     const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged, convertPartToAssembly, uploadAttachements } = this.state;
-    const { partData, initialConfiguration } = this.props;
-
+    const { partData, initialConfiguration, t } = this.props;
+    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
     let plantArray = selectedPlants && selectedPlants?.map((item) => ({ PlantName: item?.Text, PlantId: item?.Value, PlantCode: '' }))
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup?.map((item) => ({ GroupCode: item?.Text, ProductId: item?.Value })) : [{ GroupCode: values?.GroupCode }]
     let childPartArray = [];
@@ -863,7 +863,7 @@ class AddAssemblyPart extends Component {
           || BOMChanged)) {
           // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
           if (String(DataToCheck.RevisionNumber).toLowerCase() === String(values?.RevisionNumber).toLowerCase() || String(DataToCheck.BOMNumber).toLowerCase() === String(values?.BOMNumber).toLowerCase() || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this?.state?.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-            Toaster.warning('Please edit Revision no, ECN no, BOM no and Effective date')
+            Toaster.warning(`Please edit ${RevisionNoLabel.replace('.', '')}, ECN No, BOM No and Effective date`)
             return false
           } else {
             isStructureChanges = true
