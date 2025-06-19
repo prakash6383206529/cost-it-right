@@ -48,6 +48,7 @@ export const useLabels = () => {
     revisionNoLabel: tMasterLabels('RevisionNoLabel', { defaultValue: 'Revision No.' }),
     drawingNoLabel: tMasterLabels('DrawingNoLabel', { defaultValue: 'Drawing No.' }),
     revision : tMasterLabels('Revision', { defaultValue: 'Revision' }),
+    weldingMaterialRate: tMasterLabels('WeldingMaterialRate', { defaultValue: 'Welding Material Rate' }),
   };
 };
 
@@ -56,7 +57,8 @@ export const LabelsClass = (t, ns) => {
     vendorLabel: t('VendorLabel', { ns, defaultValue: 'Vendor' }),
     BOPVendorLabel: t('BOPVendorLabel', { ns, defaultValue: 'BOP Vendor' }),
     revisionNoLabel: t('RevisionNoLabel', { ns, defaultValue: 'Revision No.' }),
-    drawingNoLabel: t('DrawingNoLabel', { ns, defaultValue: 'Drawing No.' })
+    drawingNoLabel: t('DrawingNoLabel', { ns, defaultValue: 'Drawing No.' }),
+    weldingMaterialRate: t('WeldingMaterialRate', { ns, defaultValue: 'Welding Material Rate' })
   }
 }
 
