@@ -44,7 +44,7 @@ export const useLabels = () => {
     toolInterestCostPerPcLabel: tCosting('toolInterestCostPerPc', { defaultValue: 'Tool Interest Cost (per pcs)' }),
     finishWeightLabel: tMasterLabels('FinishWeightLabel', { defaultValue: 'Finish' }),
     finishedWeightLabel: tMasterLabels('FinishedWeightLabel', { defaultValue: 'Finished' }),
-    toolCostLabel: tCosting('ToolCostLabel', { defaultValue: 'Tool Cost' }),
+    toolCostLabel: tCosting('ToolCostLabel', { defaultValue: 'Tool Rate' }),
     revisionNoLabel: tMasterLabels('RevisionNoLabel', { defaultValue: 'Revision No.' }),
     drawingNoLabel: tMasterLabels('DrawingNoLabel', { defaultValue: 'Drawing No.' }),
     revision : tMasterLabels('Revision', { defaultValue: 'Revision' }),
