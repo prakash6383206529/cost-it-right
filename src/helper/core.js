@@ -44,10 +44,11 @@ export const useLabels = () => {
     toolInterestCostPerPcLabel: tCosting('toolInterestCostPerPc', { defaultValue: 'Tool Interest Cost (per pcs)' }),
     finishWeightLabel: tMasterLabels('FinishWeightLabel', { defaultValue: 'Finish' }),
     finishedWeightLabel: tMasterLabels('FinishedWeightLabel', { defaultValue: 'Finished' }),
-    toolCostLabel: tCosting('ToolCostLabel', { defaultValue: 'Tool Cost' }),
+    toolCostLabel: tCosting('ToolCostLabel', { defaultValue: 'Tool Rate' }),
     revisionNoLabel: tMasterLabels('RevisionNoLabel', { defaultValue: 'Revision No.' }),
     drawingNoLabel: tMasterLabels('DrawingNoLabel', { defaultValue: 'Drawing No.' }),
     revision : tMasterLabels('Revision', { defaultValue: 'Revision' }),
+    weldingMaterialRate: tMasterLabels('WeldingMaterialRate', { defaultValue: 'Welding Material Rate' }),
     drawing : tMasterLabels('Drawing', { defaultValue: 'Drawing' }),
   };
 };
@@ -57,7 +58,8 @@ export const LabelsClass = (t, ns) => {
     vendorLabel: t('VendorLabel', { ns, defaultValue: 'Vendor' }),
     BOPVendorLabel: t('BOPVendorLabel', { ns, defaultValue: 'BOP Vendor' }),
     revisionNoLabel: t('RevisionNoLabel', { ns, defaultValue: 'Revision No.' }),
-    drawingNoLabel: t('DrawingNoLabel', { ns, defaultValue: 'Drawing No.' })
+    drawingNoLabel: t('DrawingNoLabel', { ns, defaultValue: 'Drawing No.' }),
+    weldingMaterialRate: t('WeldingMaterialRate', { ns, defaultValue: 'Welding Material Rate' })
   }
 }
 
