@@ -784,5 +784,4 @@ export default connect(mapStateToProps, {
     validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
-})(withTranslation(['PartMaster'])(AddIndivisualProduct)),
-)
+})(withTranslation(['PartMaster', 'MasterLabels'])(AddIndivisualProduct)))
