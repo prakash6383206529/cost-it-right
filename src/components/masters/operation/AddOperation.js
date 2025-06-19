@@ -1680,7 +1680,7 @@ class AddOperation extends Component {
                         <>
                           <Col md="3">
                             <Field
-                              label={`Welding Rate/Kg`}
+                              label={`Welding Rate/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}`}
                               name={"WeldingRate"}
                               type="text"
                               placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
