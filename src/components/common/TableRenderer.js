@@ -25,19 +25,23 @@ const TableRenderer = ({
   includeOverHeadProfitIcc = false,
   isCreditBased = false,
   includeChildPartCost = null,
-  IsMultiVendorCosting = false
+  IsMultiVendorCosting = false,
+  partType = null
 }) => {
   let filteredData = [];
-  filteredData = data?.filter(item => {
-    const applicability = item?.Applicability;
-    if (IsMultiVendorCosting) {
+ 
+  if (partType) {
+    filteredData = data?.filter(item => {
+      const applicability = item?.Applicability;
+      
       // Hide Overhead and Profit if includeOverHeadProfitIcc is false
       if (!includeOverHeadProfitIcc && (applicability === "Overhead" || applicability === "Profit")) {
         return false;
       }
+      
       // If includeChildPartCost is true, hide Part Cost
       if (includeChildPartCost && applicability === "Part Cost") {
-        return false;
+        return false; 
       }
 
       // If includeChildPartCost is false, hide RM
@@ -46,19 +50,15 @@ const TableRenderer = ({
       }
 
       return true;
-    }
-    else {
-      filteredData = includeOverHeadProfitIcc === true
-        ? data
-        : data?.filter(item =>
-          item?.Applicability !== "Overhead" &&
+    });
+  } else {
+    filteredData = includeOverHeadProfitIcc 
+      ? data
+      : data?.filter(item =>
+          item?.Applicability !== "Overhead" && 
           item?.Applicability !== "Profit"
         );
-
-    }
-    console.log(filteredData, 'filteredDatadfsf')
-    return filteredData;
-  });
+  }
 
   const renderTextField = ({
     item,
@@ -121,7 +121,6 @@ const TableRenderer = ({
         </tr>
       </thead>
       <tbody>
-        {console.log(filteredData, 'filteredData')}
         {filteredData?.length > 0 ? (
           filteredData.map((item, index) => (
             <tr key={index}>
