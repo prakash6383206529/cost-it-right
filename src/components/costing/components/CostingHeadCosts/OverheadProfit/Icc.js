@@ -19,6 +19,7 @@ import Toaster from '../../../../common/Toaster';
 import { fetchModelTypeAPI } from '../../../../../actions/Common';
 import TableRenderer from '../../../../common/TableRenderer';
 import IccCalculator from './IccCalculator';
+import { label } from 'react-dom-factories';
 
 let counter = 0;
 function Icc(props) {
@@ -231,6 +232,9 @@ function Icc(props) {
         }
     }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight, includeOverHeadProfitIcc, totalOverHeadAndProfit, includeToolCostIcc]);
     useEffect(() => {
+        if(Object.keys(InventoryObj).length !== 0){
+            setValue('ModelTypeIcc', {label:InventoryObj?.ICCModelType, value:InventoryObj?.ICCModelTypeId  })
+        }
         if (state.iccDetails && state.iccDetails?.length > 0) {
             const totalIccNetCost = state.iccDetails.reduce((sum, item) => {
                 return sum + (item.TotalCost || 0);
@@ -794,6 +798,7 @@ function Icc(props) {
                                 includeOverHeadProfitIcc={includeOverHeadProfitIcc}
                                 isCreditBased={state.iccMethod === 'Credit Based'}
                                 includeChildPartCost={IsIncludeApplicabilityForChildPartsInICC}
+                                IsMultiVendorCosting={IsMultiVendorCosting}
                             />
                         </Col>
                         <Col md="1" className='second-section mb-3'>
