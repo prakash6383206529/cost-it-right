@@ -2561,13 +2561,15 @@ class AddMoreDetails extends Component {
     } = this.state;
     const { editDetails, isMachineAssociated } = this.props;
 
-    let totalPercentage = (this.state?.MachinePowerDetails || []).reduce((acc, item) => {
-        return acc + (Number(item?.Percentage) || 0);
-    }, 0);
-    if((totalPercentage) < 100){
-      Toaster.warning("Total Usage (%) of Power should be 100%")
-      return;
-    }
+    if((this.state?.MachinePowerDetails?.length > 0) && getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Custom){
+      let totalPercentage = (this.state?.MachinePowerDetails || []).reduce((acc, item) => {
+          return acc + (Number(item?.Percentage) || 0);
+      }, 0);
+      if((totalPercentage) < 100){
+        Toaster.warning("Total Usage (%) of Power should be 100%")
+        return;
+      }
+    } 
 
     // Validate process grid
     if (!this.validateProcessGrid(processGrid)) {
