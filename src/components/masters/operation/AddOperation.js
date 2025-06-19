@@ -1267,6 +1267,7 @@ class AddOperation extends Component {
     const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval, hidePlantCurrency, isDetailEntry } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    const weldingMaterialRate = LabelsClass(t, 'MasterLabels').weldingMaterialRate;
 
 
 
@@ -1680,7 +1681,7 @@ class AddOperation extends Component {
                         <>
                           <Col md="3">
                             <Field
-                              label={`Welding Rate/Kg`}
+                              label={`${weldingMaterialRate}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}`}
                               name={"WeldingRate"}
                               type="text"
                               placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
@@ -1711,7 +1712,7 @@ class AddOperation extends Component {
                           </Col>
                         </>}
                       {this.state.isImport && <Col md="3">
-                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Welding Rate/Kg * Consumption'} />}
+                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`${weldingMaterialRate}/Kg * Consumption`} />}
                         <Field
                           label={`Rate (${this.state.currency?.label ?? 'Currency'})`}
                           name={"Rate"}
