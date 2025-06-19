@@ -455,6 +455,7 @@ class AddMoreDetails extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          
           this.setState({ DataToChange: Data, labourGrid: Data.MachineLabourRates, MachinePowerDetails: Data.MachinePowerDetailsRequest })
           if (Data.MachineLabourRates && Data.MachineLabourRates.length !== 0) {
             this.setState({ disableMachineType: true })
@@ -640,6 +641,7 @@ class AddMoreDetails extends Component {
               plantCurrencyID: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
               entryType: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
+              depreciationYearToggle: Data?.IsSlmForPercentage || false
               //currency: Data?.Currency
               // selectedPlants: Data?.Plant ? { label: Data?.Plant[0]?.PlantName, value: Data?.Plant[0]?.PlantId } : null
 
