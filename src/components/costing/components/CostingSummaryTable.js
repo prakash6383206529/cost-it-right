@@ -1702,6 +1702,9 @@ const CostingSummaryTable = (props) => {
       if (prop === "vendorExcel") {
         costingSummary.push({ label: updatedVendorLabel, value: prop, })
       }
+      if (prop === "RevisionNumber") {
+        costingSummary.push({ label: revisionNoLabel, value: prop, })
+      }
       if (viewCostingData[0]?.technologyId === LOGISTICS) {
         costingSummary.push({ label: VIEW_COSTING_DATA_LOGISTICS[prop], value: prop, })
       } else {
@@ -1720,15 +1723,13 @@ const CostingSummaryTable = (props) => {
         }
       }
     }
-    const updatedCostingSummary = costingSummary.filter(
-      item => item.label !== "Vendor (Code)"
-    );
-
+    const updatedCostingSummary = costingSummary.filter(item => {
+      return item.label !== "Vendor (Code)" && item.label !== 'Revision Number';
+    })
     if (!showConvertedCurrencyCheckbox) {
       templateObj.nPoPriceCurrency = `Net Cost (${getConfigurationKey().BaseCurrency})`
     }
     viewCostingData && viewCostingData?.map((item) => {
-
       item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost?.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost?.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.ScrapRecoveryPercentage : 0) : 0
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
