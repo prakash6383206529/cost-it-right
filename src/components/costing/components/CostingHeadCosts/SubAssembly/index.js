@@ -20,9 +20,12 @@ import ViewBOP from '../../Drawers/ViewBOP';
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { useForm } from 'react-hook-form';
 import { REMARKMAXLENGTH } from '../../../../../config/masterData';
+import BOPHandlingDrawer from '../Part/BOPHandlingDrawer';
 
 function AssemblyPart(props) {
+
   const { children, item, index } = props;
+
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
@@ -41,6 +44,20 @@ function AssemblyPart(props) {
   const [singleBopRemark, setSingleBopRemark] = useState(false)
   const [remarkAccept, setRemarkAccept] = useState(false);
   const [remark, setRemark] = useState("");
+
+  const [state, setState] = useState({
+    openBOPHandlingDrawer: false,
+    totalBOPHandlingCharges: item?.CostingPartDetails?.BOPHandlingCharges,
+    showHandlingWarning: false,
+    bopDomesticCost: checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostWithQuantity) + checkForNull(item?.CostingPartDetails?.NetBOPDomesticHandlingCost),
+    bopCKDCost: checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithQuantity) + checkForNull(item?.CostingPartDetails?.NetBOPImportHandlingCost),
+    bopV2VCost: checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostWithQuantity) + checkForNull(item?.CostingPartDetails?.NetBOPSourceHandlingCost),
+    bopOSPCost: checkForNull(item?.CostingPartDetails?.TotalBOPOutsourcedCostWithQuantity) + checkForNull(item?.CostingPartDetails?.NetBOPOutsourcedHandlingCost),
+    bopDomesticHandlingCost: item?.CostingPartDetails?.NetBOPDomesticHandlingCost,
+    bopCKDHandlingCost: item?.CostingPartDetails?.NetBOPImportHandlingCost,
+    bopV2VHandlingCost: item?.CostingPartDetails?.NetBOPSourceHandlingCost,
+    bopOSPHandlingCost: item?.CostingPartDetails?.NetBOPOutsourcedHandlingCost,
+  })
 
   const [activeRemark, setActiveRemark] = useState(null)
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
@@ -153,6 +170,19 @@ function AssemblyPart(props) {
 
   const bopHandlingDrawer = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource, exchangeRateData)) return false;
+    setState({
+      openBOPHandlingDrawer: false,
+      totalBOPHandlingCharges: item?.CostingPartDetails?.BOPHandlingCharges,
+      showHandlingWarning: false,
+      bopDomesticCost: checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostWithQuantity) + checkForNull(item?.CostingPartDetails?.NetBOPDomesticHandlingCost),
+      bopCKDCost: checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithQuantity) + checkForNull(item?.CostingPartDetails?.NetBOPImportHandlingCost),
+      bopV2VCost: checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostWithQuantity) + checkForNull(item?.CostingPartDetails?.NetBOPSourceHandlingCost),
+      bopOSPCost: checkForNull(item?.CostingPartDetails?.TotalBOPOutsourcedCostWithQuantity) + checkForNull(item?.CostingPartDetails?.NetBOPOutsourcedHandlingCost),
+      bopDomesticHandlingCost: item?.CostingPartDetails?.NetBOPDomesticHandlingCost,
+      bopCKDHandlingCost: item?.CostingPartDetails?.NetBOPImportHandlingCost,
+      bopV2VHandlingCost: item?.CostingPartDetails?.NetBOPSourceHandlingCost,
+      bopOSPHandlingCost: item?.CostingPartDetails?.NetBOPOutsourcedHandlingCost,
+    })
     setIsOpenBOPDrawer(true)
   }
 
@@ -161,7 +191,14 @@ function AssemblyPart(props) {
     setIsOpenLabourDrawer(true)
   }
 
-  const handleBOPCalculationAndClose = (e = '') => {
+  const handleBOPCalculationAndClose = (type = '', totalHandlingCharges, tableData) => {
+    if (type === "Save") {
+      let bopData = {
+        IsApplyBOPHandlingCharges: true,
+        BOPHandlingCharges: totalHandlingCharges
+      }
+      props.setBOPCostWithAsssembly(bopData, item, tableData)
+    }
     setIsOpenBOPDrawer(false)
   }
 
@@ -414,7 +451,6 @@ function AssemblyPart(props) {
     // Get the remark specific to this BOP item from session storage
     const costingArray = JSON.parse(sessionStorage.getItem('costingArray')) || [];
     const bopObject = costingArray.find(item => item.AssemblyPartNumber === el?.AssemblyPartNumber && item?.PartNumber === el?.PartNumber && item?.PartType === 'BOP');
-
     const specificRemark = bopObject?.Remark || el?.Remark || '';
 
     return <BoughtOutPart
@@ -451,17 +487,19 @@ function AssemblyPart(props) {
     dispatch(getCostingBopAndBopHandlingDetails(apiParams, (res) => {
       if (res?.data?.Data) {
         // Separate assembly and child parts BOP handling charges
-        const assemblyBOPHandling = res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.find(item => !item?.IsChildPart) || {};
+        const assemblyBOPHandling = res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.filter(item => !item?.IsChildPart) || [];
         const childPartsBOPHandling = res?.data?.Data?.CostingBoughtOutPartHandlingCharge?.filter(item => item?.IsChildPart) || [];
-
+        
+        
         // Process the data to match the expected format for ViewBOP component
         const processedData = {
           BOPData: res?.data?.Data?.CostingBoughtOutPartCost || [],
 
           // Assembly BOP handling charges
-          bopPHandlingCharges: assemblyBOPHandling?.BOPHandlingCharges || 0,
-          bopHandlingPercentage: assemblyBOPHandling?.BOPHandlingPercentage || 0,
-          bopHandlingChargeType: assemblyBOPHandling?.BOPHandlingChargeType || '',
+          assemblyBOPHandlingCharges: assemblyBOPHandling,
+          // bopPHandlingCharges: assemblyBOPHandling?.BOPHandlingCharges || 0,
+          // bopHandlingPercentage: assemblyBOPHandling?.BOPHandlingPercentage || 0,
+          // bopHandlingChargeType: assemblyBOPHandling?.BOPHandlingChargeType || '',
 
           // Child parts BOP handling charges
           childPartBOPHandlingCharges: childPartsBOPHandling,
@@ -630,16 +668,28 @@ function AssemblyPart(props) {
       }
       {
         isOpenBOPDrawer &&
-        <AddBOPHandling
+        <BOPHandlingDrawer
           isOpen={isOpenBOPDrawer}
-          item={item}
           closeDrawer={handleBOPCalculationAndClose}
           isEditFlag={false}
-          ID={''}
           anchor={'right'}
+          applicabilityCost={state}
+          ViewMode={CostingViewMode}
+          item={item}
           setBOPCostWithAsssembly={props.setBOPCostWithAsssembly}
-          isAssemblyTechnology={false}
+        // bopData={gridData}
+        // netBOPCost={netBOPCost(gridData)}
         />
+        // <AddBOPHandling
+        //   isOpen={isOpenBOPDrawer}
+        //   item={item}
+        //   closeDrawer={handleBOPCalculationAndClose}
+        //   isEditFlag={false}
+        //   ID={''}
+        //   anchor={'right'}
+        //   setBOPCostWithAsssembly={props.setBOPCostWithAsssembly}
+        //   isAssemblyTechnology={false}
+        // />
       }
 
       {

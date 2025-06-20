@@ -8,12 +8,13 @@ import { useDispatch, useSelector, } from 'react-redux'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull } from "../../../../../helper/validation";
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
-import {EMPTY_DATA } from '../../../../../config/constants'
+import { EMPTY_DATA } from '../../../../../config/constants'
 import NoContentFound from '../../../../common/NoContentFound'
 import { calculatePercentageValue, loggedInUserId, showBopLabel } from '../../../../../helper'
 import { getBOPHandlingChargesDetails, getBopTypeList, saveBOPHandlingChargesDetails } from '../../../actions/CostWorking'
 
 function BOPHandlingDrawer(props) {
+    
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
@@ -41,6 +42,7 @@ function BOPHandlingDrawer(props) {
 
     useEffect(() => {
         dispatch(getBopTypeList((res) => {
+
             if (res?.data?.SelectList) {
                 const temp = res.data.SelectList.map((item) => {
                     if (item.Value === "0") return null;
@@ -54,6 +56,7 @@ function BOPHandlingDrawer(props) {
                     allBOPType: temp,
                     bopTypeDropdown: temp
                 }));
+
             }
         }));
         dispatch(getBOPHandlingChargesDetails(item?.CostingId, (res) => {
@@ -150,16 +153,32 @@ function BOPHandlingDrawer(props) {
 
         switch (bopType.label) {
             case "BOP CKD":
-                applicabilityCost = props.applicabilityCost?.bopCKDCost;
+                if (item?.PartType === "Assembly") {
+                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithQuantity)
+                } else {
+                    applicabilityCost = props.applicabilityCost?.bopCKDCost;
+                }
                 break;
-            case "BOP OSD":
-                applicabilityCost = props.applicabilityCost?.bopOSDCost;
+            case "BOP OSP":
+                if (item?.PartType === "Assembly") {
+                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPOutsourcedCostWithQuantity)
+                } else {
+                    applicabilityCost = props.applicabilityCost?.bopOSPCost;
+                }
                 break;
             case "BOP Domestic":
-                applicabilityCost = props.applicabilityCost?.bopDomesticCost;
+                if (item?.PartType === "Assembly") {
+                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostWithQuantity)
+                } else {
+                    applicabilityCost = props.applicabilityCost?.bopDomesticCost;
+                }
                 break;
             case "BOP V2V":
-                applicabilityCost = props.applicabilityCost?.bopV2VCost;
+                if (item?.PartType === "Assembly") {
+                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostWithQuantity)
+                } else {
+                    applicabilityCost = props.applicabilityCost?.bopV2VCost;
+                }
                 break;
             default:
                 applicabilityCost = props.netBOPCost;
