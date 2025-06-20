@@ -28,6 +28,7 @@ import moment from "moment";
 import { Costratiograph } from "../../../dashboard/CostRatioGraph";
 import { colorArray } from "../../../dashboard/ChartsDashboard";
 import { PaginationWrapper } from "../../../common/commonPagination";
+import { CommonSummaryReportGraph } from "../../../dashboard/CommonSummaryReportGraph";
 import ReactExport from 'react-export-excel';
 
 const BusinessValueReport = ({ }) => { 
@@ -64,26 +65,37 @@ const BusinessValueReport = ({ }) => {
   const { productHierarchyData, productDataList, nepNumberSelectList } = useSelector((state) => state.part)
   const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
-  const group = initialConfiguration?.BusinessValueSummaryHeadDefault
+  const defaultTechnology = _.get(initialConfiguration, 'BusinessSummaryReportFields.BusinessValueSummaryDefaultTechnology', false)
+  const defaultGroupBy = _.get(initialConfiguration, 'BusinessSummaryReportFields.BusinessValueSummaryHeadDefault', false)
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
   
   useEffect(() => {
     if (businessValueReportData) {
-      setTableData(businessValueReportData.ReportDetails)
+      const reportDetails = _.get(businessValueReportData, 'ReportDetails', [])
+      const updatedTableData = _.map(reportDetails, row => {
+        const hierarchyMap = _.keyBy(_.get(row, 'ProductHierarchyLevels', '') || [], 'HierarchyName')
+        const dynamicHierarchyFields = _.mapValues(hierarchyMap, level => _.get(level, 'HierarchyNumber', ''))
+        return Object.assign({}, row, dynamicHierarchyFields)
+      })
+      setTableData(updatedTableData)
       setTableHeaderColumnDefs(businessValueReportData.TableHeads)
       setReportDetailsByGroup(businessValueReportData.ReportDetailsByGroup)
     }
   }, [businessValueReportData])
 
   useEffect(() => {
-    if (!businessValueReportHeads || !group) return;
-    const matchedItem = businessValueReportHeads.find(item => item.Value === group);
-    if (matchedItem) {
-      setValue('GroupBy', { label: matchedItem.Text, value: group });
+    if (!businessValueReportHeads || !defaultTechnology || !defaultGroupBy || !technologySelectList) return
+    const defaultTechnologyFound = technologySelectList.find(item => item.Text === defaultTechnology)
+    const defaultGroupByFound = businessValueReportHeads.find(item => item.Value === defaultGroupBy)
+    if (defaultTechnologyFound) {
+      setValue('TechnologyName', { label: _.get(defaultTechnologyFound, 'Text', ''), value: _.get(defaultTechnologyFound, 'Value', '')})
     }
-  }, [businessValueReportHeads, group, setValue]);
+    if (defaultGroupBy) {
+      setValue('GroupBy', { label: _.get(defaultGroupByFound, 'Text', ''), value: _.get(defaultGroupByFound, 'Value', '') })
+    }
+  }, [businessValueReportHeads, technologySelectList, defaultTechnology, defaultGroupBy, setValue])
 
   const dispatch = useDispatch()
 
@@ -197,8 +209,11 @@ const BusinessValueReport = ({ }) => {
       businessValueReportHeads && businessValueReportHeads.map((item) => {
         if (item.Value === '0') return false
         if (item.Value === "IsRequestedForBudgeting") return false
-        if (item.IsProductHierarchy) return false
+        if (_.get(item, 'IsProductHierarchy', false)) {
+          temp.push({ label: item.Text, value: item.Text })
+        } else {
           temp.push({ label: item.Text, value: item.Value })
+        }
           return null
         })
       return temp
@@ -321,7 +336,7 @@ const BusinessValueReport = ({ }) => {
 
   const runReport = () => {
     setIsLoader(true)
-    const values = getValues()    
+    const values = getValues()
     const data = {
       ...values,
       fromDate: _.get(values, 'fromDate', '') ? moment(_.get(values, 'fromDate', '')).format('YYYY-MM-DD') : _.get(values, 'fromDate', ''),
@@ -374,50 +389,17 @@ const BusinessValueReport = ({ }) => {
   
     const labelArray = []
     const dataArray = reportDetailsByGroup
-      .filter(item => item.TotalCostPercentage > 0)
+      .filter(item => item.ActualTotalCostPercentage > 0)
       .map(item => {
           const name = _.get(item, 'GroupByValue', '')
-          const truncatedPercentage = truncateToTwoDecimals(item.TotalCostPercentage)
-          const totalCost = truncateToTwoDecimals(item.TotalCost)
+          const truncatedPercentage = truncateToTwoDecimals(item.ActualTotalCostPercentage)
+          const totalCost = truncateToTwoDecimals(item.ActualTotalCost)
           labelArray.push(`${name} (${totalCost})`)
         return truncatedPercentage
       })
     setPieChartDataArray(dataArray)
     setPieChartLabelArray(labelArray) 
   }, [100])
-
-  const pieChartData = {
-    labels: pieChartLabelArray,
-    datasets: [
-      {
-        label: '',
-        data: pieChartDataArray,
-        backgroundColor: colorArray,
-        borderWidth: 0.5,
-        hoverOffset: 10
-      },
-    ],
-  }
-
-  const pieChartOption = {
-    plugins: {
-      legend: {
-        position: 'bottom',
-        align: 'start',
-        labels: {
-          boxWidth: 16,
-          borderWidth: 0,
-          padding: 8,
-          color: '#000'
-        }
-      },
-    },
-    layout: {
-      padding: {
-        top: 30
-      }
-    }
-  }
 
   const downloadAllData = () => {
     let button = document.getElementById('Excel-Downloads')
@@ -682,7 +664,7 @@ const BusinessValueReport = ({ }) => {
               <div className='mb-2'>
                 <h6>{_.size(reportDetailsByGroup) ? 'All value is showing in (Total Cost): Percentage' : 'No data to show'}</h6>
               </div>
-              {_.size(reportDetailsByGroup) > 0 && <Costratiograph data={pieChartData} options={pieChartOption} />}
+              {_.size(reportDetailsByGroup) > 0 && <CommonSummaryReportGraph labelData={pieChartLabelArray} chartData={pieChartDataArray} />}
             </div>
           )}
         </div>
