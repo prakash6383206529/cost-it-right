@@ -594,7 +594,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         <Row className="drawer-heading">
                             <Col className="pl-0">
                                 <div className="header-wrapper left">
-                                    <h3>Paint and Masking:</h3>
+                                    <h3>Paint/Plating and Masking:</h3>
                                 </div>
                                 <div onClick={() => closeDrawer(calculateState.TotalPaintCost)} className="close-button right" />
                             </Col>
@@ -673,7 +673,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                             id="totalNormsCost"
                                             className="mt-n1 pb-4"
                                             tooltipClass="text-start"
-                                            disabledIcon
+                                            disabledIcon={true}
                                             tooltipText={'Total Norm (Consumption) Cost includes only applicable Consumption as per configuration'}
                                         />
                                         <span id="totalNormsCost">
