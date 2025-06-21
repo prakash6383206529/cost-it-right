@@ -112,7 +112,7 @@ function CostingDetailStepTwo(props) {
             checkForNull(IccCost?.NetCost) +
             (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(tempData.NetDiscountsCost)
         }
-        totalCost = checkForNull(OverAllCost) + checkForNull(DiscountCostData?.totalNpvCost) + checkForNull(DiscountCostData?.totalConditionCost)
+        totalCost = checkForNull(OverAllCost) + checkForNull(DiscountCostData?.totalNpvCost) + checkForNull(DiscountCostData?.totalLineInvestmentCost) + checkForNull(DiscountCostData?.totalConditionCost)
         return { totalCost: totalCost, basicRate: OverAllCost }
 
       case "OverheadProfitTab":
@@ -167,7 +167,7 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.ToolCost) +
           checkForNull(IccCost?.NetCost) +
           (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(data?.AnyOtherCost) - checkForNull(tempData?.NetDiscountsCost)
-        totalCost = checkForNull(OverAllCost) + (initialConfiguration?.IsAddNPVInNetCost ? checkForNull(data.totalNpvCost) : 0) + checkForNull(data.totalConditionCost)
+        totalCost = checkForNull(OverAllCost) + (initialConfiguration?.IsAddNPVInNetCost ? checkForNull(data.totalNpvCost) : 0) + (initialConfiguration?.IsShowLineInvestmentCost ? checkForNull(data.totalLineInvestmentCost) : 0) + checkForNull(data.totalConditionCost)
 
 
         return { totalCost: totalCost, basicRate: OverAllCost }
@@ -441,6 +441,7 @@ function CostingDetailStepTwo(props) {
           AnyOtherCost: checkForNull(data.AnyOtherCost),
           HundiOrDiscountPercentage: checkForNull(data.HundiOrDiscountPercentage),
           totalNpvCost: data.totalNpvCost,
+          totalLineInvestmentCost: checkForNull(data.totalLineInvestmentCost),
           totalConditionCost: data.totalConditionCost
         }
 

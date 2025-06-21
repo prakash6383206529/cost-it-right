@@ -10296,7 +10296,8 @@ export const visibilityModeDropdownArray = [
 export const typeofNpvDropdown = [
     { label: 'Tool Investment', value: 'Tool Investment' },
     { label: 'Additional Investment', value: 'Additional Investment' },
-    { label: 'One Time Investment', value: 'One Time Investment' }
+    { label: 'One Time Investment', value: 'One Time Investment' },
+    // { label: 'Line Investment', value: 'Line Investment' }
 ]
 
 
