@@ -165,7 +165,7 @@ function AddOperation(props) {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
   };
-  const isRowSelectable = rowNode => initialConfiguration?.IsAllowSingleProcessMultipleTime ? true : !selectedIds.includes(rowNode?.data?.OperationId)
+  const isRowSelectable = rowNode => initialConfiguration?.IsAllowSingleOperationMultipleTime ? true : !selectedIds.includes(rowNode?.data?.OperationId)
   // const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
 
   const resetState = () => {
@@ -247,11 +247,11 @@ function AddOperation(props) {
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="Entry Type"></AgGridColumn>
-                        <AgGridColumn  field="ForType" headerName="Operation Type"></AgGridColumn>
-                        <AgGridColumn  field="OperationName" headerName="Operation Name"></AgGridColumn>
+                        <AgGridColumn field="ForType" headerName="Operation Type"></AgGridColumn>
+                        <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                         <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
                         <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
-                        <AgGridColumn field="Currency"  headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="Currency" headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="CostingCurrency" headerName="Costing Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
