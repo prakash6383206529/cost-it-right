@@ -3644,7 +3644,7 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
-                          {!initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowLineInvestmentCost &&
+                          {initialConfiguration?.IsShowLineInvestmentCost &&
                             <tr>
                               <td>
                                 <span className={`d-block small-grey-text`}>Line Investment Cost</span>
