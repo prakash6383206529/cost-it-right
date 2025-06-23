@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import ReactExport from 'react-export-excel';
+import _ from "lodash"
+import moment from "moment";
 import { Row, Col } from "reactstrap";
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, DatePickerHookForm } from "../../../layout/HookFormInputs";
 import { useForm, Controller } from "react-hook-form";
@@ -23,20 +26,16 @@ import { getClientSelectList } from '../../../masters/actions/Client';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import _ from "lodash"
-import moment from "moment";
-import { Costratiograph } from "../../../dashboard/CostRatioGraph";
-import { colorArray } from "../../../dashboard/ChartsDashboard";
 import { PaginationWrapper } from "../../../common/commonPagination";
 import { CommonSummaryReportGraph } from "../../../dashboard/CommonSummaryReportGraph";
-import ReactExport from 'react-export-excel';
+import GraphOptionsList from "../../../dashboard/GraphOptionsList";
 
 const BusinessValueReport = ({ }) => { 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const gridOptions = {}
   const { control, register, getValues, setValue, handleSubmit, formState: { errors } } = useForm();
   const [partTypeList, setPartTypeList] = useState([])
-  const [isLoader, setIsLoader] = useState(false);
+  const [isLoader, setIsLoader] = useState(true);
   const [vendorName, setVendorName] = useState('')
   const [partName, setPartName] = useState('')
   const [isTechnologySelected, setIsTechnologySelected] = useState(false)
@@ -52,11 +51,13 @@ const BusinessValueReport = ({ }) => {
   const [IsRequestedForBudgeting, setIsRequestedForBudgeting] = useState(false)
   const [fromAndToDate, setFromAndToDate] = useState(false)
   const [financialQuarterAndYear, setFinancialQuarterAndYear] = useState(false)
-  const [pieChartLabelArray, setPieChartLabelArray] = useState([])
-  const [pieChartDataArray, setPieChartDataArray] = useState([])
+  const [actualCostLabelArray, setActualCostLabelArray] = useState([])
+  const [actualCostDataArray, setActualCostDataArray] = useState([])
+  const [budgetedCostLabelArray, setBudgetedCostLabelArray] = useState([])
+  const [budgetedCostDataArray, setBudgetedCostDataArray] = useState([])
   const [reportDetailsByGroup, setReportDetailsByGroup] = useState([])
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
-  // const [partTypeList, setPartTypeList] = useState([])
+  const [graphType, setGraphType] = useState('Bar Chart')
   const { businessValueReportHeads, businessValueReportData } = useSelector(state => state.report);
   const productGroupSelectList = useSelector(state => state.part.productGroupSelectList)
   const clientSelectList = useSelector((state) => state.client.clientSelectList)
@@ -102,7 +103,9 @@ const BusinessValueReport = ({ }) => {
   useEffect(() => {
     dispatch(getPlantSelectListByType('', '', '', () => { }))
     dispatch(getBusinessValueReportHeads(() => { }))
-    dispatch(getBusinessValueReportData({}, () => { }))
+    dispatch(getBusinessValueReportData({}, () => {
+      setIsLoader(false)
+    }))
     dispatch(getProductGroupSelectList(() => { }))
     dispatch(getClientSelectList(() => { }))
     dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
@@ -366,9 +369,7 @@ const BusinessValueReport = ({ }) => {
     const segmentId = segmentKeys.join(',')
     data.SegmentId = segmentId
     dispatch(getBusinessValueReportData(data, (res) => {
-      if (res?.status === 200) {
-        setIsLoader(false)
-      }
+      setIsLoader(false)
      }))  
   }
 
@@ -386,20 +387,32 @@ const BusinessValueReport = ({ }) => {
     const truncateToTwoDecimals = (value) => {
       return Math.floor(value * 100) / 100;
     }
-  
     const labelArray = []
-    const dataArray = reportDetailsByGroup
-      .filter(item => item.ActualTotalCostPercentage > 0)
-      .map(item => {
-          const name = _.get(item, 'GroupByValue', '')
-          const truncatedPercentage = truncateToTwoDecimals(item.ActualTotalCostPercentage)
-          const totalCost = truncateToTwoDecimals(item.ActualTotalCost)
-          labelArray.push(`${name} (${totalCost})`)
-        return truncatedPercentage
-      })
-    setPieChartDataArray(dataArray)
-    setPieChartLabelArray(labelArray) 
+    const dataArray = reportDetailsByGroup.filter(item => item.ActualTotalCostPercentage > 0).map(item => {
+      const name = _.get(item, 'GroupByValue', '')
+      const truncatedPercentage = truncateToTwoDecimals(item.ActualTotalCostPercentage)
+      const totalCost = truncateToTwoDecimals(item.ActualTotalCost)
+      labelArray.push(`${name} (${totalCost})`)
+      return truncatedPercentage
+    })
+    setActualCostDataArray(dataArray)
+    setActualCostLabelArray(labelArray)
+    
+    const labelArray1 = []
+    const dataArray1 = reportDetailsByGroup.filter(item => item.BudgetedTotalCostPercentage > 0).map(item => {
+      const name = _.get(item, 'GroupByValue', '')
+      const truncatedPercentage = truncateToTwoDecimals(item.BudgetedTotalCostPercentage)
+      const totalCost = truncateToTwoDecimals(item.BudgetedTotalCost)
+      labelArray1.push(`${name} (${totalCost})`)
+      return truncatedPercentage
+    })
+    setBudgetedCostDataArray(dataArray1)
+    setBudgetedCostLabelArray(labelArray1)
   }, [100])
+
+  const valueChanged = (event) => {
+    setGraphType(event?.label)
+  }
 
   const downloadAllData = () => {
     let button = document.getElementById('Excel-Downloads')
@@ -648,26 +661,39 @@ const BusinessValueReport = ({ }) => {
         </Row>
 
       </form>
-      {
+      {isLoader ? <LoaderCustom customClass="loader-center" /> :
         <Row className="m-0">
-        <div className="graph-box w-100">
-          <Row>
-            <Col md="8"><h3 className={`mb-${graphAccordian ? 3 : 0}`}>Graph View</h3></Col>
-            <Col md="4" className="text-right">
-              <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setGraphAccordian(!graphAccordian) }}>
-                {graphAccordian ? (<i className="fa fa-minus" ></i>) : (<i className="fa fa-plus"></i>)}
-              </button>
-            </Col>
-          </Row>
-          {graphAccordian && (
-            <div className='column-data'>
-              <div className='mb-2'>
-                <h6>{_.size(reportDetailsByGroup) ? 'All value is showing in (Total Cost): Percentage' : 'No data to show'}</h6>
+          <div className="graph-box w-100">
+            <Row className={`pb-${graphAccordian ? 3 : 0}`}>
+              <Col md="8" className="d-flex align-items-center">
+                <h3 className={`mr-3`}>Graph View</h3>
+                <GraphOptionsList valueChanged={valueChanged} />
+              </Col>
+              <Col md="4" className="text-right">
+                <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setGraphAccordian(!graphAccordian) }}>
+                  {graphAccordian ? (<i className="fa fa-minus" ></i>) : (<i className="fa fa-plus"></i>)}
+                </button>
+              </Col>
+            </Row>
+            {graphAccordian && (
+              <div className='column-data'>
+                <div className="graph-container-grid d-flex">
+                  <Col md="6" className="border">
+                    <div className='p-3'>
+                      <h6>{_.size(actualCostDataArray) ? 'All values are shown under (Actual Total Cost) as Actual Percentage.' : 'No data to show'}</h6>
+                    </div>
+                    {_.size(actualCostDataArray) > 0 && <CommonSummaryReportGraph graphType={graphType} labelData={actualCostLabelArray} chartData={actualCostDataArray} />}
+                  </Col>
+                  <Col md="6" className="border">
+                    <div className='p-3'>
+                      <h6>{_.size(budgetedCostDataArray) ? 'All values are shown under (Budgeted Total Cost) as Budgeted Percentage.' : 'No data to show'}</h6>
+                    </div>
+                    {_.size(budgetedCostDataArray) > 0 && <CommonSummaryReportGraph graphType={graphType} labelData={budgetedCostLabelArray} chartData={budgetedCostDataArray} />}
+                  </Col>
+                </div>
               </div>
-              {_.size(reportDetailsByGroup) > 0 && <CommonSummaryReportGraph labelData={pieChartLabelArray} chartData={pieChartDataArray} />}
-            </div>
-          )}
-        </div>
+            )}
+          </div>
         </Row>
       }
       {
@@ -692,33 +718,31 @@ const BusinessValueReport = ({ }) => {
          { detailAccordian && 
           <div className={`ag-grid-react ag-grid-wrapper height-width-wrapper  ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className={`ag-theme-material grid-parent-wrapper mt-2 ${isLoader && "max-loader-height"} ${tableData && tableData?.length <= 0 && "overlay-contain"}`}>
-              {isLoader ? <LoaderCustom customClass="loader-center" /> :
-                <AgGridReact
-                  defaultColDef={defaultColDef}
-                  domLayout='autoHeight'
-                  columnDefs={tableHeaderColumnDefs}
-                  rowData={tableData}
-                  pagination={true}
-                  paginationPageSize={defaultPageSize}
-                  onGridReady={onGridReady}
-                  gridOptions={gridOptions}
-                  noRowsOverlayComponent={'customNoRowsOverlay'}
-                  // onFilterModified={onFloatingFilterChanged}
-                  noRowsOverlayComponentParams={{
-                    title: EMPTY_DATA,
-                    imagClass: 'imagClass pt-3'
-                  }}
-                  // rowSelection={'multiple'}
-                  suppressRowClickSelection={true}
-                  // onSelectionChanged={onRowSelect}
-                  frameworkComponents={frameworkComponents}
-                >
-                </AgGridReact>}
+              <AgGridReact
+                defaultColDef={defaultColDef}
+                domLayout='autoHeight'
+                columnDefs={tableHeaderColumnDefs}
+                rowData={tableData}
+                pagination={true}
+                paginationPageSize={defaultPageSize}
+                onGridReady={onGridReady}
+                gridOptions={gridOptions}
+                noRowsOverlayComponent={'customNoRowsOverlay'}
+                // onFilterModified={onFloatingFilterChanged}
+                noRowsOverlayComponentParams={{
+                  title: EMPTY_DATA,
+                  imagClass: 'imagClass pt-3'
+                }}
+                // rowSelection={'multiple'}
+                suppressRowClickSelection={true}
+                // onSelectionChanged={onRowSelect}
+                frameworkComponents={frameworkComponents}
+              >
+              </AgGridReact>
                 {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
             </div>
           </div>
-       
-       }
+        }
         </div>
         </Row>
       }
