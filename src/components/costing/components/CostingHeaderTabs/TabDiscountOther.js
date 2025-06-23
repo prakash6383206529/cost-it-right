@@ -538,7 +538,7 @@ function TabDiscountOther(props) {
   useEffect(() => {
     if (RMCCTabData && RMCCTabData[0]?.CostingId && props?.activeTab === '6') {
       let npvSum = 0
-      if (initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowTCO) {
+      if (initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowTCO || initialConfiguration?.IsShowLineInvestmentCost) {
         dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
           if (res?.data?.DataList) {
             let Data = res?.data?.DataList
@@ -2508,14 +2508,17 @@ function TabDiscountOther(props) {
                     <Col md="3" >
                       {otherDiscountUI}
                     </Col >
+                    {npvDrawerCondition && shouldRenderNpvDrawer &&
                     <Col md="3">
                       {/*                <TooltipCustom disabledIcon={true} width="280px" id="npvCost" tooltipText={"NPV Cost = Sum of NPV cost added in NPV drawer"} /> */}
-                      {npvDrawerCondition && shouldRenderNpvDrawer && npvCostUI}
+                      {npvCostUI}
                     </Col>
-
+                    }
+                    {initialConfiguration?.IsShowLineInvestmentCost &&
                     <Col md="3">
-                      {initialConfiguration?.IsShowLineInvestmentCost && npvDrawerCondition && shouldRenderNpvDrawer && lineInvestmentUI}
+                      {lineInvestmentUI}
                     </Col>
+                    }
                     {/* {npvDrawerCondition && shouldRenderNpvDrawer && <Row>
                       <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
                       <Col md="4" className="text-right">
@@ -2680,7 +2683,7 @@ function TabDiscountOther(props) {
 
                       </div>
                     </Col> : ''}
-                    {(initialConfiguration?.IsShowNpvCost /* || initialConfiguration?.IsShowTCO || IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting */) && isOpenandClose && <AddNpvCost
+                    {(initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowLineInvestmentCost /* || initialConfiguration?.IsShowTCO || IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting */) && isOpenandClose && <AddNpvCost
                       isOpen={isOpenandClose}
                       drawerType={drawerType}
                       tableData={npvTableData}
@@ -2709,7 +2712,7 @@ function TabDiscountOther(props) {
                         isRfqCosting={costData?.IsRfqCosting}
                       />
                     </Col>}
-                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency}) = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency}) = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost ${initialConfiguration?.IsShowLineInvestmentCost && "+ Line Investment Cost"} - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency})`}

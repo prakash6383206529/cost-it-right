@@ -458,7 +458,7 @@ function AddNpvCost(props) {
                                     </Col>
                                 </Row>
                                 <div className='hidepage-size'>
-                                    {!costingSummary && initialConfiguration?.IsShowNpvCost && <Row>
+                                    {!costingSummary && (initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowLineInvestmentCost) && <Row>
                                         {!islineInvestmentDrawer &&
                                             <Col md="3" className='pr-1'>
                                                 <SearchableSelectHookForm
@@ -697,7 +697,7 @@ function AddNpvCost(props) {
                                             </Col>
                                         </>
                                     } */}
-                                    {initialConfiguration?.IsShowNpvCost && !props?.totalCostFromSummary && <NpvCost drawerType={drawerType} showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
+                                    {(initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowLineInvestmentCost) && !props?.totalCostFromSummary && <NpvCost drawerType={drawerType} showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
                                     {(props?.totalCostFromSummary || (initialConfiguration?.IsShowTCO && (IsRfqCostingType?.isRfqCosting || IsRfqCostingType?.costingType))) ? (
                                         <Tco costingId={props?.costingId} partType={{ PartType: partType }} />
                                     ) : null}
@@ -767,7 +767,7 @@ function AddNpvCost(props) {
                                 customClass={'underLine-title'}
                             />
                         </Col>
-                        {initialConfiguration?.IsShowNpvCost && <NpvCost drawerType={drawerType} showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
+                        {(initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowLineInvestmentCost) && <NpvCost drawerType={drawerType} showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
                     </>}
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
                         <div className='firefox-spaces'>
