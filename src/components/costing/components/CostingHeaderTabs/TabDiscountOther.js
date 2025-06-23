@@ -80,6 +80,7 @@ function TabDiscountOther(props) {
   const [hundiscountType, setHundiDiscountType] = useState([])
   const [isDisable, setIsDisable] = useState(false)
   const [npvAcc, setNpvAcc] = useState(false)
+  const [drawerType, setDrawerType] = useState("");
   const [conditionAcc, setConditionAcc] = useState(false)
   const [otherCostAcc, setOtherCotAcc] = useState(false)
   const dispatch = useDispatch()
@@ -111,6 +112,7 @@ function TabDiscountOther(props) {
   const [npvTableData, setNpvTableData] = useState([])
   const [conditionTableData, seConditionTableData] = useState([])
   const [totalNpvCost, setTotalNpvCost] = useState(0)
+  const [totalLineInvestmentCost, setTotalLineInvestmentCost] = useState(0)
   const [totalConditionCost, setTotalConditionCost] = useState(0)
   const [nfrListing, setNfrListing] = useState(false)
   const [openCloseOtherCost, setOpenCloseOtherCost] = useState(false)
@@ -186,7 +188,7 @@ function TabDiscountOther(props) {
     if (CostingViewMode === false) {
       if (props.activeTab !== '6') {
         // Basic Rate (INR) = Total Cost + Total Other Cost
-        setValue('BasicRateINR', discountObj !== undefined && checkForDecimalAndNull((checkForNull(netPOPrice) - checkForNull(otherDiscountData.totalCost) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost))), initialConfiguration?.NoOfDecimalForPrice))
+        setValue('BasicRateINR', discountObj !== undefined && checkForDecimalAndNull((checkForNull(netPOPrice) - checkForNull(otherDiscountData.totalCost) - (checkForNull(totalNpvCost) + checkForNull(totalLineInvestmentCost) + checkForNull(totalConditionCost))), initialConfiguration?.NoOfDecimalForPrice))
         setValue('NetPOPriceINR', discountObj !== undefined && checkForDecimalAndNull((checkForNull(netPOPrice) - checkForNull(netPOPrice) * calculatePercentage(discountObj?.HundiOrDiscountPercentage)), initialConfiguration?.NoOfDecimalForPrice))
         setValue('HundiOrDiscountPercentage', discountObj !== undefined && discountObj?.HundiOrDiscountPercentage !== null ? discountObj?.HundiOrDiscountPercentage : '')
         // setValue('HundiOrDiscountValue', discountObj !== undefined && discountObj?.DiscountCostType === 'Percentage' ? discountObj !== undefined && (netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)) : otherDiscountData.otherCostTotal)
@@ -200,6 +202,7 @@ function TabDiscountOther(props) {
           HundiOrDiscountValue: discountObj && checkForDecimalAndNull(otherDiscountData.totalCost !== null ? otherDiscountData.totalCost : '', initialConfiguration?.NoOfDecimalForPrice),
           DiscountApplicability: discountObj && discountObj?.DiscountApplicability,
           totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
+          totalLineInvestmentCost: discountObj?.totalLineInvestmentCost ? discountObj?.totalLineInvestmentCost : totalLineInvestmentCost,
           totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
         }
         props.setHeaderCost(topHeaderData, headerCosts, costData)
@@ -374,7 +377,8 @@ function TabDiscountOther(props) {
   }, [otherCostData])
   const npvCostUI = useMemo(() => {
 
-    const sum = npvTableData.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
+    const npvData = npvTableData?.filter((nvp) => nvp.NpvType !== "Line Investment")
+    const sum = npvData?.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0)
     setValue('NPVCost', checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
     return <div className='d-flex align-items-center'>
       <TextFieldHookForm
@@ -395,10 +399,42 @@ function TabDiscountOther(props) {
       />
       <Button
         id="tabDiscount_npvCost"
-        onClick={() => openAndCloseAddNpvDrawer('Open')}
+        onClick={() => openAndCloseAddNpvDrawer('Open', 'NPVCost')}
         className={"right mt-2"}
-        variant={viewAddButtonIcon(npvTableData, "className")}
-        title={viewAddButtonIcon(npvTableData, "title")}
+        variant={viewAddButtonIcon(npvData, "className")}
+        title={viewAddButtonIcon(npvData, "title")}
+      />
+    </div>
+  }, [npvTableData])
+
+  const lineInvestmentUI = useMemo(() => {
+    const lineInvestmentData = npvTableData?.filter((nvp) => nvp.NpvType === "Line Investment")
+    const sum = lineInvestmentData?.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0)
+    setValue('LineInvestmentCost', checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
+    return <div className='d-flex align-items-center'>
+      <TextFieldHookForm
+        label="Line Investment Cost"
+        name={'LineInvestmentCost'}
+        Controller={Controller}
+        // id="npvCost"
+        id="lineInvestmentCost"
+        control={control}
+        register={register}
+        mandatory={false}
+        rules={{}}
+        handleChange={() => { }}
+        defaultValue={sum}
+        className=""
+        customClassName={'withBorder w-100'}
+        errors={errors.NPVCost}
+        disabled={true}
+      />
+      <Button
+        id="tabDiscount_lineInvestmentCost"
+        onClick={() => openAndCloseAddNpvDrawer('Open', 'LineInvestmentCost')}
+        className={"right mt-2"}
+        variant={viewAddButtonIcon(lineInvestmentData, "className")}
+        title={viewAddButtonIcon(lineInvestmentData, "title")}
       />
     </div>
   }, [npvTableData])
@@ -502,18 +538,30 @@ function TabDiscountOther(props) {
   useEffect(() => {
     if (RMCCTabData && RMCCTabData[0]?.CostingId && props?.activeTab === '6') {
       let npvSum = 0
-      if (initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowTCO) {
+      if (initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowTCO || initialConfiguration?.IsShowLineInvestmentCost) {
         dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
           if (res?.data?.DataList) {
             let Data = res?.data?.DataList
             setNpvTableData(Data)
-            const sum = Data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
-            setTotalNpvCost(sum)
-            npvSum = sum
+            let totalNpvCost = 0
+            let totalLineInvestmentCost = 0
+            if (Array.isArray(Data)) {
+              totalNpvCost = Data
+                .filter(obj => obj.NpvType !== 'Line Investment')
+                .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
+
+                totalLineInvestmentCost = Data
+                  .filter(obj => obj.NpvType === 'Line Investment')
+                  .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0)
+            }
+            setTotalNpvCost(totalNpvCost)
+            setTotalLineInvestmentCost(totalLineInvestmentCost)
+            npvSum = totalNpvCost
             dispatch(isDiscountDataChange(true))
             setDiscountObj({
               ...discountObj,
-              totalNpvCost: sum,
+              totalNpvCost: totalNpvCost,
+              totalLineInvestmentCost: totalLineInvestmentCost
             })
           }
         }))
@@ -625,7 +673,7 @@ function TabDiscountOther(props) {
       "TotalCost": checkForNull(netPOPrice),
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
-      "BasicRate": checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)),
+      "BasicRate": checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalLineInvestmentCost) + checkForNull(totalConditionCost)),
       "CurrencyId": currency?.value,
       "Currency": currency?.label,
       "IsChangeCurrency": IsCurrencyChange,
@@ -651,6 +699,7 @@ function TabDiscountOther(props) {
         "OtherCostDetails": otherCostFinalArray,
         "DiscountCostDetails": discountArray,
         "NetNpvCost": checkForNull(totalNpvCost),
+        "NetLineInvestmentCost": checkForNull(totalLineInvestmentCost),
         "NetConditionCost": checkForNull(totalConditionCost),
       },
       "SANumber": getValues('SANumber'),
@@ -793,6 +842,7 @@ function TabDiscountOther(props) {
               // OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
               DiscountApplicability: costDetail?.DiscountCostDetails ? costDetail?.DiscountCostDetails[0]?.ApplicabilityType : '',
               totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
+              totalLineInvestmentCost: discountObj?.totalLineInvestmentCost ? discountObj?.totalLineInvestmentCost : costDetail?.NetLineInvestmentCost,
               totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
 
@@ -812,6 +862,7 @@ function TabDiscountOther(props) {
               // OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
               DiscountApplicability: costDetail?.DiscountCostDetails ? costDetail?.DiscountCostDetails[0]?.ApplicabilityType : '',
               totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
+              totalLineInvestmentCost: discountObj?.totalLineInvestmentCost ? discountObj?.totalLineInvestmentCost : costDetail?.NetLineInvestmentCost,
               totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
 
@@ -838,7 +889,7 @@ function TabDiscountOther(props) {
   useEffect(() => {
     // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
     const discountValues = {
-      BasicRateINR: discountObj?.NetPOPriceINR !== null ? checkForNull(discountObj?.NetPOPriceINR) - checkForNull(totalNpvCost) + checkForNull(totalConditionCost) : '',
+      BasicRateINR: discountObj?.NetPOPriceINR !== null ? checkForNull(discountObj?.NetPOPriceINR) - checkForNull(totalNpvCost) + checkForNull(totalLineInvestmentCost) + checkForNull(totalConditionCost) : '',
       NetPOPriceINR: discountObj?.NetPOPriceINR !== null ? checkForNull(discountObj?.NetPOPriceINR) : '',
       HundiOrDiscountValue: otherDiscountData.totalCost !== null ? checkForNull(otherDiscountData.totalCost) : '',
       AnyOtherCost: discountObj?.AnyOtherCost !== null ? checkForNull(discountObj?.AnyOtherCost) : '',
@@ -847,6 +898,7 @@ function TabDiscountOther(props) {
       // OtherCostApplicability: discountObj?.OtherCostApplicability,
       DiscountApplicability: discountObj?.DiscountApplicability,
       totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
+      totalLineInvestmentCost: discountObj?.totalLineInvestmentCost ? discountObj?.totalLineInvestmentCost : totalLineInvestmentCost,
       totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
     }
 
@@ -865,6 +917,7 @@ function TabDiscountOther(props) {
         // OtherCostApplicability: discountObj?.OtherCostApplicability,
         DiscountApplicability: discountObj?.DiscountApplicability,
         totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
+        totalLineInvestmentCost: discountObj?.totalLineInvestmentCost ? discountObj?.totalLineInvestmentCost : totalLineInvestmentCost,
         totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
       }
       props.setHeaderCost(topHeaderData, headerCosts, costData)
@@ -877,7 +930,7 @@ function TabDiscountOther(props) {
     let basicrate = checkForNull(totalCost) + checkForNull(otherCostData.otherCostTotal)
     let netCost = checkForNull(totalCost) + checkForNull(otherCostData.otherCostTotal)
     if (initialConfiguration?.IsAddNPVInNetCost) {
-      basicrate = checkForNull(basicrate) + checkForNull(totalNpvCost)
+      basicrate = checkForNull(basicrate) + checkForNull(totalNpvCost) 
       netCost = checkForNull(netCost) + checkForNull(totalNpvCost)
     }
     if (initialConfiguration?.IsAddPaymentTermInNetCost) {
@@ -887,8 +940,8 @@ function TabDiscountOther(props) {
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
       netCost = checkForNull(netCost) + checkForNull(DiscountCostData?.totalConditionCost)
     }
-    basicrate = checkForNull(basicrate) - checkForNull(otherDiscountData.totalCost)
-    netCost = checkForNull(netCost) - checkForNull(otherDiscountData.totalCost)
+    basicrate = checkForNull(basicrate) + checkForNull(totalLineInvestmentCost) - checkForNull(otherDiscountData.totalCost)
+    netCost = checkForNull(netCost) + checkForNull(totalLineInvestmentCost) - checkForNull(otherDiscountData.totalCost)
     return { basicrate: basicrate, netCost: netCost }
   }
 
@@ -952,6 +1005,7 @@ function TabDiscountOther(props) {
       // OtherCostApplicability: discountObj?.OtherCostApplicability,
       DiscountApplicability: discountObj?.DiscountApplicability,
       totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
+      totalLineInvestmentCost: discountObj?.totalLineInvestmentCost ? discountObj?.totalLineInvestmentCost : totalLineInvestmentCost,
       totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
     }
     props.setHeaderCost(topHeaderData, headerCosts, costData)
@@ -1346,7 +1400,7 @@ function TabDiscountOther(props) {
       "TotalCost": checkForNull(netPOPrice),
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
-      "BasicRate": checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)),
+      "BasicRate": checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalLineInvestmentCost) + checkForNull(totalConditionCost)),
       "CurrencyId": currency?.value,
       "Currency": currency?.label,
       "IsChangeCurrency": IsCurrencyChange,
@@ -1372,6 +1426,7 @@ function TabDiscountOther(props) {
         "OtherCostDetails": otherCostFinalArray,
         "DiscountCostDetails": discountArray,
         "NetNpvCost": checkForNull(totalNpvCost),
+        "NetLineInvestmentCost": checkForNull(totalLineInvestmentCost),
         "NetConditionCost": checkForNull(totalConditionCost),
         "TaxCodeList": taxCodeArray,
       },
@@ -1410,7 +1465,7 @@ function TabDiscountOther(props) {
       "IsIncludeOverheadAndProfitInICC": IncludeOverheadProfitInIcc,
       "IsIncludeApplicabilityForChildPartsInICC": IsIncludeApplicabilityForChildPartsInICC,
       "NetPOPrice": netPOPrice,
-      "BasicRate": netPOPrice - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)),
+      "BasicRate": netPOPrice - (checkForNull(totalNpvCost) + checkForNull(totalLineInvestmentCost) + checkForNull(totalConditionCost)),
       "NetICC": IccCost?.NetCost,
       "IsInventoryCarringCost": true,
       "ICCApplicabilityDetail": IccDataDiscountTab
@@ -1541,12 +1596,23 @@ function TabDiscountOther(props) {
 
   const setUpdatednetPoPrice = (data) => {
     dispatch(setNPVData([]))
-    const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
+    // const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
+    // setTotalNpvCost(sum)
+    const sum = data
+      .filter(obj => obj.NpvType !== 'Line Investment')
+      .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
+
+    const totalLineInvestmentCost = data
+      .filter(obj => obj.NpvType === 'Line Investment')
+      .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
+
     setTotalNpvCost(sum)
+    setTotalLineInvestmentCost(totalLineInvestmentCost)
     dispatch(isDiscountDataChange(true))
     setDiscountObj({
       ...discountObj,
-      totalNpvCost: sum
+      totalNpvCost: sum,
+      totalLineInvestmentCost: totalLineInvestmentCost
     })
 
     // if (data) {
@@ -1558,20 +1624,31 @@ function TabDiscountOther(props) {
     // }
   }
 
-  const openAndCloseAddNpvDrawer = (type, data = npvTableData) => {
+  const openAndCloseAddNpvDrawer = (type, drawerType="", data = npvTableData) => {
     if (type === 'Open') {
+      setDrawerType(drawerType)
       setisOpenandClose(true)
     } else {
+      setDrawerType("")
       setisOpenandClose(false)
       setUpdatednetPoPrice(data)
       setNpvTableData(data)
       dispatch(setNPVData([]))
-      const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
+      const sum = Array.isArray(data) ? data
+      .filter(obj => obj.NpvType !== 'Line Investment')
+      .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0) : 0;
+
+      const totalLineInvestmentCost = Array.isArray(data) ? data
+      .filter(obj => obj.NpvType === 'Line Investment')
+      .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0) : 0;
+      
       setTotalNpvCost(sum)
+      setTotalLineInvestmentCost(totalLineInvestmentCost)
       dispatch(isDiscountDataChange(true))
       setDiscountObj({
         ...discountObj,
-        totalNpvCost: sum
+        totalNpvCost: sum,
+        totalLineInvestmentCost: totalLineInvestmentCost
       })
 
       if (type === 'save') {
@@ -2161,6 +2238,9 @@ function TabDiscountOther(props) {
     if (initialConfiguration?.IsAddPaymentTermInNetCost) {
       basicrate = basicrate + ' + Payment Terms Cost'
     }
+    if (initialConfiguration?.IsShowLineInvestmentCost) {
+      basicrate = basicrate + ' + Line Investment Cost'
+    }
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
       netCost = netCost + ' + Condition Cost'
     }
@@ -2428,10 +2508,17 @@ function TabDiscountOther(props) {
                     <Col md="3" >
                       {otherDiscountUI}
                     </Col >
+                    {npvDrawerCondition && shouldRenderNpvDrawer &&
                     <Col md="3">
                       {/*                <TooltipCustom disabledIcon={true} width="280px" id="npvCost" tooltipText={"NPV Cost = Sum of NPV cost added in NPV drawer"} /> */}
-                      {npvDrawerCondition && shouldRenderNpvDrawer && npvCostUI}
+                      {npvCostUI}
                     </Col>
+                    }
+                    {initialConfiguration?.IsShowLineInvestmentCost &&
+                    <Col md="3">
+                      {lineInvestmentUI}
+                    </Col>
+                    }
                     {/* {npvDrawerCondition && shouldRenderNpvDrawer && <Row>
                       <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
                       <Col md="4" className="text-right">
@@ -2596,12 +2683,13 @@ function TabDiscountOther(props) {
 
                       </div>
                     </Col> : ''}
-                    {(initialConfiguration?.IsShowNpvCost /* || initialConfiguration?.IsShowTCO || IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting */) && isOpenandClose && <AddNpvCost
+                    {(initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowLineInvestmentCost /* || initialConfiguration?.IsShowTCO || IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting */) && isOpenandClose && <AddNpvCost
                       isOpen={isOpenandClose}
+                      drawerType={drawerType}
                       tableData={npvTableData}
                       closeDrawer={openAndCloseAddNpvDrawer}
                       anchor={'right'}
-                      netPOPrice={initialConfiguration?.IsAddNPVInNetCost ? netPOPrice - totalNpvCost : netPOPrice}
+                      netPOPrice={initialConfiguration?.IsAddNPVInNetCost ? netPOPrice - (totalNpvCost + totalLineInvestmentCost) : netPOPrice}
                       costingId={costData?.CostingId}
                       totalCostFromSummary={false}
                       CostingViewMode={CostingViewMode}
@@ -2624,7 +2712,7 @@ function TabDiscountOther(props) {
                         isRfqCosting={costData?.IsRfqCosting}
                       />
                     </Col>}
-                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency}) = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency}) = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost ${initialConfiguration?.IsShowLineInvestmentCost && "+ Line Investment Cost"} - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency})`}
