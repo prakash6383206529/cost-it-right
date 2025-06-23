@@ -31,7 +31,6 @@ function BOPHandlingDrawer(props) {
         cost: '',
         allBOPType: []
     })
-
     useEffect(() => {
         if (tableData?.length > 0) {
             const sumHandlingCharges = tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.BOPHandlingCharges), 0);
@@ -202,7 +201,8 @@ function BOPHandlingDrawer(props) {
         const applicability = state.applicabilityCost;
         const type = getValues('Type');
         const percentage = checkForNull(getValues('Percentage'));
-        const handlingCharges = state?.cost;
+        const handlingCharges = getValues('Type')?.label==='Fixed'?checkForNull(getValues('HandlingCharges')):state?.cost;
+
 
         // Create new data entry
         const newData = {
