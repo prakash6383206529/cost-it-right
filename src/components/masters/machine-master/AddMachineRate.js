@@ -93,6 +93,7 @@ class AddMachineRate extends Component {
       processGridEditIndex: '',
       isEditIndex: false,
       machineRate: '',
+      machineNumber: '',
       IsFinancialDataChanged: true,
 
       remarks: '',
@@ -2835,7 +2836,7 @@ class AddMachineRate extends Component {
                                 {!(userDetails().Role === 'SuperAdmin') && ((!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration?.IsMasterApprovalAppliedConfigure) || (initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !CostingTypePermission)) ?
                                   <button id="AddMachineRate_SendForApproval" type="submit"
                                     class="user-btn approval-btn save-btn mr5"
-                                    disabled={isViewMode || setDisable || disableSendForApproval || (isEditFlag && IsDetailedEntry) || this.state?.showWarning || this.state.showPlantWarning}
+                                    disabled={isViewMode || setDisable || disableSendForApproval || (isEditFlag && IsDetailedEntry) || this.state?.showWarning || this.state.showPlantWarning || this.state.machineNumber === ''}
                                   >
                                     <div className="send-for-approval"></div>
                                     {'Send For Approval'}
@@ -2846,7 +2847,7 @@ class AddMachineRate extends Component {
                                     id="AddMachineRate_Save"
                                     type="submit"
                                     className="user-btn mr5 save-btn"
-                                    disabled={isViewMode || setDisable || disableSendForApproval || this.state?.showWarning || this.state.showPlantWarning}
+                                    disabled={isViewMode || setDisable || disableSendForApproval || this.state?.showWarning || this.state.showPlantWarning || this.state.machineNumber === ''}
                                   >
                                     <div className={"save-icon"}></div>
                                     {isEditFlag ? "Update" : "Save"}

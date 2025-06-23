@@ -77,6 +77,7 @@ class AddMoreDetails extends Component {
       machineType: editDetails?.machineType ?? [],
       isOpenMachineType: false,
       machineRate: "",
+      machineNumber: '',
       disableMachineType: false,
       isOpenAvailability: false,
       WorkingHrPrYr: 0,
@@ -5661,7 +5662,7 @@ class AddMoreDetails extends Component {
                               <button id="AddMoreDetails_SendForApproval" type="submit"
                                 class="user-btn approval-btn save-btn mr5"
 
-                                disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval || this.state.showPlantWarning || this.state.showWarning}
+                                disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval || this.state.showPlantWarning || this.state.showWarning || this.state.machineNumber === ''}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
@@ -5671,7 +5672,7 @@ class AddMoreDetails extends Component {
                               <button
                                 type="submit"
                                 className="user-btn mr5 save-btn"
-                                disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval || this.state.showPlantWarning || this.state.showWarning}
+                                disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval || this.state.showPlantWarning || this.state.showWarning || this.state.machineNumber === ''}
                               >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? "Update" : "Save"}
