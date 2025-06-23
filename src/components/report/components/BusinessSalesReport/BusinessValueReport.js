@@ -29,6 +29,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from "../../../common/commonPagination";
 import { CommonSummaryReportGraph } from "../../../dashboard/CommonSummaryReportGraph";
 import GraphOptionsList from "../../../dashboard/GraphOptionsList";
+import { hyphenFormatter } from "../../../masters/masterUtil";
 
 const BusinessValueReport = ({ }) => { 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -334,8 +335,9 @@ const BusinessValueReport = ({ }) => {
     resizable: true,
     filter: true,
     sortable: false,
-    floatingFilter: true
-  };
+    floatingFilter: true,
+    valueFormatter: hyphenFormatter
+  }
 
   const runReport = () => {
     setIsLoader(true)

@@ -30,6 +30,7 @@ import { Costratiograph } from "../../../dashboard/CostRatioGraph";
 import { colorArray } from "../../../dashboard/ChartsDashboard";
 import { PaginationWrapper } from "../../../common/commonPagination";
 import { CommonSummaryReportGraph } from "../../../dashboard/CommonSummaryReportGraph";
+import { hyphenFormatter } from "../../../masters/masterUtil";
 import GraphOptionsList from "../../../dashboard/GraphOptionsList";
 
 const SurfaceTreatmentBusinessValueReport = ({ }) => { 
@@ -337,7 +338,8 @@ const SurfaceTreatmentBusinessValueReport = ({ }) => {
     resizable: true,
     filter: true,
     sortable: false,
-    floatingFilter: true
+    floatingFilter: true,
+    valueFormatter: hyphenFormatter
   };
 
   const runReport = () => {
