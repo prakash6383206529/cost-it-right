@@ -10,7 +10,7 @@ import { REJECTION_RECOVERY_APPLICABILITY } from '../../../../../config/masterDa
 import { setRejectionRecoveryData } from '../../../actions/Costing';
 import TooltipCustom from '../../../../common/Tooltip';
 import { IsPartType, ViewCostingContext } from '../../CostingDetails';
-import { ASSEMBLYNAME } from '../../../../../config/constants';
+import { COMPONENT_PART } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { useLabels } from '../../../../../helper/core';
@@ -60,7 +60,7 @@ function AddRejectionRecovery(props) {
         if (label === 'recoveryApplicability') {
             costingHead && costingHead?.map(item => {
                 if (item.Value === '0') return false;
-                if (partType === ASSEMBLYNAME && normalize(item.Text) === "ScrapRate * NetWeight" && !IsMultiVendorCosting)
+                if (partType !== COMPONENT_PART && normalize(item.Text) === "ScrapRate * NetWeight")
                     return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
