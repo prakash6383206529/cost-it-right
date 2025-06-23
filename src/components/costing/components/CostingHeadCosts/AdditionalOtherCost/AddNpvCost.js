@@ -72,21 +72,19 @@ function AddNpvCost(props) {
     ] = watchedValues
 
     useEffect(() => {
-        if (islineInvestmentDrawer && investmentCost && upfrontPercentage) {
+        if (islineInvestmentDrawer && (upfrontPercentage || npvPercentage)) {
             calculateUpfrontCost(investmentCost, upfrontPercentage)
-        }
-        if (islineInvestmentDrawer && investmentCost && npvPercentage) {
             calculateAmortizationCost(investmentCost, npvPercentage)
         }
     }, [investmentCost, upfrontPercentage, npvPercentage])
 
     useEffect(() => {
-        if (islineInvestmentDrawer && amortizationCost && quantity) {
+        if (islineInvestmentDrawer) {
             calculateInvestmentCostPerPiece(amortizationCost, quantity)
         } else if (islineInvestmentDrawer && !amortizationCost) {
             setTotalCost(0)
         }
-    }, [amortizationCost, quantity])
+    }, [amortizationCost, quantity, upfrontPercentage])
 
     useEffect(() => {
         if(islineInvestmentDrawer){
@@ -148,13 +146,9 @@ function AddNpvCost(props) {
     }
 
     const calculateInvestmentCostPerPiece = (amortizationCost, amortizationVolume) => {
-        if(amortizationCost && amortizationVolume){
-            const investmentCostPerPiece = (checkForNull(amortizationCost)/checkForNull(amortizationVolume))
-            setValue("Total", checkForDecimalAndNull(investmentCostPerPiece, getConfigurationKey().NoOfDecimalForPrice))
-            setTotalCost(checkForDecimalAndNull(investmentCostPerPiece, getConfigurationKey().NoOfDecimalForPrice))
-        }else{
-           setTotalCost(0) 
-        }
+        const investmentCostPerPiece = (checkForNull(amortizationCost)/checkForNull(amortizationVolume))
+        setValue("Total", checkForDecimalAndNull(investmentCostPerPiece, getConfigurationKey().NoOfDecimalForPrice))
+        setTotalCost(checkForDecimalAndNull(investmentCostPerPiece, getConfigurationKey().NoOfDecimalForPrice))
     }
 
     // This function is used to handle quantity changes in an input field.
@@ -198,7 +192,7 @@ function AddNpvCost(props) {
     }
 
     const calculateAmortizationCost = (investmentCost, amortizationPercent) => {
-        if(investmentCost && amortizationPercent){
+        if(investmentCost || amortizationPercent){
             const amortizationCost = (checkForNull(investmentCost) * checkForNull(amortizationPercent))/100
             setValue("AmortizationCost", checkForNull(amortizationCost))
         }
@@ -207,13 +201,14 @@ function AddNpvCost(props) {
     const handleNpvPercentageChange = (e) => {
 
         // If a value is entered in the NpvPercentage field, disable the Total Cost field.
+        let value = e?.target?.value
+        if(islineInvestmentDrawer){
+            setValue("NpvPercentage", Number(value))
+            setValue("UpfrontPercentage", checkForNull(100 - Number(value)))
+        }
         if (e?.target?.value) {
             setDisableTotalCost(true)
-
-            if(islineInvestmentDrawer){
-                setValue("NpvPercentage", e?.target?.value)
-                setValue("UpfrontPercentage", checkForNull(100 - e?.target?.value))
-            }else{
+            if(!islineInvestmentDrawer){
             // If the Quantity field is also filled out, calculate the Total Cost based on the new NpvPercentage value.
             if (getValues('Quantity')) {
                 let NpvPercentage = e.target.value
@@ -242,10 +237,8 @@ function AddNpvCost(props) {
     
     const handleUpfrontPercentageChange = (e) => {
         let val = e?.target?.value
-        if (val) {
-            setValue("UpfrontPercentage", checkForNull(val))
-            setValue("NpvPercentage", checkForNull(100 - val))
-        }
+        setValue("UpfrontPercentage", checkForNull(val))
+        setValue("NpvPercentage", checkForNull(100 - val))
     }
 
 
@@ -332,6 +325,22 @@ function AddNpvCost(props) {
         ? (investmentCost !== '' && upfrontPercentage !== '' && upfrontCost !== '' && amortizationCost !== '')
         : true
 
+        if(islineInvestmentDrawer){
+            const total = checkForNull(upfrontPercentage) + checkForNull(NpvPercentage);
+            if (upfrontPercentage > 100 || NpvPercentage > 100) {
+                Toaster.warning(`${upfrontPercentage > 100 ? 'Upfront' : 'Amortization'} (%) should not be more than 100%.`);
+                return false;
+            }
+            if (total > 100) {
+                Toaster.warning('Total of Upfront (%) and Amortization (%) should not be more than 100%.');
+                return false;
+            }
+            if (total < 100) {
+                Toaster.warning('Sum of Upfront (%) and Amortization (%) should be exactly 100%.');
+                return false;
+            }
+        }
+
         // If all mandatory fields are filled out, create a new object with the data and add it to the table.
         if (hasBasicFields && hasLineFields) {
             let obj = {}
@@ -416,10 +425,10 @@ function AddNpvCost(props) {
             // Retrieve the data at the specified index from the tableData array, and set the values of various form fields based on the data.
             let Data = tableData[indexValue]
             setValue('TypeOfNpv', { label: Data.NpvType, value: Data.NpvType })
-            setValue('NpvPercentage', Data.NpvPercentage)
+            setValue('NpvPercentage', Data?.NpvPercentage ?? 0)
             setValue('Quantity', Data.NpvQuantity)
             setValue('InvestmentCost', Data.InvestmentCost)
-            setValue('UpfrontPercentage', Data.UpfrontPercentage)
+            setValue('UpfrontPercentage', Data?.UpfrontPercentage ?? 0)
             setValue('UpfrontCost', Data.UpfrontCost)
             setValue('AmortizationCost', Data.AmortizationCost)
             setValue('Total', checkForDecimalAndNull(Data.NpvCost, initialConfiguration?.NoOfDecimalForPrice))
@@ -601,9 +610,9 @@ function AddNpvCost(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
                                                     }}
                                                     onKeyDown={blockInvalidNumberKeys}
@@ -625,9 +634,9 @@ function AddNpvCost(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
                                                     }}
                                                     onKeyDown={blockInvalidNumberKeys}
@@ -652,9 +661,9 @@ function AddNpvCost(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={!islineInvestmentDrawer}
                                                 rules={{
-                                                    required: true,
+                                                    required: !islineInvestmentDrawer,
                                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
                                                 }}
                                                 onKeyDown={blockInvalidNumberKeys}
