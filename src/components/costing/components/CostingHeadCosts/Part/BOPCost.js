@@ -538,6 +538,7 @@ function BOPCost(props) {
                 />}
             </Col>
           </Row>
+          <div className={'cr-process-costwrap'}>
           {showDifferentBOPType() && <Row className="cr-innertool-cost">
             <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`${showBopLabel()} Domestic Cost: ${state.bopDomesticCost !== null ? checkForDecimalAndNull(state.bopDomesticCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
             <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`${showBopLabel()} CKD Cost: ${state.bopCKDCost !== null ? checkForDecimalAndNull(state.bopCKDCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
@@ -545,60 +546,47 @@ function BOPCost(props) {
             <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`${showBopLabel()} OSP Cost: ${state.bopOSPCost !== null ? checkForDecimalAndNull(state.bopOSPCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span></Col>
           </Row>}
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
-            <Row>
-              {/*BOP COST GRID */}
-
-              <Col md="12">
-                <Table className="table cr-brdr-main costing-bop-cost-section p-relative" size="sm" >
-                  <thead className={`${headerPinned ? 'sticky-headers' : ''} table-header`}>
-                    <tr>
-                      <th>{`${showBopLabel()} Part No.`}</th>
-                      <th>{`${showBopLabel()} Part Name`}</th>
-                      <th>{`UOM`}</th>
-                      <th>{`${showBopLabel()} Cost (${currencySource?.label ? currencySource?.label : initialConfiguration?.BaseCurrency})`}</th>
-                      <th>{`Quantity`}</th>
-                      <th>{`Net ${showBopLabel()} Cost`}</th>
-                      {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
-                      <th><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
-                    </tr>
-                  </thead>
-                  <tbody className='rm-table-body'>
-                    {
-                      gridData &&
-                      gridData.map((item, index) => {
-                        return (
-                          editIndex === index ?
-                            <tr key={index}>
-                              <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
-                              <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
-                              <td>{item.BoughtOutPartUOM}</td>
-                              <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                              <td style={{ width: 200 }}>
-                                {
-                                  item.BoughtOutPartUOM === 'Number' ?
-                                    <>
-                                      <TextFieldHookForm
-                                        label={false}
-                                        name={`${bopGridFields}.${index}.Quantity`}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                          validate: { number, checkWhiteSpaces, noDecimal, numberLimit6 },
-                                        }}
-                                        defaultValue={item.Quantity}
-                                        className=""
-                                        customClassName={'withBorder error-label'}
-                                        handleChange={(e) => {
-                                          e.preventDefault()
-                                          handleQuantityChange(e, index)
-                                        }}
-                                        errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
-                                        disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
-                                      />
-                                    </>
-                                    :
+            {showDifferentBOPType() ?
+            <>
+            {['Domestic', 'CKD', 'V2V', 'OSP'].map(bopType => (
+              <React.Fragment key={bopType}>
+                <Row className="align-items-center">
+                  <Col md="10">
+                    <div className="left-border">{`${showBopLabel()} ${bopType} Cost:`}{gridData && gridData.length !== 0 &&
+                      <TourWrapper
+                        buttonSpecificProp={{ id: "Costing_RM_Cost", onClick: tourStart }}
+                        stepsSpecificProp={{
+                          steps: Steps(t).BOP_COST
+                        }} />}</div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md="12">
+                    <Table className="table cr-brdr-main costing-bop-cost-section p-relative" size="sm" >
+                      <thead className={`${headerPinned ? 'sticky-headers' : ''} table-header`}>
+                        <tr>
+                          <th>{`${showBopLabel()} Part No.`}</th>
+                          <th>{`${showBopLabel()} Part Name`}</th>
+                          <th>{`UOM`}</th>
+                          <th>{`${showBopLabel()} Cost (${currencySource?.label ? currencySource?.label : initialConfiguration?.BaseCurrency})`}</th>
+                          <th>{`Quantity`}</th>
+                          <th>{`Net ${showBopLabel()} Cost`}</th>
+                          {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                          <th><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
+                        </tr>
+                      </thead>
+                      <tbody className='rm-table-body'>
+                        {
+                          gridData &&
+                          gridData.filter(item => item.BOPType === `BOP ${bopType}`).map((item, index) => {
+                            return (
+                              editIndex === index ?
+                                <tr key={index}>
+                                  <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
+                                  <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
+                                  <td>{item.BoughtOutPartUOM}</td>
+                                  <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                  <td style={{ width: 200 }}>
                                     <TextFieldHookForm
                                       label={false}
                                       name={`${bopGridFields}.${index}.Quantity`}
@@ -607,7 +595,11 @@ function BOPCost(props) {
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                        validate: { 
+                                          ...(item.BoughtOutPartUOM === 'Number' ? 
+                                            { number, checkWhiteSpaces, noDecimal, numberLimit6 } :
+                                            { number, checkWhiteSpaces, decimalNumberLimit6 })
+                                        },
                                       }}
                                       defaultValue={item.Quantity}
                                       className=""
@@ -617,94 +609,235 @@ function BOPCost(props) {
                                         handleQuantityChange(e, index)
                                       }}
                                       errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
-                                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ)}
                                     />
-                                }
-                              </td>
-                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
-                              {initialConfiguration?.IsShowCRMHead && <td>
-                                <SearchableSelectHookForm
-                                  name={`crmHeadBop${index}`}
-                                  type="text"
-                                  label="CRM Head"
-                                  errors={`${errors.crmHeadBop}${index}`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    required: false,
-                                  }}
-                                  defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: index } : ''}
-                                  placeholder={'Select'}
-                                  customClassName="costing-selectable-dropdown"
-                                  options={CRMHeads}
-                                  required={false}
-                                  handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                  disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
-                                />
-                              </td>}
-                              <td>
-                                <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} disabled={bopAddEditDeleteDisable} />}
-                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} disabled={bopAddEditDeleteDisable} />}
-                                  <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
-                                </div>
-                              </td>
-                            </tr>
-                            :
-                            <tr key={index}>
-                              <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
-                              <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
-                              <td>{item.BoughtOutPartUOM}</td>
-                              <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice) : ''}</td>
-                              <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
-                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
-                              {initialConfiguration?.IsShowCRMHead && <td>
-                                <SearchableSelectHookForm
-                                  name={`crmHeadBop${index}`}
-                                  type="text"
-                                  label="CRM Head"
-                                  errors={`${errors.crmHeadBop}${index}`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    required: false,
-                                  }}
-                                  defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: index } : ''}
-                                  placeholder={'Select'}
-                                  customClassName="costing-selectable-dropdown"
-                                  options={CRMHeads}
-                                  required={false}
-                                  handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                  disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
-                                />
-                              </td>}
-                              <td>
-                                <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} disabled={bopAddEditDeleteDisable} />}
-                                  {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} disabled={bopAddEditDeleteDisable} />}
-                                  <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
-                                </div>
-                              </td>
-                            </tr>
+                                  </td>
+                                  <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
+                                  {initialConfiguration?.IsShowCRMHead && <td>
+                                    <SearchableSelectHookForm
+                                      name={`crmHeadBop${index}`}
+                                      type="text"
+                                      label="CRM Head"
+                                      errors={`${errors.crmHeadBop}${index}`}
+                                      Controller={Controller}
+                                      control={control}
+                                      register={register}
+                                      mandatory={false}
+                                      rules={{
+                                        required: false,
+                                      }}
+                                      defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: index } : ''}
+                                      placeholder={'Select'}
+                                      customClassName="costing-selectable-dropdown"
+                                      options={CRMHeads}
+                                      required={false}
+                                      handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                      disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
+                                    />
+                                  </td>}
+                                  <td>
+                                    <div className='action-btn-wrapper'>
+                                      {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} disabled={bopAddEditDeleteDisable} />}
+                                      {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} disabled={bopAddEditDeleteDisable} />}
+                                      <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
+                                    </div>
+                                  </td>
+                                </tr>
+                                :
+                                <tr key={index}>
+                                  <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
+                                  <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
+                                  <td>{item.BoughtOutPartUOM}</td>
+                                  <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice) : ''}</td>
+                                  <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                                  <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
+                                  {initialConfiguration?.IsShowCRMHead && <td>
+                                    <SearchableSelectHookForm
+                                      name={`crmHeadBop${index}`}
+                                      type="text"
+                                      label="CRM Head"
+                                      errors={`${errors.crmHeadBop}${index}`}
+                                      Controller={Controller}
+                                      control={control}
+                                      register={register}
+                                      mandatory={false}
+                                      rules={{
+                                        required: false,
+                                      }}
+                                      defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: index } : ''}
+                                      placeholder={'Select'}
+                                      customClassName="costing-selectable-dropdown"
+                                      options={CRMHeads}
+                                      required={false}
+                                      handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                      disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
+                                    />
+                                  </td>}
+                                  <td>
+                                    <div className='action-btn-wrapper'>
+                                      {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} disabled={bopAddEditDeleteDisable} />}
+                                      {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} disabled={bopAddEditDeleteDisable} />}
+                                      <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
+                                    </div>
+                                  </td>
+                                </tr>
+                            )
+                          })
+                        }
+                        {(!gridData || gridData.filter(item => item.BOPType === `BOP ${bopType}`).length === 0) &&
+                          <tr>
+                            <td colSpan={12}>
+                              <NoContentFound title={EMPTY_DATA} />
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </Table>
+                  </Col>
+                </Row>
+              </React.Fragment>
+            ))}
+            </>:
+            <Row>
+              <>
+            {/*BOP COST GRID */}
 
-                        )
-                      })
-                    }
-                    {gridData && gridData.length === 0 &&
-                      <tr>
-                        <td colSpan={12}>
-                          <NoContentFound title={EMPTY_DATA} />
-                        </td>
-                      </tr>
-                    }
-                  </tbody>
-                </Table>
-              </Col>
-            </Row>
+            <Col md="12">
+              <Table className="table cr-brdr-main costing-bop-cost-section p-relative" size="sm" >
+                <thead className={`${headerPinned ? 'sticky-headers' : ''} table-header`}>
+                  <tr>
+                    <th>{`${showBopLabel()} Part No.`}</th>
+                    <th>{`${showBopLabel()} Part Name`}</th>
+                    <th>{`UOM`}</th>
+                    <th>{`${showBopLabel()} Cost (${currencySource?.label ? currencySource?.label : initialConfiguration?.BaseCurrency})`}</th>
+                    <th>{`Quantity`}</th>
+                    <th>{`Net ${showBopLabel()} Cost`}</th>
+                    {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                    <th><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
+                  </tr>
+                </thead>
+                <tbody className='rm-table-body'>
+                  {
+                    gridData &&
+                    gridData.map((item, index) => {
+                      return (
+                        editIndex === index ?
+                          <tr key={index}>
+                            <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
+                            <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
+                            <td>{item.BoughtOutPartUOM}</td>
+                            <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                            <td style={{ width: 200 }}>
+                              <TextFieldHookForm
+                                label={false}
+                                name={`${bopGridFields}.${index}.Quantity`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  validate: { 
+                                    ...(item.BoughtOutPartUOM === 'Number' ? 
+                                      { number, checkWhiteSpaces, noDecimal, numberLimit6 } :
+                                      { number, checkWhiteSpaces, decimalNumberLimit6 })
+                                  },
+                                }}
+                                defaultValue={item.Quantity}
+                                className=""
+                                customClassName={'withBorder error-label'}
+                                handleChange={(e) => {
+                                  e.preventDefault()
+                                  handleQuantityChange(e, index)
+                                }}
+                                errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
+                                disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ)}
+                              />
+                            </td>
+                            <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
+                            {initialConfiguration?.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadBop${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadBop}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: index } : ''}
+                                placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
+                                options={CRMHeads}
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
+                              />
+                            </td>}
+                            <td>
+                              <div className='action-btn-wrapper'>
+                                {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} disabled={bopAddEditDeleteDisable} />}
+                                {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} disabled={bopAddEditDeleteDisable} />}
+                                <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
+                              </div>
+                            </td>
+                          </tr>
+                          :
+                          <tr key={index}>
+                            <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
+                            <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
+                            <td>{item.BoughtOutPartUOM}</td>
+                            <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice) : ''}</td>
+                            <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                            <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
+                            {initialConfiguration?.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadBop${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadBop}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: index } : ''}
+                                placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
+                                options={CRMHeads}
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
+                              />
+                            </td>}
+                            <td>
+                              <div className='action-btn-wrapper'>
+                                {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} disabled={bopAddEditDeleteDisable} />}
+                                {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} disabled={bopAddEditDeleteDisable} />}
+                                <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
+                              </div>
+                            </td>
+                          </tr>
+
+                      )
+                    })
+                  }
+                  {gridData && gridData.length === 0 &&
+                    <tr>
+                      <td colSpan={12}>
+                        <NoContentFound title={EMPTY_DATA} />
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </Table>
+            </Col>
+          </>
+          </Row>}
             <Row className='handling-charge'>
               <div className="pl-3">
                 <span className="d-inline-block" id="bop_handling_charge">
@@ -785,6 +918,7 @@ function BOPCost(props) {
             </Row>
           </form>
         </div>
+        </div >
       </div >
       {remarkAccept &&
         <PopupMsgWrapper

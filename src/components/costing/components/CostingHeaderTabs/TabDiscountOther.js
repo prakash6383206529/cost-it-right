@@ -1640,10 +1640,6 @@ function TabDiscountOther(props) {
     let tempListCondition = [...conditionTableData]
 
     const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost)
-    const RMBOPCC = checkForNull(headerCosts.NetBoughtOutPartCost) + checkForNull(headerCosts.NetRawMaterialsCost) + checkForNull(ConversionCostForCalculation)
-    const RMBOP = checkForNull(headerCosts.NetRawMaterialsCost) + checkForNull(headerCosts.NetBoughtOutPartCost);
-    const RMCC = checkForNull(headerCosts.NetRawMaterialsCost) + checkForNull(ConversionCostForCalculation);
-    const BOPCC = checkForNull(headerCosts.NetBoughtOutPartCost) + checkForNull(ConversionCostForCalculation);
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
     const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
 
@@ -1651,6 +1647,8 @@ function TabDiscountOther(props) {
     const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
 
     const calculateCostByApplicability = (item, isDiscount = false) => {
+      console.log(item,'item');
+      
       if (item?.OtherCostApplicability === 'Fixed' || item?.ApplicabilityType === 'Fixed') return item;
 
       const percent = isDiscount ? item?.PercentageDiscountCost : item?.PercentageOtherCost;
@@ -1666,23 +1664,8 @@ function TabDiscountOther(props) {
         case 'BOP':
           applicabilityCost = checkForNull(headerCosts.NetBoughtOutPartCost);
           break;
-        case 'RM + CC':
-        case 'Part Cost + CC':
-          applicabilityCost = RMCC;
-          break;
-        case 'BOP + CC':
-          applicabilityCost = BOPCC;
-          break;
         case 'CC':
           applicabilityCost = ConversionCostForCalculation;
-          break;
-        case 'RM + CC + BOP':
-        case 'Part Cost + CC + BOP':
-          applicabilityCost = RMBOPCC;
-          break;
-        case 'RM + BOP':
-        case 'Part Cost + BOP':
-          applicabilityCost = RMBOP;
           break;
         case 'Net Cost':
           applicabilityCost = totalTabCost;

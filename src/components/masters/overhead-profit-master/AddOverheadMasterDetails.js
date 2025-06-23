@@ -73,11 +73,33 @@ const AddOverheadMasterDetails = (props) => {
                 includeOnlyFixed = fixedExists;
                 excludeFixed = !fixedExists;
             }
+
             const filtered = costingHead.filter(item => {
                 const isFixed = item.Text?.toLowerCase() === "fixed";
                 const isAlreadyUsed = state.ApplicabilityDetails?.some(
                     ap => ap.ApplicabilityId == item.Value
                 );
+                
+                // Check if BOP exists in ApplicabilityDetails
+                const hasBOP = state.ApplicabilityDetails?.some(
+                    ap => ap.Applicability === "BOP"
+                );
+
+                // Check if any BOP variant exists in ApplicabilityDetails
+                const hasBOPVariant = state.ApplicabilityDetails?.some(
+                    ap => ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(ap.Applicability)
+                );
+
+                // Remove BOP variants if BOP exists
+                if (hasBOP && ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(item.Text)) {
+                    return false;
+                }
+
+                // Remove BOP if any BOP variant exists
+                if (hasBOPVariant && item.Text === "BOP") {
+                    return false;
+                }
+
                 if (Number(item.Value) === 0) return false;
                 if (includeOnlyFixed && !isFixed) return false;
                 if (excludeFixed && isFixed) return false;

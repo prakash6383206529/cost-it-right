@@ -152,6 +152,11 @@ NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCostWithQuantity ? TopHe
           NetBOPImportCost: TopHeaderValues?.NetBOPImportCost ?? 0,
           NetBOPSourceCost: TopHeaderValues?.NetBOPSourceCost ?? 0,
           NetBOPOutsourcedCost: TopHeaderValues?.NetBOPOutsourcedCost ?? 0,
+          NetBoughtOutPartCostWithOutHandlingCharge: TopHeaderValues?.NetBoughtOutPartCostWithOutHandlingCharge ?? 0,
+          NetBOPDomesticCostWithOutHandlingCharge: TopHeaderValues?.NetBOPDomesticCostWithOutHandlingCharge ?? 0,
+          NetBOPImportCostWithOutHandlingCharge: TopHeaderValues?.NetBOPImportCostWithOutHandlingCharge ?? 0,
+          NetBOPSourceCostWithOutHandlingCharge: TopHeaderValues?.NetBOPSourceCostWithOutHandlingCharge ?? 0,
+          NetBOPOutsourcedCostWithOutHandlingCharge: TopHeaderValues?.NetBOPOutsourcedCostWithOutHandlingCharge ?? 0,
         }
       }
       props.setHeaderCost(topHeaderData)
@@ -635,7 +640,16 @@ partObj.CostingPartDetails.CostingRawMaterialCommonCalculationId = gridData[0]?.
           item.BOPType === "BOP V2V" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0) + checkForNull(checkboxFields?.NetBOPSourceHandlingCost)
         partObj.CostingPartDetails.NetBOPOutsourcedCost = gridData?.reduce((acc, item) =>
           item.BOPType === "BOP OSP" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0) + checkForNull(checkboxFields?.NetBOPOutsourcedHandlingCost)
+        partObj.CostingPartDetails.NetBOPDomesticCostWithOutHandlingCharge = gridData?.reduce((acc, item) =>
+          item.BOPType === "BOP Domestic" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+        partObj.CostingPartDetails.NetBOPImportCostWithOutHandlingCharge = gridData?.reduce((acc, item) =>
+          item.BOPType === "BOP CKD" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+        partObj.CostingPartDetails.NetBOPSourceCostWithOutHandlingCharge = gridData?.reduce((acc, item) =>
+          item.BOPType === "BOP V2V" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+        partObj.CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge = gridData?.reduce((acc, item) =>
+          item.BOPType === "BOP OSP" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
         partObj.CostingPartDetails.NetBoughtOutPartCost = checkboxFields?.IsApplyBOPHandlingCharges ? (netBOPCost(gridData) + checkForNull(checkboxFields?.BOPHandlingCharges)) : netBOPCost(gridData);
+        partObj.CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge = netBOPCost(gridData);
         partObj.CostingPartDetails.IsApplyBOPHandlingCharges = checkboxFields?.IsApplyBOPHandlingCharges;
         partObj.CostingPartDetails.BOPHandlingCharges = checkForNull(checkboxFields?.BOPHandlingCharges);
         GrandTotalCost = checkForNull(partObj?.CostingPartDetails?.NetRawMaterialsCost) + checkForNull(partObj?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(partObj?.CostingPartDetails?.NetConversionCost)

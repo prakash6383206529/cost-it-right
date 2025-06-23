@@ -92,6 +92,10 @@ import {
   SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS,
   SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_ICC,
   SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_PAYMENT,
+  SET_SURFACE_COST_FOR_OVERHEAD,
+  SET_SURFACE_COST_FOR_PROFIT,
+  SET_TOOL_COST_FOR_OVERHEAD,
+  SET_TOOL_COST_FOR_PROFIT,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -3569,6 +3573,56 @@ export function setApplicabilityForChildParts(IsInclude) {
     dispatch({
       type:SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS,
       payload: IsInclude,
+    });
+  }
+};
+
+/**
+ * @method setSurfaceCostInOverhead
+ * @description SET SURFACE TREATMENT COST FOR OVERHEAD
+ */
+export function setSurfaceCostInOverhead(IsIncluded) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_SURFACE_COST_FOR_OVERHEAD,
+      payload: IsIncluded,
+    });
+  }
+};
+
+/**
+ * @method setSurfaceCostInProfit
+ * @description SET SURFACE TREATMENT COST FOR PROFIT
+ */
+export function setSurfaceCostInProfit(IsIncluded) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_SURFACE_COST_FOR_PROFIT,
+      payload: IsIncluded,
+    });
+  }
+};
+/**
+ * @method setToolCostInOverhead
+ * @description ADD TOOL COST IN OVERHEAD
+ */
+export function setToolCostInOverhead(IsIncluded) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_TOOL_COST_FOR_OVERHEAD,
+      payload: IsIncluded,
+    });
+  }
+};
+/**
+ * @method setToolCostInProfit
+ * @description ADD TOOL COST IN PROFIT
+ */
+export function setToolCostInProfit(IsIncluded) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_TOOL_COST_FOR_PROFIT,
+      payload: IsIncluded,
     });
   }
 };
