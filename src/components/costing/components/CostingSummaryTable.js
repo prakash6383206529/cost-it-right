@@ -3644,6 +3644,23 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
+                          {!initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowLineInvestmentCost &&
+                            <tr>
+                              <td>
+                                <span className={`d-block small-grey-text`}>Line Investment Cost</span>
+                              </td>
+                              {viewCostingData &&
+                                viewCostingData?.map((data, index) => {
+                                  return (
+                                    <td className={tableDataClass(data)}>
+                                      <span title={data?.netLineInvestmentCost} className={`d-block small-grey-text w-fit `}>
+                                        {(data?.CostingHeading !== VARIANCE && data?.bestCost !== true) ? checkForDecimalAndNull(data?.netLineInvestmentCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                      </span>
+                                    </td>
+                                  )
+                                })}
+                            </tr>
+                          }
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("netConditionCost", "main-row")} netPo-row`}>
 

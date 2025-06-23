@@ -668,18 +668,16 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                             <tbody>
                                 {renderTableRows()}
                                 <tr className="table-footer">
-                                    <td colSpan={4} className="text-right">
-                                        <TooltipCustom
-                                            id="totalNormsCost"
-                                            className="mt-n1 pb-4"
-                                            tooltipClass="text-start"
-                                            disabledIcon={true}
-                                            tooltipText={'Total Norm (Consumption) Cost includes only applicable Consumption as per configuration'}
-                                        />
-                                        <span id="totalNormsCost">
-                                            Total Norm (Consumption) Cost
+                                    <th colSpan={4} className="text-right">
+                                        <span>Total Norm (Consumption) Cost 
+                                            <TooltipCustom 
+                                                customClass="float-unset ml-1" 
+                                                tooltipClass="totalNormsCost" 
+                                                id={`totalNormsCost`} 
+                                                tooltipText={'Total Norm (Consumption) Cost includes only applicable Consumption as per configuration'}
+                                            />
                                         </span>
-                                    </td>
+                                    </th>
                                     <td colSpan={2}>
                                         {/* <TooltipCustom
                                             id="totalGSM"
