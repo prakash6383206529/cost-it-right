@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
-import { checkForDecimalAndNull } from '../../../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
 import { Drawer } from '@material-ui/core'
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
 import { typeofNpvDropdown } from '../../../../../config/masterData'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, blockInvalidNumberKeys, nonZero } from "../../../../../helper/validation";
@@ -21,13 +21,16 @@ import Tco from './Tco'
 import { ViewCostingContext } from '../../CostingDetails'
 
 function AddNpvCost(props) {
-    const { partId, vendorId } = props
+    const { partId, vendorId, drawerType } = props
+    const islineInvestmentDrawer = drawerType === "LineInvestmentCost"
+    const colMd = islineInvestmentDrawer ? "3" : "2"
     const [tableData, setTableData] = useState(props.tableData)
     const [conditionTableData, seConditionTableData] = useState([])
     const [costingSummary, setCostingSummary] = useState(props.costingSummary ? props.costingSummary : false)
     const [disableNpvPercentage, setDisableNpvPercentage] = useState(false)
     const [disableTotalCost, setDisableTotalCost] = useState(false)
     const [disableAllFields, setDisableAllFields] = useState(true)
+    const [disableLineCostFields, setDisableLineCostFields] = useState(false)
     const [disableQuantity, setDisableQuantity] = useState(false)
     const [editIndex, setEditIndex] = useState('')
     const [isEditMode, setIsEditMode] = useState(false)
@@ -39,7 +42,7 @@ function AddNpvCost(props) {
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const isRfqCostingTypeDefined = IsRfqCostingType && (IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting);
-    const label = props?.totalCostFromSummary ? 'TCO Cost' : !(isRfqCostingTypeDefined) ? 'Add NPV:' : 'View TCO:';
+    const label = props?.totalCostFromSummary ? 'TCO Cost' : !(isRfqCostingTypeDefined) ? (islineInvestmentDrawer ? "Investment Cost (Line/Plant)" : 'Add NPV:') : 'View TCO:';
     const CostingViewMode = useContext(ViewCostingContext);
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
@@ -48,6 +51,50 @@ function AddNpvCost(props) {
     })
 
     const dispatch = useDispatch();
+
+    const watchedValues = useWatch({
+        control,
+        name: [
+            'InvestmentCost',
+            'UpfrontPercentage',
+            'NpvPercentage',
+            'Quantity',
+            'AmortizationCost'
+        ]
+    })
+
+    const [
+        investmentCost,
+        upfrontPercentage,
+        npvPercentage,
+        quantity,
+        amortizationCost
+    ] = watchedValues
+
+    useEffect(() => {
+        if (islineInvestmentDrawer && investmentCost && upfrontPercentage) {
+            calculateUpfrontCost(investmentCost, upfrontPercentage)
+        }
+        if (islineInvestmentDrawer && investmentCost && npvPercentage) {
+            calculateAmortizationCost(investmentCost, npvPercentage)
+        }
+    }, [investmentCost, upfrontPercentage, npvPercentage])
+
+    useEffect(() => {
+        if (islineInvestmentDrawer && amortizationCost && quantity) {
+            calculateInvestmentCostPerPiece(amortizationCost, quantity)
+        } else if (islineInvestmentDrawer && !amortizationCost) {
+            setTotalCost(0)
+        }
+    }, [amortizationCost, quantity])
+
+    useEffect(() => {
+        if(islineInvestmentDrawer){
+            let val = { label: 'Line Investment', value: 'Line Investment' }
+            setValue("TypeOfNpv", val)
+            setDisableLineCostFields(tableData?.some(obj => obj.NpvType === 'Line Investment') || false);
+        }
+    }, [tableData])
 
     useEffect(() => {
         if (props.costingSummary) {
@@ -100,19 +147,30 @@ function AddNpvCost(props) {
         setDisableQuantity(false)
     }
 
+    const calculateInvestmentCostPerPiece = (amortizationCost, amortizationVolume) => {
+        if(amortizationCost && amortizationVolume){
+            const investmentCostPerPiece = (checkForNull(amortizationCost)/checkForNull(amortizationVolume))
+            setValue("Total", checkForDecimalAndNull(investmentCostPerPiece, getConfigurationKey().NoOfDecimalForPrice))
+            setTotalCost(checkForDecimalAndNull(investmentCostPerPiece, getConfigurationKey().NoOfDecimalForPrice))
+        }else{
+           setTotalCost(0) 
+        }
+    }
 
     // This function is used to handle quantity changes in an input field.
     const handleQuantityChange = (e) => {
-
-        // Check if there is a value in the input field
-        if (e?.target?.value) {
+        let val = e?.target?.value
+        if (val) {
+            if(islineInvestmentDrawer){
+                setValue('Quantity', val)
+            }else{
 
             // If total cost is disabled, calculate the total cost based on the net PO price and quantity input
             if (disableTotalCost) {
 
                 // Get the NPV percentage and quantity input
                 let NpvPercentage = getValues('NpvPercentage')
-                let quantity = e.target.value
+                let quantity = val
 
                 // Calculate the total cost based on the NPV percentage, net PO price, and quantity input
                 let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
@@ -126,7 +184,7 @@ function AddNpvCost(props) {
 
                 // Get the total cost and quantity input
                 let total = getValues('Total')
-                let quantity = e.target.value
+                let quantity = val
 
                 // Calculate the NPV percentage based on the total cost, net PO price, and quantity input
                 let npvPercent = (total * 100) / (props.netPOPrice * quantity)
@@ -135,6 +193,14 @@ function AddNpvCost(props) {
                 setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration?.NoOfDecimalForPrice))
 
             }
+            }
+        }
+    }
+
+    const calculateAmortizationCost = (investmentCost, amortizationPercent) => {
+        if(investmentCost && amortizationPercent){
+            const amortizationCost = (checkForNull(investmentCost) * checkForNull(amortizationPercent))/100
+            setValue("AmortizationCost", checkForNull(amortizationCost))
         }
     }
 
@@ -144,6 +210,10 @@ function AddNpvCost(props) {
         if (e?.target?.value) {
             setDisableTotalCost(true)
 
+            if(islineInvestmentDrawer){
+                setValue("NpvPercentage", e?.target?.value)
+                setValue("UpfrontPercentage", checkForNull(100 - e?.target?.value))
+            }else{
             // If the Quantity field is also filled out, calculate the Total Cost based on the new NpvPercentage value.
             if (getValues('Quantity')) {
                 let NpvPercentage = e.target.value
@@ -153,12 +223,28 @@ function AddNpvCost(props) {
                 setTotalCost(total)
                 errors.Total = []
             }
+            }
 
         } else {
 
             // If the NpvPercentage field is empty, enable the Total Cost field and clear the Total Cost value.
             setDisableTotalCost(false)
             setValue('', '')
+        }
+    }
+
+    const calculateUpfrontCost = (investmentCost, upfrontPercent) => {
+        if(investmentCost && upfrontPercent){
+            const upfrontCost = (checkForNull(investmentCost) * checkForNull(upfrontPercent))/100
+            setValue("UpfrontCost", checkForNull(upfrontCost))
+        }
+    }
+    
+    const handleUpfrontPercentageChange = (e) => {
+        let val = e?.target?.value
+        if (val) {
+            setValue("UpfrontPercentage", checkForNull(val))
+            setValue("NpvPercentage", checkForNull(100 - val))
         }
     }
 
@@ -187,10 +273,16 @@ function AddNpvCost(props) {
         }
     }
 
+    const handleInvestmentCostChange = (e) => {
+        let val = e?.target?.value
+        if (val) {
+            setValue("InvestmentCost", checkForNull(val))
+        }
+    }
+
 
     // This function is called when the user clicks a button to add data to a table.
     const addData = () => {
-
         if (errors.NpvPercentage) {
             return false
         }
@@ -219,14 +311,38 @@ function AddNpvCost(props) {
             return false
         }
 
-        // If all mandatory fields are filled out, create a new object with the data and add it to the table.
-        if (getValues('TypeOfNpv') && getValues('NpvPercentage') && getValues('Quantity')) {
-            let obj = {}
-            obj.NpvType = getValues('TypeOfNpv') ? getValues('TypeOfNpv').label : ''
-            obj.NpvPercentage = getValues('NpvPercentage') ? getValues('NpvPercentage') : ''
-            obj.NpvQuantity = getValues('Quantity') ? getValues('Quantity') : ''
-            obj.NpvCost = totalCost ? totalCost : ''
+        const [TypeOfNpv, NpvPercentage, Quantity] = getValues([
+            'TypeOfNpv',
+            'NpvPercentage',
+            'Quantity'
+        ])
 
+        const [investmentCost, upfrontPercentage, upfrontCost, amortizationCost] = getValues([
+            'InvestmentCost',
+            'UpfrontPercentage',
+            'UpfrontCost',
+            'AmortizationCost'
+        ])
+
+        // Check for basic fields
+        const hasBasicFields = TypeOfNpv !== '' && npvPercentage !== '' && quantity !== ''
+
+        // Check for additional fields if islineInvestmentDrawer is true
+        const hasLineFields = islineInvestmentDrawer
+        ? (investmentCost !== '' && upfrontPercentage !== '' && upfrontCost !== '' && amortizationCost !== '')
+        : true
+
+        // If all mandatory fields are filled out, create a new object with the data and add it to the table.
+        if (hasBasicFields && hasLineFields) {
+            let obj = {}
+            obj.NpvType = TypeOfNpv ? TypeOfNpv.label : ''
+            obj.NpvPercentage = NpvPercentage ? NpvPercentage : ''
+            obj.NpvQuantity = Quantity ? Quantity : ''
+            obj.NpvCost = totalCost ? totalCost : ''
+            obj.InvestmentCost = investmentCost ? investmentCost : ''
+            obj.UpfrontPercentage = upfrontPercentage ? upfrontPercentage : ''
+            obj.UpfrontCost = upfrontCost ? upfrontCost : ''
+            obj.AmortizationCost = amortizationCost ? amortizationCost : ''
             // If we're in edit mode, update the existing row with the new data.
             // Otherwise, add the new row to the end of the table.
             if (isEditMode) {
@@ -248,10 +364,19 @@ function AddNpvCost(props) {
     }
 
     const resetData = () => {
-        setValue('TypeOfNpv', '')
+        if(islineInvestmentDrawer){
+            let val = { label: 'Line Investment', value: 'Line Investment' }
+            setValue("TypeOfNpv", val)
+        }else{
+            setValue('TypeOfNpv', '')
+        }
         setValue('NpvPercentage', '')
         setValue('Quantity', '')
         setValue('Total', '')
+        setValue('InvestmentCost', '')
+        setValue('UpfrontPercentage', '')
+        setValue('UpfrontCost', '')
+        setValue('AmortizationCost', '')
         setTotalCost('')
         setDisableAllFields(true)
         setIsEditMode(false)
@@ -284,7 +409,6 @@ function AddNpvCost(props) {
             setEditIndex(indexValue)
             setIsEditMode(true)
             if (tableData[indexValue]?.NpvType === 'Tool Investment') {
-                
                 setDisableQuantity(true)
             } else {
                 setDisableQuantity(false)
@@ -294,10 +418,15 @@ function AddNpvCost(props) {
             setValue('TypeOfNpv', { label: Data.NpvType, value: Data.NpvType })
             setValue('NpvPercentage', Data.NpvPercentage)
             setValue('Quantity', Data.NpvQuantity)
+            setValue('InvestmentCost', Data.InvestmentCost)
+            setValue('UpfrontPercentage', Data.UpfrontPercentage)
+            setValue('UpfrontCost', Data.UpfrontCost)
+            setValue('AmortizationCost', Data.AmortizationCost)
             setValue('Total', checkForDecimalAndNull(Data.NpvCost, initialConfiguration?.NoOfDecimalForPrice))
             setTotalCost(Data.NpvCost)
             setDisableTotalCost(false)
             setDisableAllFields(false)
+            setDisableLineCostFields(false)
             setDisableNpvPercentage(false)
             //setDisableQuantity(false)
         }
@@ -330,29 +459,85 @@ function AddNpvCost(props) {
                                 </Row>
                                 <div className='hidepage-size'>
                                     {!costingSummary && initialConfiguration?.IsShowNpvCost && <Row>
-
-                                        <Col md="3" className='pr-1'>
-                                            <SearchableSelectHookForm
-                                                label={`Type of Investment`}
-                                                name={'TypeOfNpv'}
-                                                placeholder={'Select'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                options={typeofNpvDropdown}
-                                                handleChange={handleNpvChange}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.LossOfType}
-                                                disabled={CostingViewMode}
-                                            />
-                                        </Col>
-                                        <Col md="2" className='px-1'>
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'percentage'} tooltipText={'Percentage = (Total * 100) / Quantity * Net Cost'} />
+                                        {!islineInvestmentDrawer &&
+                                            <Col md="3" className='pr-1'>
+                                                <SearchableSelectHookForm
+                                                    label={`Type of Investment`}
+                                                    name={'TypeOfNpv'}
+                                                    placeholder={'Select'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    options={typeofNpvDropdown}
+                                                    handleChange={handleNpvChange}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.LossOfType}
+                                                    disabled={CostingViewMode}
+                                                />
+                                            </Col>
+                                        }
+                                        {islineInvestmentDrawer &&
+                                        <>
+                                            <Col md={colMd}>
+                                                <NumberFieldHookForm
+                                                    label={`Investment Cost`}
+                                                    name={'InvestmentCost'}
+                                                    id={'Investment-cost'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    rules={{
+                                                        required: true,
+                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
+                                                    }}
+                                                    onKeyDown={blockInvalidNumberKeys}
+                                                    handleChange={handleInvestmentCostChange}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.InvestmentCost}
+                                                    disabled={CostingViewMode || disableLineCostFields}
+                                                />
+                                            </Col>
+                                        
+                                            <Col md={colMd} className='px-1'>
+                                                <NumberFieldHookForm
+                                                    label={`Upfront (%)`}
+                                                    name={'UpfrontPercentage'}
+                                                    id={'upfront-percentage'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    rules={{
+                                                        required: false,
+                                                        validate: { number, checkWhiteSpaces, percentageLimitValidation, nonZero },
+                                                        max: {
+                                                            value: 100,
+                                                            message: 'Percentage should be less than 100'
+                                                        },
+                                                    }}
+                                                    onKeyDown={blockInvalidNumberKeys}
+                                                    handleChange={handleUpfrontPercentageChange}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.UpfrontPercentage}
+                                                    disabled={CostingViewMode || disableLineCostFields}
+                                                />
+                                            </Col>
+                                            </>
+                                        }
+                                        <Col md={colMd} className='px-1'>
+                                            {!islineInvestmentDrawer &&
+                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'percentage'} tooltipText={'Percentage = (Total * 100) / Quantity * Net Cost'} />
+                                            }
                                             <NumberFieldHookForm
-                                                label={`Percentage (%)`}
+                                                label={`${islineInvestmentDrawer ? "Amortization" : "Percentage"} (%)`}
                                                 name={'NpvPercentage'}
                                                 id={'percentage'}
                                                 Controller={Controller}
@@ -374,12 +559,16 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.NpvPercentage}
-                                                disabled={CostingViewMode || disableNpvPercentage || disableAllFields}
+                                                // disabled={CostingViewMode || disableNpvPercentage || disableAllFields}
+                                                disabled={
+                                                    (islineInvestmentDrawer ? disableLineCostFields : disableAllFields || disableNpvPercentage)
+                                                    || CostingViewMode
+                                                }
                                             />
                                         </Col>
-                                        <Col md="2" className='px-1'>
+                                        <Col md={colMd} className='px-1'>
                                             <NumberFieldHookForm
-                                                label={`Quantity`}
+                                                label={`${islineInvestmentDrawer ? "Quantity/ Amortization Volume" :"Quantity"}`}
                                                 name={'Quantity'}
                                                 Controller={Controller}
                                                 control={control}
@@ -395,13 +584,69 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Quantity}
-                                                disabled={CostingViewMode || disableAllFields || disableQuantity}
+                                                disabled={
+                                                    (islineInvestmentDrawer ? disableLineCostFields : disableAllFields || disableQuantity)
+                                                    || CostingViewMode
+                                                }
                                             />
                                         </Col>
-                                        <Col md="2" className='px-1'>
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cost'} tooltipText={'Total = (Percentage / 100) * Quantity * Net Cost'} />
+                                        {islineInvestmentDrawer &&
+                                        <>
+                                            <Col md="3">
+                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'upFront-cost'} tooltipText={'UpFront Cost = (Investment Cost * Upfront Percentage)/100'} />
+                                                <NumberFieldHookForm
+                                                    label={`UpFront Cost`}
+                                                    name={'UpfrontCost'}
+                                                    id={'upFront-cost'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    rules={{
+                                                        required: true,
+                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
+                                                    }}
+                                                    onKeyDown={blockInvalidNumberKeys}
+                                                    handleChange={() => {}}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.UpfrontCost}
+                                                    disabled={true}
+                                                />
+                                            </Col>
+                                        
+                                            <Col md="3" className='px-1'>
+                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'amortization-cost'} tooltipText={'Amortization Cost = (Investment Cost * Amortization %)/100'} />
+                                                <NumberFieldHookForm
+                                                    label={`Amortization Cost`}
+                                                    name={'AmortizationCost'}
+                                                    id={'amortization-cost'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    rules={{
+                                                        required: true,
+                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
+                                                    }}
+                                                    onKeyDown={blockInvalidNumberKeys}
+                                                    handleChange={handleTotalCostChange}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.AmortizationCost}
+                                                    disabled={true}
+                                                />
+                                            </Col>
+                                            </>
+                                        }
+                                        <Col md={colMd} className='px-1'>
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cost'} 
+                                                tooltipText={`${islineInvestmentDrawer ? "Investement Cost/Pc = Amortization Cost / (Quantity/Amortization Volume)" : "Total = (Percentage / 100) * Quantity * Net Cost"}`} 
+                                            />
                                             <NumberFieldHookForm
-                                                label={`Total`}
+                                                label={`${islineInvestmentDrawer ? "Investement Cost/Pc" : "Total"}`}
                                                 name={'Total'}
                                                 id={'total-cost'}
                                                 Controller={Controller}
@@ -418,7 +663,7 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Total}
-                                                disabled={CostingViewMode || disableTotalCost || disableAllFields}
+                                                disabled={CostingViewMode || disableTotalCost || disableAllFields || islineInvestmentDrawer}
                                             />
                                         </Col>
                                         <Col md="3" className="mt-4 pt-1">
@@ -427,7 +672,7 @@ function AddNpvCost(props) {
                                                 type="button"
                                                 className={"user-btn  pull-left mt-1"}
                                                 onClick={addData}
-                                                disabled={CostingViewMode}
+                                                disabled={CostingViewMode || (islineInvestmentDrawer && disableLineCostFields)}
                                             >
                                                 <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
                                             </button>
@@ -452,7 +697,7 @@ function AddNpvCost(props) {
                                             </Col>
                                         </>
                                     } */}
-                                    {initialConfiguration?.IsShowNpvCost && !props?.totalCostFromSummary && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
+                                    {initialConfiguration?.IsShowNpvCost && !props?.totalCostFromSummary && <NpvCost drawerType={drawerType} showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
                                     {(props?.totalCostFromSummary || (initialConfiguration?.IsShowTCO && (IsRfqCostingType?.isRfqCosting || IsRfqCostingType?.costingType))) ? (
                                         <Tco costingId={props?.costingId} partType={{ PartType: partType }} />
                                     ) : null}
@@ -503,7 +748,7 @@ function AddNpvCost(props) {
                                         <button
                                             type={'button'}
                                             className="submit-button save-btn"
-                                            onClick={() => { props.closeDrawer('save', tableData) }}
+                                            onClick={() => { props.closeDrawer('save', "", tableData) }}
                                             disabled={CostingViewMode}>
                                             <div className={"save-icon"}></div>
                                             {'Save'}
@@ -522,7 +767,7 @@ function AddNpvCost(props) {
                                 customClass={'underLine-title'}
                             />
                         </Col>
-                        {initialConfiguration?.IsShowNpvCost && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
+                        {initialConfiguration?.IsShowNpvCost && <NpvCost drawerType={drawerType} showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
                     </>}
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
                         <div className='firefox-spaces'>
@@ -567,7 +812,7 @@ function AddNpvCost(props) {
                             <button
                                 type={'button'}
                                 className="submit-button save-btn"
-                                onClick={() => { props.closeDrawer('save', tableData) }}
+                                onClick={() => { props.closeDrawer('save', "", tableData) }}
                                 disabled={CostingViewMode}>
                                 <div className={"save-icon"}></div>
                                 {'Save'}

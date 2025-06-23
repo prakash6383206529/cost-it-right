@@ -43,6 +43,7 @@ import { AcceptableBOPUOM, LOGISTICS } from '../../../config/masterData';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
 import AddModel from './AddModel';
+import { LabelsClass } from '../../../helper/core';
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
 
@@ -793,8 +794,8 @@ class AddAssemblyPart extends Component {
       return false;
     }
     const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged, convertPartToAssembly, uploadAttachements } = this.state;
-    const { partData, initialConfiguration } = this.props;
-
+    const { partData, initialConfiguration, t } = this.props;
+    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
     let plantArray = selectedPlants && selectedPlants?.map((item) => ({ PlantName: item?.Text, PlantId: item?.Value, PlantCode: '' }))
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup?.map((item) => ({ GroupCode: item?.Text, ProductId: item?.Value })) : [{ GroupCode: values?.GroupCode }]
     let childPartArray = [];
@@ -862,7 +863,7 @@ class AddAssemblyPart extends Component {
           || BOMChanged)) {
           // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
           if (String(DataToCheck.RevisionNumber).toLowerCase() === String(values?.RevisionNumber).toLowerCase() || String(DataToCheck.BOMNumber).toLowerCase() === String(values?.BOMNumber).toLowerCase() || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this?.state?.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-            Toaster.warning('Please edit Revision no, ECN no, BOM no and Effective date')
+            Toaster.warning(`Please edit ${RevisionNoLabel.replace('.', '')}, ECN No, BOM No and Effective date`)
             return false
           } else {
             isStructureChanges = true
@@ -1102,6 +1103,8 @@ class AddAssemblyPart extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData } = this.state;
     const PartMasterConfigurable = initialConfiguration?.PartAdditionalMasterFields
+    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
+    const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
     const filterList = async (inputValue) => {
       const { partName, selectedParts } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1294,7 +1297,7 @@ class AddAssemblyPart extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Revision No.`}
+                            label={RevisionNoLabel}
                             name={"RevisionNumber"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
@@ -1308,16 +1311,17 @@ class AddAssemblyPart extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Drawing No.`}
+                            label={DrawingNoLabel}
                             name={"DrawingNumber"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation, ...(PartMasterConfigurable?.IsDrawingRevisionNoMandatory ? [required] : [])]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
                             disabled={isViewMode}
                             onChange={e => this.isFieldChange(e.target.value, 'Drawing')}
+                            required={PartMasterConfigurable?.IsDrawingRevisionNoMandatory}
                           />
                         </Col>
                         {initialConfiguration?.IsProductMasterConfigurable ? (

@@ -212,7 +212,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "NetToolCost": ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
       "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
       "NetDiscountsCost": discountAndOtherTabData?.HundiOrDiscountValue,
-      "NetPOPrice": checkForNull(basicRate) + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost),
+      "NetPOPrice": checkForNull(basicRate) + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost) + checkForNull(discountAndOtherTabData?.totalLineInvestmentCost),
       "BasicRate": basicRate,
       "FreightCost": PackageAndFreightTabData[0]?.CostingPartDetails?.FreightNetCost,
       "PackagingCost": PackageAndFreightTabData[0]?.CostingPartDetails?.PackagingNetCost,
