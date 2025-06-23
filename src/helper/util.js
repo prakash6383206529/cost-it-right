@@ -2201,3 +2201,9 @@ export const filterApplicabilityDetails = (details, isChildParts) => {
     return true;
   });
 };
+
+export const graphDropDownOptions = [
+  { label: "Bar Chart", value: "1" },
+  { label: "Line Chart", value: "2" },
+  { label: "Pie Chart", value: "3" },
+]

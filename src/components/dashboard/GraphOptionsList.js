@@ -3,20 +3,13 @@ import { SearchableSelectHookForm } from '../layout/HookFormInputs'
 import { Controller, useForm } from "react-hook-form";
 
 function GraphOptionsList(props) {
-
   const { register, control, setValue } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
 
-  const dropdownOptions = [
-    { label: "Bar Chart", value: "1" },
-    { label: "Line Chart", value: "2" },
-    { label: "Pie Chart", value: "3" },
-  ]
-
   useEffect(() => {
-    setValue('singleDropDown', { label: "Bar Chart", value: "1" })
+    setValue('singleDropDown', { label: props?.dropDownOptions?.[0]?.label, value: props?.dropDownOptions?.[0]?.value })
   }, [])
 
   const valueChanged = (event) => {
@@ -33,7 +26,7 @@ function GraphOptionsList(props) {
         control={control}
         rules={{ required: false }}
         register={register}
-        options={dropdownOptions}
+        options={props?.dropDownOptions}
         isMulti={false}
         mandatory={false}
         dropDownClass={true}

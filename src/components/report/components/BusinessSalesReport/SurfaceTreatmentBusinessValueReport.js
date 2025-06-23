@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import _ from "lodash"
-import moment from "moment";
+import DayTime from "../../../common/DayTimeWrapper";
 import ReactExport from 'react-export-excel';
 import { Row, Col } from "reactstrap";
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, DatePickerHookForm } from "../../../layout/HookFormInputs";
 import { useForm, Controller } from "react-hook-form";
 import "react-datepicker/dist/react-datepicker.css";
-import { loggedInUserId } from "../../../../helper";
+import { loggedInUserId, checkForDecimalAndNull } from "../../../../helper";
 import { getCostingSpecificTechnology, getPartSelectListByTechnology } from "../../../costing/actions/Costing";
 import { getFinancialYearSelectList } from "../../../masters/actions/Volume";
 import { getAllProductLevels, getPartFamilySelectList, getModelList, getProductDataList, getNepNumberList } from "../../../masters/actions/Part";
@@ -32,6 +32,7 @@ import { PaginationWrapper } from "../../../common/commonPagination";
 import { CommonSummaryReportGraph } from "../../../dashboard/CommonSummaryReportGraph";
 import { hyphenFormatter } from "../../../masters/masterUtil";
 import GraphOptionsList from "../../../dashboard/GraphOptionsList";
+import { graphDropDownOptions } from "../../../../helper";
 
 const SurfaceTreatmentBusinessValueReport = ({ }) => { 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -77,15 +78,20 @@ const SurfaceTreatmentBusinessValueReport = ({ }) => {
   
   useEffect(() => {
     if (surfaceTreatmentBusinessValueReportData) {
+      // Safely retrieve the 'ReportDetails' array from `businessValueReportData`, or return an empty array if not present
       const reportDetails = _.get(surfaceTreatmentBusinessValueReportData, 'ReportDetails', [])
       const updatedTableData = _.map(reportDetails, row => {
+        // Get the 'ProductHierarchyLevels' from the row (or an empty array if missing), 
+        // then convert it into an object where each key is the 'HierarchyName' and the value is the corresponding level object
         const hierarchyMap = _.keyBy(_.get(row, 'ProductHierarchyLevels', '') || [], 'HierarchyName')
+        // Create a new object where each key is the same as in `hierarchyMap`, 
         const dynamicHierarchyFields = _.mapValues(hierarchyMap, level => _.get(level, 'HierarchyNumber', ''))
+        // Merge the original row with the dynamicHierarchyFields, so new hierarchy keys (like 'Plant', 'Division', etc.) get added to each row
         return Object.assign({}, row, dynamicHierarchyFields)
       })
       setTableData(updatedTableData)
-      setTableHeaderColumnDefs(surfaceTreatmentBusinessValueReportData.TableHeads)
-      setReportDetailsByGroup(surfaceTreatmentBusinessValueReportData.ReportDetailsByGroup)
+      setTableHeaderColumnDefs(surfaceTreatmentBusinessValueReportData?.TableHeads)
+      setReportDetailsByGroup(surfaceTreatmentBusinessValueReportData?.ReportDetailsByGroup)
     }
   }, [surfaceTreatmentBusinessValueReportData])
 
@@ -134,92 +140,92 @@ const SurfaceTreatmentBusinessValueReport = ({ }) => {
     const temp = []
     if (label === 'GroupCode') {
       productGroupSelectList && productGroupSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item?.Value === '0') return false;
+        temp.push({ label: item?.Text, value: item?.Value })
         return null;
       })
       return temp;
     }
     if (label === 'CustomerCode') {
       clientSelectList && clientSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item?.Value === '0') return false;
+        temp.push({ label: item?.Text, value: item?.Value })
         return null;
       })
       return temp;
     }
     if (label === 'FinancialQuarter') {
       FinancialQuarterOptions && FinancialQuarterOptions.map(item => {
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item?.Text, value: item?.Value })
         return null;
       })
       return temp;
     }
     if (label === 'TechnologyName') {
       technologySelectList && technologySelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item?.Value === '0') return false;
+        temp.push({ label: item?.Text, value: item?.Value })
         return null;
       })
       return temp;
     }
     if (label === 'FinancialYear') {
       financialYearSelectList && financialYearSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+        if (item?.Value === '0') return false
+        temp.push({ label: item?.Text, value: item?.Value })
+        return null
+      })
       return temp
     }
     if (label === 'PartFamilyCode') {
       partFamilySelectList && partFamilySelectList.map((item) => {
-        if (item.Value === '--0--') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+        if (item?.Value === '--0--') return false
+        temp.push({ label: item?.Text, value: item?.Value })
+        return null
+      })
       return temp
     }
-    if (label === 'PartModelName') {      
+    if (label === 'PartModelName') {
       partModelOptions && partModelOptions.map((item) => {
-        if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+        if (item?.Value === '0') return false
+        temp.push({ label: item?.Text, value: item?.Value })
+        return null
+      })
       return temp
     }
     if (label === 'PartType') {
       partTypeList && partTypeList.map((item) => {
-        if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+        if (item?.Value === '0') return false
+        temp.push({ label: item?.Text, value: item?.Value })
+        return null
+      })
       return temp
     }
-    
+
     if (label === 'PlantCode') {
       plantSelectList && plantSelectList.map((item) => {
-        if (item.PlantId === '0') return false
-          temp.push({ label: item.PlantNameCode, value: item.PlantId })
-          return null
-        })
+        if (item?.PlantId === '0') return false
+        temp.push({ label: item?.PlantNameCode, value: item?.PlantId })
+        return null
+      })
       return temp
     }
     if (label === 'PartNepNumber' || label === 'NepNumber') {
       nepNumberSelectList && nepNumberSelectList.map((item) => {
-        if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+        if (item?.Value === '0') return false
+        temp.push({ label: item?.Text, value: item?.Value })
+        return null
+      })
       return temp
     }
     if (label === 'GroupBy') {
       businessValueReportHeads && businessValueReportHeads.map((item) => {
-        if (item.Value === '0') return false
-        if (item.Value === "IsRequestedForBudgeting") return false
+        if (item?.Value === '0') return false
+        if (item?.Value === "IsRequestedForBudgeting") return false
         if (_.get(item, 'IsProductHierarchy', false)) {
-          temp.push({ label: item.Text, value: item.Text })
+          temp.push({ label: item?.Text, value: item?.Text })
         } else {
-          temp.push({ label: item.Text, value: item.Value })
+          temp.push({ label: item?.Text, value: item?.Value })
         }
         return null
       })
@@ -231,12 +237,12 @@ const SurfaceTreatmentBusinessValueReport = ({ }) => {
       })
       if (_.size(_.get(associatedHierarchy, 'ProductHierarchyValueDetail', []))) {
         _.map(_.get(associatedHierarchy, 'ProductHierarchyValueDetail', []), item => {        
-          temp.push({ label: item.ProductHierarchyValue, value: item.ProductHierarchyValueDetailsId, IsProductHierarchy })
+          temp.push({ label: item?.ProductHierarchyValue, value: item?.ProductHierarchyValueDetailsId, IsProductHierarchy })
             return null
         })
       } else {
         productDataList && productDataList.map((item) => {
-          temp.push({ label: item.ProductName, value: item.ProductHierarchyValueDetailsIdRef, IsProductHierarchy })
+          temp.push({ label: item?.ProductName, value: item?.ProductHierarchyValueDetailsIdRef, IsProductHierarchy })
           return null
         })
       }
@@ -347,8 +353,8 @@ const SurfaceTreatmentBusinessValueReport = ({ }) => {
     const values = getValues()    
     const data = {
       ...values,
-      fromDate: _.get(values, 'fromDate', '') ? moment(_.get(values, 'fromDate', '')).format('YYYY-MM-DD') : _.get(values, 'fromDate', ''),
-      toDate: _.get(values, 'toDate', '') ? moment(_.get(values, 'toDate', '')).format('YYYY-MM-DD') : _.get(values, 'toDate', ''),
+      fromDate: DayTime(_.get(values, 'fromDate', '')).isValid() ? DayTime(_.get(values, 'fromDate', '')).format('YYYY-MM-DD') : _.get(values, 'fromDate', ''),
+      toDate: DayTime(_.get(values, 'toDate', '')).isValid() ? DayTime(_.get(values, 'toDate', '')).format('YYYY-MM-DD') : _.get(values, 'toDate', ''),
       FinancialQuarter: _.get(values, 'FinancialQuarter.label', ''),
       FinancialYear: _.get(values, 'FinancialYear.label', ''),
       IsRequestedForBudgeting: IsRequestedForBudgeting,
@@ -389,14 +395,11 @@ const SurfaceTreatmentBusinessValueReport = ({ }) => {
   }
 
   const viewPieData = _.debounce(() => {
-      const truncateToTwoDecimals = (value) => {
-        return Math.floor(value * 100) / 100;
-      }
       const labelArray = []
-      const dataArray = reportDetailsByGroup.filter(item => item.ActualTotalCostPercentage > 0).map(item => {
+      const dataArray = reportDetailsByGroup.filter(item => item?.ActualTotalCostPercentage > 0).map(item => {
         const name = _.get(item, 'GroupByValue', '')
-        const truncatedPercentage = truncateToTwoDecimals(item.ActualTotalCostPercentage)
-        const totalCost = truncateToTwoDecimals(item.ActualTotalCost)
+        const truncatedPercentage = checkForDecimalAndNull(item?.ActualTotalCostPercentage, initialConfiguration?.NoOfDecimalForPrice)
+        const totalCost = checkForDecimalAndNull(item?.ActualTotalCost, initialConfiguration?.NoOfDecimalForPrice)
         labelArray.push(`${name} (${totalCost})`)
         return truncatedPercentage
       })
@@ -404,10 +407,10 @@ const SurfaceTreatmentBusinessValueReport = ({ }) => {
       setActualCostLabelArray(labelArray)
       
       const labelArray1 = []
-      const dataArray1 = reportDetailsByGroup.filter(item => item.BudgetedTotalCostPercentage > 0).map(item => {
+      const dataArray1 = reportDetailsByGroup.filter(item => item?.BudgetedTotalCostPercentage > 0).map(item => {
         const name = _.get(item, 'GroupByValue', '')
-        const truncatedPercentage = truncateToTwoDecimals(item.BudgetedTotalCostPercentage)
-        const totalCost = truncateToTwoDecimals(item.BudgetedTotalCost)
+        const truncatedPercentage = checkForDecimalAndNull(item?.BudgetedTotalCostPercentage, initialConfiguration?.NoOfDecimalForPrice)
+        const totalCost = checkForDecimalAndNull(item?.BudgetedTotalCost, initialConfiguration?.NoOfDecimalForPrice)
         labelArray1.push(`${name} (${totalCost})`)
         return truncatedPercentage
       })
@@ -672,7 +675,7 @@ const SurfaceTreatmentBusinessValueReport = ({ }) => {
             <Row className={`pb-${graphAccordian ? 3 : 0}`}>
               <Col md="8" className="d-flex align-items-center">
                 <h3 className={`mr-3`}>Graph View</h3>
-                <GraphOptionsList valueChanged={valueChanged} />
+                <GraphOptionsList valueChanged={valueChanged} dropDownOptions={graphDropDownOptions}/>
               </Col>
               <Col md="4" className="text-right">
                 <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setGraphAccordian(!graphAccordian) }}>
