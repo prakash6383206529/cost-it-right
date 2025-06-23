@@ -165,8 +165,8 @@ function AddOperation(props) {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
   };
-
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
+  const isRowSelectable = rowNode => initialConfiguration?.IsAllowSingleProcessMultipleTime ? true : !selectedIds.includes(rowNode?.data?.OperationId)
+  // const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
