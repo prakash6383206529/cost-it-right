@@ -48,7 +48,7 @@ function NpvCost(props) {
                                 {<th>{`${islineInvestmentDrawer ? "Amortization" : "Percentage"} (%)`}</th>}
                                 {<th>{`${islineInvestmentDrawer ? "Quantity/ Amortization Volume" : "Quantity"}`}</th>}
                                 {islineInvestmentDrawer && <th>{`Upfront (%)`}</th>}
-                                {islineInvestmentDrawer && <th>{`UpFront  Cost`}</th>}
+                                {islineInvestmentDrawer && <th>{`Upfront  Cost`}</th>}
                                 {islineInvestmentDrawer && <th>{`Amortization Cost`}</th>}
                                 {<th>{`${islineInvestmentDrawer ? "Investement Cost/Pc" : "Total"}`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}

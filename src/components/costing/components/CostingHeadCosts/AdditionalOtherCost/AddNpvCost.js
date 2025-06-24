@@ -45,7 +45,7 @@ function AddNpvCost(props) {
     const label = props?.totalCostFromSummary ? 'TCO Cost' : !(isRfqCostingTypeDefined) ? (islineInvestmentDrawer ? "Investment Cost (Line/Plant)" : 'Add NPV:') : 'View TCO:';
     const CostingViewMode = useContext(ViewCostingContext);
 
-    const { register, control, setValue, getValues, formState: { errors }, } = useForm({
+    const { register, control, setValue, getValues, clearErrors, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -239,6 +239,7 @@ function AddNpvCost(props) {
         let val = e?.target?.value
         setValue("UpfrontPercentage", checkForNull(val))
         setValue("NpvPercentage", checkForNull(100 - val))
+        clearErrors('NpvPercentage');
     }
 
 
@@ -524,7 +525,7 @@ function AddNpvCost(props) {
                                                     mandatory={true}
                                                     rules={{
                                                         required: false,
-                                                        validate: { number, checkWhiteSpaces, percentageLimitValidation, nonZero },
+                                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                         max: {
                                                             value: 100,
                                                             message: 'Percentage should be less than 100'
@@ -552,10 +553,10 @@ function AddNpvCost(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={!islineInvestmentDrawer}
                                                 rules={{
                                                     required: false,
-                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation, nonZero },
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation, ...(islineInvestmentDrawer ? {} : { nonZero })},
                                                     max: {
                                                         value: 100,
                                                         message: 'Percentage should be less than 100'
@@ -602,9 +603,9 @@ function AddNpvCost(props) {
                                         {islineInvestmentDrawer &&
                                         <>
                                             <Col md="3">
-                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'upFront-cost'} tooltipText={'UpFront Cost = (Investment Cost * Upfront Percentage)/100'} />
+                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'upFront-cost'} tooltipText={'Upfront Cost = (Investment Cost * Upfront Percentage)/100'} />
                                                 <NumberFieldHookForm
-                                                    label={`UpFront Cost`}
+                                                    label={`Upfront Cost`}
                                                     name={'UpfrontCost'}
                                                     id={'upFront-cost'}
                                                     Controller={Controller}
