@@ -203,8 +203,10 @@ function AddNpvCost(props) {
         // If a value is entered in the NpvPercentage field, disable the Total Cost field.
         let value = e?.target?.value
         if(islineInvestmentDrawer){
+            const upfrontValue = Math.max(0, 100 - value);
             setValue("NpvPercentage", Number(value))
-            setValue("UpfrontPercentage", checkForNull(100 - Number(value)))
+            setValue("UpfrontPercentage", checkForNull(upfrontValue))
+            clearErrors('UpfrontPercentage');
         }
         if (e?.target?.value) {
             setDisableTotalCost(true)
@@ -229,7 +231,7 @@ function AddNpvCost(props) {
     }
 
     const calculateUpfrontCost = (investmentCost, upfrontPercent) => {
-        if(investmentCost && upfrontPercent){
+        if(investmentCost || upfrontPercent){
             const upfrontCost = (checkForNull(investmentCost) * checkForNull(upfrontPercent))/100
             setValue("UpfrontCost", checkForNull(upfrontCost))
         }
@@ -237,8 +239,9 @@ function AddNpvCost(props) {
     
     const handleUpfrontPercentageChange = (e) => {
         let val = e?.target?.value
+        const npvValue = Math.max(0, 100 - val);
         setValue("UpfrontPercentage", checkForNull(val))
-        setValue("NpvPercentage", checkForNull(100 - val))
+        setValue("NpvPercentage", checkForNull(npvValue));
         clearErrors('NpvPercentage');
     }
 
@@ -277,7 +280,7 @@ function AddNpvCost(props) {
 
     // This function is called when the user clicks a button to add data to a table.
     const addData = () => {
-        if (errors.NpvPercentage) {
+        if (errors.NpvPercentage || errors.InvestmentCost) {
             return false
         }
 
@@ -319,7 +322,7 @@ function AddNpvCost(props) {
         ])
 
         // Check for basic fields
-        const hasBasicFields = TypeOfNpv !== '' && npvPercentage !== '' && quantity !== ''
+        const hasBasicFields = TypeOfNpv !== '' && npvPercentage !== '' && (!islineInvestmentDrawer || Number(upfrontPercentage) === 100 || quantity !== '')
 
         // Check for additional fields if islineInvestmentDrawer is true
         const hasLineFields = islineInvestmentDrawer
@@ -367,6 +370,7 @@ function AddNpvCost(props) {
             resetData()
             setIsEditMode(false)
             setEditIndex('')
+            clearErrors();
         } else {
             // If not all mandatory fields are filled out, show an error message.
             Toaster.warning('Please enter data in all mandatory fields.')
@@ -390,6 +394,7 @@ function AddNpvCost(props) {
         setTotalCost('')
         setDisableAllFields(true)
         setIsEditMode(false)
+        clearErrors();
         resetErrors()
     }
 
@@ -522,9 +527,9 @@ function AddNpvCost(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={!upfrontPercentage && !npvPercentage}
                                                     rules={{
-                                                        required: false,
+                                                        required: !!(upfrontPercentage || npvPercentage),
                                                         validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                         max: {
                                                             value: 100,
@@ -553,9 +558,10 @@ function AddNpvCost(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={!islineInvestmentDrawer}
+                                                // mandatory={!islineInvestmentDrawer || !!(upfrontPercentage || npvPercentage)}
+                                                mandatory={!islineInvestmentDrawer || (islineInvestmentDrawer && !upfrontPercentage && !npvPercentage)}
                                                 rules={{
-                                                    required: false,
+                                                    required: !islineInvestmentDrawer || (islineInvestmentDrawer && !upfrontPercentage && !npvPercentage),
                                                     validate: { number, checkWhiteSpaces, percentageLimitValidation, ...(islineInvestmentDrawer ? {} : { nonZero })},
                                                     max: {
                                                         value: 100,
@@ -583,9 +589,9 @@ function AddNpvCost(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={!islineInvestmentDrawer || Number(upfrontPercentage) !== 100}
                                                 rules={{
-                                                    required: true,
+                                                    required: !islineInvestmentDrawer || Number(upfrontPercentage) !== 100,
                                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
                                                 }}
                                                 onKeyDown={blockInvalidNumberKeys}
@@ -655,6 +661,14 @@ function AddNpvCost(props) {
                                             <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cost'} 
                                                 tooltipText={`${islineInvestmentDrawer ? "Investement Cost/Pc = Amortization Cost / (Quantity/Amortization Volume)" : "Total = (Percentage / 100) * Quantity * Net Cost"}`} 
                                             />
+                                            {islineInvestmentDrawer &&
+                                            <TooltipCustom 
+                                                customClass="mt-1" 
+                                                tooltipClass="InvestementCost" 
+                                                id={`investement-cost`} 
+                                                tooltipText={'Amortization Cost/Pc'}
+                                            />
+                                            }
                                             <NumberFieldHookForm
                                                 label={`${islineInvestmentDrawer ? "Investement Cost/Pc" : "Total"}`}
                                                 name={'Total'}
