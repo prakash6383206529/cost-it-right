@@ -124,7 +124,7 @@ function Rejection(props) {
     }, [IsIncludedSurfaceInRejection]);
     useEffect(() => {
         callGetRejectionDataByModelType(state?.modelType)
-    }, [IsIncludeApplicabilityForChildParts,IsIncludedSurfaceInRejection])
+    }, [IsIncludeApplicabilityForChildParts, IsIncludedSurfaceInRejection])
 
     // useEffect(() => {
     //     setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration?.NoOfDecimalForPrice))
@@ -835,7 +835,7 @@ function Rejection(props) {
                             disabled={true}
                         />
                     </Col>}
-                    {(!IdForMultiTechnology.includes(String(costData?.TechnologyId))&& (costData?.PartType !== 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable &&  applicability.label === 'RM' && <Col md="2">
+                    {getConfigurationKey().IsRejectionRecoveryApplicable && applicability.label === 'RM' && <Col md="2">
                         {/* {RejectionRecoveryUI} */}
                         <div className='d-flex align-items-center'>
                             <TextFieldHookForm
@@ -908,7 +908,7 @@ function Rejection(props) {
                                 <th>Rejection (%)</th>
                                 <th>Cost (Applicability)</th>
                                 <th>Rejection</th>
-                                {(!IdForMultiTechnology.includes(String(costData?.TechnologyId))&& (costData?.PartType !== 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable && <th>Rejection Recovery Cost</th>}
+                                {(!IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable && applicability.label === 'RM' && <th>Rejection Recovery Cost</th>}
                                 <th>Net Rejection</th>
                                 {!CostingViewMode && !fetchRejectionDataFromMaster() && <th className='text-right'>Action</th>}
                                 <th className='text-center'>Remark</th>
@@ -963,7 +963,7 @@ function Rejection(props) {
                                             )}
                                         </td>
                                         <td>{item?.Applicability === 'Fixed' ? checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.TotalCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
-                                        {getConfigurationKey().IsRejectionRecoveryApplicable && !IdForMultiTechnology.includes(String(costData?.TechnologyId)) && costData?.PartType !== 'Assembly' && <td>
+                                        {getConfigurationKey().IsRejectionRecoveryApplicable && !IdForMultiTechnology.includes(String(costData?.TechnologyId)) && <td>
 
                                             <div className='d-flex align-items-center'>
                                                 <span>{checkForDecimalAndNull(item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</span>
@@ -1044,6 +1044,8 @@ function Rejection(props) {
                 calculateRecoveryCost={calculateRecoveryCost}
                 rejectionTotalCost={!fetchRejectionDataFromMaster() ? getValues('RejectionTotalCost') : state.gridData?.find(item => item.Applicability === 'RM')?.TotalCost || ''}
                 isViewRejectionRecovery={state?.isViewRejectionRecovery}
+                partType={costData?.PartType}
+                IsMultiVendorCosting={IsMultiVendorCosting}
             />}
 
 
