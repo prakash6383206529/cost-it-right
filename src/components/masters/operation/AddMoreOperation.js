@@ -162,6 +162,15 @@ function AddMoreOperation(props) {
         callExchangeRateAPI()
     }, [localCurrencyLabel]);
 
+
+    useEffect(() => {
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, null, (res) => {
+            setTimeout(() => {
+                commonFunction(plant, false, res?.data?.Data?.MasterLevels)
+            }, 500);
+        }))
+    }, [plant]);
+
     const callExchangeRateAPI = (obj) => {
         const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
         const toCurrency = reactLocalStorage.getObject("baseCurrency");
@@ -586,6 +595,8 @@ function AddMoreOperation(props) {
     const commonFunction = (plantId = EMPTY_GUID, isDivision = false, masterLevels = []) => {
         let levelDetailsTemp = []
         levelDetailsTemp = userTechnologyDetailByMasterId(addMoreDetailObj?.costingTypeId, OPERATIONS_ID, masterLevels)
+        console.log(levelDetailsTemp, "levelDetailsTemp");
+        
         setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
         let obj = {
             DepartmentId: userDetails().DepartmentId,
