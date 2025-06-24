@@ -10,14 +10,14 @@ import { REJECTION_RECOVERY_APPLICABILITY } from '../../../../../config/masterDa
 import { setRejectionRecoveryData } from '../../../actions/Costing';
 import TooltipCustom from '../../../../common/Tooltip';
 import { IsPartType, ViewCostingContext } from '../../CostingDetails';
-import { ASSEMBLYNAME } from '../../../../../config/constants';
+import { COMPONENT_PART } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { useLabels } from '../../../../../helper/core';
 
 function AddRejectionRecovery(props) {
 
-    const { rejectionPercentage, isOpen, closeDrawer, rejectionTotalCost, isViewRejectionRecovery } = props;
+    const { rejectionPercentage, isOpen, closeDrawer, rejectionTotalCost, isViewRejectionRecovery, partType, IsMultiVendorCosting } = props;
 
     const defaultValues = {
 
@@ -56,10 +56,12 @@ function AddRejectionRecovery(props) {
     const renderListing = (label) => {
         const temp = [];
 
+        const normalize = (str) => str.replace(/\s+/g, ' ').trim();
         if (label === 'recoveryApplicability') {
             costingHead && costingHead?.map(item => {
                 if (item.Value === '0') return false;
-                if (isPartType?.label === ASSEMBLYNAME && item.value === '24') return false;
+                if (partType !== COMPONENT_PART && normalize(item.Text) === "ScrapRate * NetWeight")
+                    return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });

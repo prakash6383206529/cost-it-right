@@ -440,9 +440,9 @@ export function fileUploadMachine(data, callback) {
  * @method checkAndGetMachineNumber
  * @description CHECK AND GET MACHINE NUMBER
  */
-export function checkAndGetMachineNumber(number, callback) {
+export function checkAndGetMachineNumber(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.checkAndGetMachineNumber}?loggedInUserId=${loggedInUserId()}&machineNumber=${number}`, config());
+        const request = axios.post(API.checkAndGetMachineNumber, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

@@ -458,7 +458,8 @@ const AddFreight = (props) => {
               };
             });
             setValueMainForm('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
-            setValueMainForm('plantCurrency', Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+            // For domestic and import case we need to get data for plantCurrency from LocalCurrency key only.
+            setValueMainForm('plantCurrency', Data?.LocalCurrency)
             setValueMainForm('currency', Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [])
             if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
               setState(prev => ({ ...prev, hidePlantCurrency: false }))
