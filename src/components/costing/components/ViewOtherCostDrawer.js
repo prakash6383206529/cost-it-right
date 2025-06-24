@@ -156,7 +156,7 @@ function ViewOtherCostDrawer(props) {
                 />
             </Col>
             <Col md="12">
-                <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
+                <Table className="table cr-brdr-main forging-cal-table" size="sm">
                     <thead>
                         <tr>
                             {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
@@ -633,7 +633,8 @@ function ViewOtherCostDrawer(props) {
                     </Container>
                 </div>
             </Drawer> : <>
-                {gridData && gridData.length !== 0 && OtherCost()}
+                {discountData && discountData?.length > 0 && DiscountCost()}
+                {gridData && gridData?.length !== 0 && OtherCost()}
                 {/* {tableData && tableData.length !== 0 && <>
                     <Col md="12">
                         <HeaderTitle className="border-bottom"
@@ -643,6 +644,18 @@ function ViewOtherCostDrawer(props) {
                     </Col>
                     <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} />
                 </>} */}
+                {initialConfiguration?.IsAddPaymentTermInNetCost && CostingPaymentTermDetails?.PaymentTermDetail && 
+                    Object.keys(CostingPaymentTermDetails.PaymentTermDetail).length > 0 && (
+                    paymentTableData()
+                )}
+                {(() => {
+                    const npvData = npvCostData?.filter(item => item?.NpvType !== 'Line Investment') || [];
+                    return npvData.length > 0 ? NpvCost() : null;
+                })()}
+                {(() => {
+                    const npvData = npvCostData?.filter(item => item?.NpvType === 'Line Investment') || [];
+                    return npvData?.length > 0 ? LineInvestmentCost() : null;
+                })()}
                 {conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25 firefox-10'}>
                     <HeaderTitle className="border-bottom"
                         title={'Costing Condition'}
