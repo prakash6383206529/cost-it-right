@@ -33,6 +33,7 @@ function AddOperation(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const { selectedIdsOfOperationAndOtherOperation, selectedIdsOfOperation } = useSelector(state => state.costing)
   let selectedIds = [...selectedIdsOfOperation, ...selectedIdsOfOperationAndOtherOperation]
+  const IsAllowSingleOperationMultipleTime = _.get(initialConfiguration, 'IsAllowSingleOperationMultipleTime', false)
 
   const { technologyLabel } = useLabels();
   /**
@@ -107,9 +108,11 @@ function AddOperation(props) {
 
   const isFirstColumn = (params) => {
     const rowData = params?.valueFormatted ? params.valueFormatted : params?.data;
-    const allSelectedOperation = tableData?.every(operation => selectedIds?.includes(operation.OperationId));
-    if (allSelectedOperation) {
-      return false;
+    if (!IsAllowSingleOperationMultipleTime) {
+      const allSelectedOperation = tableData?.every(operation => selectedIds?.includes(operation.OperationId));
+      if (allSelectedOperation) {
+        return false;
+      }
     }
 
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -165,7 +168,7 @@ function AddOperation(props) {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
   };
-  const isRowSelectable = rowNode => initialConfiguration?.IsAllowSingleProcessMultipleTime ? true : !selectedIds.includes(rowNode?.data?.OperationId)
+  const isRowSelectable = rowNode => IsAllowSingleOperationMultipleTime ? true : !selectedIds.includes(rowNode?.data?.OperationId)
   // const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
 
   const resetState = () => {

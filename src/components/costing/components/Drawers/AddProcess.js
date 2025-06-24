@@ -45,6 +45,7 @@ function AddProcess(props) {
   const { initialConfiguration } = useSelector(state => state.auth)
   const CostingViewMode = useContext(ViewCostingContext);
   const { technologyLabel } = useLabels();
+  const IsAllowSingleProcessMultipleTime = _.get(initialConfiguration, 'IsAllowSingleProcessMultipleTime', false)
   /**
   * @method toggleDrawer
   * @description TOGGLE DRAWER
@@ -217,9 +218,11 @@ function AddProcess(props) {
 
   const isFirstColumn = (params) => {
     const rowData = params?.valueFormatted ? params.valueFormatted : params?.data;
-    const allProcessSelected = processDrawerList?.every(process => props?.Ids?.includes(process.ProcessId));
-    if (allProcessSelected) {
-      return false;
+    if (!IsAllowSingleProcessMultipleTime) {
+      const allProcessSelected = processDrawerList?.every(process => props?.Ids?.includes(process.ProcessId));
+      if (allProcessSelected) {
+        return false;
+      }
     }
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -318,7 +321,7 @@ function AddProcess(props) {
     });
     return isContainProcess
   }
-  const isRowSelectable = rowNode => initialConfiguration?.IsAllowSingleProcessMultipleTime ? true : !findProcessId(rowNode.data)
+  const isRowSelectable = rowNode => IsAllowSingleProcessMultipleTime ? true : !findProcessId(rowNode.data)
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
