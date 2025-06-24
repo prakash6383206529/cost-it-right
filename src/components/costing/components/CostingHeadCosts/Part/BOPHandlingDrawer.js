@@ -14,7 +14,7 @@ import { calculatePercentageValue, loggedInUserId, showBopLabel } from '../../..
 import { getBOPHandlingChargesDetails, getBopTypeList, saveBOPHandlingChargesDetails } from '../../../actions/CostWorking'
 
 function BOPHandlingDrawer(props) {
-    
+
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
@@ -68,30 +68,33 @@ function BOPHandlingDrawer(props) {
         }))
     }, [])
     useEffect(() => {
-        if (tableData && tableData?.length > 0) {
-            const hasBOPEntry = tableData.some(entry => entry.BOPType === 'BOP');
-            const hasOtherBOPEntry = tableData.some(entry => ['BOP Domestic', 'BOP CKD', 'BOP V2V', 'BOP OSP'].includes(entry.BOPType));
+        // Only run filtering logic if we have allBOPType data
+        if (state.allBOPType && state.allBOPType.length > 0) {
+            if (tableData && tableData?.length > 0) {
+                const hasBOPEntry = tableData.some(entry => entry.BOPType === 'BOP');
+                const hasOtherBOPEntry = tableData.some(entry => ['BOP Domestic', 'BOP CKD', 'BOP V2V', 'BOP OSP'].includes(entry.BOPType));
 
-            let filteredDropdown = [...state.allBOPType];
+                let filteredDropdown = [...state.allBOPType];
 
-            if (hasBOPEntry) {
-                // If BOP entry exists, only keep the BOP option
-                filteredDropdown = filteredDropdown.filter(option => option.value === 'BOP');
-            } else if (hasOtherBOPEntry) {
-                // If any other BOP type exists, remove the BOP option
-                filteredDropdown = filteredDropdown.filter(option => option.value !== 'BOP');
+                if (hasBOPEntry) {
+                    // If BOP entry exists, only keep the BOP option
+                    filteredDropdown = filteredDropdown.filter(option => option.value === 'BOP');
+                } else if (hasOtherBOPEntry) {
+                    // If any other BOP type exists, remove the BOP option
+                    filteredDropdown = filteredDropdown.filter(option => option.value !== 'BOP');
+                }
+                setState(prevState => ({
+                    ...prevState,
+                    bopTypeDropdown: filteredDropdown
+                }));
+            } else {
+                setState(prevState => ({
+                    ...prevState,
+                    bopTypeDropdown: state.allBOPType
+                }));
             }
-            setState(prevState => ({
-                ...prevState,
-                bopTypeDropdown: filteredDropdown
-            }));
-        } else {
-            setState(prevState => ({
-                ...prevState,
-                bopTypeDropdown: state.allBOPType
-            }));
         }
-    }, [tableData])
+    }, [tableData, state.allBOPType])
 
     const editDeleteData = (indexValue, operation) => {
         if (operation === 'delete') {
@@ -152,35 +155,38 @@ function BOPHandlingDrawer(props) {
 
         switch (bopType.label) {
             case "BOP CKD":
-                if (item?.PartType === "Assembly") {
+                if (item?.PartType !== "Part") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopCKDCost;
                 }
                 break;
             case "BOP OSP":
-                if (item?.PartType === "Assembly") {
+                if (item?.PartType !== "Part") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPOutsourcedCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopOSPCost;
                 }
                 break;
             case "BOP Domestic":
-                if (item?.PartType === "Assembly") {
+                if (item?.PartType !== "Part") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopDomesticCost;
                 }
                 break;
             case "BOP V2V":
-                if (item?.PartType === "Assembly") {
+                if (item?.PartType !== "Part") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopV2VCost;
                 }
                 break;
             default:
-                applicabilityCost = props.netBOPCost;
+                if (item?.PartType !== "Part") {
+                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
+                } else {
+                    applicabilityCost = props.netBOPCost;                }
         }
 
         cost = calculatePercentageValue(applicabilityCost, percentage);
@@ -209,7 +215,7 @@ function BOPHandlingDrawer(props) {
         dispatch(saveBOPHandlingChargesDetails(data, (res) => {
             if (res?.data?.Result) {
                 Toaster.success(`${showBopLabel()} Handling Charges saved successfully`)
-                props.closeDrawer('Save', state.totalHandlingCharges, tableData)
+                props.closeDrawer('Save', state?.totalHandlingCharges, tableData)
             }
         }))
 

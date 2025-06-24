@@ -24,6 +24,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
       if (item.PartType === 'Sub Assembly' || item.PartType === 'BOP') {
         let subAssemblyObj = {
+          "PartName": item?.PartName,
           "CostingId": item.CostingId,
           "SubAssemblyCostingId": item.SubAssemblyCostingId,
           "CostingNumber": "", // Need to find out how to get it.
@@ -35,6 +36,13 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalConversionCostWithQuantity": item.PartType === 'Part' ? item?.CostingPartDetails?.NetConversionCost * item?.CostingPartDetails?.Quantity : item?.CostingPartDetails?.TotalConversionCostWithQuantity,
           "TotalCalculatedRMBOPCCCostWithQuantity": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
           "TotalCalculatedRMBOPCCCostPerAssembly": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "TotalBoughtOutPartCostComponent": item?.CostingPartDetails?.TotalBoughtOutPartCostComponent,
+          "TotalBoughtOutPartCostSubAssembly": item?.CostingPartDetails?.TotalBoughtOutPartCostSubAssembly,
+          "TotalBoughtOutPartCostPerAssembly": item?.CostingPartDetails?.TotalBoughtOutPartCostPerAssembly,
+          "TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity,
+          "TotalBoughtOutPartCostWithOutHandlingChargePerAssembly": item?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargePerAssembly,
+          "TotalBoughtOutPartCostWithOutHandlingChargeComponent": item?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeComponent,
+          "TotalBoughtOutPartCostWithOutHandlingChargeSubAssembly": item?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeSubAssembly,
 
           "TotalBOPDomesticCostWithQuantity": checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostComponent) + checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostSubAssembly),
           "TotalBOPDomesticCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostPerAssembly),
@@ -244,6 +252,8 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "CostingNumber": tabData && tabData.CostingNumber,
       "NetRawMaterialsCost": tabData && tabData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
       "NetBoughtOutPartCost": tabData && tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+      "BOPHandlingCharges": tabData && tabData?.CostingPartDetails?.BOPHandlingCharges,
+      "IsApplyBOPHandlingCharges": tabData && tabData?.CostingPartDetails?.IsApplyBOPHandlingCharges,
       "NetConversionCost": tabData && tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
       "NetTotalRMBOPCC": tabData && tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "NetSurfaceTreatmentCost": surfaceTabData && surfaceTabData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys,
@@ -259,12 +269,20 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TabId": tabId,
       "TotalRawMaterialsCostWithQuantity": tabData && tabData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
       "TotalBoughtOutPartCostWithQuantity": tabData && tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+      "TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity": tabData && tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity,
+      "TotalBoughtOutPartCostWithOutHandlingChargePerAssembly": tabData && tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargePerAssembly,
+      "TotalBoughtOutPartCostWithOutHandlingChargeComponent": tabData && tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeComponent,
+      "TotalBoughtOutPartCostWithOutHandlingChargeSubAssembly": tabData && tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeSubAssembly,
+
       "TotalConversionCostPerAssembly": tabData?.CostingPartDetails?.TotalConversionCostPerAssembly,
       "TotalConversionCostPerSubAssembly": tabData?.CostingPartDetails?.TotalConversionCostPerSubAssembly,
       "TotalConversionCostComponent": tabData?.CostingPartDetails?.TotalConversionCostComponent,
       "TotalConversionCostWithQuantity": tabData && AddLabour ? (tabData?.CostingPartDetails?.TotalConversionCostWithQuantity + checkForNull(tabData?.CostingPartDetails?.NetLabourCost) + checkForNull(tabData?.CostingPartDetails?.IndirectLaborCost) + checkForNull(tabData?.CostingPartDetails?.StaffCost)) : tabData?.CostingPartDetails?.TotalConversionCostWithQuantity,
       "TotalCalculatedRMBOPCCCostWithQuantity": tabData && tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+      "TotalBoughtOutPartCostComponent": tabData?.CostingPartDetails?.TotalBoughtOutPartCostComponent,
+      "TotalBoughtOutPartCostSubAssembly": tabData?.CostingPartDetails?.TotalBoughtOutPartCostSubAssembly,
+      "TotalBoughtOutPartCostPerAssembly": tabData?.CostingPartDetails?.TotalBoughtOutPartCostPerAssembly,
 
       "TotalBOPDomesticCostWithQuantity": checkForNull(tabData?.CostingPartDetails?.TotalBOPDomesticCostPerAssembly) + checkForNull(tabData?.CostingPartDetails?.TotalBOPDomesticCostComponent) + checkForNull(tabData?.CostingPartDetails?.TotalBOPDomesticCostSubAssembly),
       "TotalBOPDomesticCostPerAssembly": checkForNull(tabData?.CostingPartDetails?.TotalBOPDomesticCostPerAssembly),
@@ -433,14 +451,14 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "NetOtherOperationCost": 0,               // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
     },
     "WorkingRows": assemblyWorkingRow,
-    "BOPHandlingCharges": {
-      "AssemblyCostingId": tabData && tabData.CostingId,
-      "IsApplyBOPHandlingCharges": tabData && tabData?.CostingPartDetails?.IsApplyBOPHandlingCharges,
-      "BOPHandlingChargeApplicability": tabData && tabData?.CostingPartDetails?.BOPHandlingChargeApplicability,
-      "BOPHandlingPercentage": tabData && tabData?.CostingPartDetails?.BOPHandlingPercentage,
-      "BOPHandlingCharges": tabData && tabData?.CostingPartDetails?.BOPHandlingCharges,
-      "BOPHandlingChargeType": tabData && tabData?.CostingPartDetails?.BOPHandlingChargeType
-    },
+    // "BOPHandlingCharges": {
+    //   "AssemblyCostingId": tabData && tabData.CostingId,
+    //   "IsApplyBOPHandlingCharges": tabData && tabData?.CostingPartDetails?.IsApplyBOPHandlingCharges,
+    //   "BOPHandlingChargeApplicability": tabData && tabData?.CostingPartDetails?.BOPHandlingChargeApplicability,
+    //   "BOPHandlingPercentage": tabData && tabData?.CostingPartDetails?.BOPHandlingPercentage,
+    //   "BOPHandlingCharges": tabData && tabData?.CostingPartDetails?.BOPHandlingCharges,
+    //   "BOPHandlingChargeType": tabData && tabData?.CostingPartDetails?.BOPHandlingChargeType
+    // },
     "LoggedInUserId": loggedInUserId()
 
   }
@@ -639,20 +657,20 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
   })
 
   let basicRate = 0
-  let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) 
+  let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost)
   basicRate = checkForNull(tabData?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(totalOverheadPrice) +
     checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
     checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) + (IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
   let temp = {
-    "BOPHandlingCharges": {
-      "AssemblyCostingId": tabData?.CostingId,
-      "BOPHandlingChargeType": tabData?.CostingPartDetails?.BOPHandlingChargeType,
-      "IsApplyBOPHandlingCharges": tabData?.CostingPartDetails?.IsApplyBOPHandlingCharges,
-      "BOPHandlingPercentage": tabData?.CostingPartDetails?.BOPHandlingPercentage,
-      "BOPHandlingCharges": tabData?.CostingPartDetails?.BOPHandlingCharges,
-      "BOPHandlingChargeApplicability": 0
-    },
+    // "BOPHandlingCharges": {
+    //   "AssemblyCostingId": tabData?.CostingId,
+    //   "BOPHandlingChargeType": tabData?.CostingPartDetails?.BOPHandlingChargeType,
+    //   "IsApplyBOPHandlingCharges": tabData?.CostingPartDetails?.IsApplyBOPHandlingCharges,
+    //   "BOPHandlingPercentage": tabData?.CostingPartDetails?.BOPHandlingPercentage,
+    //   "BOPHandlingCharges": tabData?.CostingPartDetails?.BOPHandlingCharges,
+    //   "BOPHandlingChargeApplicability": 0
+    // },
     "TopRow": {
       "CostingId": tabData?.CostingId,
       "NetOperationCost": tabData?.CostingPartDetails?.NetOperationCost,
