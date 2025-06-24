@@ -70,11 +70,11 @@ function OverheadProfit(props) {
   const costingHead = useSelector(state => state.comman.costingHead)
 
   const { CostingEffectiveDate, CostingDataList, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI, currencySource, exchangeRateData, IsIncludeApplicabilityForChildParts, IsIncludedSurfaceInOverhead, IsIncludedSurfaceInProfit, IsIncludedToolCostInOverhead, IsIncludedToolCostInProfit } = useSelector(state => state.costing)
-  
+
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
-  
+
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
-  
+
   const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
   const [showWarning, setShowWarning] = useState('')
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
@@ -94,7 +94,7 @@ function OverheadProfit(props) {
     isPressToolOverhead: false,
     isPressToolProfit: false,
   })
-  
+
   //INITIAL CALLED EFFECT TO SET VALUES
   useEffect(() => {
 
@@ -130,7 +130,7 @@ function OverheadProfit(props) {
     setProfitValues(profitObj, false)
     setIsSurfaceTreatmentAdded(false)
   }, [state.isIncludeSurfaceTreatmentInOverhead, state.isIncludeSurfaceTreatmentInProfit, state.isIncludeToolCostInOverhead, state.isIncludeToolCostInProfit, SurfaceTreatmentCost.NetSurfaceTreatmentCost, IsIncludeApplicabilityForChildParts])
-  
+
 
   // useEffect(() => {
   //   IncludeSurfaceTreatmentCall()
@@ -147,7 +147,7 @@ function OverheadProfit(props) {
 
 
     if (OverheadProfitTabData && OverheadProfitTabData.length > 0) {
-      
+
       if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverhead !== null && !state.isPressSurfaceOverhead) {
         dispatch(setSurfaceCostInOverhead(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverhead, () => { }))
       }
@@ -441,28 +441,28 @@ function OverheadProfit(props) {
             setValue('OverheadWeldingCost', checkForDecimalAndNull(weldingCost, initialConfiguration?.NoOfDecimalForPrice));
             setValue('OverheadWeldingTotalCost', checkForDecimalAndNull(weldingTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
-            case 'BOP Domestic':
+          case 'BOP Domestic':
             const bopDomesticCost = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPDomesticCost) + checkForNull(OverheadDetail?.NetChildPartsBOPDomesticCost) : checkForNull(headerCosts?.NetBOPDomesticCost);
             const bopDomesticTotalCost = bopDomesticCost * calculatePercentage(Percentage);
             setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(bopDomesticCost, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(bopDomesticTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
-            case 'BOP CKD':
+          case 'BOP CKD':
             const bopCKDCost = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPImportCost) + checkForNull(OverheadDetail?.NetChildPartsBOPImportCost) : checkForNull(headerCosts?.NetBOPImportCost);
             const bopCKDTotalCost = bopCKDCost * calculatePercentage(Percentage);
             setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(bopCKDCost, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(bopCKDTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
-            case 'BOP V2V':
+          case 'BOP V2V':
             const bopV2VCost = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPSourceCost) + checkForNull(OverheadDetail?.NetChildPartsBOPSourceCost) : checkForNull(headerCosts?.NetBOPSourceCost);
             const bopV2VTotalCost = bopV2VCost * calculatePercentage(Percentage);
             setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(bopV2VCost, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(bopV2VTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
-            case 'BOP OSP':
+          case 'BOP OSP':
             const bopOSPCost = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPOutsourcedCost) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPOutsourcedCost);
             const bopOSPTotalCost = bopOSPCost * calculatePercentage(Percentage);
             setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
@@ -489,10 +489,27 @@ function OverheadProfit(props) {
           baseCost = IsIncludeApplicabilityForChildParts
             ? checkForNull(OverheadDetail?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost)
             : checkForNull(headerCosts?.NetBoughtOutPartCost);
+        } else if (Applicability === 'BOP Domestic') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(OverheadDetail?.NetChildPartsBOPDomesticCost) + checkForNull(headerCosts?.NetBOPDomesticCost)
+            : checkForNull(headerCosts?.NetBOPDomesticCost);
+        } else if (Applicability === 'BOP CKD') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(OverheadDetail?.NetChildPartsBOPImportCost) + checkForNull(headerCosts?.NetBOPImportCost)
+            : checkForNull(headerCosts?.NetBOPImportCost);
+        } else if (Applicability === 'BOP V2V') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(OverheadDetail?.NetChildPartsBOPSourceCost) + checkForNull(headerCosts?.NetBOPSourceCost)
+            : checkForNull(headerCosts?.NetBOPSourceCost);
+        } else if (Applicability === 'BOP OSP') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost) + checkForNull(headerCosts?.NetBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBOPOutsourcedCost);
         } else if (Applicability === 'CC') {
           baseCost = IsIncludeApplicabilityForChildParts
             ? checkForNull(OverheadDetail?.NetChildPartsOperationCostForOverhead) + checkForNull(OverheadDetail?.NetChildPartsProcessCostForOverhead) + getCCCost('overhead')
             : getCCCost('overhead');
+
         } else if (Applicability === 'Welding') {
           baseCost = IsIncludeApplicabilityForChildParts
             ? checkForNull(headerCosts?.NetWeldingCostForOverhead) + checkForNull(OverheadDetail?.NetChildPartsWeldingCostForOverhead)
@@ -575,28 +592,28 @@ function OverheadProfit(props) {
             setValue('ProfitWeldingCost', checkForDecimalAndNull(weldingCost, initialConfiguration?.NoOfDecimalForPrice));
             setValue('ProfitWeldingTotalCost', checkForDecimalAndNull(weldingTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
-            case 'BOP Domestic':
+          case 'BOP Domestic':
             const bopDomesticCost = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPDomesticCost) + checkForNull(ProfitDetail?.NetChildPartsBOPDomesticCost) : checkForNull(headerCosts?.NetBOPDomesticCost);
             const bopDomesticTotalCost = bopDomesticCost * calculatePercentage(Percentage);
             setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(bopDomesticCost, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(bopDomesticTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
-            case 'BOP CKD':
+          case 'BOP CKD':
             const bopCKDCost = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPImportCost) + checkForNull(ProfitDetail?.NetChildPartsBOPImportCost) : checkForNull(headerCosts?.NetBOPImportCost);
             const bopCKDTotalCost = bopCKDCost * calculatePercentage(Percentage);
             setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(bopCKDCost, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(bopCKDTotalCost, initialConfiguration?.NoOfDecimalForPrice));
-            break;  
-            case 'BOP V2V': 
+            break;
+          case 'BOP V2V':
             const bopV2VCost = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPSourceCost) + checkForNull(ProfitDetail?.NetChildPartsBOPSourceCost) : checkForNull(headerCosts?.NetBOPSourceCost);
             const bopV2VTotalCost = bopV2VCost * calculatePercentage(Percentage);
             setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(bopV2VCost, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(bopV2VTotalCost, initialConfiguration?.NoOfDecimalForPrice));
-            break;  
-            case 'BOP OSP':
+            break;
+          case 'BOP OSP':
             const bopOSPCost = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPOutsourcedCost) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPOutsourcedCost);
             const bopOSPTotalCost = bopOSPCost * calculatePercentage(Percentage);
             setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
@@ -630,10 +647,23 @@ function OverheadProfit(props) {
           baseCost = IsIncludeApplicabilityForChildParts
             ? checkForNull(headerCosts?.NetWeldingCostForProfit) + checkForNull(ProfitDetail?.NetChildPartsWeldingCostForProfit)
             : checkForNull(headerCosts?.NetWeldingCostForProfit);
-        } else {
-          baseCost = 0;
+        } else if (Applicability === 'BOP Domestic')  {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPDomesticCost) + checkForNull(ProfitDetail?.NetChildPartsBOPDomesticCost)
+            : checkForNull(headerCosts?.NetBOPDomesticCost);
+        } else if (Applicability === 'BOP CKD') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPImportCost) + checkForNull(ProfitDetail?.NetChildPartsBOPImportCost)
+            : checkForNull(headerCosts?.NetBOPImportCost);
+        } else if (Applicability === 'BOP V2V') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPSourceCost) + checkForNull(ProfitDetail?.NetChildPartsBOPSourceCost)
+            : checkForNull(headerCosts?.NetBOPSourceCost);
+        } else if (Applicability === 'BOP OSP') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPOutsourcedCost) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBOPOutsourcedCost);
         }
-
         const totalCost = baseCost * calculatePercentage(Percentage);
 
         return {
@@ -659,7 +689,7 @@ function OverheadProfit(props) {
   const getCCCost = (type = '') => {
     const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost?.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost?.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0]?.NetSurfaceTreatmentCost);
     const NetToolCost = state.isIncludeToolCostInOverhead || state.isIncludeToolCostInProfit ? checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) : 0;
-    
+
     if (type === 'overhead') {
       return checkForNull(headerCosts?.NetProcessCostForOverhead) +
         checkForNull(headerCosts?.NetOperationCostForOverhead) +
@@ -730,11 +760,11 @@ function OverheadProfit(props) {
   }
 
   const onRemarkPopUpClickOverHead = () => {
-    
+
     if (errors.overheadRemark !== undefined) {
       return false
     }
-    
+
     const remarkValue = getValues('overheadRemark');
     setOverheadObj(prev => ({
       ...prev,
@@ -761,7 +791,7 @@ function OverheadProfit(props) {
     if (errors.profitRemark !== undefined) {
       return false
     }
-    
+
     const remarkValue = getValues('profitRemark');
     setProfitObj(prev => ({
       ...prev,
@@ -829,8 +859,8 @@ function OverheadProfit(props) {
     }))
     dispatch(setSurfaceCostInOverhead(!IsIncludedSurfaceInOverhead))
     dispatch(isOverheadProfitDataChange(true))
-  } 
-  
+  }
+
   const onPressIncludeSurfaceTreatmentProfit = () => {
     setState(prev => ({
       ...prev,
@@ -849,7 +879,7 @@ function OverheadProfit(props) {
     dispatch(setToolCostInOverhead(!IsIncludedToolCostInOverhead))
     dispatch(isOverheadProfitDataChange(true))
   }
-  
+
   const onPressIncludeToolCostProfit = () => {
     setState(prev => ({
       ...prev,
