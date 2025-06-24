@@ -650,7 +650,8 @@ class AddMachineRate extends Component {
           // }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('Specification', Data.Specification)
-          this.props.change('plantCurrency', Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency ?? Data?.LocalCurrency)
+          // For domestic and import case we need to get data for plantCurrency from LocalCurrency key only.
+          this.props.change('plantCurrency', Data?.LocalCurrency)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.finalUserCheckAndMasterLevelCheckFunction(Data.Plant[0].PlantId)
           setTimeout(() => {

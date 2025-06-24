@@ -587,7 +587,8 @@ class AddMoreDetails extends Component {
           } else {
             this.setState({ hidePlantCurrency: true })
           }
-          this.props.change('plantCurrency', Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+          // For domestic and import case we need to get data for plantCurrency from LocalCurrency key only.
+          this.props.change('plantCurrency', Data?.LocalCurrency)
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('TotalFuelCostPerYear', Data.TotalFuelCostPerYear ? Data.TotalFuelCostPerYear : '')
           this.props.change('ConsumptionPerYear', Data.ConsumptionPerYear ? Data.ConsumptionPerYear : '')
