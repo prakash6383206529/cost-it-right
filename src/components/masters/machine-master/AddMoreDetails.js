@@ -3601,7 +3601,6 @@ class AddMoreDetails extends Component {
                             disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
-                            required={true}
                           />
                         </Col>
 
