@@ -282,6 +282,7 @@ class AddMachineRate extends Component {
         "MachineName": fieldsObj.MachineName,
         "MachineTypeId": machineType.value,
         "Specification": fieldsObj.Specification,
+        "MachineEntryType": this.state.isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
         "TonnageCapacity": fieldsObj.TonnageCapacity,
         "LoggedInUserId": loggedInUserId(),
         "MachineProcessRates": [],
