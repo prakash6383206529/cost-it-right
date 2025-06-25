@@ -1448,6 +1448,7 @@ function TabDiscountOther(props) {
       "IsPaymentTerms": true,
       // "ApplicabilityCost": DiscountAndOtherCostTabData?.ApplicabilityCost || "",
       "PaymentTermDetail": {
+        "PaymentTermCostingApplicabilityDetails": [],
         "InterestRateId": DiscountAndOtherCostTabData?.InterestRateId || "",
         "PaymentTermDetailId": "",
         "PaymentTermApplicability": DiscountAndOtherCostTabData?.PaymentTermApplicability || "",
