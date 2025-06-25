@@ -32,7 +32,7 @@ import { CheckApprovalApplicableMaster, getExchangeRateParams, userTechnologyDet
 import { checkFinalUser, getExchangeRateByCurrency } from "../../costing/actions/Costing";
 import MasterSendForApproval from "../MasterSendForApproval";
 import Button from "../../layout/Button";
-import { debounce } from "lodash";
+import { debounce, get } from "lodash";
 import Switch from 'react-switch'
 import { getPlantUnitAPI } from "../actions/Plant";
 import WarningMessage from "../../common/WarningMessage";
@@ -166,7 +166,8 @@ function AddMoreOperation(props) {
     useEffect(() => {
         dispatch(getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, null, (res) => {
             setTimeout(() => {
-                commonFunction(plant, false, res?.data?.Data?.MasterLevels)
+                const PlantId = Array.isArray(plant) ? get(plant, '[0].value', EMPTY_GUID) :  get(plant, 'value', EMPTY_GUID)
+                commonFunction(PlantId, false, res?.data?.Data?.MasterLevels)
             }, 500);
         }))
     }, [plant]);
@@ -595,8 +596,6 @@ function AddMoreOperation(props) {
     const commonFunction = (plantId = EMPTY_GUID, isDivision = false, masterLevels = []) => {
         let levelDetailsTemp = []
         levelDetailsTemp = userTechnologyDetailByMasterId(addMoreDetailObj?.costingTypeId, OPERATIONS_ID, masterLevels)
-        console.log(levelDetailsTemp, "levelDetailsTemp");
-        
         setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
         let obj = {
             DepartmentId: userDetails().DepartmentId,
