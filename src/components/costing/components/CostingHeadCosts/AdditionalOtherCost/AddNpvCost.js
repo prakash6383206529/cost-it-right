@@ -7,7 +7,7 @@ import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layou
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
 import { typeofNpvDropdown } from '../../../../../config/masterData'
-import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, blockInvalidNumberKeys, nonZero } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, blockInvalidNumberKeys, nonZero, decimalNumberLimit8And7 } from "../../../../../helper/validation";
 import NpvCost from './NpvCost'
 import { setNPVData } from '../../../actions/Costing'
 import Toaster from '../../../../common/Toaster'
@@ -193,8 +193,9 @@ function AddNpvCost(props) {
 
     const calculateAmortizationCost = (investmentCost, amortizationPercent) => {
         if(investmentCost || amortizationPercent){
-            const amortizationCost = (checkForNull(investmentCost) * checkForNull(amortizationPercent))/100
-            setValue("AmortizationCost", checkForNull(amortizationCost))
+            const percent = Number(checkForNull(amortizationPercent)).toFixed(2);
+            const amortizationCost = (checkForNull(investmentCost) * checkForNull(percent))/100
+            setValue("AmortizationCost", checkForDecimalAndNull(amortizationCost, initialConfiguration?.NoOfDecimalForPrice))
         }
     }
 
@@ -203,7 +204,7 @@ function AddNpvCost(props) {
         // If a value is entered in the NpvPercentage field, disable the Total Cost field.
         let value = e?.target?.value
         if(islineInvestmentDrawer){
-            const upfrontValue = Math.max(0, 100 - value);
+            const upfrontValue = Math.max(0, (100 - value).toFixed(2));
             setValue("NpvPercentage", Number(value))
             setValue("UpfrontPercentage", checkForNull(upfrontValue))
             clearErrors('UpfrontPercentage');
@@ -232,14 +233,15 @@ function AddNpvCost(props) {
 
     const calculateUpfrontCost = (investmentCost, upfrontPercent) => {
         if(investmentCost || upfrontPercent){
-            const upfrontCost = (checkForNull(investmentCost) * checkForNull(upfrontPercent))/100
-            setValue("UpfrontCost", checkForNull(upfrontCost))
+            const percent = Number(checkForNull(upfrontPercent)).toFixed(2);
+            const upfrontCost = (checkForNull(investmentCost) * checkForNull(percent))/100
+            setValue("UpfrontCost", checkForDecimalAndNull(upfrontCost, initialConfiguration?.NoOfDecimalForPrice))
         }
     }
     
     const handleUpfrontPercentageChange = (e) => {
         let val = e?.target?.value
-        const npvValue = Math.max(0, 100 - val);
+        const npvValue = Math.max(0, (100 - val).toFixed(2));
         setValue("UpfrontPercentage", checkForNull(val))
         setValue("NpvPercentage", checkForNull(npvValue));
         clearErrors('NpvPercentage');
@@ -507,7 +509,7 @@ function AddNpvCost(props) {
                                                     mandatory={true}
                                                     rules={{
                                                         required: true,
-                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
+                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit8And7, nonZero },
                                                     }}
                                                     onKeyDown={blockInvalidNumberKeys}
                                                     handleChange={handleInvestmentCostChange}
