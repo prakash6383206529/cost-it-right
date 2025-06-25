@@ -72,8 +72,7 @@ const AddInterestRate = (props) => {
         minEffectiveDate: '',
         showErrorOnFocus: false,
         costingTypeId: ZBCTypeId,
-        // client: [],
-        clientName: [],
+        client: [],
         showPopup: false,
         vendorFilterList: [],
         RawMaterial: [],
@@ -226,6 +225,8 @@ const AddInterestRate = (props) => {
             );
 
             const { plantArray, cbcPlantArray } = getPlants();
+            console.log(state, "state");
+            
             let data = {
                 vendorInterestRateId: null,
                 costingHeadId: state?.costingTypeId,
