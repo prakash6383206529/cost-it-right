@@ -61,7 +61,7 @@ import AddLabourCost from './CostingHeadCosts/AdditionalOtherCost/AddLabourCost'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, revisionNoLabel } = useLabels()
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -1702,6 +1702,9 @@ const CostingSummaryTable = (props) => {
       if (prop === "vendorExcel") {
         costingSummary.push({ label: updatedVendorLabel, value: prop, })
       }
+      if (prop === "RevisionNumber") {
+        costingSummary.push({ label: revisionNoLabel, value: prop, })
+      }
       if (viewCostingData[0]?.technologyId === LOGISTICS) {
         costingSummary.push({ label: VIEW_COSTING_DATA_LOGISTICS[prop], value: prop, })
       } else {
@@ -1720,15 +1723,13 @@ const CostingSummaryTable = (props) => {
         }
       }
     }
-    const updatedCostingSummary = costingSummary.filter(
-      item => item.label !== "Vendor (Code)"
-    );
-
+    const updatedCostingSummary = costingSummary.filter(item => {
+      return item.label !== "Vendor (Code)" && item.label !== 'Revision Number';
+    })
     if (!showConvertedCurrencyCheckbox) {
       templateObj.nPoPriceCurrency = `Net Cost (${getConfigurationKey().BaseCurrency})`
     }
     viewCostingData && viewCostingData?.map((item) => {
-
       item.scrapRecoveryPercentage = isScrapRecoveryPercentageApplied && item?.CostingPartDetails?.CostingRawMaterialsCost?.length > 1 ? 'Multiple RM' : item?.CostingPartDetails?.CostingRawMaterialsCost?.length === 1 ? (item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied ? item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.ScrapRecoveryPercentage : 0) : 0
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
@@ -2577,7 +2578,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Part Family (Code)</span>
-                              <span className="d-block">Revision Number</span>
+                              <span className="d-block">{revisionNoLabel}</span>
                               <span className="d-block">Plant (Code)</span>
                               {(props?.isRfqCosting && !checkTechnologyIdAndRfq(viewCostingData)) && <span className="d-block">SOB</span>}
 
@@ -3639,6 +3640,23 @@ const CostingSummaryTable = (props) => {
                                         {(data?.CostingHeading !== VARIANCE && data?.bestCost !== true) ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                       </span>
 
+                                    </td>
+                                  )
+                                })}
+                            </tr>
+                          }
+                          {initialConfiguration?.IsShowLineInvestmentCost &&
+                            <tr>
+                              <td>
+                                <span className={`d-block small-grey-text`}>Line Investment Cost</span>
+                              </td>
+                              {viewCostingData &&
+                                viewCostingData?.map((data, index) => {
+                                  return (
+                                    <td className={tableDataClass(data)}>
+                                      <span title={data?.netLineInvestmentCost} className={`d-block small-grey-text w-fit `}>
+                                        {(data?.CostingHeading !== VARIANCE && data?.bestCost !== true) ? checkForDecimalAndNull(data?.netLineInvestmentCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                      </span>
                                     </td>
                                   )
                                 })}

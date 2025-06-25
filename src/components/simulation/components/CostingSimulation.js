@@ -54,7 +54,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
-    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, finishWeightLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, finishWeightLabel, revisionNoLabel } = useLabels()
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
@@ -1851,7 +1851,7 @@ function CostingSimulation(props) {
                                                     {isSimulationWithCosting && <AgGridColumn width={120} field="PartType" tooltipField='PartType' cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
                                                     {(isSimulationWithCosting && !amendmentDetails?.IsExchangeRateSimulation) && <AgGridColumn width={130} field="Technology" tooltipField='Technology' headerName={technologyLabel}></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={110} field="ECNNumber" tooltipField='ECNNumber' headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
-                                                    {isSimulationWithCosting && <AgGridColumn width={130} field="RevisionNumber" tooltipField='RevisionNumber' headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
+                                                    {isSimulationWithCosting && <AgGridColumn width={130} field="RevisionNumber" tooltipField='RevisionNumber' headerName={revisionNoLabel} cellRenderer='revisionFormatter'></AgGridColumn>}
                                                     {/* //MINDA */}
                                                     {isSimulationWithCosting && showSaLineNumber() && <AgGridColumn width={130} field="SANumber" tooltipField='SANumber' headerName='SA Number' editable={true}></AgGridColumn>}
                                                     {isSimulationWithCosting && showSaLineNumber() && <AgGridColumn width={130} field="LineNumber" tooltipField='LineNumber' headerName='Line Number' editable={true}></AgGridColumn>}

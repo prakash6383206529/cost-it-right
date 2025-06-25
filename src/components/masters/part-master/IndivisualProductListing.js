@@ -30,6 +30,7 @@ import { ApplyPermission } from ".";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "../../common/Tour/TourMessages";
+import { useLabels, useWithLocalization } from "../../../helper/core";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -57,6 +58,7 @@ const IndivisualProductListing = (props) => {
   const { initialConfiguration } = useSelector((state) => state.auth);
   const [showExtraData, setShowExtraData] = useState(false)
   const [render, setRender] = useState(false)
+  const { revisionNoLabel, drawingNoLabel } = useLabels()
   const { t } = useTranslation("common")
   useEffect(() => {
 
@@ -227,6 +229,8 @@ const IndivisualProductListing = (props) => {
     setSelectedRowData(selectedRows);
     setDataCount(selectedRows.length);
   };
+  
+  const INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = [];
     tempArr = gridApi && gridApi?.getSelectedRows();
@@ -236,7 +240,7 @@ const IndivisualProductListing = (props) => {
         : productDataList
           ? productDataList
           : [];
-    return returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, tempArr);
+    return returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION, tempArr);
   };
 
   const returnExcelColumn = (data = [], tempArr) => {
@@ -454,12 +458,12 @@ const IndivisualProductListing = (props) => {
             ></AgGridColumn>
             <AgGridColumn
               field="RevisionNumber"
-              headerName="Revision No."
+              headerName={revisionNoLabel}
               cellRenderer={"hyphenFormatter"}
             ></AgGridColumn>
             <AgGridColumn
               field="DrawingNumber"
-              headerName="Drawing No."
+              headerName={drawingNoLabel}
               cellRenderer={"hyphenFormatter"}
             ></AgGridColumn>
             <AgGridColumn

@@ -12,6 +12,8 @@ import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { LabelsClass } from '../../../helper/core';
+import { withTranslation } from 'react-i18next';
 
 class AddAssemblyForm extends Component {
 
@@ -202,8 +204,9 @@ class AddAssemblyForm extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, } = this.props;
-
+        const { handleSubmit, isEditFlag, t} = this.props;
+        const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
+        const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
         const filterList = async (inputValue) => {
             const { partName, selectedParts } = this.state
             if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -319,7 +322,7 @@ class AddAssemblyForm extends Component {
 
                         <Col md="6">
                             <Field
-                                label={`Revision No.`}
+                                label={RevisionNoLabel}
                                 name={"RevisionNumber"}
                                 type="text"
                                 placeholder={''}
@@ -333,7 +336,7 @@ class AddAssemblyForm extends Component {
                         </Col>
                         <Col md="6">
                             <Field
-                                label={`Drawing No.`}
+                                label={DrawingNoLabel}
                                 name={"DrawingNumber"}
                                 type="text"
                                 placeholder={''}
@@ -431,4 +434,4 @@ export default connect(mapStateToProps, {
     validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
-})(AddAssemblyForm));
+})(withTranslation(['MasterLabels'])(AddAssemblyForm)));

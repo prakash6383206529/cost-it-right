@@ -73,7 +73,7 @@ const IndivisualPartListing = (props) => {
     showPopupToggle: false,
     showPopupToggle2: false,
   });
-  const { technologyLabel } = useLabels();
+  const { technologyLabel, revisionNoLabel, drawingNoLabel } = useLabels();
   const [searchText, setSearchText] = useState('');
   const { newPartsListing, allNewPartsListing } = useSelector((state) => state.part);
   const { initialConfiguration } = useSelector((state) => state.auth);
@@ -862,8 +862,8 @@ const IndivisualPartListing = (props) => {
                   <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 )}
                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
-                <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
-                <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                <AgGridColumn field="RevisionNumber" headerName={revisionNoLabel} cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                <AgGridColumn field="DrawingNumber" headerName={drawingNoLabel} cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 {PartMasterConfigurable?.IsShowPartModel && <AgGridColumn field="PartsModelMaster" headerName="Parts Model" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                 {PartMasterConfigurable?.IsShowNepNumber && <AgGridColumn field="NEPNumber" headerName="NEP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>}

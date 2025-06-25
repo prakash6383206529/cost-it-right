@@ -114,7 +114,7 @@ function AddBudget(props) {
     const [ExchangeSource, setExchangeSource] = useState()
     const [costConverSionInLocalCurrency, setCostConverSionInLocalCurrency] = useState(false)
     const [showPlantWarning, setShowPlantWarning] = useState(false)
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, revisionNoLabel } = useLabels()
     const [budgetingId, setBudgetingId] = useState(0)
     // const [isImport, setIsImport] = useState(listToggle.RawMaterial);
 
@@ -1391,7 +1391,7 @@ function AddBudget(props) {
                                                             </Col>
                                                             <Col className="col-md-3 p-relative">
                                                                 <AsyncSearchableSelectHookForm
-                                                                    label={"Part No. (Revision No.)"}
+                                                                    label={`Part No. (${revisionNoLabel})`}
                                                                     id='AddBudget_PartNumber'
                                                                     name={"PartNumber"}
                                                                     placeholder={"Select"}

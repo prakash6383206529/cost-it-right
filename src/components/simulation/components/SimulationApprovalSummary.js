@@ -56,7 +56,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
-    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, revisionNoLabel } = useLabels()
     const { isbulkUpload } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId, simulationId, receiverId, SimulationHeadId, fromDashboard } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
@@ -1493,7 +1493,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={160} field="PartName" tooltipField='PartName' headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="PartType" tooltipField='PartType' headerName='Part Type'></AgGridColumn>
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
-                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer={revisionFormatter}></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName={revisionNoLabel} cellRenderer={revisionFormatter}></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' headerName="Category" cellRenderer='categoryFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>}

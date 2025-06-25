@@ -15,6 +15,7 @@ import { fetchApplicabilityList, getVendorNameByVendorSelectList, fetchSpecifica
 import { autoCompleteDropdown, filterBOPApplicability, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 import { LOGISTICS } from '../../../config/masterData';
+import Toaster from '../../common/Toaster';
 
 
 
@@ -169,6 +170,7 @@ const AddOverheadMasterDetails = (props) => {
             if (!isPercentageValid) return;
         }
         if (!checkForNull(percentage) && state?.OverheadApplicability?.label != "Fixed") {
+            Toaster.warning('Percentage should be positive number.');
             setValue("OverheadPercentage", "")
             return false
         }

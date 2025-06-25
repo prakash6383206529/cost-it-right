@@ -171,7 +171,7 @@ function VolumeListing(props) {
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const dispatch = useDispatch();
   const { t } = useTranslation("Common");
-  const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
+  const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel, revisionNoLabel } = useLabels()
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
@@ -762,7 +762,7 @@ function VolumeListing(props) {
                   {reactLocalStorage.getObject('CostingTypePermission').cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
                   <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                   <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                  <AgGridColumn field="PartNumber" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
+                  <AgGridColumn field="PartNumber" headerName={`Part No. (${revisionNoLabel})`} width={200}></AgGridColumn>
                   <AgGridColumn field="PartName" headerName="Part Name"                  ></AgGridColumn>
                   <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"                  ></AgGridColumn>
                   {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}

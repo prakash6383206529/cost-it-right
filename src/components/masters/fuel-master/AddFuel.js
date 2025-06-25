@@ -252,7 +252,8 @@ class AddFuel extends Component {
               }
             })
             const effectiveDate = rateGridArray[0]?.effectiveDate;
-            this.props.change('plantCurrency', Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+            // For domestic and import case we need to get data for plantCurrency from LocalCurrency key only.
+            this.props.change('plantCurrency', Data?.LocalCurrency)
             if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
               this.setState({ hidePlantCurrency: false })
             } else {
