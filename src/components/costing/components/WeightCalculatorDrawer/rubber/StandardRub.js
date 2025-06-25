@@ -156,7 +156,7 @@ function StandardRub(props) {
             setValue('GrossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             setValue('NetRMCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-            if ((getConfigurationKey()?.IsCalculateVolumeForPartInRubber && !isVolumeAutoCalculate)) {
+            if ((getConfigurationKey()?.IsCalculateVolumeForPartInRubber && !isVolumeAutoCalculate && FinishWeight !== getValues('FinishWeight'))) {
                 setValue('FinishWeight', checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             }
         }
@@ -728,7 +728,7 @@ function StandardRub(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.CuttingAllowance === 0))}
+                                                mandatory={false}
                                                 rules={{
                                                     required: isVolumeAutoCalculate && (!(tableData.length > 0) || (tableData[tableData.length - 1]?.CuttingAllowance === 0)),
                                                     validate: { number, decimalAndNumberValidation },
@@ -762,9 +762,9 @@ function StandardRub(props) {
                                             />
                                         </Col>
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'rubber-total-allowance'} tooltipText={"Total Allowance = Cutting Allowance(mm) + (Bends Tolerance(mm) * No. Of Bends)"} />
+                                            <TooltipCustom disabledIcon={true} id={'rubber-total-allowance'} tooltipText={"Total Allowance (Cutting, bends & shrinkage) = Cutting Allowance(mm) + (Bends Tolerance(mm) * No. Of Bends)"} />
                                             <TextFieldHookForm
-                                                label={`Total Allowance`}
+                                                label={`Total Allowance (Cutting, bends & shrinkage)`}
                                                 name={'TotalAllowance'}
                                                 id={'rubber-total-allowance'}
                                                 Controller={Controller}
@@ -786,7 +786,7 @@ function StandardRub(props) {
 
 
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'rubber-total-length'} tooltipText={"Total Length = Length + Total allowance "} />
+                                            <TooltipCustom disabledIcon={true} id={'rubber-total-length'} tooltipText={"Total Length = Length + Total Allowance (Cutting, bends & shrinkage)"} />
                                             <TextFieldHookForm
                                                 label={`Total Length(mm)`}
                                                 id={'rubber-total-length'}
@@ -1070,7 +1070,7 @@ function StandardRub(props) {
                                                 <AgGridColumn minWidth="150" field="CuttingAllowance" headerName="Cutting Allowance" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="BendTolerance" headerName="Bends Tolerance" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="NumberOfBends" headerName="Number of Bends" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn minWidth="150" field="TotalAllowance" headerName="Total Allowance" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth="250" field="TotalAllowance" headerName="Total Allowance (Cutting, bends & shrinkage)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="TotalLength" headerName="Total Length" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="Volume" headerName="Volume" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 {getConfigurationKey()?.IsCalculateVolumeForPartInRubber ?
