@@ -70,7 +70,7 @@ function IsolateReRender(control) {
 }
 
 function CostingDetails(props) {
-  const { vendorLabel } = useLabels()
+  const { vendorLabel, revisionNoLabel, drawingNoLabel } = useLabels()
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -2375,7 +2375,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="Drawing No."
+                          label={drawingNoLabel}
                           name={"DrawingNumber"}
                           Controller={Controller}
                           control={control}
@@ -2392,7 +2392,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="Revision No."
+                          label={revisionNoLabel}
                           name={"RevisionNumber"}
                           Controller={Controller}
                           control={control}

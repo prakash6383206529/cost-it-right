@@ -24,6 +24,7 @@ import Button from '../../layout/Button';
 import AssociateHierarchy from './AssociateHierarchy';
 import { subDays } from 'date-fns';
 import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { LabelsClass } from '../../../helper/core';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -388,6 +389,8 @@ class AddIndivisualProduct extends Component {
     */
     render() {
         const { handleSubmit, initialConfiguration, t, productHierarchyData } = this.props;
+        const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
+        const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
         const productLabel = productHierarchyData.length > 0 ? productHierarchyData[productHierarchyData?.length - 1]?.ProductHierarchyName : 'Product'
         const { isEditFlag, isViewMode, setDisable } = this.state;
         return (
@@ -508,7 +511,7 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
                                                     <Col md="3">
                                                         <Field
-                                                            label={`Revision No.`}
+                                                            label={RevisionNoLabel}
                                                             name={"RevisionNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
@@ -522,7 +525,7 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
                                                     <Col md="3">
                                                         <Field
-                                                            label={`Drawing No.`}
+                                                            label={DrawingNoLabel}
                                                             name={"DrawingNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
@@ -781,5 +784,4 @@ export default connect(mapStateToProps, {
     validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
-})(withTranslation(['PartMaster'])(AddIndivisualProduct)),
-)
+})(withTranslation(['PartMaster', 'MasterLabels'])(AddIndivisualProduct)))

@@ -66,7 +66,7 @@ function CostingSummary(props) {
   const [partType, setPartType] = useState([]);
   const [partFamily, setPartFamily] = useState([])
   const { t } = useTranslation("Costing")
-  const { technologyLabel } = useLabels();
+  const { technologyLabel, drawingNoLabel, revisionNoLabel } = useLabels();
   const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
   const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
 
@@ -659,7 +659,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="Drawing No."
+                          label={drawingNoLabel}
                           name={'DrawingNumber'}
                           Controller={Controller}
                           control={control}
@@ -677,7 +677,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="Revision No."
+                          label={revisionNoLabel}
                           name={'RevisionNumber'}
                           Controller={Controller}
                           control={control}

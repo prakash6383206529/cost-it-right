@@ -327,6 +327,7 @@ function OperationCostExcludedOverhead(props) {
 
 
   const OperationGridFields = 'OperationGridFields';
+  const quantityTooltipText = <div>If the Operation is Welding, please enter <b>Welding Length/No. of Spot</b> <div>For all other Operatios, please enter the actual <b>Quantity</b>.</div></div>;
 
   /**
   * @method render
@@ -369,7 +370,7 @@ function OperationCostExcludedOverhead(props) {
                     <th>{`Operation Code`}</th>
                     <th>{`UOM`}</th>
                     <th>{`Rate`}</th>
-                    <th >{`Quantity`}</th>
+                    <th><span>Quantity <TooltipCustom customClass="float-unset" tooltipClass="operation-quatity-tooltip" id={`operation-quantity-info`} tooltipText={quantityTooltipText} /></span></th>
                     {initialConfiguration &&
                       initialConfiguration?.IsOperationLabourRateConfigure &&
                       <th>{`Labour Rate`}</th>}

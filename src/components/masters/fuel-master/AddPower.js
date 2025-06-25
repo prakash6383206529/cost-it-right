@@ -531,7 +531,8 @@ class AddPower extends Component {
             this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
             this.props.change('NetPowerCostPerUnitLocalConversion', Data.NetPowerCostPerUnitLocalConversion)
             this.props.change('NetPowerCostPerUnitConversion', Data.NetPowerCostPerUnitConversion)
-            this.props.change('plantCurrency', Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+            // For domestic and import case we need to get data for plantCurrency from LocalCurrency key only.
+            this.props.change('plantCurrency', Data?.LocalCurrency)
             this.props.change('Country', Data.CountryName !== undefined ? { label: Data?.CountryName, value: Data?.CountryId } : {})
             this.props.change('State', Data.StateName !== undefined ? { label: Data?.StateName, value: Data.StateId } : {})
             this.props.change('City', Data.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : {})

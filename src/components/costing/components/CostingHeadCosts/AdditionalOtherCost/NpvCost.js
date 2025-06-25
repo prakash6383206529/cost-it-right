@@ -2,7 +2,7 @@ import React, { Fragment, useContext } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useEffect } from 'react'
@@ -10,8 +10,9 @@ import { ViewCostingContext } from '../../CostingDetails'
 import { reactLocalStorage } from 'reactjs-localstorage'
 
 function NpvCost(props) {
+    const islineInvestmentDrawer = props?.drawerType === "LineInvestmentCost"
     const [totalCost, setTotalCost] = useState(0)
-  const { currencySource } = useSelector((state) => state?.costing);
+    const { currencySource } = useSelector((state) => state?.costing);
 
     const editDeleteData = (indexValue, operation) => {
         props.editData(indexValue, operation)
@@ -20,9 +21,20 @@ function NpvCost(props) {
     const CostingViewMode = useContext(ViewCostingContext);
 
     useEffect(() => {
-        const sum = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
-        setTotalCost(checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
+        const sum = props?.tableData
+            .filter(obj => obj.NpvType !== 'Line Investment')
+            .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
+        const totalLineInvestmentCost = props?.tableData
+            .filter(obj => obj.NpvType === 'Line Investment')
+            .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
+        const finalCalculation = islineInvestmentDrawer ? totalLineInvestmentCost : sum
+        setTotalCost(checkForDecimalAndNull(finalCalculation, initialConfiguration?.NoOfDecimalForPrice))
     }, [props?.tableData])
+
+
+    const filteredRows = (props?.tableData || []).filter(item =>
+        islineInvestmentDrawer ? item?.NpvType === 'Line Investment' : item?.NpvType !== 'Line Investment'
+    )
 
     return (
         <Fragment>
@@ -31,21 +43,32 @@ function NpvCost(props) {
                     <Table className="table cr-brdr-main mb-4 forging-cal-table" size="sm">
                         <tbody>
                             <tr className='thead'>
-                                <th>{`Type of Investment`}</th>
-                                {<th>{`Percentage (%)`}</th>}
-                                {<th>{`Quantity`}</th>}
-                                {<th>{`Total`}</th>}
+                                {islineInvestmentDrawer && <th>{`Investment Cost`}</th>}
+                                {!islineInvestmentDrawer && <th>{`Type of Investment`}</th>}
+                                {<th>{`${islineInvestmentDrawer ? "Amortization" : "Percentage"} (%)`}</th>}
+                                {<th>{`${islineInvestmentDrawer ? "Quantity/ Amortization Volume" : "Quantity"}`}</th>}
+                                {islineInvestmentDrawer && <th>{`Upfront (%)`}</th>}
+                                {islineInvestmentDrawer && <th>{`Upfront  Cost`}</th>}
+                                {islineInvestmentDrawer && <th>{`Amortization Cost`}</th>}
+                                {<th>{`${islineInvestmentDrawer ? "Investement Cost/Pc" : "Total"}`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
-
                             </tr>
                             {props?.tableData &&
                                 props?.tableData.map((item, index) => {
+                                    if ((islineInvestmentDrawer && item?.NpvType !== 'Line Investment') ||
+                                        (!islineInvestmentDrawer && item?.NpvType === 'Line Investment')) {
+                                        return null;
+                                    }
                                     return (
                                         <Fragment>
                                             <tr key={index}>
-                                                <td>{item.NpvType} </td>
+                                                {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.InvestmentCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {!islineInvestmentDrawer && <td>{item.NpvType} </td>}
                                                 {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.NpvQuantity, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {islineInvestmentDrawer && <td>{item?.UpfrontPercentage}</td>}
+                                                {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.UpfrontCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.AmortizationCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} disabled={CostingViewMode} />
                                                     <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} disabled={CostingViewMode} />
@@ -55,15 +78,17 @@ function NpvCost(props) {
                                         </Fragment>
                                     )
                                 })}
-                            {props?.tableData && props?.tableData.length === 0 && (
+
+                            {filteredRows && filteredRows.length === 0 && (
                                 <tr>
                                     <td colspan="15">
                                         <NoContentFound title={EMPTY_DATA} />
                                     </td>
                                 </tr>
                             )}
+
                             <tr className='table-footer'>
-                                <td colSpan={"3"} className="text-right">{`Total NPV Cost (${currencySource?.label}) :`}</td>
+                                <td colSpan={`${islineInvestmentDrawer ? "6" : "3"}`} className="text-right">{`${islineInvestmentDrawer ? "Investment Line cost" : "Total NPV Cost"} (${currencySource?.label}) :`}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>
                         </tbody>

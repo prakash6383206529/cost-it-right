@@ -8,11 +8,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCostDeviationReport } from '../../actions/ReportListing';
 import NoContentFound from '../../../common/NoContentFound';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import { useLabels } from '../../../../helper/core';
+
 const gridOptions = {};
 const CostDeviationListing = ({ formData, viewCostVariance }) => {
     const [gridDataList, setGridDataList] = useState([]);
     const [gridApi, setGridApi] = useState(null);
     const { costDeviationReportList } = useSelector(state => state.report);
+    const { revisionNoLabel } = useLabels();
     const dispatch = useDispatch();
     const [state, setState] = useState({
         isLoader: false,
@@ -121,7 +124,7 @@ const CostDeviationListing = ({ formData, viewCostVariance }) => {
                         suppressRowClickSelection={true}
                     >
                         <AgGridColumn field="PartNo" cellClass={cellClass} cellRenderer={'PartNoRenderer'} headerName="Part Number" ></AgGridColumn>
-                        <AgGridColumn width={140} field="RevisionNumber" headerName="Revision Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn width={140} field="RevisionNumber" headerName={revisionNoLabel} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={220} field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={210} field="RawMaterialGrossWeight" headerName="RM Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={245} field="RawMaterialFinishWeight" headerName="RM Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>

@@ -35,7 +35,7 @@ export const NetPOPriceContext = React.createContext()
 export const IsNFRContext = React.createContext()
 
 function CostingDetailStepTwo(props) {
-  const { vendorLabel } = useLabels()
+  const { vendorLabel, revisionNoLabel } = useLabels()
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -112,7 +112,7 @@ function CostingDetailStepTwo(props) {
             checkForNull(IccCost?.NetCost) +
             (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(tempData.NetDiscountsCost)
         }
-        totalCost = checkForNull(OverAllCost) + checkForNull(DiscountCostData?.totalNpvCost) + checkForNull(DiscountCostData?.totalConditionCost)
+        totalCost = checkForNull(OverAllCost) + checkForNull(DiscountCostData?.totalNpvCost) + checkForNull(DiscountCostData?.totalLineInvestmentCost) + checkForNull(DiscountCostData?.totalConditionCost)
         return { totalCost: totalCost, basicRate: OverAllCost }
 
       case "OverheadProfitTab":
@@ -167,7 +167,7 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.ToolCost) +
           checkForNull(IccCost?.NetCost) +
           (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(data?.AnyOtherCost) - checkForNull(tempData?.NetDiscountsCost)
-        totalCost = checkForNull(OverAllCost) + (initialConfiguration?.IsAddNPVInNetCost ? checkForNull(data.totalNpvCost) : 0) + checkForNull(data.totalConditionCost)
+        totalCost = checkForNull(OverAllCost) + (initialConfiguration?.IsAddNPVInNetCost ? checkForNull(data.totalNpvCost) : 0) + (initialConfiguration?.IsShowLineInvestmentCost ? checkForNull(data.totalLineInvestmentCost) : 0) + checkForNull(data.totalConditionCost)
 
 
         return { totalCost: totalCost, basicRate: OverAllCost }
@@ -441,6 +441,7 @@ function CostingDetailStepTwo(props) {
           AnyOtherCost: checkForNull(data.AnyOtherCost),
           HundiOrDiscountPercentage: checkForNull(data.HundiOrDiscountPercentage),
           totalNpvCost: data.totalNpvCost,
+          totalLineInvestmentCost: checkForNull(data.totalLineInvestmentCost),
           totalConditionCost: data.totalConditionCost
         }
 
@@ -575,7 +576,7 @@ function CostingDetailStepTwo(props) {
                     <tbody>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Technology:</span><span className="dark-blue"> {costingData.TechnologyName}</span></p></div></td>
                       <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue" title={costingData.PartName}> {costingData.PartName}</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Revision No:</span><span className="dark-blue"> {costingData.RevisionNumber !== null ? costingData.RevisionNumber : '-'}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">{revisionNoLabel.replace('.', ':')}</span><span className="dark-blue"> {costingData.RevisionNumber !== null ? costingData.RevisionNumber : '-'}</span></p></div></td>
 
                       {
                         (costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId ||

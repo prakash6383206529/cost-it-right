@@ -18,6 +18,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { LabelsClass } from '../../../helper/core';
 
 class AddIndivisualProduct extends Component {
   constructor(props) {
@@ -307,7 +308,9 @@ class AddIndivisualProduct extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit, initialConfiguration, t } = this.props;
+    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
+    const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
     const { isEditFlag, } = this.state;
     return (
       <>
@@ -430,7 +433,7 @@ class AddIndivisualProduct extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Revision No.`}
+                              label={RevisionNoLabel}
                               name={"RevisionNumber"}
                               type="text"
                               placeholder={""}
@@ -443,7 +446,7 @@ class AddIndivisualProduct extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Drawing No.`}
+                              label={DrawingNoLabel}
                               name={"DrawingNumber"}
                               type="text"
                               placeholder={""}
@@ -713,4 +716,4 @@ export default connect(mapStateToProps, {
   form: 'AddIndivisualProduct',
   validate: validateForm,
   enableReinitialize: true,
-})(AddIndivisualProduct));
+})(withTranslation(['MasterLabels'])(AddIndivisualProduct)));

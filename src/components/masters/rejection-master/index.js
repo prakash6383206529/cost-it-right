@@ -138,6 +138,7 @@ const RejectionMaster = () => {
                     DeleteAccessibility={state.DeleteAccessibility}
                     DownloadAccessibility={state.DownloadAccessibility}
                     ViewAccessibility={state.ViewAccessibility}
+                    BulkUploadAccessibility={state.BulkUploadAccessibility}
                     stopApiCallOnCancel={state.stopApiCallOnCancel}
                   />
                 </ApplyPermission.Provider>

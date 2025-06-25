@@ -12,6 +12,8 @@ import { PartEffectiveDate } from './AddAssemblyPart';
 import { onFocus } from '../../../helper';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { LabelsClass } from '../../../helper/core';
+import { withTranslation } from 'react-i18next';
 
 class AddComponentForm extends Component {
   static contextType = PartEffectiveDate
@@ -203,8 +205,9 @@ class AddComponentForm extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, partAssembly } = this.props;
-
+    const { handleSubmit, isEditFlag, partAssembly, t } = this.props;
+    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
+    const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
     const filterList = async (inputValue) => {
       const { partName, selectedParts } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -326,7 +329,7 @@ class AddComponentForm extends Component {
 
             <Col md="6">
               <Field
-                label={`Revision No.`}
+                label={RevisionNoLabel}
                 name={"RevisionNumber"}
                 type="text"
                 placeholder={""}
@@ -339,7 +342,7 @@ class AddComponentForm extends Component {
             </Col>
             <Col md="6">
               <Field
-                label={`Drawing No.`}
+                label={DrawingNoLabel}
                 name={"DrawingNumber"}
                 type="text"
                 placeholder={""}
@@ -447,4 +450,4 @@ export default connect(mapStateToProps, {
   validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
-})(AddComponentForm));
+})(withTranslation(['MasterLabels'])(AddComponentForm)));

@@ -68,7 +68,7 @@ function VerifySimulation(props) {
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
     const gridRef = useRef();
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, revisionNoLabel, weldingMaterialRate } = useLabels()
     const verifyList = useSelector(state => state?.simulation?.simulationVerifyList)
 
     // const isAssemblyCosting = true
@@ -965,7 +965,7 @@ function VerifySimulation(props) {
                                             {isMasterAssociatedWithCosting && <AgGridColumn minWidth={90} field="PartNo" tooltipField="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="PartName" tooltipField="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="PartType" tooltipField="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
-                                            {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="RevisionNumber" tooltipField="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn minWidth={100} field="RevisionNumber" tooltipField="RevisionNumber" cellRenderer='revisionFormatter' headerName={revisionNoLabel}></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn minWidth={80} field="InfoCategory" tooltipField="InfoCategory" cellRenderer='hyphenFormatter' headerName="Category"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn minWidth={120} field="RMName" tooltipField="RMName" headerName="RM Name" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn minWidth={120} field="RMGrade" tooltipField="RMGrade" headerName="Grade" ></AgGridColumn>}
@@ -983,8 +983,8 @@ function VerifySimulation(props) {
                                             {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn minWidth={190} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (Currency)`} cellRenderer='priceFormatter'></AgGridColumn>}
                                             {(isSurfaceTreatmentOrOperation === true && getConfigurationKey()?.IsShowDetailedOperationBreakup) && <AgGridColumn minWidth={150} field="ForType" headerName="Operation Type"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn minWidth={100} field="OldOperationConsumption" tooltipField="OldOperationRate" headerName="Consumption"></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn minWidth={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName="Existing Welding Rate/kg"></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn minWidth={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Rate/kg"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn minWidth={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName={`Existing ${weldingMaterialRate}/kg`}></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn minWidth={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName={`Revised ${weldingMaterialRate}/kg`}></AgGridColumn>}
                                             {simulationApplicability?.value !== APPLICABILITY_PART_SIMULATION && <AgGridColumn field='Currency' minWidth={120} headerName='Master Currency' />}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn minWidth={120} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn minWidth={120} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}

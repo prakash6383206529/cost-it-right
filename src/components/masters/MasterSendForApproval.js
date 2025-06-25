@@ -36,7 +36,7 @@ function MasterSendForApproval(props) {
         reValidateMode: 'onChange',
     })
     const receiverId = selectedRows && selectedRows[0]?.ReceiverId ? selectedRows[0]?.ReceiverId : props?.receiverId ?? null
-    const { vendorLabel } = useLabels();
+    const { vendorLabel, revisionNoLabel } = useLabels();
     const gridOptions = {};
     const [approvalDropDown, setApprovalDropDown] = useState([])
     const [approverIdList, setApproverIdList] = useState([])
@@ -1199,7 +1199,7 @@ function MasterSendForApproval(props) {
                                                         <SearchableSelectHookForm
                                                             name="PartNumber"
                                                             type="text"
-                                                            label={'Part No. (Revision No.)'}
+                                                            label={`Part No. (${revisionNoLabel})`}
                                                             errors={errors.PartNumber}
                                                             Controller={Controller}
                                                             control={control}

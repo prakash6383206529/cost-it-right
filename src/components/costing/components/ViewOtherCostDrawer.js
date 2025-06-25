@@ -435,6 +435,7 @@ function ViewOtherCostDrawer(props) {
             </Row></>
     }
     const NpvCost = () => {
+        const npvData = npvCostData?.filter(item => item?.NpvType !== 'Line Investment') || [];
         return <>
             <Row Col md="12" className='mt-4'>
                 <Col md="12">
@@ -455,10 +456,9 @@ function ViewOtherCostDrawer(props) {
                             </tr>
                         </thead>
                         <tbody>
-                            {npvCostData &&
-                                npvCostData.map((item, index) => {
+                            {npvData && npvData.length > 0 &&
+                                npvData.map((item, index) => {
                                     return (
-
                                         <tr key={index}>
                                             <td>{item.NpvType} </td>
                                             {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForPrice)}</td>}
@@ -469,7 +469,7 @@ function ViewOtherCostDrawer(props) {
 
                                     )
                                 })}
-                            {npvCostData && npvCostData.length === 0 && (
+                            {npvData && npvData.length === 0 && (
                                 <tr>
                                     <td colspan="15">
                                         <NoContentFound title={EMPTY_DATA} />
@@ -477,6 +477,56 @@ function ViewOtherCostDrawer(props) {
                                 </tr>
                             )}
 
+                        </tbody>
+                    </Table>
+                </Col>
+            </Row></>
+    }
+
+    const LineInvestmentCost = () => {
+        const lineInvestmentData = npvCostData?.filter(item => item?.NpvType === 'Line Investment') || [];
+        return <>
+            <Row Col md="12" className='mt-4'>
+                <Col md="12">
+                    <div className="left-border">{"Line Investment Cost:"}</div>
+                </Col>
+            </Row>
+            <Row>
+                <Col md="12">
+                    <Table className="table cr-brdr-main add-min-width" size="sm">
+                        <thead>
+                            <tr className='thead'>
+                                <th>{`Investment Cost`}</th>
+                                {<th>{`Amortization (%)`}</th>}
+                                {<th>{`Quantity/ Amortization Volume`}</th>}
+                                {<th>{`Upfront (%)`}</th>}
+                                {<th>{`UpFront Cost`}</th>}
+                                {<th>{`Amortization Cost`}</th>}
+                                {<th>{`Investement Cost/Pc`}</th>}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {lineInvestmentData && lineInvestmentData.length > 0 &&
+                                lineInvestmentData.map((item, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>{checkForDecimalAndNull(item?.InvestmentCost, getConfigurationKey().NoOfDecimalForPrice) || "-"}</td>
+                                            <td>{item?.NpvPercentage ?? "-"}</td>
+                                            <td>{checkForDecimalAndNull(item?.NpvQuantity, getConfigurationKey().NoOfDecimalForPrice) || "-"}</td>
+                                            <td>{item?.UpfrontPercentage ?? "-"}</td>
+                                            <td>{checkForDecimalAndNull(item?.UpfrontCost, getConfigurationKey().NoOfDecimalForPrice) || "-"}</td>
+                                            <td>{checkForDecimalAndNull(item?.AmortizationCost, getConfigurationKey().NoOfDecimalForPrice) || "-"}</td>
+                                            <td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey().NoOfDecimalForPrice) || "-"}</td>
+                                        </tr>
+                                    )
+                                })}
+                            {lineInvestmentData && lineInvestmentData.length === 0 && (
+                                <tr>
+                                    <td colspan="15">
+                                        <NoContentFound title={EMPTY_DATA} />
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </Table>
                 </Col>
@@ -543,8 +593,9 @@ function ViewOtherCostDrawer(props) {
                                 {costingSummary && OtherCost()}
                                 {costingSummary && modelShowDataForIcc()}
                                 {costingSummary && iccPaymentData?.ICCApplicabilityDetail?.ICCMethod !== "Credit Based" && iccTableData()}
-                                {costingSummary && paymentTableData()}
+                                {costingSummary && initialConfiguration?.IsAddPaymentTermInNetCost && paymentTableData()}
                                 {costingSummary && npvCostData && NpvCost()}
+                                {costingSummary && npvCostData && initialConfiguration?.IsShowLineInvestmentCost && LineInvestmentCost()}
                                 {/* {initialConfiguration?.IsShowNpvCost && costingSummary &&
                                     <>
                                         <Col md="12" className='mt-4'>
