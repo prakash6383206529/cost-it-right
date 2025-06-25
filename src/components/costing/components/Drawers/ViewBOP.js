@@ -10,7 +10,8 @@ import DayTime from '../../../common/DayTimeWrapper'
 
 function ViewBOP(props) {
   const { viewBOPData, isPDFShow } = props
- const { BOPData, bopPHandlingCharges, bopHandlingPercentage, bopHandlingChargeType, childPartBOPHandlingCharges, IsAssemblyCosting, partType } = viewBOPData || {}
+  const { BOPData, childPartBOPHandlingCharges, IsAssemblyCosting, partType ,assemblyBOPHandlingCharges} = viewBOPData || {}
+  
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
@@ -105,6 +106,7 @@ function ViewBOP(props) {
           <Table className="table cr-brdr-main mb-0" size="sm">
             <thead>
               <tr>
+                <th>{`${showBopLabel()} Type`}</th>
                 <th>{`${showBopLabel()} Handling Type`}</th>
                 <th>{`Percentage`}</th>
                 <th className="costing-border-right">{`Handling Charges`}</th>
@@ -112,18 +114,22 @@ function ViewBOP(props) {
             </thead>
             <tbody>
               {
-                bopPHandlingCharges ?
+                assemblyBOPHandlingCharges && assemblyBOPHandlingCharges.length > 0 ? (
+                  assemblyBOPHandlingCharges.map((charge, index) => (
+                    <tr key={index}>
+                      <td>{charge?.BOPType}</td>
+                      <td>{charge.BOPHandlingChargeType}</td>
+                      <td>{charge.BOPHandlingChargeType === 'Fixed' ? '-' : charge.BOPHandlingPercentage ?? 0}</td>
+                      <td>{checkForDecimalAndNull(charge.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                    </tr>
+                  ))
+                ) : (
                   <tr>
-                    <td>{bopHandlingChargeType}</td>
-                    <td>{bopHandlingChargeType === 'Fixed' ? '-' : bopHandlingPercentage ?? 0}</td>
-                    <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                  </tr> :
-
-                  <tr>
-                    <td colSpan={7}>
+                    <td colSpan={3}>
                       {isPDFShow ? <div className='text-center'>0</div> : <NoContentFound title={EMPTY_DATA} />}
                     </td>
                   </tr>
+                )
               }
 
             </tbody>
@@ -145,6 +151,7 @@ function ViewBOP(props) {
               <thead>
                 <tr>
                   {IsAssemblyCosting && <th>{`Part No.`}</th>}
+                  <th>{`${showBopLabel()} Type`}</th>
                   <th>{`${showBopLabel()} Handling Type`}</th>
                   <th>{`Percentage`}</th>
                   <th className="costing-border-right">{`Handling Charges`}</th>
@@ -156,6 +163,7 @@ function ViewBOP(props) {
                     return (
                       <tr key={index}>
                         {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                        <td>{item?.BOPType}</td>
                         <td>{item.BOPHandlingChargeType}</td>
                         <td>{checkForDecimalAndNull(item?.BOPHandlingChargeType === 'Fixed' ? '-' : item?.BOPHandlingPercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
@@ -205,7 +213,7 @@ function ViewBOP(props) {
           </Container>
         </Drawer> : <div className='mt-2'>
           {viewBOPCost.length !== 0 && bopDataTable()}
-          {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || bopHandlingPercentage !== 0 || bopPHandlingCharges !== 0) && handlingChargeTableData())}</div>}
+          {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || assemblyBOPHandlingCharges.length !== 0) && handlingChargeTableData())}</div>}
     </Fragment>
   )
 }
