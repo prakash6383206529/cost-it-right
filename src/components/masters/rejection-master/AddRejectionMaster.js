@@ -251,6 +251,10 @@ const AddRejectionMaster = (props) => {
     const { client, costingTypeId, ModelType, vendorName, selectedPlants, remarks, OverheadID, RMGrade, ApplicabilityDetails, selectedPartFamily,
       singlePlantSelected, isEditFlag, files, EffectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, IsFinancialDataChanged, selectedTechnologies } = state;
     const userDetailsOverhead = JSON.parse(localStorage.getItem('userDetail'))
+    if (ApplicabilityDetails?.length === 0) {
+      Toaster.warning('Please add at least one Applicability entry.');
+      return;
+    }
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })

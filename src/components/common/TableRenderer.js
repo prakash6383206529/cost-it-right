@@ -24,30 +24,41 @@ const TableRenderer = ({
   totalIccReceivable = 0,
   includeOverHeadProfitIcc = false,
   isCreditBased = false,
-  includeChildPartCost = null 
+  includeChildPartCost = null,
+  IsMultiVendorCosting = false,
+  partType = null
 }) => {
+  let filteredData = [];
+ 
+  if (partType) {
+    filteredData = data?.filter(item => {
+      const applicability = item?.Applicability;
+      
+      // Hide Overhead and Profit if includeOverHeadProfitIcc is false
+      if (!includeOverHeadProfitIcc && (applicability === "Overhead" || applicability === "Profit")) {
+        return false;
+      }
+      
+      // If includeChildPartCost is true, hide Part Cost
+      if (includeChildPartCost && applicability === "Part Cost") {
+        return false; 
+      }
 
-  const filteredData = data?.filter(item => {
-    const applicability = item?.Applicability;
-  
-    // Hide Overhead and Profit if includeOverHeadProfitIcc is false
-    if (!includeOverHeadProfitIcc && (applicability === "Overhead" || applicability === "Profit")) {
-      return false;
-    }
-  
-    // If includeChildPartCost is true, hide Part Cost
-    if (includeChildPartCost && applicability === "Part Cost") {
-      return false;
-    }
-  
-    // If includeChildPartCost is false, hide RM
-    if (!includeChildPartCost && applicability === "RM") {
-      return false;
-    }
-  
-    return true;
-  });
-  
+      // If includeChildPartCost is false, hide RM
+      if (!includeChildPartCost && applicability === "RM") {
+        return false;
+      }
+
+      return true;
+    });
+  } else {
+    filteredData = includeOverHeadProfitIcc 
+      ? data
+      : data?.filter(item =>
+          item?.Applicability !== "Overhead" && 
+          item?.Applicability !== "Profit"
+        );
+  }
 
   const renderTextField = ({
     item,
@@ -147,26 +158,26 @@ const TableRenderer = ({
                     ? checkForDecimalAndNull(item?.[col.key], getConfigurationKey()?.NoOfDecimalForInputOutput)
                     : col?.identifier === "cost"
                       ? checkForDecimalAndNull(item?.[col.key], getConfigurationKey()?.NoOfDecimalForPrice)
-                      : item?.[col.key]??'-';
-                      return  <td key={colIdx}>
-                  <div className="w-fit d-flex">
-                    <div id={randomId}>
-                      {cellValue}
-                     {(col?.columnHead === 'Net Cost'||col?.columnHead === 'Interest Cost Per Unit') && isCreditBased &&  <TooltipCustom
-                        disabledIcon={true}
-                        tooltipClass="net-rm-cost"
-                        id={randomId}
-                        tooltipText={col?.columnHead === 'Interest Cost Per Unit' ?
-                          'Interest Cost Per Unit = (Applicability Cost * Interest Days * Interest on Receivables (%)/ Annual ICC) / 365 * 100':
-                          item?.InventoryType === "Receivables" ?
-                          'Net Cost = (Applicability Cost * Markup Factor * No of Days * Interest on Receivables (%)/ Annual ICC) /365 * 100'
-                          :
-                          'Net Cost = (Applicability Cost * No of Days * Interest on Receivables (%)/ Annual ICC) /365 * 100'
-                        }
-                      />}
+                      : item?.[col.key] ?? '-';
+                  return <td key={colIdx}>
+                    <div className="w-fit d-flex">
+                      <div id={randomId}>
+                        {cellValue}
+                        {(col?.columnHead === 'Net Cost' || col?.columnHead === 'Interest Cost Per Unit') && isCreditBased && <TooltipCustom
+                          disabledIcon={true}
+                          tooltipClass="net-rm-cost"
+                          id={randomId}
+                          tooltipText={col?.columnHead === 'Interest Cost Per Unit' ?
+                            'Interest Cost Per Unit = (Applicability Cost * Interest Days * Interest on Receivables (%)/ Annual ICC) / 365 * 100' :
+                            item?.InventoryType === "Receivables" ?
+                              'Net Cost = (Applicability Cost * Markup Factor * No of Days * Interest on Receivables (%)/ Annual ICC) /365 * 100'
+                              :
+                              'Net Cost = (Applicability Cost * No of Days * Interest on Receivables (%)/ Annual ICC) /365 * 100'
+                          }
+                        />}
+                      </div>
                     </div>
-                  </div>
-                </td>
+                  </td>
                 }
               })}
             </tr>
@@ -178,7 +189,7 @@ const TableRenderer = ({
             </td>
           </tr>
         )}
-        {(isWipInventory||isInventory) && <tr className='table-footer'>
+        {(isWipInventory || isInventory) && <tr className='table-footer'>
           <td colSpan={columns.length - 1} className="text-right font-weight-600 fw-bold">{`${isInventory ? 'ICC Payable to Supplier:' : 'ICC Receivable from Supplier:'}`}</td>
           <td colSpan={1}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(isInventory ? totalIccPayable : totalIccReceivable, getConfigurationKey()?.NoOfDecimalForPrice)}</div></td>
         </tr>}

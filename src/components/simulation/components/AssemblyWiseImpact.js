@@ -18,6 +18,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import WarningMessage from '../../common/WarningMessage';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer';
+import { useLabels } from '../../../helper/core';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -26,6 +27,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function AssemblyWiseImpact(props) {
     const { impactType, dataForAssemblyImpact, isPartImpactAssembly, isImpactDrawer, simulationId } = props;
+    const { revisionNoLabel } = useLabels()
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(false);
@@ -217,7 +219,7 @@ function AssemblyWiseImpact(props) {
                                 frameworkComponents={frameworkComponents}
                             >
                                 <AgGridColumn field="PartNumber" headerName='Assembly Number' cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="RevisionNumber" headerName='Revision No.' cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="RevisionNumber" headerName={revisionNoLabel} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartName" headerName='Name' cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Level" headerName="Child's Level" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity' cellRenderer={'hyphenFormatter'}></AgGridColumn>}

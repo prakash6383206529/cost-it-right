@@ -33,6 +33,7 @@ function AddOperation(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const { selectedIdsOfOperationAndOtherOperation, selectedIdsOfOperation } = useSelector(state => state.costing)
   let selectedIds = [...selectedIdsOfOperation, ...selectedIdsOfOperationAndOtherOperation]
+  const IsAllowSingleOperationMultipleTime = _.get(initialConfiguration, 'IsAllowSingleOperationMultipleTime', false)
 
   const { technologyLabel } = useLabels();
   /**
@@ -107,9 +108,11 @@ function AddOperation(props) {
 
   const isFirstColumn = (params) => {
     const rowData = params?.valueFormatted ? params.valueFormatted : params?.data;
-    const allSelectedOperation = tableData?.every(operation => selectedIds?.includes(operation.OperationId));
-    if (allSelectedOperation) {
-      return false;
+    if (!IsAllowSingleOperationMultipleTime) {
+      const allSelectedOperation = tableData?.every(operation => selectedIds?.includes(operation.OperationId));
+      if (allSelectedOperation) {
+        return false;
+      }
     }
 
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -165,8 +168,8 @@ function AddOperation(props) {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
   };
-
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
+  const isRowSelectable = rowNode => IsAllowSingleOperationMultipleTime ? true : !selectedIds.includes(rowNode?.data?.OperationId)
+  // const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
@@ -247,11 +250,11 @@ function AddOperation(props) {
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="Entry Type"></AgGridColumn>
-                        <AgGridColumn  field="ForType" headerName="Operation Type"></AgGridColumn>
-                        <AgGridColumn  field="OperationName" headerName="Operation Name"></AgGridColumn>
+                        <AgGridColumn field="ForType" headerName="Operation Type"></AgGridColumn>
+                        <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                         <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
                         <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
-                        <AgGridColumn field="Currency"  headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="Currency" headerName="Master Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="CostingCurrency" headerName="Costing Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>

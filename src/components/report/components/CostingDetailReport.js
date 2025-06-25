@@ -77,7 +77,7 @@ function ReportListing(props) {
     const [selectedCostingHead, setSelectedCostingHead] = useState(null);
 
     const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
-    const { technologyLabel, discountLabel, toolMaintenanceCostLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, finishWeightLabel } = useLabels();
+    const { technologyLabel, discountLabel, toolMaintenanceCostLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, finishWeightLabel, revisionNoLabel } = useLabels();
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
     var filterParams = {
@@ -1098,7 +1098,7 @@ function ReportListing(props) {
                             <AgGridColumn field='PartType' headerName='Part Type' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='DepartmentCode' headerName={`${handleDepartmentHeader()} Code`} cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='DepartmentName' headerName={`${handleDepartmentHeader()} Name`} cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='RevisionNumber' headerName='Revision Number' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='RevisionNumber' headerName={revisionNoLabel} cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialCode' headerName='Code' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialName' headerName='RM Name' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialGrade' headerName='Grade' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>

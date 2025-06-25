@@ -318,6 +318,10 @@ const AddPaymentTerms = (props) => {
         const { data } = props;
         const userDetail = userDetails();
         const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'));
+        if (state?.ApplicabilityDetails?.length === 0) {
+            Toaster.warning('Please add at least one Applicability entry.');
+            return;
+        }
 
         let plantArray = [];
         if (costingTypeId === VBCTypeId) {

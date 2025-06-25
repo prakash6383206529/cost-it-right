@@ -22,6 +22,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
 import LoaderCustom from '../../common/LoaderCustom';
+import { useLabels } from '../../../helper/core';
 const gridOptions = {};
 
 function NFRApprovalListing(props) {
@@ -38,6 +39,7 @@ function NFRApprovalListing(props) {
     const agGridRef = useRef(null);
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
+    const { revisionNoLabel } = useLabels()
     const floatingFilterNfr = {
         maxValue: 12,
         suppressFilterButton: true,
@@ -282,7 +284,7 @@ function NFRApprovalListing(props) {
                                             <AgGridColumn cellClass="has-checkbox" field="ApprovalToken" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                             <AgGridColumn field="NfrNumber" headerName="Customer RFQ Number" cellRenderer='hyphenFormatter' ></AgGridColumn>
                                             <AgGridColumn field="GroupName" headerName="Group Name"  ></AgGridColumn>
-                                            <AgGridColumn field="PartNumber" headerName='Part No. (Revision No.)'></AgGridColumn>
+                                            <AgGridColumn field="PartNumber" headerName={`Part No. (${revisionNoLabel})`}></AgGridColumn>
                                             <AgGridColumn field="ProductCode" headerName="Product Code" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field="InitiatedByName" headerName="Initiated By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field="CreatedByName" headerName=" Created By" cellRenderer='hyphenFormatter'></AgGridColumn>

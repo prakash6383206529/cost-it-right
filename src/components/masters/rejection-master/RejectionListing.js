@@ -45,7 +45,7 @@ const gridOptions = {};
 
 function RejectionListing(props) {
 
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility, BulkUploadAccessibility } = props;
     const { t } = useTranslation("common")
     const permissions = useContext(ApplyPermission);
     const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, technologyLabel } = useLabels()
@@ -720,15 +720,17 @@ function RejectionListing(props) {
                                             {/* ADD */}
                                         </button>
                                     )}
-                                    <button
-                                        type="button"
-                                        className={"user-btn mr5 Tour_List_Add"}
-                                        onClick={bulkToggle}
-                                        title="Bulk Upload"
-                                    >
-                                        <div className={"upload mr-0"}></div>
+                                    {BulkUploadAccessibility &&
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5 Tour_List_Add"}
+                                            onClick={bulkToggle}
+                                            title="Bulk Upload"
+                                        >
+                                            <div className={"upload mr-0"}></div>
 
-                                    </button>
+                                        </button>
+                                    }
                                     {
                                         DownloadAccessibility &&
                                         <>
