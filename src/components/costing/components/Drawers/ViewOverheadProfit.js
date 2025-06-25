@@ -118,7 +118,7 @@ function ViewOverheadProfit(props) {
               </tr>
             </thead>
             <tbody>
-              {overheadData?.CostingApplicabilityDetails?.map(item => (
+              {overheadData?.CostingApplicabilityDetails?.map((item, ind) => (
                 <tr key={item.ApplicabilityDetailsId}>
                   <td>{item.Applicability}</td>
                   <td>
@@ -132,7 +132,9 @@ function ViewOverheadProfit(props) {
                     {item.TotalCost ? checkForDecimalAndNull(item.TotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
                   </td>
                   {initialConfiguration?.IsShowCRMHead && <td>{overheadData.OverheadCRMHead || '-'}</td>}
-                  <td>{overheadData.Remark || '-'}</td>
+                  {ind === 0 &&
+                  <td className='text-center align-middle border-start' rowSpan={overheadData?.CostingApplicabilityDetails?.length || 1}>{overheadData.Remark || '-'}</td>
+                  }
                 </tr>
               ))}
               {overheadData?.CostingApplicabilityDetails?.length && (
@@ -185,7 +187,7 @@ function ViewOverheadProfit(props) {
               </tr>
             </thead>
             <tbody>
-              {profitData?.CostingApplicabilityDetails?.map(item => (
+              {profitData?.CostingApplicabilityDetails?.map((item, ind) => (
                 <tr key={item.ApplicabilityDetailsId}>
                   <td>{item.Applicability}</td>
                   <td>
@@ -199,7 +201,9 @@ function ViewOverheadProfit(props) {
                     {item.TotalCost ? checkForDecimalAndNull(item.TotalCost, initialConfiguration?.NoOfDecimalForPrice) : "-"}
                   </td>
                   {initialConfiguration?.IsShowCRMHead && <td>{profitData.ProfitCRMHead || '-'}</td>}
-                  <td>{profitData.Remark || '-'}</td>
+                  {ind === 0 &&
+                  <td className='text-center align-middle border-start' rowSpan={overheadData?.CostingApplicabilityDetails?.length || 1}>{profitData.Remark || '-'}</td>
+                  }
                 </tr>
               ))}
               {profitData?.CostingApplicabilityDetails?.length && (

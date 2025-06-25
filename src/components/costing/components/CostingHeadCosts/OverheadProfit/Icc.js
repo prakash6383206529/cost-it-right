@@ -19,6 +19,7 @@ import Toaster from '../../../../common/Toaster';
 import { fetchModelTypeAPI } from '../../../../../actions/Common';
 import TableRenderer from '../../../../common/TableRenderer';
 import IccCalculator from './IccCalculator';
+import { label } from 'react-dom-factories';
 
 let counter = 0;
 function Icc(props) {
@@ -60,7 +61,7 @@ function Icc(props) {
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
-    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData?.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData?.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly'))
 
     const dispatch = useDispatch()
 
@@ -267,19 +268,19 @@ function Icc(props) {
                 existingDetails[uniqueId] = item;
             });
 
-            // Filter ICC details based on conditions while preserving existing data
-            const filteredData = state?.iccDetails?.length > 0
-                ? state.iccDetails.filter(item => {
+            let filteredData = [];
+            if (partType) {
+                filteredData = state?.iccDetails?.length > 0 ? state.iccDetails.filter(item => {
                     const applicability = item?.Applicability;
-
+                    
                     // Hide Overhead and Profit if includeOverHeadProfitIcc is false
                     if (!includeOverHeadProfitIcc && (applicability === "Overhead" || applicability === "Profit")) {
                         return false;
                     }
-
+                    
                     // If includeChildPartCost is true, hide Part Cost
                     if (IsIncludeApplicabilityForChildPartsInICC && applicability === "Part Cost") {
-                        return false;
+                        return false; 
                     }
 
                     // If includeChildPartCost is false, hide RM
@@ -292,8 +293,19 @@ function Icc(props) {
                     const uniqueId = `${item?.Applicability}_${item?.Percentage}`;
                     const existingItem = existingDetails[uniqueId];
                     return existingItem ? { ...existingItem } : item;
-                })
-                : [];
+                }) : [];
+            } else {
+                filteredData = state?.iccDetails?.length > 0 ? (includeOverHeadProfitIcc 
+                    ? state.iccDetails
+                    : state.iccDetails.filter(item =>
+                        item?.Applicability !== "Overhead" && 
+                        item?.Applicability !== "Profit"
+                    )).map(item => {
+                        const uniqueId = `${item?.Applicability}_${item?.Percentage}`;
+                        const existingItem = existingDetails[uniqueId];
+                        return existingItem ? { ...existingItem } : item;
+                    }) : [];
+            }
 
             const tempObj = {
                 ...InventoryObj,
@@ -303,6 +315,7 @@ function Icc(props) {
             props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
         }
     }, [InventoryObj, state.iccDetails, tempInventoryObj, CostingViewMode])
+
 
     useEffect(() => {
         if (ICCApplicabilityDetail?.ICCCostingApplicabilityDetails?.length > 0) {
@@ -807,6 +820,8 @@ function Icc(props) {
                                 includeOverHeadProfitIcc={includeOverHeadProfitIcc}
                                 isCreditBased={state.iccMethod === 'Credit Based'}
                                 includeChildPartCost={IsIncludeApplicabilityForChildPartsInICC}
+                                IsMultiVendorCosting={IsMultiVendorCosting}
+                                partType={partType}
                             />
                         </Col>
                         <Col md="1" className='second-section mb-3'>

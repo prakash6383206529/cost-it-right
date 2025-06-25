@@ -4,6 +4,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import _ from 'lodash'
 import { NUMBERMAXLENGTH } from '../config/masterData';
 import BigNumber from 'bignumber.js';
+import { getConfigurationKey } from './auth';
 
 // Ensure your configuration for BigNumber, only needs to be done once:
 BigNumber.config({ DECIMAL_PLACES: 10 });
@@ -711,3 +712,25 @@ export const isValidNumber = (val) => {
         typeof val === 'number' &&
         isFinite(val);
 };
+export const isTonnageRequired = (selectedTechnology) => {
+    const machineTonnageTechnologyList = getConfigurationKey().MachineTonnageTechnologyList;
+  
+    if (!selectedTechnology || !machineTonnageTechnologyList) {
+      return false;
+    }
+  
+    // Split the string by comma and create array of technology objects
+    let arrayOfTechnology = [];
+    const myArray = machineTonnageTechnologyList.split(",");
+    myArray && myArray.map((item) => {
+      let tempObj = {};
+      let temp = item.split('=');
+      tempObj.label = temp[0];
+      tempObj.value = temp[1];
+      arrayOfTechnology.push(tempObj);
+      return null;
+    });
+  
+    // Check if the selected technology's value exists in the list
+    return arrayOfTechnology.some(tech => tech.value === selectedTechnology.value);
+  }

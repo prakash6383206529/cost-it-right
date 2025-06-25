@@ -4,7 +4,7 @@ import { Col, Container, Row, Table } from 'reactstrap'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import Button from '../../../../layout/Button'
-import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, loggedInUserId, maxLength7, number, percentageLimitValidation } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, getConfigurationKey, loggedInUserId, maxLength7, number, percentageLimitValidation } from '../../../../../helper'
 import TooltipCustom from '../../../../common/Tooltip'
 import { useDispatch, useSelector } from 'react-redux'
 import NoContentFound from '../../../../common/NoContentFound'
@@ -209,6 +209,11 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         calculateTotalCost(updatedCoats)
     }
 
+    const hasExcludedPaintCoat = (coatId) => {
+        const excludedList = getConfigurationKey().PaintCoatListToExcludeConsumptionInPaintCost;
+        return !!excludedList?.some(user => String(user?.PaintCoatId) === String(coatId));
+    };
+
     const addData = data => {
         const existingPaintCoat = calculateState?.Coats?.find(item => item?.PaintCoat === data?.PaintCoat?.label)
 
@@ -242,6 +247,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
             ...(calculateState?.Coats ?? []),
             {
                 PaintCoat: data?.PaintCoat?.label,
+                PaintCoatId: data?.PaintCoat?.value,
                 PaintCoatSequence: paintCoatSequence,
                 RawMaterials: processedRawMaterials,
             }
@@ -315,12 +321,11 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         }, 0);
 
         const paintConsumptionCost = tableData?.reduce((total, paintData) => {
+            if (hasExcludedPaintCoat(paintData?.PaintCoatId)) return total;
             return total + paintData?.RawMaterials?.reduce((rmTotal, rmItem) => {
-
                 return rmTotal + (checkForNull((rmItem?.Consumption || 0) * checkForNull(rmItem?.BasicRatePerUOM || 0)) / 1000);
             }, 0);
         }, 0);
-
 
         totalPaintCost = totalNetCost + checkForNull(getTapValue)
         setCalculateState(prev => ({
@@ -507,6 +512,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         parentIndex,
                         childIndex,
                         required: false,
+                        disabled:hasExcludedPaintCoat(item?.PaintCoatId),
                         onHandleChange: e => calculateValues(
                             checkForNull(getValuesTableForm(`SurfaceArea${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`)),
                             e.target.value,
@@ -540,7 +546,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         childIndex,
                         required: false,
                         disabled: true,
-                        tooltipText: 'Rejection Allowance = (Part Surface Area * Consumption) * Rejection Allowance Percentage / 100'
+                        tooltipText: `Rejection Allowance = (Part Surface Area ${hasExcludedPaintCoat(item.PaintCoatId) ? "" : "* Consumption"}) * Rejection Allowance Percentage / 100`
                     })}</td>
                     <td width="90">{checkForDecimalAndNull(rm?.BasicRatePerUOM, NoOfDecimalForInputOutput) || ''}</td>
                     <td>{renderInputBox({
@@ -551,7 +557,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         childIndex,
                         required: false,
                         disabled: true,
-                        tooltipText: 'Net Cost = ((Part Surface Area * (Consumption)/1000) + Rejection Allowance) * RM Rate (Currency/UOM)'
+                        tooltipText: `Net Cost = ((Part Surface Area ${hasExcludedPaintCoat(item.PaintCoatId) ? "" : "* (Consumption)/1000" }) + Rejection Allowance) * RM Rate (Currency/UOM)`
                     })}</td>
                     <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
                     {childIndex === 0 && !ViewMode && !IsLocked && (
@@ -588,7 +594,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         <Row className="drawer-heading">
                             <Col className="pl-0">
                                 <div className="header-wrapper left">
-                                    <h3>Paint and Masking:</h3>
+                                    <h3>Paint/Plating and Masking:</h3>
                                 </div>
                                 <div onClick={() => closeDrawer(calculateState.TotalPaintCost)} className="close-button right" />
                             </Col>
@@ -662,16 +668,37 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                             <tbody>
                                 {renderTableRows()}
                                 <tr className="table-footer">
-                                    <td colSpan={4} className="text-right">
-                                        Total Norm (Consumption) Cost
-                                    </td>
+                                    <th colSpan={4} className="text-right">
+                                        <span>Total Norm (Consumption) Cost 
+                                            <TooltipCustom 
+                                                customClass="float-unset ml-1" 
+                                                tooltipClass="totalNormsCost" 
+                                                id={`totalNormsCost`} 
+                                                tooltipText={'Total Norm (Consumption) Cost includes only applicable Consumption as per configuration'}
+                                            />
+                                        </span>
+                                    </th>
                                     <td colSpan={2}>
                                         {/* <TooltipCustom
                                             id="totalGSM"
                                             disabledIcon
                                             tooltipText="Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM..."
                                         /> */}
-                                        <div className="w-fit" id="totalGSM">
+                                        <TooltipCustom
+                                            id="consumptionCost"
+                                            className="mt-n1 pb-4"
+                                            tooltipClass="text-start"
+                                            disabledIcon
+                                            tooltipText={
+                                                <span className='text-start'>
+                                                    Total Norm (Consumption) Cost = <br />
+                                                    ((<span className='text-start'>Consumption (ml/dm<sup>2</sup>)</span> × RM Rate ({state?.rawMaterialList[0]?.CostingCurrency || 'Currency'})) / 1000) + <br />
+                                                    ((<span>Consumption (ml/dm<sup>2</sup>)</span> × RM Rate ({state?.rawMaterialList[0]?.CostingCurrency || 'Currency'})) / 1000) + <br />
+                                                    ...
+                                                </span>
+                                            }
+                                        />
+                                        <div className="w-fit" id="consumptionCost">
                                             {checkForDecimalAndNull(calculateState?.PaintConsumptionCost, NoOfDecimalForPrice)}
                                         </div>
                                     </td>

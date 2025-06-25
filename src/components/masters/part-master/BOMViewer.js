@@ -14,6 +14,7 @@ import _, { debounce } from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
 import { withTranslation } from 'react-i18next';
 import { validateForm } from '../../layout/FormInputs';
+import { LabelsClass } from '../../../helper/core';
 
 class BOMViewer extends Component {
   constructor(props) {
@@ -354,9 +355,9 @@ class BOMViewer extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, isFromVishualAd, initialConfiguration } = this.props;
+    const { handleSubmit, isEditFlag, isFromVishualAd, initialConfiguration, t } = this.props;
     const { isOpenChildDrawer, isOpenVisualDrawer, flowpoints } = this.state;
-    
+    const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
     return (
       <>
         <Drawer
@@ -521,7 +522,7 @@ class BOMViewer extends Component {
                                 <strong title={el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology?.label}>{el?.PartType === BOUGHTOUTPARTSPACING && el?.IsBreakupBoughtOutPart === false ? '-' : el?.Technology?.label || '-'}</strong>
                               </p>
                              <p>
-                                Revision No:<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo || '-'}</strong>
+                             {RevisionNoLabel.replace('.', ':')}<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo || '-'}</strong>
                               </p>
                               {/* {`X=:${el.Position.x}`}
                                                             {`Y=:${el.Position.y}`} */}
