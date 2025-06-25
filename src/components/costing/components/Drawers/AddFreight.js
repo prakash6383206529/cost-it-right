@@ -18,6 +18,7 @@ import { getFreigtRateCriteriaSelectList, getTruckDimensionsSelectList } from '.
 import FreightCalculator from '../WeightCalculatorDrawer/FreightCalculator';
 import { getNoOfComponentsPerCrateFromPackaging } from '../../actions/CostWorking';
 import TooltipCustom from '../../../common/Tooltip';
+import { filterBOPApplicability } from '../../../common/CommonFunctions';
 
 function AddFreight(props) {
 
@@ -245,23 +246,7 @@ function AddFreight(props) {
         return null;
       });
 
-      // Filter BOP variants based on gridData
-      const hasBOP = gridData?.some(entry => entry.Criteria === "BOP");
-      const hasBOPVariant = gridData?.some(entry =>
-        ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(entry.Criteria)
-      );
-
-      // Remove BOP variants if BOP exists, or remove BOP if any variant exists
-      tempList = temp.filter(item => {
-        if (hasBOP && ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(item.label)) {
-          return false;
-        }
-        if (hasBOPVariant && item.label === "BOP") {
-          return false;
-        }
-        return true;
-      });
-
+      tempList=filterBOPApplicability(costingHead,gridData,'Criteria')
       // Apply additional filters if needed
       if (isBreakupBoughtOutPartCostingFromAPI) {
         tempList = removeBOPfromApplicability([...tempList])
@@ -426,6 +411,11 @@ function AddFreight(props) {
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
+        case "BOP Without Handling Charge":
+          totalFreightCost = checkForNull(NetBoughtOutPartCostWithOutHandlingCharge) * calculatePercentage(RateAsPercentage)
+          setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setFreightCost(totalFreightCost)
+          break;
       case "BOP Domestic Without Handling Charge":
         totalFreightCost = checkForNull(NetBOPDomesticCostWithOutHandlingCharge) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')

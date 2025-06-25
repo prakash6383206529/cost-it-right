@@ -64,7 +64,7 @@ const AddOverheadMasterDetails = (props) => {
         }
 
         if (label === 'OverheadApplicability') {
-            return filterBOPApplicability(costingHead, state?.ApplicabilityDetails)
+            return filterBOPApplicability(costingHead, state?.ApplicabilityDetails,'Applicability')
         }
 
         if (label === 'ModelType') {

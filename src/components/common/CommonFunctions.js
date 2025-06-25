@@ -591,7 +591,8 @@ export const generateUnusedRMsMessage = (unusedRMs) => {
  * @param {Array} applicabilityDetails - Currently selected applicability details
  * @returns {Array} Filtered list of applicable options
  */
-export const filterBOPApplicability = (costingHead, applicabilityDetails) => {
+export const filterBOPApplicability = (costingHead, applicabilityDetails,applicabilityKey) => {
+    
     if (!costingHead) return [];
 
     // Check for fixed applicability
@@ -599,7 +600,7 @@ export const filterBOPApplicability = (costingHead, applicabilityDetails) => {
     let includeOnlyFixed = false;
     if (applicabilityDetails && applicabilityDetails.length > 0) {
         const fixedExists = applicabilityDetails.some(
-            ap => ap.Applicability?.toLowerCase() === "fixed"
+            ap => (applicabilityKey ? ap[applicabilityKey]?.toLowerCase() : ap.Applicability?.toLowerCase()) === "fixed"
         );
         includeOnlyFixed = fixedExists;
         excludeFixed = !fixedExists;
@@ -638,16 +639,16 @@ export const filterBOPApplicability = (costingHead, applicabilityDetails) => {
     const filtered = costingHead.filter(item => {
         const isFixed = item.Text?.toLowerCase() === "fixed";
         const isAlreadyUsed = applicabilityDetails?.some(
-            ap => ap.ApplicabilityId === item.Value
+            ap => (applicabilityKey ? ap[applicabilityKey] : ap.Applicability) === item.Text
         );
 
         // Check if any BOP variant exists in ApplicabilityDetails
         const selectedBOPVariant = applicabilityDetails?.find(ap => 
-            Object.keys(bopVariants).includes(ap.Applicability)
+            Object.keys(bopVariants).includes(applicabilityKey ? ap[applicabilityKey] : ap.Applicability)
         );
 
         // If a BOP variant is selected, filter out its corresponding variants
-        if (selectedBOPVariant && bopVariants[selectedBOPVariant.Applicability].includes(item.Text)) {
+        if (selectedBOPVariant && bopVariants[applicabilityKey ? selectedBOPVariant[applicabilityKey] : selectedBOPVariant.Applicability].includes(item.Text)) {
             return false;
         }
 

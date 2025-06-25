@@ -18,6 +18,7 @@ import { CRMHeads, WACTypeId } from '../../../../config/constants';
 import { fetchCostingHeadsAPI } from '../../../../actions/Common';
 import Toaster from '../../../common/Toaster';
 import PackagingCalculator from '../WeightCalculatorDrawer/PackagingCalculator';
+import { filterBOPApplicability } from '../../../common/CommonFunctions';
 // import PackagingCalculator from '../WeightCalculatorDrawer/PackagingCalculator';
 
 function IsolateReRender(control) {
@@ -165,24 +166,7 @@ function AddPackaging(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
-
-      // Filter BOP variants based on gridData
-      const hasBOP = gridData?.some(entry => entry.Applicability === "BOP");
-      const hasBOPVariant = gridData?.some(entry =>
-        ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(entry.Applicability)
-      );
-
-      // Remove BOP variants if BOP exists, or remove BOP if any variant exists
-      tempList = temp.filter(item => {
-        if (hasBOP && ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(item.label)) {
-          return false;
-        }
-        if (hasBOPVariant && item.label === "BOP") {
-          return false;
-        }
-        return true;
-      });
-
+      tempList=filterBOPApplicability(costingHead,gridData,'Applicability')
       // Apply additional filters if needed
       if (isBreakupBoughtOutPartCostingFromAPI) {
         tempList = removeBOPfromApplicability([...tempList])
@@ -348,6 +332,7 @@ function AddPackaging(props) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (NetBOPDomesticCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
       case "BOP CKD Without Handling Charge":
@@ -355,6 +340,7 @@ function AddPackaging(props) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (NetBOPImportCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
       case "BOP V2V Without Handling Charge":
@@ -362,6 +348,7 @@ function AddPackaging(props) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (NetBOPSourceCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
       case "BOP OSP Without Handling Charge":
@@ -369,6 +356,7 @@ function AddPackaging(props) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (NetBOPOutsourcedCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
 
@@ -377,6 +365,7 @@ function AddPackaging(props) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (NetBoughtOutPartCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
       case "Hanger Cost":

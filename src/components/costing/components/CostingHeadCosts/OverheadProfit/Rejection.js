@@ -1027,7 +1027,7 @@ function Rejection(props) {
                                             )}
                                         </td>
                                         <td>{item?.Applicability === 'Fixed' ? checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.TotalCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
-                                        {getConfigurationKey().IsRejectionRecoveryApplicable && !IdForMultiTechnology.includes(String(costData?.TechnologyId)) && <td>
+                                        {(!IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable && applicability.label === 'RM' && <td>
 
                                             <div className='d-flex align-items-center'>
                                                 <span>{checkForDecimalAndNull(item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</span>

@@ -10,7 +10,9 @@ import DayTime from '../../../common/DayTimeWrapper'
 
 function ViewBOP(props) {
   const { viewBOPData, isPDFShow } = props
- const { BOPData, bopPHandlingCharges, bopHandlingPercentage, bopHandlingChargeType, childPartBOPHandlingCharges, IsAssemblyCosting, partType } = viewBOPData || {}
+  // const { BOPData, childPartBOPHandlingCharges, IsAssemblyCosting, partType ,assemblyBOPHandlingCharges} = viewBOPData || {}
+  const { BOPData, bopPHandlingCharges, bopHandlingPercentage, bopHandlingChargeType, childPartBOPHandlingCharges, IsAssemblyCosting, partType } = viewBOPData || {}
+  
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
@@ -173,6 +175,7 @@ function ViewBOP(props) {
           <Table className="table cr-brdr-main mb-0" size="sm">
             <thead>
               <tr>
+                <th>{`${showBopLabel()} Type`}</th>
                 <th>{`${showBopLabel()} Handling Type`}</th>
                 <th>{`Percentage`}</th>
                 <th className="costing-border-right">{`Handling Charges`}</th>
@@ -180,18 +183,22 @@ function ViewBOP(props) {
             </thead>
             <tbody>
               {
-                bopPHandlingCharges ?
+                assemblyBOPHandlingCharges && assemblyBOPHandlingCharges.length > 0 ? (
+                  assemblyBOPHandlingCharges.map((charge, index) => (
+                    <tr key={index}>
+                      <td>{charge?.BOPType}</td>
+                      <td>{charge.BOPHandlingChargeType}</td>
+                      <td>{charge.BOPHandlingChargeType === 'Fixed' ? '-' : charge.BOPHandlingPercentage ?? 0}</td>
+                      <td>{checkForDecimalAndNull(charge.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                    </tr>
+                  ))
+                ) : (
                   <tr>
-                    <td>{bopHandlingChargeType}</td>
-                    <td>{bopHandlingChargeType === 'Fixed' ? '-' : bopHandlingPercentage ?? 0}</td>
-                    <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                  </tr> :
-
-                  <tr>
-                    <td colSpan={7}>
+                    <td colSpan={3}>
                       {isPDFShow ? <div className='text-center'>0</div> : <NoContentFound title={EMPTY_DATA} />}
                     </td>
                   </tr>
+                )
               }
 
             </tbody>

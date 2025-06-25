@@ -15,6 +15,7 @@ import Toaster from '../../../../common/Toaster';
 import { setOtherDiscountData } from '../../../actions/Costing';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { filterBOPApplicability } from '../../../../common/CommonFunctions';
 
 function AddOtherDiscount(props) {
     const { register, handleSubmit, formState: { errors }, control, getValues, setValue } = useForm({
@@ -28,6 +29,7 @@ function AddOtherDiscount(props) {
         tableData: otherDiscountData.gridData,
         discountTotalCost: otherDiscountData.totalCost,
         otherDiscountApplicabilityType: [],
+        disablePercentage: false
     })
     const [otherCostApplicability, setOtherCostApplicability] = useState([])
     const [otherCost, setOtherCost] = useState('')
@@ -48,7 +50,7 @@ function AddOtherDiscount(props) {
         name: ['ApplicabilityCost'],
     })
     const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
-    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId||(costData?.PartType === 'Assembly' && IsMultiVendorCosting))
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
 
     useEffect(() => {
         setValue('ApplicabilityCost', '')
@@ -68,38 +70,8 @@ function AddOtherDiscount(props) {
     }, [])
 
     const renderListing = (label) => {
-        const temp = [];
-        let tempList = [];
         if (label === 'Applicability') {
-            if (!costingHead) return [];
-
-            // Check if BOP or BOP variants exist in current entries
-            const hasBOP = state.tableData?.some(entry => entry.ApplicabilityType === "BOP");
-            const hasBOPVariant = state.tableData?.some(entry => 
-                ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(entry.ApplicabilityType)
-            );
-
-            const filtered = costingHead.filter(item => {
-                if (item.Value === '0' || item.Value === '24') return false; // 24 IS FOR ScrapRate * NetWeight
-
-                // Remove BOP variants if BOP exists
-                if (hasBOP && ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(item.Text)) {
-                    return false;
-                }
-
-                // Remove BOP if any BOP variant exists  
-                if (hasBOPVariant && item.Text === "BOP") {
-                    return false;
-                }
-
-                return true;
-            });
-
-            let tempList = filtered.map(item => ({
-                label: item.Text,
-                value: item.Value
-            }));
-
+            let tempList = filterBOPApplicability(costingHead, state.tableData, 'ApplicabilityType')
             if (isBreakupBoughtOutPartCostingFromAPI) {
                 tempList = removeBOPfromApplicability(tempList);
             }
@@ -235,6 +207,11 @@ function AddOtherDiscount(props) {
         setValue('OtherCostDescription', editObj.Description)
         setValue('AnyOtherCost', editObj.NetCost)
         setValue('crmHeadOtherCost', { label: editObj.CRMHead, value: index })
+        if (initialConfiguration?.IsBopOspWithoutHandlingDiscountRequired && editObj?.ApplicabilityType === 'BOP OSP Without Handling Charge') {
+            setState(prevState => ({ ...prevState, disablePercentage: true }))
+        } else {
+            setState(prevState => ({ ...prevState, disablePercentage: false }))
+        }
         if (editObj?.ApplicabilityType === 'Fixed') {
             setTimeout(() => {
                 setValue('ApplicabilityCost', editObj?.ApplicabilityCost)
@@ -264,17 +241,23 @@ function AddOtherDiscount(props) {
         resetData()
     }
     const handleOherCostApplicabilityChange = (value) => {
+        console.log(value, 'value');
+
         if (!CostingViewMode) {
             if (value && value !== '') {
+                if (initialConfiguration?.IsBopOspWithoutHandlingDiscountRequired && value?.label === "BOP OSP Without Handling Charge") {
+                    setValue('PercentageOtherCost', 100)
+                    setState(prevState => ({ ...prevState, disablePercentage: true }))
+                } else {
+                    setState(prevState => ({ ...prevState, disablePercentage: false }))
+                    errors.PercentageOtherCost = {}
+                    setValue('PercentageOtherCost', '')
+                }
                 delete errors.ApplicabilityCost
                 let applicability = value.label !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : value
-                // setState(prevState => ({ ...prevState, otherDiscountApplicabilityType: applicability }))
                 setOtherCostApplicability(applicability)
                 setValue('AnyOtherCost', 0)
-                setValue('PercentageOtherCost', '')
                 errors.AnyOtherCost = {}
-                errors.PercentageOtherCost = {}
-
             } else {
                 setState(prevState => ({ ...prevState, otherDiscountApplicabilityType: [] }))
 
@@ -310,12 +293,12 @@ function AddOtherDiscount(props) {
                 totalCost = headerCosts.NetBOPDomesticCost * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPDomesticCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPDomesticCost, initialConfiguration?.NoOfDecimalForPrice))
-                break;      
+                break;
             case 'BOP CKD':
                 totalCost = headerCosts.NetBOPImportCost * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPImportCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPImportCost, initialConfiguration?.NoOfDecimalForPrice))
-                    break;
+                break;
             case 'BOP V2V':
                 totalCost = headerCosts.NetBOPSourceCost * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPSourceCost)
@@ -325,6 +308,31 @@ function AddOtherDiscount(props) {
                 totalCost = headerCosts.NetBOPOutsourcedCost * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPOutsourcedCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPOutsourcedCost, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case "BOP Without Handling Charge":
+                totalCost = headerCosts.NetBoughtOutPartCostWithOutHandlingCharge * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBoughtOutPartCostWithOutHandlingCharge)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case "BOP Domestic Without Handling Charge":
+                totalCost = headerCosts.NetBOPDomesticCostWithOutHandlingCharge * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPDomesticCostWithOutHandlingCharge)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPDomesticCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case "BOP CKD Without Handling Charge":
+                totalCost = headerCosts.NetBOPImportCostWithOutHandlingCharge * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPImportCostWithOutHandlingCharge)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPImportCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case "BOP V2V Without Handling Charge":
+                totalCost = headerCosts.NetBOPSourceCostWithOutHandlingCharge * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPSourceCostWithOutHandlingCharge)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPSourceCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case "BOP OSP Without Handling Charge":
+                totalCost = headerCosts.NetBOPOutsourcedCostWithOutHandlingCharge * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPOutsourcedCostWithOutHandlingCharge)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPOutsourcedCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'CC':
                 totalCost = (ConversionCostForCalculation) * calculatePercentage(percent)
@@ -505,7 +513,7 @@ function AddOtherDiscount(props) {
                                                 className=""
                                                 customClassName={"withBorder"}
                                                 errors={errors.PercentageOtherCost}
-                                                disabled={CostingViewMode || !(otherCostApplicability && otherCostApplicability.value === 'Percentage') ? true : false}
+                                                disabled={CostingViewMode || state.disablePercentage || !(otherCostApplicability && otherCostApplicability.value === 'Percentage') ? true : false}
                                             />
                                         </Col>}
                                     {
@@ -634,3 +642,4 @@ function AddOtherDiscount(props) {
 }
 
 export default AddOtherDiscount
+
