@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import { checkForDecimalAndNull, checkTechnologyIdAndRfq, getChangeHighlightClass, getConfigurationKey, showBopLabel } from '../../../../../src/helper'
+import { checkForDecimalAndNull, checkTechnologyIdAndRfq, getChangeHighlightClass, getConfigurationKey, showBopLabel, showDifferentBOPType } from '../../../../../src/helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
@@ -33,6 +33,74 @@ function ViewBOP(props) {
     }
     props.closeDrawer('')
   }
+
+  const differentTypeBopDataTable = () => {
+    return <>
+      <Row>
+        <Col md="12">
+            {['Domestic', 'CKD', 'V2V', 'OSP'].map(bopType => {
+              const filteredBopData = viewBOPCost?.filter(item => item.BOPType === `BOP ${bopType}`) ?? [];
+              return (
+              <React.Fragment key={bopType}>
+                <Row>
+                  <Col md="12">
+                    <div className="left-border">{`${showBopLabel()} ${bopType}:`}</div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md="12">
+                    <Table className="table cr-brdr-main" size="sm" >
+                      <thead className={`${''} table-header`}>
+                        <tr>
+                          {IsAssemblyCosting && <th>{`Part No.`}</th>}
+                          <th>{`${showBopLabel()} Part No.`}</th>
+                          <th>{`${showBopLabel()} Part Name`}</th>
+                          <th>{`Landed Cost `}</th>
+                          <th>{`Quantity`}</th>
+                          <th>{`Net ${showBopLabel()} Cost`}</th>
+                          {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                          <th>{`Effective Date`}</th>
+                          <th>{`Remark`}</th>
+                        </tr>
+                      </thead>
+                      <tbody className='rm-table-body'>
+                        {
+                          filteredBopData && filteredBopData.length > 0 &&
+                          filteredBopData.map((item, index) => {
+                            return (
+                                <tr key={index}>
+                                  {IsAssemblyCosting && <th>{item?.PartNumber ?? "-"}</th>}
+                                  <td>{item?.BOPPartNumber ?? "-"}</td>
+                                  <td>{item?.BOPPartName ?? "-"}</td>
+                                  <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                  <td>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                                  <td>{checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                  {initialConfiguration?.IsShowCRMHead && <td>{item?.BoughtOutPartCRMHead ?? "-"}</td>}
+                                  <td>{item.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-'}</td>
+                                  <td>{item?.Remark || '-'}</td>
+                                </tr>
+                            )
+                          })
+                        }
+                        {filteredBopData && filteredBopData.length === 0 &&
+                          <tr>
+                            <td colSpan={9}>
+                              <NoContentFound title={EMPTY_DATA} />
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </Table>
+                  </Col>
+                </Row>
+              </React.Fragment>
+            )})}
+         
+        </Col>
+      </Row>
+    </>
+  }
+
   const bopDataTable = () => {
     return <>
       <Row>
@@ -95,7 +163,7 @@ function ViewBOP(props) {
   }
   const handlingChargeTableData = () => {
     return <>
-      <Row>
+      {/* <Row>
         <Col md="12" className='mb-1'>
           <Row>
             <Col md="12">
@@ -129,50 +197,101 @@ function ViewBOP(props) {
             </tbody>
           </Table>
         </Col>
-      </Row>
+      </Row> */}
 
-      {
-        IsAssemblyCosting && !partType &&
         <Row className="mx-0">
           <Col md="12" className='px-0 mb-1'>
             <br />
             <Row>
               <Col md="12">
-                <div className="left-border">{`Part's ${showBopLabel()} Handling Charge:`}</div>
+                <div className="left-border">{IsAssemblyCosting ? `Assembly's ${showBopLabel()} Handling Charge:` : `${showBopLabel()} Handling Charge:`}</div>
               </Col>
             </Row>
-            <Table className="table cr-brdr-main mb-0" size="sm">
-              <thead>
-                <tr>
-                  {IsAssemblyCosting && <th>{`Part No.`}</th>}
-                  <th>{`${showBopLabel()} Handling Type`}</th>
-                  <th>{`Percentage`}</th>
-                  <th className="costing-border-right">{`Handling Charges`}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {childPartBOPHandlingCharges &&
-                  childPartBOPHandlingCharges.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                        <td>{item.BOPHandlingChargeType}</td>
-                        <td>{checkForDecimalAndNull(item?.BOPHandlingChargeType === 'Fixed' ? '-' : item?.BOPHandlingPercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                        <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                      </tr>
-                    )
-                  })}
-                {childPartBOPHandlingCharges && childPartBOPHandlingCharges.length === 0 && (
+
+            {showDifferentBOPType() ?
+            <>
+              {['Domestic', 'CKD', 'V2V', 'OSP'].map(bopType => {
+                const filteredChargesData = childPartBOPHandlingCharges?.filter(item => item.BOPType === `BOP ${bopType}`) ?? [];
+                return(
+                  <React.Fragment key={bopType}>
+                    <Row>
+                      <Col md="12">
+                        <div className="left-border">{`${showBopLabel()} ${bopType}:`}</div>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="12">
+                        <Table className="table cr-brdr-main" size="sm">
+                          <thead>
+                            <tr>
+                              {IsAssemblyCosting && <th>{`Part No.`}</th>}
+                              <th>{`${showBopLabel()} Handling Type`}</th>
+                              <th>{`Percentage`}</th>
+                              <th className="costing-border-right">{`Handling Charges`}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredChargesData &&
+                              filteredChargesData.map((item, index) => {
+                                return (
+                                  <tr key={index}>
+                                    {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                                    <td>{item.BOPHandlingChargeType}</td>
+                                    <td>{checkForDecimalAndNull(item?.BOPHandlingChargeType === 'Fixed' ? '-' : item?.BOPHandlingPercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                    <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                  </tr>
+                                )
+                              })}
+                            {filteredChargesData && filteredChargesData.length === 0 && (
+                              <tr>
+                                <td colSpan={7}>
+                                  <NoContentFound title={EMPTY_DATA} />
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </Table>
+                      </Col>
+                    </Row>
+                  
+                  </React.Fragment>
+                )
+              })}
+              </> 
+            :
+              <Table className="table cr-brdr-main mb-0" size="sm">
+                <thead>
                   <tr>
-                    <td colSpan={7}>
-                      <NoContentFound title={EMPTY_DATA} />
-                    </td>
+                    {IsAssemblyCosting && <th>{`Part No.`}</th>}
+                    <th>{`${showBopLabel()} Handling Type`}</th>
+                    <th>{`Percentage`}</th>
+                    <th className="costing-border-right">{`Handling Charges`}</th>
                   </tr>
-                )}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {childPartBOPHandlingCharges &&
+                    childPartBOPHandlingCharges.map((item, index) => {
+                      return (
+                        <tr key={index}>
+                          {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                          <td>{item.BOPHandlingChargeType}</td>
+                          <td>{checkForDecimalAndNull(item?.BOPHandlingChargeType === 'Fixed' ? '-' : item?.BOPHandlingPercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                          <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                        </tr>
+                      )
+                    })}
+                  {childPartBOPHandlingCharges && childPartBOPHandlingCharges.length === 0 && (
+                    <tr>
+                      <td colSpan={7}>
+                        <NoContentFound title={EMPTY_DATA} />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            }
           </Col>
-        </Row>}
+        </Row>
     </>
   }
   return (
@@ -196,7 +315,10 @@ function ViewBOP(props) {
                   ></div>
                 </Col>
               </Row>
-              {bopDataTable()}
+              {
+                showDifferentBOPType() ? differentTypeBopDataTable() : bopDataTable()
+              }
+              {/* {bopDataTable()} */}
               <div>
                 {handlingChargeTableData()}
               </div>
@@ -204,7 +326,10 @@ function ViewBOP(props) {
             </div>
           </Container>
         </Drawer> : <div className='mt-2'>
-          {viewBOPCost.length !== 0 && bopDataTable()}
+          {/* {viewBOPCost.length !== 0 && bopDataTable()} */}
+          {(Array.isArray(viewBOPCost) && viewBOPCost.length > 0) &&
+            (showDifferentBOPType() ? differentTypeBopDataTable() : bopDataTable())
+          }
           {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || bopHandlingPercentage !== 0 || bopPHandlingCharges !== 0) && handlingChargeTableData())}</div>}
     </Fragment>
   )
