@@ -225,8 +225,6 @@ const AddInterestRate = (props) => {
             );
 
             const { plantArray, cbcPlantArray } = getPlants();
-            console.log(state, "state");
-            
             let data = {
                 vendorInterestRateId: null,
                 costingHeadId: state?.costingTypeId,
