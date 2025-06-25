@@ -469,6 +469,43 @@ function OverheadProfit(props) {
             setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(bopOSPCost, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(bopOSPTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
+          case 'BOP Without Handling Charge':
+            const bopCostWithoutHandling = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge);
+            const bopTotalCostWithoutHandling = bopCostWithoutHandling * calculatePercentage(Percentage);
+            setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(bopCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(bopTotalCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+            break;
+          case 'BOP Domestic Without Handling Charge':
+            const bopDomesticCostWithoutHandling = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge);
+            const bopDomesticTotalCostWithoutHandling = bopDomesticCostWithoutHandling * calculatePercentage(Percentage);
+            setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(bopDomesticCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(bopDomesticTotalCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+            break;
+          case 'BOP CKD Without Handling Charge':
+            const bopCKDCostWithoutHandling = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge);
+            console.log(bopCKDCostWithoutHandling,'bopCKDCostWithoutHandling');
+            
+            const bopCKDTotalCostWithoutHandling = bopCKDCostWithoutHandling * calculatePercentage(Percentage);
+            setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(bopCKDCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(bopCKDTotalCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+            break;
+          case 'BOP V2V Without Handling Charge':
+            const bopV2VCostWithoutHandling = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge);
+            const bopV2VTotalCostWithoutHandling = bopV2VCostWithoutHandling * calculatePercentage(Percentage);
+            setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(bopV2VCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(bopV2VTotalCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+            break;
+          case 'BOP OSP Without Handling Charge':
+            const bopOSPCostWithoutHandling = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge);
+            const bopOSPTotalCostWithoutHandling = bopOSPCostWithoutHandling * calculatePercentage(Percentage);
+            setValue(`Overhead${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}Cost`, checkForDecimalAndNull(bopOSPCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+            setValue(`Overhead${Applicability}TotalCost`, checkForDecimalAndNull(bopOSPTotalCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+            break;
           default:
             break;
         }
@@ -514,6 +551,26 @@ function OverheadProfit(props) {
           baseCost = IsIncludeApplicabilityForChildParts
             ? checkForNull(headerCosts?.NetWeldingCostForOverhead) + checkForNull(OverheadDetail?.NetChildPartsWeldingCostForOverhead)
             : checkForNull(headerCosts?.NetWeldingCostForOverhead);
+        } else if (Applicability === 'BOP Without Handling Charge') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge);
+        } else if (Applicability === 'BOP Domestic Without Handling Charge') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge);
+        } else if (Applicability === 'BOP CKD Without Handling Charge') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge);
+        } else if (Applicability === 'BOP V2V Without Handling Charge') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge);
+        } else if (Applicability === 'BOP OSP Without Handling Charge') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge) + checkForNull(OverheadDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge);
         } else {
           baseCost = 0;
         }
@@ -549,6 +606,7 @@ function OverheadProfit(props) {
       // Process each applicability type
       dataObj?.CostingApplicabilityDetails?.forEach(detail => {
         const { Applicability, Percentage, Cost, TotalCost } = detail;
+console.log(headerCosts,'WithoutHandling');
 
         switch (Applicability) {
           case 'Fixed':
@@ -620,6 +678,41 @@ function OverheadProfit(props) {
             setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(bopOSPCost, initialConfiguration?.NoOfDecimalForPrice));
             setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(bopOSPTotalCost, initialConfiguration?.NoOfDecimalForPrice));
             break;
+            case 'BOP Without Handling Charge':
+              const bopCostWithoutHandling = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge);
+              const bopTotalCostWithoutHandling = bopCostWithoutHandling * calculatePercentage(Percentage);
+              setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+              setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(bopCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+              setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(bopTotalCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+              break;
+            case 'BOP Domestic Without Handling Charge':
+              const bopDomesticCostWithoutHandling = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge);
+              const bopDomesticTotalCostWithoutHandling = bopDomesticCostWithoutHandling * calculatePercentage(Percentage);
+              setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+              setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(bopDomesticCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+              setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(bopDomesticTotalCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+              break;
+              case 'BOP CKD Without Handling Charge':
+                const bopCKDCostWithoutHandling = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge);
+                const bopCKDTotalCostWithoutHandling = bopCKDCostWithoutHandling * calculatePercentage(Percentage);
+                setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+                setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(bopCKDCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+                setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(bopCKDTotalCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+                break;
+                case 'BOP V2V Without Handling Charge':
+                  const bopV2VCostWithoutHandling = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge);
+                  const bopV2VTotalCostWithoutHandling = bopV2VCostWithoutHandling * calculatePercentage(Percentage);
+                  setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+                  setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(bopV2VCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+                  setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(bopV2VTotalCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+                  break;
+                  case 'BOP OSP Without Handling Charge':
+                    const bopOSPCostWithoutHandling = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge);
+                    const bopOSPTotalCostWithoutHandling = bopOSPCostWithoutHandling * calculatePercentage(Percentage);
+                    setValue(`Profit${Applicability}Percentage`, checkForDecimalAndNull(Percentage, initialConfiguration?.NoOfDecimalForPrice));
+                    setValue(`Profit${Applicability}Cost`, checkForDecimalAndNull(bopOSPCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+                    setValue(`Profit${Applicability}TotalCost`, checkForDecimalAndNull(bopOSPTotalCostWithoutHandling, initialConfiguration?.NoOfDecimalForPrice));
+                    break;
           default:
             break;
         }
@@ -663,6 +756,26 @@ function OverheadProfit(props) {
           baseCost = IsIncludeApplicabilityForChildParts
             ? checkForNull(headerCosts?.NetBOPOutsourcedCost) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost)
             : checkForNull(headerCosts?.NetBOPOutsourcedCost);
+        } else if (Applicability === 'BOP Without Handling Charge	') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge);
+        } else if (Applicability === 'BOP Domestic Without Handling Charge') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge);
+        } else if (Applicability === 'BOP CKD Without Handling Charge') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge);
+        } else if (Applicability === 'BOP V2V Without Handling Charge') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge);
+        } else if (Applicability === 'BOP OSP Without Handling Charge	') {
+          baseCost = IsIncludeApplicabilityForChildParts
+            ? checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost)
+            : checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge);
         }
         const totalCost = baseCost * calculatePercentage(Percentage);
 
