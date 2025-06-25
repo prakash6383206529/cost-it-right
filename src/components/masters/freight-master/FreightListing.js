@@ -442,7 +442,7 @@ const FreightListing = (props) => {
                   frameworkComponents={frameworkComponents}
                   suppressRowClickSelection={true}
                 >
-                  <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus} floatingFilterComponent="statusFilter"></AgGridColumn>
+                  <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus} floatingFilterComponent="statusFilter"></AgGridColumn>
                   <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
