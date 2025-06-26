@@ -3004,8 +3004,13 @@ const CostingSummaryTable = (props) => {
 
                               {
                                 viewCostingData && !viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart && <tr className={highlighter("netBOP", "main-row")}>
-                                  <th>Net {showBopLabel()} Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
-
+                                  <th>
+                                    <span id='net-bop-cost-summary'>
+                                      Net {showBopLabel()} Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}
+                                      {showDifferentBOPType() && <TooltipCustom customClass="mt-1 ml-2 float-unset" id="net-bop-cost-summary" tooltipText={`Included Handling Charges`} />}
+                                    </span>
+                                  </th>
+                                  
                                   {viewCostingData &&
                                     viewCostingData?.map((data, index) => {
                                       return (
