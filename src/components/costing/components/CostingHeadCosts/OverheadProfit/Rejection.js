@@ -43,7 +43,7 @@ function Rejection(props) {
     const [percentageLimit, setPercentageLimit] = useState(false)
     const { IsIncludedSurfaceInRejection, isBreakupBoughtOutPartCostingFromAPI, IsIncludeApplicabilityForChildParts } = useSelector(state => state.costing)
     const { SurfaceTabData, rejectionRecovery, RMCCTabData, CostingEffectiveDate } = useSelector(state => state.costing)
-    const { CostingPartDetails, PartType } = RMCCTabData[0]
+    const { CostingPartDetails, PartType } = RMCCTabData?.[0]
     const [errorMessage, setErrorMessage] = useState('')
     const [isOpenRecoveryDrawer, setIsOpenRecoveryDrawer] = useState(false);
     const conditionTypeId = getCostingConditionTypes(REJECTIONMASTER);
@@ -294,6 +294,12 @@ function Rejection(props) {
                         case 'BOP OSP Without Handling Charge':
                         totalCost = (BOPOSPWithoutHandling * calculatePercentage(item.Percentage));
                         item.Cost = BOPOSPWithoutHandling;
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                        case 'Labour Cost':
+                        totalCost = (headerCosts?.TotalLabourCost * calculatePercentage(item.Percentage));
+                        item.Cost = headerCosts?.TotalLabourCost;
                         item.TotalCost = totalCost;
                         item.NetCost = totalCost
                         break;
@@ -723,11 +729,20 @@ function Rejection(props) {
                 IsMultiVendorCosting: IsMultiVendorCosting
             }
             dispatch(getRejectionDataByModelType(reqParams, (res) => {
+                console.log(res,'res');
                 let data = res?.data?.Data?.CostingRejectionDetail
-                setRejectionObj(data)
-                setTimeout(() => {
-                    checkRejectionModelType(data)
-                }, 500);
+                if(data){
+                    setRejectionObj(data)
+                    setTimeout(() => {
+                        checkRejectionModelType(data)
+                    }, 500);
+                }else{
+                    setState(prev => ({
+                        ...prev,
+                        gridData: []
+                    }))
+                    setRejectionObj({}) 
+                }
             }))
         }
     }

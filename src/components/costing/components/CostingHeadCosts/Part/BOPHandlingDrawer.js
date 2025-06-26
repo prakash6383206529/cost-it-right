@@ -155,38 +155,39 @@ function BOPHandlingDrawer(props) {
 
         switch (bopType.label) {
             case "BOP CKD":
-                if (item?.PartType !== "Part") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopCKDCost;
                 }
                 break;
             case "BOP OSP":
-                if (item?.PartType !== "Part") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPOutsourcedCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopOSPCost;
                 }
                 break;
             case "BOP Domestic":
-                if (item?.PartType !== "Part") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopDomesticCost;
                 }
                 break;
             case "BOP V2V":
-                if (item?.PartType !== "Part") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopV2VCost;
                 }
                 break;
             default:
-                if (item?.PartType !== "Part") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
                 } else {
-                    applicabilityCost = props.netBOPCost;                }
+                    applicabilityCost = props.netBOPCost;
+                }
         }
 
         cost = calculatePercentageValue(applicabilityCost, percentage);
@@ -226,7 +227,7 @@ function BOPHandlingDrawer(props) {
         const applicability = state.applicabilityCost;
         const type = getValues('Type');
         const percentage = checkForNull(getValues('Percentage'));
-        const handlingCharges = getValues('Type')?.label==='Fixed'?checkForNull(getValues('HandlingCharges')):state?.cost;
+        const handlingCharges = getValues('Type')?.label === 'Fixed' ? checkForNull(getValues('HandlingCharges')) : state?.cost;
 
 
         // Create new data entry
