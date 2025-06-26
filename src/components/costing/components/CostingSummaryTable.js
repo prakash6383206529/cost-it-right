@@ -16,7 +16,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel, checkTechnologyIdAndRfq, showRMScrapKeys, getLocalizedCostingHeadValue } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel, checkTechnologyIdAndRfq, showRMScrapKeys, getLocalizedCostingHeadValue, showDifferentBOPType } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showDynamicKeys, PLANTCODELABEL, SUPPLIERCODELABEL, CUSTOMERCODELABEL, DEFAULTCOSTINGSUMMARYLABEL } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -2979,10 +2979,38 @@ const CostingSummaryTable = (props) => {
                                   isPDFShow={true}
                                 /></th></tr>
                               }
+
+                            {showDifferentBOPType() &&
+                              <tr>
+                                <td>
+                                  <span className="d-block small-grey-text">{`${showBopLabel()} Domestic Cost`}</span>
+                                  <span className="d-block small-grey-text">{`${showBopLabel()} CKD Cost`}</span>
+                                  <span className="d-block small-grey-text">{`${showBopLabel()} V2V Cost`}</span>
+                                  <span className="d-block small-grey-text">{`${showBopLabel()} OSP Cost`}</span>
+                                </td>
+                                {viewCostingData &&
+                                  viewCostingData?.map((data) => {
+                                    return (
+                                      <td className={tableDataClass(data)}>
+                                        <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPDomesticCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
+                                        <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPImportCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
+                                        <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPSourceCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
+                                        <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPOutsourcedCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
+                                      </td>
+                                    )
+                                  })}
+                              </tr>
+                            }
+
                               {
                                 viewCostingData && !viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart && <tr className={highlighter("netBOP", "main-row")}>
-                                  <th>Net {showBopLabel()} Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
-
+                                  <th>
+                                    <span id='net-bop-cost-summary'>
+                                      Net {showBopLabel()} Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}
+                                      {showDifferentBOPType() && <TooltipCustom customClass="mt-1 ml-2 float-unset" id="net-bop-cost-summary" tooltipText={`Included Handling Charges`} />}
+                                    </span>
+                                  </th>
+                                  
                                   {viewCostingData &&
                                     viewCostingData?.map((data, index) => {
                                       return (
