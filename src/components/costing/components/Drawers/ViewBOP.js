@@ -48,6 +48,7 @@ function ViewBOP(props) {
               <tr>
                 {IsAssemblyCosting && <th>{`Part No.`}</th>}
                 <th>{`${showBopLabel()} Part No.`}</th>
+                <th>{`${showBopLabel()} Type`}</th>
                 <th>{`${showBopLabel()} Part Name`}</th>
                 {checkTechnologyIdAndRfq(viewCostingData) && <th>{`${showBopLabel()} Updated Part Name`}</th>}
 
@@ -65,7 +66,9 @@ function ViewBOP(props) {
                   return (
                     <tr key={index}>
                       {IsAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</span></td>}
-                      <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
+                      <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.BOPPartNumber}>{item?.BOPPartNumber}</span></td>
+                      <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.BOPType}>{item?.BOPType}</span></td>
+
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                       {checkTechnologyIdAndRfq(viewCostingData) && <td><div className={getChangeHighlightClass(item?.BOPPartName, item?.UpdatedBoughtOutPartPartName)}><span title={item?.UpdatedBoughtOutPartPartName}>{item?.UpdatedBoughtOutPartPartName}</span></div></td>}
                       <td>

@@ -109,7 +109,7 @@ function TabRMCC(props) {
           NetBOPOutsourcedCost: TopHeaderValues?.TotalBOPOutsourcedCostWithQuantity ? TopHeaderValues?.TotalBOPOutsourcedCostWithQuantity : null,
           TotalBoughtOutPartCostComponent: TopHeaderValues?.TotalBoughtOutPartCostComponent ? TopHeaderValues?.TotalBoughtOutPartCostComponent : null,
           TotalBoughtOutPartCostSubAssembly: TopHeaderValues?.TotalBoughtOutPartCostSubAssembly ? TopHeaderValues?.TotalBoughtOutPartCostSubAssembly : null,
-          TotalBoughtOutPartCostPerAssembly: TopHeaderValues?.TotalBoughtOutPartCostComponent ? TopHeaderValues?.TotalBoughtOutPartCostComponent : null,
+          TotalBoughtOutPartCostPerAssembly: TopHeaderValues?.TotalBoughtOutPartCostPerAssembly ? TopHeaderValues?.TotalBoughtOutPartCostPerAssembly : null,
           TotalBoughtOutPartCostWithOutHandlingChargePerAssembly: TopHeaderValues?.TotalBoughtOutPartCostWithOutHandlingChargePerAssembly ? TopHeaderValues?.TotalBoughtOutPartCostWithOutHandlingChargePerAssembly : null,
           TotalBoughtOutPartCostWithOutHandlingChargeSubAssembly: TopHeaderValues?.TotalBoughtOutPartCostWithOutHandlingChargeSubAssembly ? TopHeaderValues?.TotalBoughtOutPartCostWithOutHandlingChargeSubAssembly : null,
           TotalBoughtOutPartCostWithOutHandlingChargeComponent: TopHeaderValues?.TotalBoughtOutPartCostWithOutHandlingChargeComponent ? TopHeaderValues?.TotalBoughtOutPartCostWithOutHandlingChargeComponent : null,
