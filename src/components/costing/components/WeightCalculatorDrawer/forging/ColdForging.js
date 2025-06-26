@@ -357,6 +357,14 @@ function ColdForging(props) {
       label: 'Bar Cutting Allowance',
       value: 8,
     },
+    {
+      label: 'End Loss',
+      value: 11,
+    },
+     {
+      label: 'Yield Loss',
+      value: 12,
+    }
   ]
 
   const tableData1 = (value = []) => {

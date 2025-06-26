@@ -208,7 +208,7 @@ function LossStandardTable(props) {
     const LossOfType = getValues('LossOfType')
     const FlashLoss = getValues('FlashLoss')
 
-    if ((LossOfType?.label === "Scale Loss") || (LossOfType?.label === "Bilet Heating Loss") || (LossOfType?.label === "Burning Loss")) {
+    if ((LossOfType?.label === "Scale Loss") || (LossOfType?.label === "Bilet Heating Loss") || (LossOfType?.label === "Burning Loss") || (LossOfType?.label === "End Loss") || (LossOfType?.label === "Yield Loss")) {
 
       setIsDisable(true)
     }
@@ -252,6 +252,8 @@ function LossStandardTable(props) {
     switch (LossOfType?.label) {
       case 'Scale Loss':
       case 'Burning Loss':
+      case 'End Loss':
+      case 'Yield Loss':
         LossWeight = ((forgeWeight * LossPercentage) / 100)
         break;
       case 'Bilet Heating Loss':
