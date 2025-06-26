@@ -54,7 +54,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalBOPImportCostComponent": checkForNull(item?.CostingPartDetails?.TotalBOPImportCostComponent),
           "TotalBOPImportCostSubAssembly": checkForNull(item?.CostingPartDetails?.TotalBOPImportCostSubAssembly),
 
-          "TotalBOPSourceCostWithQuantity": checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostComponent) + checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostSubAssembly),
+          "TotalBOPSourceCostWithQuantity": checkForNull(item?.CostingPartDetails?.TotalBOPSourcedCostPerAssembly) + checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostComponent) + checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostSubAssembly),
           "TotalBOPSourceCostPerAssembly": checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostPerAssembly),
           "TotalBOPSourceCostComponent": checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostComponent),
           "TotalBOPSourceCostSubAssembly": checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostSubAssembly),
@@ -644,11 +644,22 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
     if (item.BOMLevel === 'L1' && (item.PartType === 'Sub Assembly' || item.PartType === 'Part' || item.PartType === 'BOP')) {
 
       let subAssemblyObj = {
+        "PartName": item?.PartName,
         "CostingId": item?.CostingId,
         "NetPOPrice": item?.CostingPartDetails?.NetPOPrice,
         "NetChildPartsCostWithQuantity": item?.CostingPartDetails?.NetChildPartsCostWithQuantity,
         "BasicRate": item?.CostingPartDetails?.NetPOPrice,
         "TotalBoughtOutPartCostWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+        "TotalBOPDomesticCostWithQuantity": item?.CostingPartDetails?.TotalBOPDomesticCostWithQuantity,
+        "TotalBOPImportCostWithQuantity": item?.CostingPartDetails?.TotalBOPImportCostWithQuantity,
+        "TotalBOPSourceCostWithQuantity": item?.CostingPartDetails?.TotalBOPSourceCostWithQuantity,
+        "TotalBOPOutsourcedCostWithQuantity": item?.CostingPartDetails?.TotalBOPOutsourcedCostWithQuantity,
+        "TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity,
+        "TotalBOPDomesticCostWithOutHandlingChargeWithQuantity":item?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity,
+        "TotalBOPImportCostWithOutHandlingChargeWithQuantity":item?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity,
+        "TotalBOPSourceCostWithOutHandlingChargeWithQuantity":item?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity,
+        "TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity":item?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity,
+
         "Remark": item.Remark ?? ""
       }
       assemblyWorkingRow.push(subAssemblyObj)
@@ -679,6 +690,8 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetChildPartsCost": tabData?.CostingPartDetails?.NetChildPartsCost,
       "NetRawMaterialsCost": tabData?.CostingPartDetails?.NetChildPartsCost,
       "NetBoughtOutPartCost": tabData?.CostingPartDetails?.NetBoughtOutPartCost,
+      "BOPHandlingCharges": tabData?.CostingPartDetails?.BOPHandlingCharges,
+      "IsApplyBOPHandlingCharges": tabData?.CostingPartDetails?.IsApplyBOPHandlingCharges,
       "NetConversionCost": checkForNull(tabData?.CostingPartDetails?.NetOperationCost) + checkForNull(tabData?.CostingPartDetails?.NetProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost),
       "NetTotalRMBOPCC": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.NetOperationCost) + checkForNull(tabData?.CostingPartDetails?.NetProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost),
       "NetSurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost,
@@ -714,7 +727,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetWeldingCostForProfit": tabData?.CostingPartDetails?.NetWeldingCostForProfit,
       "NetOperationCostForOverhead": tabData?.CostingPartDetails?.NetOperationCostForOverhead,
       "NetOperationCostForProfit": tabData?.CostingPartDetails?.NetOperationCostForProfit,
-      "NetCCForOtherTechnologyCost":tabData?.CostingPartDetails?.NetCCForOtherTechnologyCost,
+      "NetCCForOtherTechnologyCost": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCost,
       "NetCCForOtherTechnologyCostForOverhead": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCostForOverhead,
       "NetCCForOtherTechnologyCostForProfit": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCostForProfit,
       "PaintConsumptionCost": surfaceTabData?.CostingPartDetails?.PaintConsumptionCost,
@@ -723,7 +736,16 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "TotalPaintCost": surfaceTabData?.CostingPartDetails?.TotalPaintCost,
       "HangerRate": surfaceTabData?.CostingPartDetails?.HangerRate,
       "HangerCostPerPart": surfaceTabData?.CostingPartDetails?.HangerCostPerPart,
-      "NumberOfPartsPerHanger": surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger
+      "NumberOfPartsPerHanger": surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger,
+      "NetBOPDomesticCost": tabData?.CostingPartDetails?.NetBOPDomesticCost,
+      "NetBOPImportCost": tabData?.CostingPartDetails?.NetBOPImportCost,
+      "NetBOPSourceCost": tabData?.CostingPartDetails?.NetBOPSourceCost,
+      "NetBOPOutsourcedCost": tabData?.CostingPartDetails?.NetBOPOutsourcedCost,
+      "NetBoughtOutPartCostWithOutHandlingCharge": tabData?.CostingPartDetails?.NetBoughtOutPartCostWithOutHandlingCharge,
+      "NetBOPDomesticCostWithOutHandlingCharge": tabData?.CostingPartDetails?.NetBOPDomesticCostWithOutHandlingCharge,
+      "NetBOPImportCostWithOutHandlingCharge": tabData?.CostingPartDetails?.NetBOPImportCostWithOutHandlingCharge,
+      "NetBOPSourceCostWithOutHandlingCharge": tabData?.CostingPartDetails?.NetBOPSourceCostWithOutHandlingCharge,
+      "NetBOPOutsourcedCostWithOutHandlingCharge": tabData?.CostingPartDetails?.NetBOPOutsourcedCostWithOutHandlingCharge,
       // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
     },
     "WorkingRows": assemblyWorkingRow,
