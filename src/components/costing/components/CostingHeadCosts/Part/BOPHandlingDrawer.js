@@ -155,35 +155,35 @@ function BOPHandlingDrawer(props) {
 
         switch (bopType.label) {
             case "BOP CKD":
-                if (item?.PartType !== "Part") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopCKDCost;
                 }
                 break;
             case "BOP OSP":
-                if (item?.PartType !== "Part" && item?.PartType !== "BoughtOutPart") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPOutsourcedCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopOSPCost;
                 }
                 break;
             case "BOP Domestic":
-                if (item?.PartType !== "Part" && item?.PartType !== "BoughtOutPart") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopDomesticCost;
                 }
                 break;
             case "BOP V2V":
-                if (item?.PartType !== "Part" && item?.PartType !== "BoughtOutPart") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopV2VCost;
                 }
                 break;
             default:
-                if (item?.PartType !== "Part" && item?.PartType !== "BoughtOutPart") {
+                if (item?.PartType !== "Part"&& item?.PartType !== "Component" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
                 } else {
                     applicabilityCost = props.netBOPCost;

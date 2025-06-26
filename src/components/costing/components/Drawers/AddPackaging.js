@@ -18,6 +18,7 @@ import { CRMHeads, WACTypeId } from '../../../../config/constants';
 import { fetchCostingHeadsAPI } from '../../../../actions/Common';
 import Toaster from '../../../common/Toaster';
 import PackagingCalculator from '../WeightCalculatorDrawer/PackagingCalculator';
+import { filterBOPApplicability } from '../../../common/CommonFunctions';
 // import PackagingCalculator from '../WeightCalculatorDrawer/PackagingCalculator';
 
 function IsolateReRender(control) {
@@ -75,9 +76,9 @@ function AddPackaging(props) {
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
   const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId||(costData?.PartType === 'Assembly' && IsMultiVendorCosting))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
 
-  const { RMCCTabData } = useSelector(state => state.costing)
+  const { RMCCTabData, OverheadProfitTabData, SurfaceTabData } = useSelector(state => state.costing)
 
   const freightType = [
     { label: 'Origin THC', value: 'Origin THC' },
@@ -122,7 +123,7 @@ function AddPackaging(props) {
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : 'packaging'
     let isRequestForMultiTechnology = partType ? true : false
-    dispatch(fetchCostingHeadsAPI(request, false, isRequestForMultiTechnology, (res) => { }))
+    dispatch(fetchCostingHeadsAPI(request, true, isRequestForMultiTechnology, (res) => { }))
     const removeApplicabilityList = _.map(gridData, 'Applicability')
     setRemoveApplicability(removeApplicabilityList)
     if (applicability?.label === 'Crate/Trolley') {
@@ -165,24 +166,7 @@ function AddPackaging(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
-
-      // Filter BOP variants based on gridData
-      const hasBOP = gridData?.some(entry => entry.Applicability === "BOP");
-      const hasBOPVariant = gridData?.some(entry => 
-        ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(entry.Applicability)
-      );
-
-      // Remove BOP variants if BOP exists, or remove BOP if any variant exists
-      tempList = temp.filter(item => {
-        if (hasBOP && ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(item.label)) {
-          return false;
-        }
-        if (hasBOPVariant && item.label === "BOP") {
-          return false;
-        }
-        return true;
-      });
-
+      tempList=filterBOPApplicability(costingHead,gridData,'Applicability')
       // Apply additional filters if needed
       if (isBreakupBoughtOutPartCostingFromAPI) {
         tempList = removeBOPfromApplicability([...tempList])
@@ -249,8 +233,9 @@ function AddPackaging(props) {
   const calculateApplicabilityCost = (Text, applicablityDropDownChange = false) => {
 
 
-    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetBOPDomesticCost ,NetBOPImportCost, NetBOPOutsourcedCost, NetBOPSourceCost} = headCostData;
-
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetBOPDomesticCost, NetBOPImportCost, NetBOPOutsourcedCost, NetBOPSourceCost, NetBOPDomesticCostWithOutHandlingCharge, NetBOPImportCostWithOutHandlingCharge, NetBOPOutsourcedCostWithOutHandlingCharge, NetBOPSourceCostWithOutHandlingCharge, NetBoughtOutPartCostWithOutHandlingCharge } = headCostData;
+    let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData?.length > 0 && OverheadProfitTabData?.[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData?.[0]?.CostingPartDetails : null;
+    const { HangerCostPerPart, PaintCost, SurfaceTreatmentCost } = SurfaceTabData[0]?.CostingPartDetails
     const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.NetProcessCost + headCostData.NetOperationCost
     const PackagingCostPercentage = getValues('PackagingCostPercentage');
 
@@ -305,8 +290,8 @@ function AddPackaging(props) {
           setPackagingCost(totalPackagingCost)
         }
         break;
-        case 'BOP Domestic':
-          
+      case 'BOP Domestic':
+
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -315,7 +300,7 @@ function AddPackaging(props) {
           setPackagingCost(totalPackagingCost)
         }
         break;
-        case 'BOP CKD':
+      case 'BOP CKD':
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -324,7 +309,7 @@ function AddPackaging(props) {
           setPackagingCost(totalPackagingCost)
         }
         break;
-        case 'BOP V2V':
+      case 'BOP V2V':
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -333,13 +318,102 @@ function AddPackaging(props) {
           setPackagingCost(totalPackagingCost)
         }
         break;
-        case 'BOP OSP':
+      case 'BOP OSP':
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (NetBOPOutsourcedCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
+        }
+        break;
+      case "BOP Domestic Without Handling Charge":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (NetBOPDomesticCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        }
+        break;
+      case "BOP CKD Without Handling Charge":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (NetBOPImportCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        }
+        break;
+      case "BOP V2V Without Handling Charge":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (NetBOPSourceCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        }
+        break;
+      case "BOP OSP Without Handling Charge":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (NetBOPOutsourcedCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        }
+        break;
+
+      case "BOP Without Handling Charge":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (NetBoughtOutPartCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        }
+        break;
+      case "Hanger Cost":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (HangerCostPerPart) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        }
+        break;
+      case "Paint Cost":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (PaintCost) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        }
+        break;
+      case "Surface Treatment Cost":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (SurfaceTreatmentCost) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        }
+        break;
+      case "Overhead Cost":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (TopHeaderValues?.OverheadCost) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        }
+        break;
+      case "Profit Cost":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (TopHeaderValues?.ProfitCost) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        }
+        break;
+      case "Rejection Cost":
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          totalPackagingCost = (TopHeaderValues?.RejectionCost) * calculatePercentage(PackagingCostPercentage)
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
       case 'Fixed':

@@ -17,7 +17,8 @@ import {
   GET_INCO_SELECTLIST_SUCCESS,
   GET_PAYMENT_SELECTLIST_SUCCESS,
   GET_VIEW_BOUGHT_OUT_PART_SUCCESS,
-  GET_BOP_DETAILS
+  GET_BOP_DETAILS,
+  GET_BOP_TYPE_SELECTLIST_SUCCESS
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -186,7 +187,7 @@ export function getBOPImportById(bopId, callback) {
 export function getBOPDataBySourceVendor(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOPDataBySourceVendor}?costingHeadId=${data?.costingHeadId}&bopNumber=${data?.bopNumber}&categoryId=${data?.categoryId}&sourceVendorId=${data?.sourceVendorId}&technologyId=${null}&loggedInUserId=${loggedInUserId()}`, config());
+        const request = axios.get(`${API.getBOPDataBySourceVendor}?costingHeadId=${data?.costingHeadId}&bopNumber=${data?.bopNumber}&categoryId=${data?.categoryId}&sourceVendorId=${data?.sourceVendorId}&technologyId=${null}&IsBreakupBoughtOutPart=${data?.IsBreakupBoughtOutPart}&plantId=${data?.plantId}&loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response) {
                 callback(response);
@@ -266,6 +267,29 @@ export function getBOPCategorySelectList(callback) {
       if (response.data.Result) {
         dispatch({
           type: GET_BOP_CATEGORY_SELECTLIST_SUCCESS,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getBOPTypeSelectList
+ * @description Used to fetch BOP Category selectlist
+ */
+export function getBOPTypeSelectList(callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getBOPTypeSelectList}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_BOP_TYPE_SELECTLIST_SUCCESS,
           payload: response.data.SelectList,
         });
         callback(response);

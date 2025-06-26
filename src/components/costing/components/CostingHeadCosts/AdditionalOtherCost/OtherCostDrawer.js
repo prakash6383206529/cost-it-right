@@ -17,6 +17,7 @@ import { setOtherCostData } from '../../../actions/Costing';
 import OtherCostTable from './OtherCostTable';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
+import { filterBOPApplicability } from '../../../../common/CommonFunctions';
 
 function OtherCostDrawer(props) {
 
@@ -39,12 +40,14 @@ function OtherCostDrawer(props) {
 
 
     const headerCosts = useContext(netHeadCostContext);
+
     const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
 
     const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, getCostingPaymentDetails, UpdatePaymentTermCost, ToolTabData, IccCost } = useSelector(state => state.costing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingHead = useSelector(state => state.comman.costingHead)
+
     const [isEdit, setIsEdit] = useState(false);
     const [gridData, setgridData] = useState(otherCostData.gridData);
     const [otherCostTotal, setOtherCostTotal] = useState(props?.otherCostArr?.length > 0 ? calculateSumOfValues(props?.otherCostArr) : 0)
@@ -96,39 +99,12 @@ function OtherCostDrawer(props) {
             ];
         }
         if (label === 'Applicability') {
-            if (!costingHead) return [];
 
-            // Check if BOP or BOP variants exist in current entries
-            const hasBOP = gridData?.some(entry => entry.OtherCostApplicability === "BOP");
-            const hasBOPVariant = gridData?.some(entry => 
-                ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(entry.OtherCostApplicability)
-            );
-
-            const filtered = costingHead.filter(item => {
-                if (item.Value === '0') return false;
-
-                // Remove BOP variants if BOP exists
-                if (hasBOP && ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP"].includes(item.Text)) {
-                    return false;
-                }
-
-                // Remove BOP if any BOP variant exists  
-                if (hasBOPVariant && item.Text === "BOP") {
-                    return false;
-                }
-
-                return true;
-            });
-
-            let tempList = filtered.map(item => ({
-                label: item.Text,
-                value: item.Value
-            }));
+            let tempList = filterBOPApplicability(costingHead, gridData, 'OtherCostApplicability')
 
             if (isBreakupBoughtOutPartCostingFromAPI) {
                 tempList = removeBOPfromApplicability(tempList);
             }
-
             return tempList;
         }
     }
@@ -366,6 +342,31 @@ function OtherCostDrawer(props) {
                 totalCost = headerCosts.NetBOPOutsourcedCost * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPOutsourcedCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPOutsourcedCost, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case "BOP Without Handling Charge":
+                totalCost = headerCosts.NetBoughtOutPartCostWithOutHandlingCharge * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBoughtOutPartCostWithOutHandlingCharge)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case "BOP Domestic Without Handling Charge":
+                totalCost = headerCosts.NetBOPDomesticCostWithOutHandlingCharge * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPDomesticCostWithOutHandlingCharge)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPDomesticCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case "BOP CKD Without Handling Charge":
+                totalCost = headerCosts.NetBOPImportCostWithOutHandlingCharge * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPImportCostWithOutHandlingCharge)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPImportCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case "BOP V2V Without Handling Charge":
+                totalCost = headerCosts.NetBOPSourceCostWithOutHandlingCharge * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPSourceCostWithOutHandlingCharge)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPSourceCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case "BOP OSP Without Handling Charge":
+                totalCost = headerCosts.NetBOPOutsourcedCostWithOutHandlingCharge * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBOPOutsourcedCostWithOutHandlingCharge)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPOutsourcedCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'CC':
                 totalCost = (ConversionCostForCalculation) * calculatePercentage(percent)

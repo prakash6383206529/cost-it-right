@@ -17,8 +17,8 @@ export const config = () => {
   return { headers }
 }
 
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-const BASE_URL = `http://10.10.1.102:9002/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.1.102:9002/api/v1`;
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -382,6 +382,9 @@ export const API = {
   //BOP Category
   createBOPCategory: `${BASE_URL}/masters-bought-out-part/add-bought-out-part-category`,
   getBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
+
+  //BOP Type
+  getBOPTypeSelectList: `${BASE_URL}/masters-bought-out-part/select-list-bop-type`,
 
   //PROCESS MASTER
   createProcessAPI: `${BASE_URL}/masters-process/create`,
@@ -1610,6 +1613,7 @@ export const GET_BOP_IMPORT_DATA_SUCCESS = 'GET_BOP_IMPORT_DATA_SUCCESS';
 export const GET_BOP_FAILURE = 'GET_BOP_FAILURE';
 export const UPDATE_BOP_SUCCESS = 'UPDATE_BOP_SUCCESS';
 export const GET_BOP_CATEGORY_SELECTLIST_SUCCESS = 'GET_BOP_CATEGORY_SELECTLIST_SUCCESS';
+export const GET_BOP_TYPE_SELECTLIST_SUCCESS = 'GET_BOP_TYPE_SELECTLIST_SUCCESS';
 export const GET_PLANT_SELECTLIST_BY_VENDOR = 'GET_PLANT_SELECTLIST_BY_VENDOR';
 export const GET_BOP_SOB_VENDOR_DATA_SUCCESS = 'GET_BOP_SOB_VENDOR_DATA_SUCCESS';
 export const GET_INITIAL_SOB_VENDORS_SUCCESS = 'GET_INITIAL_SOB_VENDORS_SUCCESS';

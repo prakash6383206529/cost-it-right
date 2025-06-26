@@ -171,11 +171,6 @@ export const checkInterestRateConfigure = (excelData) => {
 * @description CONDITION TO CHECK:- TO AVOID VENDOR PLANT IF NOT CONFIGURABLE FROM INITIALIZER
 */
 export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVendor = false) => {
-
-
-
-
-
     return excelData.filter((el) => {
         // Check permissions for VBC and CBC
         const costingTypePermission = reactLocalStorage.getObject('CostingTypePermission');
@@ -265,6 +260,9 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
         }
         if (getConfigurationKey().IsSourceExchangeRateNameVisible === false) {
             if (el.value === 'ExchangeRateSourceName') return false
+        }
+        if (!getConfigurationKey()?.IsShowDifferentBOPType) {
+            if (el.value === 'BOPType') return false
         }
         return true;
     })

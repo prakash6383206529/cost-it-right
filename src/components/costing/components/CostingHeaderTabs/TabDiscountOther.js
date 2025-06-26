@@ -550,9 +550,9 @@ function TabDiscountOther(props) {
                 .filter(obj => obj.NpvType !== 'Line Investment')
                 .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
 
-                totalLineInvestmentCost = Data
-                  .filter(obj => obj.NpvType === 'Line Investment')
-                  .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0)
+              totalLineInvestmentCost = Data
+                .filter(obj => obj.NpvType === 'Line Investment')
+                .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0)
             }
             setTotalNpvCost(totalNpvCost)
             setTotalLineInvestmentCost(totalLineInvestmentCost)
@@ -930,7 +930,7 @@ function TabDiscountOther(props) {
     let basicrate = checkForNull(totalCost) + checkForNull(otherCostData.otherCostTotal)
     let netCost = checkForNull(totalCost) + checkForNull(otherCostData.otherCostTotal)
     if (initialConfiguration?.IsAddNPVInNetCost) {
-      basicrate = checkForNull(basicrate) + checkForNull(totalNpvCost) 
+      basicrate = checkForNull(basicrate) + checkForNull(totalNpvCost)
       netCost = checkForNull(netCost) + checkForNull(totalNpvCost)
     }
     if (initialConfiguration?.IsAddPaymentTermInNetCost) {
@@ -1325,8 +1325,24 @@ function TabDiscountOther(props) {
   const onSubmit = debounce((values, gotoNextValue) => {
     setIsLoader(true)
     setPaymentTermsWarning(false)
+
     if (errorCheckObject(ErrorObjDiscount)) return false;
 
+    if (initialConfiguration?.IsBopOspWithoutHandlingDiscountRequired) {
+      const hasBopOsp = RMCCTabData[0]?.CostingPartDetails?.CostingBoughtOutPartCost?.some(
+        item => item.BOPType === "BOP OSP"
+      );
+
+      const hasBopOspWithoutHandlingCharge = discountCostArray?.some(
+        item => item.ApplicabilityType === "BOP OSP Without Handling Charge"
+      );
+
+      if (hasBopOsp && !hasBopOspWithoutHandlingCharge) {
+        Toaster.warning(`Please add discount for '${showBopLabel()} OSP Without Handling Charge' in discount cost to proceed further`);
+        setIsLoader(false)
+        return false;
+      }
+    }
     if (!getValues('discountDescriptionRemark') && discountCostApplicability?.value) {
       errors.discountDescriptionRemark = {
         "type": "required",
@@ -1344,6 +1360,7 @@ function TabDiscountOther(props) {
     const surfaceTabData = SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]
     const discountAndOtherTabData = DiscountCostData
+
     const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
     const toolTabData = ToolTabData && ToolTabData[0]
     let taxCodeArray = []
@@ -1478,10 +1495,11 @@ function TabDiscountOther(props) {
         }))
         dispatch(isDiscountDataChange(false))
       }
-    } else if (costData.IsAssemblyPart !== true && !partType) {
-      handleCommonSaveDiscountTab({ data, obj, iccObj, gotoNextValue, isNFR })
-
     }
+    // else if (costData.IsAssemblyPart !== true && !partType) {
+    //   handleCommonSaveDiscountTab({ data, obj, iccObj, gotoNextValue, isNFR })
+
+    // }
 
 
 
@@ -1624,7 +1642,7 @@ function TabDiscountOther(props) {
     // }
   }
 
-  const openAndCloseAddNpvDrawer = (type, drawerType="", data = npvTableData) => {
+  const openAndCloseAddNpvDrawer = (type, drawerType = "", data = npvTableData) => {
     if (type === 'Open') {
       setDrawerType(drawerType)
       setisOpenandClose(true)
@@ -1635,13 +1653,13 @@ function TabDiscountOther(props) {
       setNpvTableData(data)
       dispatch(setNPVData([]))
       const sum = Array.isArray(data) ? data
-      .filter(obj => obj.NpvType !== 'Line Investment')
-      .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0) : 0;
+        .filter(obj => obj.NpvType !== 'Line Investment')
+        .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0) : 0;
 
       const totalLineInvestmentCost = Array.isArray(data) ? data
-      .filter(obj => obj.NpvType === 'Line Investment')
-      .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0) : 0;
-      
+        .filter(obj => obj.NpvType === 'Line Investment')
+        .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0) : 0;
+
       setTotalNpvCost(sum)
       setTotalLineInvestmentCost(totalLineInvestmentCost)
       dispatch(isDiscountDataChange(true))
@@ -1727,8 +1745,7 @@ function TabDiscountOther(props) {
     const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
 
     const calculateCostByApplicability = (item, isDiscount = false) => {
-      console.log(item,'item');
-      
+
       if (item?.OtherCostApplicability === 'Fixed' || item?.ApplicabilityType === 'Fixed') return item;
 
       const percent = isDiscount ? item?.PercentageDiscountCost : item?.PercentageOtherCost;
@@ -2492,15 +2509,15 @@ function TabDiscountOther(props) {
                       {otherDiscountUI}
                     </Col >
                     {npvDrawerCondition && shouldRenderNpvDrawer &&
-                    <Col md="3">
-                      {/*                <TooltipCustom disabledIcon={true} width="280px" id="npvCost" tooltipText={"NPV Cost = Sum of NPV cost added in NPV drawer"} /> */}
-                      {npvCostUI}
-                    </Col>
+                      <Col md="3">
+                        {/*                <TooltipCustom disabledIcon={true} width="280px" id="npvCost" tooltipText={"NPV Cost = Sum of NPV cost added in NPV drawer"} /> */}
+                        {npvCostUI}
+                      </Col>
                     }
                     {initialConfiguration?.IsShowLineInvestmentCost &&
-                    <Col md="3">
-                      {lineInvestmentUI}
-                    </Col>
+                      <Col md="3">
+                        {lineInvestmentUI}
+                      </Col>
                     }
                     {/* {npvDrawerCondition && shouldRenderNpvDrawer && <Row>
                       <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
