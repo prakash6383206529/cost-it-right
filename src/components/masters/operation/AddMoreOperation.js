@@ -32,7 +32,7 @@ import { CheckApprovalApplicableMaster, getExchangeRateParams, userTechnologyDet
 import { checkFinalUser, getExchangeRateByCurrency } from "../../costing/actions/Costing";
 import MasterSendForApproval from "../MasterSendForApproval";
 import Button from "../../layout/Button";
-import { debounce } from "lodash";
+import { debounce, get } from "lodash";
 import Switch from 'react-switch'
 import { getPlantUnitAPI } from "../actions/Plant";
 import WarningMessage from "../../common/WarningMessage";
@@ -161,6 +161,16 @@ function AddMoreOperation(props) {
     useEffect(() => {
         callExchangeRateAPI()
     }, [localCurrencyLabel]);
+
+
+    useEffect(() => {
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, null, (res) => {
+            setTimeout(() => {
+                const PlantId = Array.isArray(plant) ? get(plant, '[0].value', EMPTY_GUID) :  get(plant, 'value', EMPTY_GUID)
+                commonFunction(PlantId, false, res?.data?.Data?.MasterLevels)
+            }, 500);
+        }))
+    }, [plant]);
 
     const callExchangeRateAPI = (obj) => {
         const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
