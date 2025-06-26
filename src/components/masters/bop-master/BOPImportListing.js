@@ -867,6 +867,9 @@ const BOPImportListing = (props) => {
     if (!getConfigurationKey().IsShowPartOutsourcedInBoughtOutPart) {
       tempData = hideColumnFromExcel(tempData, "IsPartOutsourced")
     }
+    if (!getConfigurationKey().IsShowDifferentBOPType) {
+      tempData = hideColumnFromExcel(tempData, "BOPType")
+    }
     temp =
       TempData && TempData.map((item) => {
         if (item.Plants === "-") {
@@ -1190,6 +1193,7 @@ const BOPImportListing = (props) => {
                         {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                         <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} No.`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Name`}></AgGridColumn>
+                        {getConfigurationKey()?.IsShowDifferentBOPType && <AgGridColumn field="BOPType" headerName={`${showBopLabel()} Type`}></AgGridColumn>}
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                         {initialConfiguration?.PartAdditionalMasterFields?.IsShowPartFamily && <AgGridColumn field="PartFamily" headerName="Part Family (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                         <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>

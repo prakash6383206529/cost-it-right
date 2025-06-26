@@ -11,7 +11,7 @@ import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, re
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction, getExchangeRateSource } from '../../../actions/Common';
 import {
   createBOP, updateBOP, getBOPCategorySelectList, getBOPImportById,
-  fileUploadBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList, checkAndGetBopPartNo, getBOPDataBySourceVendor
+  fileUploadBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList, checkAndGetBopPartNo, getBOPDataBySourceVendor, getBOPTypeSelectList
 } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
@@ -125,6 +125,7 @@ class AddBOPImport extends Component {
       NetLandedCostINR: '',
       NetLandedCost: '',
       PartFamilySelected: [],
+      selectedBOPType: [],
       FinalBasicRateBaseCurrency: '',
       BasicPrice: '',
       FinalNetCostBaseCurrency: '',
@@ -225,6 +226,7 @@ class AddBOPImport extends Component {
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     const { currency } = this.state
     this.getPartFamilySelectList();
+    this.props.getBOPTypeSelectList((res) => { })
     this.props.getExchangeRateSource((res) => { })
     this.props.getIncoTermSelectList(() => { })
     this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
@@ -595,6 +597,7 @@ class AddBOPImport extends Component {
             LocalExchangeRateId: Data?.LocalExchangeRateId,
             totalBasicRate: Data?.BasicRate,
             ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName },
+            selectedBOPType: Data?.BOPType !== undefined ? { label: Data?.BOPType, value: Data?.BOPType } : []
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
@@ -680,7 +683,7 @@ class AddBOPImport extends Component {
   */
   renderListing = (label) => {
     const { bopCategorySelectList, partSelectList, plantSelectList, exchangeRateSourceList, partFamilySelectList,
-      UOMSelectList, currencySelectList, clientSelectList, IncoTermsSelectList, PaymentTermsSelectList, costingSpecifiTechnology } = this.props;
+      UOMSelectList, currencySelectList, clientSelectList, IncoTermsSelectList, PaymentTermsSelectList, costingSpecifiTechnology, BOPTypeSelectList } = this.props;
     const temp = [];
     if (label === 'PartFamily') {
       partFamilySelectList && partFamilySelectList.map((item) => {
@@ -769,6 +772,14 @@ class AddBOPImport extends Component {
       exchangeRateSourceList && exchangeRateSourceList.map((item) => {
         if (item.Value === '--Exchange Rate Source Name--') return false
 
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+    if (label === 'BOPType') {
+      BOPTypeSelectList && BOPTypeSelectList.map((item) => {
+        if (item.Value === '--0--') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -1340,7 +1351,11 @@ class AddBOPImport extends Component {
               bopNumber: this.props?.fieldsObj?.BoughtOutPartNumber,
               categoryId: this.state?.BOPCategory.value,
               sourceVendorId: newValue?.value,
-              technologyId: this.state?.Technology?.value
+              technologyId: this.state?.Technology?.value,
+              ...(getConfigurationKey()?.IsFetchVBCSourceVendorDataForBOP && {
+                IsBreakupBoughtOutPart: (this?.state?.selectedBOPType?.value === "BOP V2V" || this?.state?.selectedBOPType?.value === "BOP OSP") ? true : false,
+                plantId: this?.state?.selectedPlants?.value ?? ""
+              })
             };
             this.handleSourceVendorDataFetch(data);
         }
@@ -1412,8 +1427,8 @@ class AddBOPImport extends Component {
       UOM, DataToChange, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible,
       Technology, NetConditionCost, conditionTableData, BasicPrice, NetLandedCost, otherCostTableData, totalOtherCost,
       currencyValue, DropdownChanged, IsSAPCodeUpdated, IsSAPCodeHandle, LocalExchangeRateId, LocalCurrencyId, plantCurrencyValue, ExchangeRateId, ExchangeSource,
-    SourceVendorAssociatedAsBoughtOutPartVendors, IsPartOutsourced, sourceVendor, SourceVendorBoughtOutPartId } = this.state;
-    const {  isBOPAssociated } = this.props
+    SourceVendorAssociatedAsBoughtOutPartVendors, IsPartOutsourced, sourceVendor, SourceVendorBoughtOutPartId, selectedBOPType } = this.state;
+    const { fieldsObj, isBOPAssociated } = this.props
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1442,6 +1457,7 @@ class AddBOPImport extends Component {
       BasicRateConversion: convertIntoCurrency(values?.BasicRate, currencyValue),
       BoughtOutPartConditionsDetails: conditionTableData,
       BoughtOutPartId: BOPID,
+      BOPType: getConfigurationKey()?.IsShowDifferentBOPType ? selectedBOPType?.value : "BOP",
       BoughtOutPartIncoTermId: incoTerm.value,
       BoughtOutPartName: values?.BoughtOutPartName,
       BoughtOutPartNumber: values?.BoughtOutPartNumber,
@@ -1496,7 +1512,8 @@ class AddBOPImport extends Component {
       PartFamilyId: this?.state?.PartFamilySelected?.value || "",
       PartFamily: this?.state?.PartFamilySelected?.label || "",
       SourceVendorAssociatedAsBoughtOutPartVendors: SourceVendorAssociatedAsBoughtOutPartVendors,
-      IsPartOutsourced: IsPartOutsourced,
+      // IsPartOutsourced: IsPartOutsourced,
+      IsPartOutsourced: (selectedBOPType?.value === "BOP V2V" || selectedBOPType?.value === "BOP OSP") ? true : false,
       SourceVendorId: sourceVendor?.value,
       SourceVendorName: sourceVendor?.label,
       SourceVendorBoughtOutPartId: SourceVendorBoughtOutPartId
@@ -1584,6 +1601,14 @@ class AddBOPImport extends Component {
       this.setState({ PartFamilySelected: newValue });
     } else {
       this.setState({ PartFamilySelected: null });
+    }
+  }
+
+  handleBOpTypeChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ selectedBOPType: newValue });
+    } else {
+      this.setState({ selectedBOPType: null });
     }
   }
 
@@ -1879,6 +1904,23 @@ class AddBOPImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
+                          {getConfigurationKey()?.IsShowDifferentBOPType &&
+                            <Col md="3">
+                              <Field
+                                name="BOPType"
+                                type="text"
+                                label={`${showBopLabel()} Type`}
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("BOPType")}
+                                validate={this?.state?.selectedBOPType == null || this?.state?.selectedBOPType.length === 0 ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handleBOpTypeChange}
+                                valueDescription={this?.state?.selectedBOPType}
+                                disabled={isEditFlag || isViewMode}
+                              />
+                            </Col>
+                          }
                           <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
@@ -2786,7 +2828,7 @@ function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
   const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate', 'BoughtOutPartName', 'BoughtOutPartNumber', 'SAPPartNumber', 'plantCurrency', 'ExchangeSource', 'Currency');
 
-  const { bopCategorySelectList, bopData, IncoTermsSelectList, PaymentTermsSelectList } = boughtOutparts;
+  const { bopCategorySelectList, bopData, IncoTermsSelectList, PaymentTermsSelectList, BOPTypeSelectList } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList,
     UOMSelectList, currencySelectList, plantSelectList, exchangeRateSourceList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
@@ -2814,7 +2856,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
+    vendorWithVendorCodeSelectList, bopCategorySelectList, BOPTypeSelectList, plantList, filterPlantList, filterCityListBySupplier,
     plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, partFamilySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList, userMasterLevelAPI, costingSpecifiTechnology, exchangeRateSourceList
   }
 
@@ -2834,6 +2876,7 @@ export default connect(mapStateToProps, {
   createBOP,
   updateBOP,
   getBOPCategorySelectList,
+  getBOPTypeSelectList,
   getBOPImportById,
   fileUploadBOPDomestic,
   getPlantSelectListByType,
