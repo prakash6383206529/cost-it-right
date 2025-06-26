@@ -121,7 +121,7 @@ function LossStandardTable(props) {
     }
   }, [])
 
-  const handleLossOfType = (value) => {
+  const handleLossOfType = (value) => {    
     setPercentage(false)
     setUseformula(false)
 
@@ -132,10 +132,15 @@ function LossStandardTable(props) {
       setLossWeightTooltip(<div>Loss {isFerrous ? "Wt" : "Weight"} = (π/4 * Bar Diameter<sup>2</sup> * Blade Thickness * Density / 1000000)</div>)
     }
     else if ((value.label === "Flash Loss")) {
-
       setFlashLossType(true)
       setIsDisable(false)
       setBarCuttingAllowanceLossType(false)
+    }
+    else if ((value.label === "Fixed Loss")) {
+      setFlashLossType(false)
+      setIsDisable(false)
+      setBarCuttingAllowanceLossType(false)
+      setPercentage(false)
     }
     else {
       setIsDisable(true)
@@ -339,6 +344,14 @@ function LossStandardTable(props) {
       if (isExist !== -1) {
         Toaster.warning('Already added, Please select another loss type.')
         return false;
+      }
+    }
+
+    if (props?.isLossStandard) {
+     const yieldLoss = tableData.some(el => String(el?.LossOfType) === '19')
+      if (yieldLoss) {
+        Toaster.warning("You have already selected Yield Loss. Please remove it before selecting other losses.")
+        return false
       }
     }
 
@@ -562,7 +575,8 @@ function LossStandardTable(props) {
     }
 
   }
-
+  // console.log(props.CostingViewMode, isDisable, disableAll, fieldsEnabled);
+  
   return (
     <Fragment>
       <Row className={`mb-3 ${isFerrous ? 'mx-0' : ''}`}>
@@ -761,7 +775,8 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossWeight}
-            disabled={props.CostingViewMode || isDisable || disableAll || !fieldsEnabled}
+            // disabled={props.CostingViewMode || isDisable || disableAll || !fieldsEnabled} need to discuss
+            disabled={props.CostingViewMode || isDisable || disableAll || (!isLossStandard && !fieldsEnabled)}
           />
         </Col>
         <Col md="3" className="pr-0">
