@@ -45,9 +45,9 @@ function NpvCost(props) {
                             <tr className='thead'>
                                 {islineInvestmentDrawer && <th>{`Investment Cost`}</th>}
                                 {!islineInvestmentDrawer && <th>{`Type of Investment`}</th>}
+                                {islineInvestmentDrawer && <th>{`Upfront (%)`}</th>}
                                 {<th>{`${islineInvestmentDrawer ? "Amortization" : "Percentage"} (%)`}</th>}
                                 {<th>{`${islineInvestmentDrawer ? "Quantity/ Amortization Volume" : "Quantity"}`}</th>}
-                                {islineInvestmentDrawer && <th>{`Upfront (%)`}</th>}
                                 {islineInvestmentDrawer && <th>{`Upfront  Cost`}</th>}
                                 {islineInvestmentDrawer && <th>{`Amortization Cost`}</th>}
                                 {<th>{`${islineInvestmentDrawer ? "Investement Cost/Pc" : "Total"}`}</th>}
@@ -64,9 +64,9 @@ function NpvCost(props) {
                                             <tr key={index}>
                                                 {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.InvestmentCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {!islineInvestmentDrawer && <td>{item.NpvType} </td>}
+                                                {islineInvestmentDrawer && <td>{item?.UpfrontPercentage}</td>}
                                                 {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.NpvQuantity, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                                {islineInvestmentDrawer && <td>{item?.UpfrontPercentage}</td>}
                                                 {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.UpfrontCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.AmortizationCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
