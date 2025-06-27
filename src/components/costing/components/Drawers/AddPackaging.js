@@ -295,7 +295,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (NetBOPDomesticCost) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(NetBOPDomesticCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
@@ -304,7 +304,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (NetBOPImportCost) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(NetBOPImportCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
@@ -313,7 +313,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (NetBOPSourceCost) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(NetBOPSourceCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
@@ -322,7 +322,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (NetBOPOutsourcedCost) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(NetBOPOutsourcedCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
@@ -331,7 +331,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (NetBOPDomesticCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(NetBOPDomesticCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
@@ -339,7 +339,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (NetBOPImportCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(NetBOPImportCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
@@ -347,7 +347,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (NetBOPSourceCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(NetBOPSourceCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
@@ -355,7 +355,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (NetBOPOutsourcedCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(NetBOPOutsourcedCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
@@ -364,7 +364,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (NetBoughtOutPartCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(NetBoughtOutPartCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
@@ -372,7 +372,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (HangerCostPerPart) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(HangerCostPerPart) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
@@ -380,7 +380,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (PaintCost) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(PaintCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
@@ -388,7 +388,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (SurfaceTreatmentCost) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(SurfaceTreatmentCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
@@ -396,7 +396,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (TopHeaderValues?.OverheadCost) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(TopHeaderValues?.OverheadCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
@@ -404,7 +404,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (TopHeaderValues?.ProfitCost) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(TopHeaderValues?.ProfitCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;
@@ -412,7 +412,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = (TopHeaderValues?.RejectionCost) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(TopHeaderValues?.RejectionCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         }
         break;

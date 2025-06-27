@@ -191,7 +191,7 @@ function Rejection(props) {
         const BOP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost)) : checkForNull(headerCosts?.NetBoughtOutPartCost);
         const BOPDomestic = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPDomesticCost)) : checkForNull(headerCosts?.NetBOPDomesticCost);
         const BOPCKD = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPImportCost)) : checkForNull(headerCosts?.NetBOPImportCost);
-        const BOPImport = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPSourceCost)) : checkForNull(headerCosts?.NetBOPSourceCost);
+        const BOPV2V = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPSourceCost)) : checkForNull(headerCosts?.NetBOPSourceCost);
         const BOPOSP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPOutsourcedCost)) : checkForNull(headerCosts?.NetBOPOutsourcedCost);
         const BOPWithoutHandling=IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge);
         const BOPDomesticWithoutHandling=IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge);
@@ -256,8 +256,8 @@ function Rejection(props) {
                         item.NetCost = totalCost
                         break;
                         case 'BOP V2V': 
-                        totalCost = (BOPImport * calculatePercentage(item.Percentage));
-                        item.Cost = BOPImport;
+                        totalCost = (BOPV2V * calculatePercentage(item.Percentage));
+                        item.Cost = BOPV2V;
                         item.TotalCost = totalCost;
                         item.NetCost = totalCost
                         break;
