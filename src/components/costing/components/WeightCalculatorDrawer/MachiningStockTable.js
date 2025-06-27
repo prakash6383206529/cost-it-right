@@ -51,7 +51,7 @@ function MachiningStockTable(props) {
     calculateforgingVolumeAndWeight()
     calculateTotalMachiningStock()
 
-  }, [fieldValues])
+  }, [fieldValues, props?.netWeightCost])
 
 
   const handleVolumeChange = () => {
@@ -137,6 +137,9 @@ function MachiningStockTable(props) {
       setTooltipMessageForGross('Gross Weight = (Volume * Number * Density / 1000000)')
     }
     else if (value.label === "Multiplying factor (Yield %)") {
+      if (!props?.netWeightCost) {
+        Toaster.warning("Please Select Net Weight First.")
+      }
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
@@ -257,6 +260,13 @@ function MachiningStockTable(props) {
     
     if (Object.keys(errors).length > 0 || 'finishedWeight' in hotcoldErrors > 0) {
       return false
+    }
+
+    if (!isEdit) {
+      if (MachiningStock?.label === 'Multiplying factor (Yield %)' && !props?.netWeightCost) {
+        Toaster.warning("Please Select Net Weight First.")
+        return false;
+      }
     }
 
     if (GrossWeight === 0 || (MachiningStock?.label !== 'Multiplying factor (Yield %)' && Volume === 0) || MachiningStock === '' || Description === '') {
@@ -543,7 +553,7 @@ function MachiningStockTable(props) {
               className=""
               customClassName={'withBorder'}
               errors={errors.MachiningMultiplyingFactorPercentage}
-              disabled={props.CostingViewMode || disableAll}
+              disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
             />
           </Col>
         }
