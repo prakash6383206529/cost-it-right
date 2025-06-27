@@ -193,6 +193,7 @@ function AddNpvCost(props) {
 
     const calculateAmortizationCost = (investmentCost, amortizationPercent) => {
         if(investmentCost || amortizationPercent){
+            if (amortizationPercent > 100) return;
             const percent = Number(checkForNull(amortizationPercent)).toFixed(2);
             const amortizationCost = (checkForNull(investmentCost) * checkForNull(percent))/100
             setValue("AmortizationCost", checkForDecimalAndNull(amortizationCost, initialConfiguration?.NoOfDecimalForPrice))
@@ -233,6 +234,7 @@ function AddNpvCost(props) {
 
     const calculateUpfrontCost = (investmentCost, upfrontPercent) => {
         if(investmentCost || upfrontPercent){
+            if (upfrontPercent > 100) return;
             const percent = Number(checkForNull(upfrontPercent)).toFixed(2);
             const upfrontCost = (checkForNull(investmentCost) * checkForNull(percent))/100
             setValue("UpfrontCost", checkForDecimalAndNull(upfrontCost, initialConfiguration?.NoOfDecimalForPrice))
@@ -282,7 +284,7 @@ function AddNpvCost(props) {
 
     // This function is called when the user clicks a button to add data to a table.
     const addData = () => {
-        if (errors.NpvPercentage || errors.InvestmentCost) {
+        if (errors.NpvPercentage || errors.InvestmentCost || errors.UpfrontPercentage) {
             return false
         }
 
@@ -331,22 +333,6 @@ function AddNpvCost(props) {
         ? (investmentCost !== '' && upfrontPercentage !== '' && upfrontCost !== '' && amortizationCost !== '')
         : true
 
-        if(islineInvestmentDrawer){
-            const total = checkForNull(upfrontPercentage) + checkForNull(NpvPercentage);
-            if (upfrontPercentage > 100 || NpvPercentage > 100) {
-                Toaster.warning(`${upfrontPercentage > 100 ? 'Upfront' : 'Amortization'} (%) should not be more than 100%.`);
-                return false;
-            }
-            if (total > 100) {
-                Toaster.warning('Total of Upfront (%) and Amortization (%) should not be more than 100%.');
-                return false;
-            }
-            if (total < 100) {
-                Toaster.warning('Sum of Upfront (%) and Amortization (%) should be exactly 100%.');
-                return false;
-            }
-        }
-
         // If all mandatory fields are filled out, create a new object with the data and add it to the table.
         if (hasBasicFields && hasLineFields) {
             let obj = {}
@@ -358,6 +344,24 @@ function AddNpvCost(props) {
             obj.UpfrontPercentage = upfrontPercentage ? upfrontPercentage : ''
             obj.UpfrontCost = upfrontCost ? upfrontCost : ''
             obj.AmortizationCost = amortizationCost ? amortizationCost : ''
+
+            if(islineInvestmentDrawer){
+                const total = checkForNull(upfrontPercentage) + checkForNull(NpvPercentage);
+                if (upfrontPercentage > 100 || NpvPercentage > 100) {
+                    Toaster.warning(`${upfrontPercentage > 100 ? 'Upfront' : 'Amortization'} (%) should not be more than 100%.`);
+                    return false;
+                }
+                if (total > 100) {
+                    Toaster.warning('Total of Upfront (%) and Amortization (%) should not be more than 100%.');
+                    return false;
+                }
+                if (total < 100) {
+                    Toaster.warning('Sum of Upfront (%) and Amortization (%) should be exactly 100%.');
+                    return false;
+                }
+            }
+
+
             // If we're in edit mode, update the existing row with the new data.
             // Otherwise, add the new row to the end of the table.
             if (isEditMode) {
