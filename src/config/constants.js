@@ -2604,6 +2604,7 @@ export const VIEW_COSTING_DATA = {
   saNumber: 'SA Number',
   lineNumber: 'Line Number',
   npvCost: 'Net NPV Cost',
+  lineInvestmentCost: 'Line Investment Cost',
   paymentApplicablity: 'Payment Applicability',
   paymentPercent: 'Payment %',
   paymentcApplicablityValue: 'Payment Value',

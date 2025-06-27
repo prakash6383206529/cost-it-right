@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, checkWhiteSpaces, decimalAndNumberValidation, decimalNumberLimit3, maxLength200 } from '../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, checkWhiteSpaces, decimalAndNumberValidation, decimalNumberLimit3, maxLength200, percentageLimitValidation } from '../../../../helper'
 import Toaster from '../../../common/Toaster'
 import TooltipCustom from '../../../common/Tooltip'
 function MachiningStockTable(props) {
@@ -20,6 +20,7 @@ function MachiningStockTable(props) {
   const [rectangularMachiningStock, setRectangularMachiningStock] = useState(false)
   const [squareMachiningStock, setSquareMachiningStock] = useState(false)
   const [irregularMachiningStock, setIrregularMachiningStock] = useState(false)
+  const [multiplyingFactorMachiningStock, setMultiplyingFactorMachiningStock] = useState(false)
   const [disable, setDisable] = useState(true)
   const [disableMachineType, setDisableMachineType] = useState(false)
   const [tooltipClassShow, setTooltipClassShow] = useState(false)
@@ -41,6 +42,7 @@ function MachiningStockTable(props) {
       'Height',
       'Breadth',
       'No',
+      'MachiningMultiplyingFactorPercentage'
 
     ],
   })
@@ -66,6 +68,7 @@ function MachiningStockTable(props) {
   const [editIndex, setEditIndex] = useState('')
   const [oldNetWeight, setOldNetWeight] = useState('')
   const [netWeight, setNetWeight] = useState(props.netWeight !== '' ? props.netWeight : 0)
+  
 
   const { forgingCalculatorMachiningStockSectionValue } = useSelector(state => state.costing)
 
@@ -99,6 +102,7 @@ function MachiningStockTable(props) {
       setSquareMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
+      setMultiplyingFactorMachiningStock(false)
       setTooltipClassShow(true)
       setTooltipMessageForGross('Gross Weight = (Volume * Density / 1000000)')
     }
@@ -108,6 +112,7 @@ function MachiningStockTable(props) {
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
+      setMultiplyingFactorMachiningStock(false)
       setTooltipClassShow(false)
       setTooltipMessageForGross('Gross Weight = (Volume * Number  * Density / 1000000)')
     }
@@ -117,6 +122,7 @@ function MachiningStockTable(props) {
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setIrregularMachiningStock(false)
+      setMultiplyingFactorMachiningStock(false)
       setTooltipClassShow(false)
       setTooltipMessageForGross('Gross Weight = (Volume * Number * Density / 1000000)')
     }
@@ -125,11 +131,23 @@ function MachiningStockTable(props) {
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(true)
+      setMultiplyingFactorMachiningStock(false)
       setDisable(false)
       setTooltipClassShow(false)
       setTooltipMessageForGross('Gross Weight = (Volume * Number * Density / 1000000)')
     }
+    else if (value.label === "Multiplying factor (Yield %)") {
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setRectangularMachiningStock(false)
+      setIrregularMachiningStock(false)
+      setMultiplyingFactorMachiningStock(true)
+      setDisable(false)
+      setTooltipClassShow(false)
+      setTooltipMessageForGross('Gross Weight = (Net Weight(kg) * Machining Multiplying Factor (%))')
+    }
     else {
+      setMultiplyingFactorMachiningStock(false)
       setIrregularMachiningStock(false)
       setTooltipClassShow(false)
     }
@@ -164,10 +182,11 @@ function MachiningStockTable(props) {
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
     const forgingV = checkForNull(getValues('forgingVolume'))
-
+    const machiningMultiplyingFactorPercentage = checkForNull(getValues('MachiningMultiplyingFactorPercentage'))
+    
     let Volume = 0;
     let GrossWeight = 0;
-
+    
     switch (MachiningStock?.label) {
       case 'Circular':
         Volume = ((Math.PI / 4) * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length)
@@ -195,6 +214,9 @@ function MachiningStockTable(props) {
       case 'Irregular':
         Volume = forgingV
         GrossWeight = (forgingV * No * rmRowData.Density) / 1000000
+        break;
+      case 'Multiplying factor (Yield %)':
+        GrossWeight = (props?.netWeightCost * (machiningMultiplyingFactorPercentage / 100))
         break;
       default:
         return "none";
@@ -231,14 +253,34 @@ function MachiningStockTable(props) {
     const Breadth = checkForNull(getValues('Breadth'))
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
-
+    const MachiningMultiplyingFactorPercentage = getValues('MachiningMultiplyingFactorPercentage')
+    
     if (Object.keys(errors).length > 0 || 'finishedWeight' in hotcoldErrors > 0) {
       return false
     }
 
-    if (GrossWeight === 0 || Volume === 0 || MachiningStock === '' || Description === '') {
+    if (GrossWeight === 0 || (MachiningStock?.label !== 'Multiplying factor (Yield %)' && Volume === 0) || MachiningStock === '' || Description === '') {
 
       Toaster.warning("Please fill all the mandatory fields first.")
+      return false;
+    }
+    //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+    if (!isEdit) {
+      const isExist = tableData.findIndex(el => (String(el.TypesOfMachiningStockId) === String(MachiningStock?.value)))
+      if (isExist !== -1) {
+        Toaster.warning('Already added, Please select another shape type.')
+        return false;
+      }
+    }
+
+    const yieldPercentage = tableData.some(el => String(el?.TypesOfMachiningStockId) === '21')    
+    if (yieldPercentage) {
+      Toaster.warning("You have already selected Multiplying factor (Yield %). Please remove it before selecting other shape type.")
+      return false
+    }
+    
+    if (tableData.length > 0 && String(MachiningStock?.value) === '21') {
+      Toaster.warning("To add Multiplying factor (Yield %), please remove other shape type first.");
       return false;
     }
 
@@ -269,6 +311,7 @@ function MachiningStockTable(props) {
       TypesOfMachiningStockId: MachiningStock?.value,
       GrossWeight: GrossWeight,
       Volume: Volume,
+      MachiningMultiplyingFactorPercentage:MachiningMultiplyingFactorPercentage
     }
 
 
@@ -298,6 +341,7 @@ function MachiningStockTable(props) {
       MachiningStock: '',
       grossWeight: '',
       forgingVolume: '',
+      MachiningMultiplyingFactorPercentage: ''
 
     })
 
@@ -470,7 +514,33 @@ function MachiningStockTable(props) {
             disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
           />
         </Col>
-        {!irregularMachiningStock &&
+        {multiplyingFactorMachiningStock &&
+          <Col md="3">
+            <TextFieldHookForm
+              label={`Machining Multiplying Factor (%)`}
+              name={'MachiningMultiplyingFactorPercentage'}
+              Controller={Controller}
+              control={control}
+              register={register}
+              mandatory={false}
+              rules={{
+                required: false,
+                validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                max: {
+                  value: 100,
+                  message: 'Percentage cannot be greater than 100'
+                },
+              }}
+              handleChange={() => { }}
+              defaultValue={''}
+              className=""
+              customClassName={'withBorder'}
+              errors={errors.MachiningMultiplyingFactorPercentage}
+              disabled={props.CostingViewMode || disableAll}
+            />
+          </Col>
+        }
+        {!irregularMachiningStock && !multiplyingFactorMachiningStock &&
           <>
             <Col md="2" className='forging-length-wrapper'>
               <TextFieldHookForm
@@ -688,24 +758,26 @@ function MachiningStockTable(props) {
               />
             </Col >
           </>}
-        <Col md="3">
-          {disable && tooltipMessageForVolume && <TooltipCustom disabledIcon={true} tooltipClass={`${tooltipClassShow ? 'weight-of-sheet' : ''}`} id={'forging-volume'} tooltipText={tooltipMessageForVolume} />}
-          <TextFieldHookForm
-            label={UnitFormat()}
-            name={'forgingVolume'}
-            Controller={Controller}
-            control={control}
-            register={register}
-            mandatory={false}
-            id={'forging-volume'}
-            handleChange={handleVolumeChange}
-            defaultValue={''}
-            className=""
-            customClassName={'withBorder'}
-            errors={errors.forgingVolume}
-            disabled={disable}
-          />
-        </Col >
+          {!multiplyingFactorMachiningStock &&
+            <Col md="3">
+              {disable && tooltipMessageForVolume && <TooltipCustom disabledIcon={true} tooltipClass={`${tooltipClassShow ? 'weight-of-sheet' : ''}`} id={'forging-volume'} tooltipText={tooltipMessageForVolume} />}
+              <TextFieldHookForm
+                label={UnitFormat()}
+                name={'forgingVolume'}
+                Controller={Controller}
+                control={control}
+                register={register}
+                mandatory={false}
+                id={'forging-volume'}
+                handleChange={handleVolumeChange}
+                defaultValue={''}
+                className=""
+                customClassName={'withBorder'}
+                errors={errors.forgingVolume}
+                disabled={disable}
+              />
+            </Col >
+          }
         <Col md="3">
           {tooltipMessageForGross && <TooltipCustom disabledIcon={true} id={'forging-gross-weight'} tooltipText={tooltipMessageForGross} />}
           <TextFieldHookForm
@@ -771,6 +843,7 @@ function MachiningStockTable(props) {
                 <th>{`Breadth (mm)`}</th>
                 <th>{`Height (mm)`}</th>
                 <th>{`Number`}</th>
+                <th>{`Multiplying factor (Yield %)`}</th>
                 <th>{UnitFormat()}</th>
                 <th>{`Gross Weight (Kg)`}</th>
                 <th>{`Actions`}</th>
@@ -790,6 +863,7 @@ function MachiningStockTable(props) {
                         <td>{checkForDecimalAndNull(item.Breadth, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.Breadth, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.Height, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.Height, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.No, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.No, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
+                        <td>{checkForDecimalAndNull(item?.MachiningMultiplyingFactorPercentage, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item?.MachiningMultiplyingFactorPercentage, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
 
                         <td className='number-overflow'>
                           <span title={checkForDecimalAndNull(item.Volume, getConfigurationKey().NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(item.Volume, getConfigurationKey().NoOfDecimalForInputOutput)}</span>

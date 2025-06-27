@@ -121,7 +121,7 @@ function LossStandardTable(props) {
     }
   }, [])
 
-  const handleLossOfType = (value) => {
+  const handleLossOfType = (value) => {    
     setPercentage(false)
     setUseformula(false)
 
@@ -132,10 +132,15 @@ function LossStandardTable(props) {
       setLossWeightTooltip(<div>Loss {isFerrous ? "Wt" : "Weight"} = (π/4 * Bar Diameter<sup>2</sup> * Blade Thickness * Density / 1000000)</div>)
     }
     else if ((value.label === "Flash Loss")) {
-
       setFlashLossType(true)
       setIsDisable(false)
       setBarCuttingAllowanceLossType(false)
+    }
+    else if ((value.label === "Fixed Loss")) {
+      setFlashLossType(false)
+      setIsDisable(false)
+      setBarCuttingAllowanceLossType(false)
+      setPercentage(false)
     }
     else {
       setIsDisable(true)
@@ -208,7 +213,7 @@ function LossStandardTable(props) {
     const LossOfType = getValues('LossOfType')
     const FlashLoss = getValues('FlashLoss')
 
-    if ((LossOfType?.label === "Scale Loss") || (LossOfType?.label === "Bilet Heating Loss") || (LossOfType?.label === "Burning Loss")) {
+    if ((LossOfType?.label === "Scale Loss") || (LossOfType?.label === "Bilet Heating Loss") || (LossOfType?.label === "Burning Loss") || (LossOfType?.label === "End Loss") || (LossOfType?.label === "Yield Loss")) {
 
       setIsDisable(true)
     }
@@ -252,6 +257,8 @@ function LossStandardTable(props) {
     switch (LossOfType?.label) {
       case 'Scale Loss':
       case 'Burning Loss':
+      case 'End Loss':
+      case 'Yield Loss':
         LossWeight = ((forgeWeight * LossPercentage) / 100)
         break;
       case 'Bilet Heating Loss':
@@ -336,6 +343,18 @@ function LossStandardTable(props) {
       const isExist = tableData.findIndex(el => (String(el.LossOfType) === String(LossOfType)))
       if (isExist !== -1) {
         Toaster.warning('Already added, Please select another loss type.')
+        return false;
+      }
+    }
+
+    if (props?.isLossStandard) {
+     const yieldLoss = tableData.some(el => String(el?.LossOfType) === '19')
+      if (yieldLoss) {
+        Toaster.warning("You have already selected Yield Loss. Please remove it before selecting other losses.")
+        return false
+      }
+      if (tableData.length > 0 && String(LossOfType) === '19') {
+        Toaster.warning("To add Yield Loss, please remove other losses first.");
         return false;
       }
     }
@@ -560,7 +579,7 @@ function LossStandardTable(props) {
     }
 
   }
-
+  
   return (
     <Fragment>
       <Row className={`mb-3 ${isFerrous ? 'mx-0' : ''}`}>
@@ -759,7 +778,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossWeight}
-            disabled={props.CostingViewMode || isDisable || disableAll || !fieldsEnabled}
+            disabled={props.CostingViewMode || isDisable || disableAll || (isFerrous && !fieldsEnabled)}
           />
         </Col>
         <Col md="3" className="pr-0">
