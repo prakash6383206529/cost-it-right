@@ -718,6 +718,11 @@ function EditPartCost(props) {
             let bopImportCost = 0;
             let bopSourceCost = 0;
             let bopOutsourceCost = 0;
+            let bopDomesticWithoutHandlingCharge = 0;
+            let bopImportWithoutHandlingCharge = 0;
+            let bopSourceWithoutHandlingCharge = 0;
+            let bopOutsourcedWithoutHandlingCharge = 0;
+            let bopBoughtOutPartCostWithOutHandlingCharge = 0;
             // Calculate assembly level BOP costs by aggregating child part costs
             tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.forEach((el) => {
                 const totalCost = checkForNull(el?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity);
@@ -729,37 +734,39 @@ function EditPartCost(props) {
                 const importCost = checkForNull(el?.CostingPartDetails?.NetBOPImportCost);
                 const sourceCost = checkForNull(el?.CostingPartDetails?.NetBOPSourceCost);
                 const outsourceCost = checkForNull(el?.CostingPartDetails?.NetBOPOutsourcedCost);
+                const boughtOutPartCostWithOutHandlingCharge = checkForNull(el?.CostingPartDetails?.NetBoughtOutPartCostWithOutHandlingCharge);
+                const domesticWithOutHandlingCharge = checkForNull(el?.CostingPartDetails?.NetBOPDomesticCostWithOutHandlingCharge);
+                const importWithOutHandlingCharge = checkForNull(el?.CostingPartDetails?.NetBOPImportCostWithOutHandlingCharge);
+                const sourceWithOutHandlingCharge = checkForNull(el?.CostingPartDetails?.NetBOPSourceCostWithOutHandlingCharge);
+                const outsourcedWithOutHandlingCharge = checkForNull(el?.CostingPartDetails?.NetBOPOutsourcedCostWithOutHandlingCharge);
 
                 if (domesticCost > 0) {
                     bopDomesticCost += domesticCost;
+                    bopDomesticWithoutHandlingCharge += domesticWithOutHandlingCharge;
                 }
                 if (importCost > 0) {
                     bopImportCost += importCost;
+                    bopImportWithoutHandlingCharge += importWithOutHandlingCharge;
                 }
                 if (sourceCost > 0) {
                     bopSourceCost += sourceCost;
+                    bopSourceWithoutHandlingCharge += sourceWithOutHandlingCharge;
                 }
                 if (outsourceCost > 0) {
                     bopOutsourceCost += outsourceCost;
+                    bopOutsourcedWithoutHandlingCharge += outsourcedWithOutHandlingCharge;
                 }
+                bopBoughtOutPartCostWithOutHandlingCharge += boughtOutPartCostWithOutHandlingCharge;
             });
 
-            // Get assembly-level handling charges
-            const parentAssembly = tempsubAssemblyTechnologyArray[0]?.CostingPartDetails
-            const assemblyHandlingCharges = {
-                domestic: checkForNull(parentAssembly?.NetBOPDomesticHandlingCost),
-                import: checkForNull(parentAssembly?.NetBOPImportHandlingCost),
-                source: checkForNull(parentAssembly?.NetBOPSourceHandlingCost),
-                outsourced: checkForNull(parentAssembly?.NetBOPOutsourcedHandlingCost),
-                bopHandlingCharge: checkForNull(parentAssembly?.BOPHandlingCharges)
-            }
+         
 
             // Set all the BOP related costs in tempsubAssemblyTechnologyArray (without handling charges first)
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge = checkForNull(bopCostperAssembly)
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCostWithOutHandlingCharge = checkForNull(bopDomesticCost)
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPImportCostWithOutHandlingCharge = checkForNull(bopImportCost)
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCostWithOutHandlingCharge = checkForNull(bopSourceCost)
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge = checkForNull(bopOutsourceCost)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge = checkForNull(bopBoughtOutPartCostWithOutHandlingCharge)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCostWithOutHandlingCharge = checkForNull(bopDomesticWithoutHandlingCharge)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPImportCostWithOutHandlingCharge = checkForNull(bopImportWithoutHandlingCharge)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCostWithOutHandlingCharge = checkForNull(bopSourceWithoutHandlingCharge)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge = checkForNull(bopOutsourcedWithoutHandlingCharge)
 
             // Set BOP costs with handling charges (handling charges applied only at assembly level)
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost = checkForNull(bopCostperAssembly) /* + checkForNull(assemblyHandlingCharges?.bopHandlingCharge) */

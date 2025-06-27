@@ -9,6 +9,7 @@ import EditPartCost from '../SubAssembly/EditPartCost';
 
 function BoughtOutPart(props) {
   const { item, remarkButton } = props;
+  
   const dispatch = useDispatch()
   const [partCostDrawer, setPartCostDrawer] = useState(false);
   const [tabAssemblyIndividualBopDetail, setTabAssemblyIndividualBopDetail] = useState({})
@@ -66,7 +67,7 @@ function BoughtOutPart(props) {
           <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item?.CostingPartDetails?.Quantity, initialConfiguration?.NoOfDecimalForPrice) : 1}</td>
           {partType && <td>{!editBopForAssemblyTechnology ? item?.CostingPartDetails?.NetPOPrice ? checkForDecimalAndNull(item?.CostingPartDetails?.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-' : '-'}</td>}
           <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-          {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
+          {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate*item?.CostingPartDetails?.Quantity, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>}
           <td className='text-right'>
             {partType &&
               <button
