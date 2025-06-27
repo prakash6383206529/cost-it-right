@@ -271,17 +271,16 @@ function MachiningStockTable(props) {
         Toaster.warning('Already added, Please select another shape type.')
         return false;
       }
-    }
-
-    const yieldPercentage = tableData.some(el => String(el?.TypesOfMachiningStockId) === '21')    
-    if (yieldPercentage) {
-      Toaster.warning("You have already selected Multiplying factor (Yield %). Please remove it before selecting other shape type.")
-      return false
-    }
+      const yieldPercentage = tableData.some(el => String(el?.TypesOfMachiningStockId) === '21')    
+      if (yieldPercentage) {
+        Toaster.warning("You have already selected Multiplying factor (Yield %). Please remove it before selecting other shape type.")
+        return false
+      }
     
-    if (tableData.length > 0 && String(MachiningStock?.value) === '21') {
-      Toaster.warning("To add Multiplying factor (Yield %), please remove other shape type first.");
-      return false;
+      if (tableData.length > 0 && String(MachiningStock?.value) === '21') {
+        Toaster.warning("To add Multiplying factor (Yield %), please remove other shape type first.");
+        return false;
+      }
     }
 
     let tempArray = []
@@ -356,7 +355,7 @@ function MachiningStockTable(props) {
     setIsEdit(true)
     setEditIndex(index)
     const tempObj = tableData[index]
-
+    
     setOldNetWeight(tempObj.GrossWeight)
     setValue('majorDiameter', tempObj.MajorDiameter)
     setValue('minorDiameter', tempObj.MinorDiameter)
@@ -368,6 +367,7 @@ function MachiningStockTable(props) {
     setValue('grossWeight', tempObj.GrossWeight)
     setValue('forgingVolume', tempObj.Volume)
     setValue('description', tempObj.Description)
+    setValue('MachiningMultiplyingFactorPercentage', tempObj?.MachiningMultiplyingFactorPercentage)
 
     if (tempObj.TypesOfMachiningStock === 'Circular' || tempObj.TypesOfMachiningStock === 'Semi Circular' || tempObj.TypesOfMachiningStock === 'Quarter Circular') {
       setDisableMachineType(true)
@@ -386,6 +386,13 @@ function MachiningStockTable(props) {
     else if (tempObj.TypesOfMachiningStock === 'Rectangular') {
       setDisableMachineType(true)
       setRectangularMachiningStock(true)
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setIrregularMachiningStock(false)
+    }
+    else if (tempObj.TypesOfMachiningStock === 'Multiplying factor (Yield %)') {
+      setDisableMachineType(true)
+      setRectangularMachiningStock(false)
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setIrregularMachiningStock(false)
