@@ -1301,8 +1301,8 @@ function CostingDetails(props) {
     const indexOfCostingOptions = tempObject.findIndex((el) => el.CostingId === tempCostingId?.value)
 
     let costingOptionsSelectedObjectTemp = {
-      SubAssemblyCostingId: tempObject[indexOfCostingOptions].SubAssemblyCostingId,
-      AssemblyCostingId: tempObject[indexOfCostingOptions].AssemblyCostingId
+      SubAssemblyCostingId: tempObject[indexOfCostingOptions]?.SubAssemblyCostingId,
+      AssemblyCostingId: tempObject[indexOfCostingOptions]?.AssemblyCostingId
     }
     setApprovalStatus(tempObject[indexOfCostingOptions].Status)
     setCostingOptionsSelectedObject(costingOptionsSelectedObjectTemp)

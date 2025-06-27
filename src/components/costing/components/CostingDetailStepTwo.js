@@ -215,8 +215,18 @@ function CostingDetailStepTwo(props) {
         NetCCForOtherTechnologyCost: data?.NetCCForOtherTechnologyCost,
         NetCCForOtherTechnologyCostForOverhead: data?.NetCCForOtherTechnologyCostForOverhead,
         NetCCForOtherTechnologyCostForProfit: data?.NetCCForOtherTechnologyCostForProfit,
+        NetBOPDomesticCost: data?.NetBOPDomesticCost,
+        NetBOPImportCost: data?.NetBOPImportCost,
+        NetBOPSourceCost: data?.NetBOPSourceCost,
+        NetBOPOutsourcedCost: data?.NetBOPOutsourcedCost,
+        NetBoughtOutPartCostWithOutHandlingCharge:data?.NetBoughtOutPartCostWithOutHandlingCharge,
+        NetBOPDomesticCostWithOutHandlingCharge:data?.NetBOPDomesticCostWithOutHandlingCharge,
+        NetBOPImportCostWithOutHandlingCharge:data?.NetBOPImportCostWithOutHandlingCharge,
+        NetBOPSourceCostWithOutHandlingCharge:data?.NetBOPSourceCostWithOutHandlingCharge,
+        NetBOPOutsourcedCostWithOutHandlingCharge:data?.NetBOPOutsourcedCostWithOutHandlingCharge
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+
 
 
       dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => {

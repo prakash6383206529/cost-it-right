@@ -33,7 +33,8 @@ import {
     SET_PACKAGING_CALCULATOR_AVAILABLE,
     SET_FREIGHT_CALCULATOR_AVAILABLE,
     GET_TYPE_OF_COST_SUCCESS,
-    GET_CALCULATION_CRITERIA_LIST_SUCCESS
+    GET_CALCULATION_CRITERIA_LIST_SUCCESS,
+    SET_BOP_ADD_EDIT_DELETE_DISABLE
 } from '../../../config/constants';
 
 const initialState = {
@@ -283,6 +284,13 @@ export default function CostWorkingReducer(state = initialState, action) {
                 error: true,
                 calculationCriteriaList: action.payload
             }
+            case SET_BOP_ADD_EDIT_DELETE_DISABLE:
+                return {
+                    ...state,
+                    loading: false,
+                    error: true,
+                    bopAddEditDeleteDisable: action.payload
+                }  
         default:
             return state;
     }

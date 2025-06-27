@@ -22,7 +22,8 @@ import {
     GET_INCO_SELECTLIST_SUCCESS,
     GET_PAYMENT_SELECTLIST_SUCCESS,
     GET_VIEW_BOUGHT_OUT_PART_SUCCESS,
-    GET_BOP_DETAILS
+    GET_BOP_DETAILS,
+    GET_BOP_TYPE_SELECTLIST_SUCCESS
 } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
@@ -90,6 +91,12 @@ export default function BOPReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 bopCategorySelectList: action.payload
+            };
+        case GET_BOP_TYPE_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                BOPTypeSelectList: action.payload
             };
         case GET_ALL_VENDOR_SELECTLIST_SUCCESS:
             return {

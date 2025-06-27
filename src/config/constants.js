@@ -18,7 +18,7 @@ export const config = () => {
 }
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.1.102:4002/api/v1`;
+// const BASE_URL = `http://10.10.1.102:9002/api/v1`;
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -383,6 +383,9 @@ export const API = {
   createBOPCategory: `${BASE_URL}/masters-bought-out-part/add-bought-out-part-category`,
   getBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
 
+  //BOP Type
+  getBOPTypeSelectList: `${BASE_URL}/masters-bought-out-part/select-list-bop-type`,
+
   //PROCESS MASTER
   createProcessAPI: `${BASE_URL}/masters-process/create`,
   getProcessAPI: `${BASE_URL}/masters-process/get`,
@@ -655,6 +658,7 @@ export const API = {
   getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
   getCostingBopAndBopHandlingDetails: `${BASE_URL}/costing/get-costing-bop-and-bop-handling-details`,
   getApplicabilityList: `${BASE_URL}/costing/select-list-get-applicability-data`,
+  getBopTypeList: `${BASE_URL}/costing/select-list-get-bop-type`, 
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -759,6 +763,9 @@ export const API = {
   uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
   uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
   uploadMonocartonCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-mono-carton-box`,
+  saveBOPHandlingChargesDetails:`${BASE_URL}/costing/save-costing-bought-out-part-handling-charge-details`,
+  getBOPHandlingChargesDetails:`${BASE_URL}/costing/get-costing-bought-out-part-handling-charge-details`,
+
 
   //COST SUMMARY
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -1193,6 +1200,7 @@ export const API = {
   getCostDeviationReport: `${BASE_URL}/reports/get-weight-comparison-report`,
   getBusinessValueReportHeads: `${BASE_URL}/configuration/select-business-value-summary-report-heads`,
   getBusinessValueReportData: `${BASE_URL}/reports/get-business-value-summary-report`,
+  getSurfaceTreatmentBusinessValueReportData: `${BASE_URL}/reports/get-business-value-surface-treatment-report`,
 
 
   //RFQ
@@ -1605,6 +1613,7 @@ export const GET_BOP_IMPORT_DATA_SUCCESS = 'GET_BOP_IMPORT_DATA_SUCCESS';
 export const GET_BOP_FAILURE = 'GET_BOP_FAILURE';
 export const UPDATE_BOP_SUCCESS = 'UPDATE_BOP_SUCCESS';
 export const GET_BOP_CATEGORY_SELECTLIST_SUCCESS = 'GET_BOP_CATEGORY_SELECTLIST_SUCCESS';
+export const GET_BOP_TYPE_SELECTLIST_SUCCESS = 'GET_BOP_TYPE_SELECTLIST_SUCCESS';
 export const GET_PLANT_SELECTLIST_BY_VENDOR = 'GET_PLANT_SELECTLIST_BY_VENDOR';
 export const GET_BOP_SOB_VENDOR_DATA_SUCCESS = 'GET_BOP_SOB_VENDOR_DATA_SUCCESS';
 export const GET_INITIAL_SOB_VENDORS_SUCCESS = 'GET_INITIAL_SOB_VENDORS_SUCCESS';
@@ -1853,6 +1862,7 @@ export const SET_OPERATION_APPLICABILITY_SELECT = 'SET_OPERATION_APPLICABILITY_S
 export const SET_PROCESS_APPLICABILITY_SELECT = 'SET_PROCESS_APPLICABILITY_SELECT'
 export const SET_OVERALL_APPLICABILITY_TOOL_DATA = 'SET_OVERALL_APPLICABILITY_TOOL_DATA'
 export const SET_DISABLE_ICC_CHECKBOX = 'SET_DISABLE_ICC_CHECKBOX'
+export const SET_BOP_ADD_EDIT_DELETE_DISABLE = 'SET_BOP_ADD_EDIT_DELETE_DISABLE'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1959,6 +1969,10 @@ export const SET_OTHER_DISCOUNT_DATA = 'SET_OTHER_DISCOUNT_DATA'
 export const SET_OVERHEAD_PROFIT_ICC = 'SET_OVERHEAD_PROFIT_ICC'
 export const SET_YOY_COST_GRID_FOR_SAVE = 'SET_YOY_COST_GRID_FOR_SAVE'
 export const SET_QUOTATION_ID_FOR_RFQ = 'SET_QUOTATION_ID_FOR_RFQ'
+export const SET_SURFACE_COST_FOR_OVERHEAD = 'SET_SURFACE_COST_FOR_OVERHEAD'
+export const SET_SURFACE_COST_FOR_PROFIT = 'SET_SURFACE_COST_FOR_PROFIT'
+export const SET_TOOL_COST_FOR_OVERHEAD = 'SET_TOOL_COST_FOR_OVERHEAD'
+export const SET_TOOL_COST_FOR_PROFIT = 'SET_TOOL_COST_FOR_PROFIT'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -2190,6 +2204,7 @@ export const GET_PRODUCT_PART_DATA_LIST = 'GET_PRODUCT_PART_DATA_LIST'
 export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
 export const GET_BUSINESS_VALUE_REPORT_HEADS = 'GET_BUSINESS_VALUE_REPORT_HEADS'
 export const GET_BUSINESS_VALUE_REPORT_DATA = 'GET_BUSINESS_VALUE_REPORT_DATA'
+export const SURFACE_TREATMENT_BUSINESS_VALUE_REPORT_DATA = 'SURFACE_TREATMENT_BUSINESS_VALUE_REPORT_DATA'
 
 //MINDA
 export const GET_NFR_INSIGHT_DETAILS = 'GET_NFR_INSIGHT_DETAILS'
@@ -2396,6 +2411,7 @@ export const SALES_PROVISION_REPORT = 'Sales Provision Report'
 export const COST_DEVIATION_REPORT = 'Cost Deviation'
 export const COST_VARIANCE_REPORT = 'Cost Variance'
 export const BUSINESS_VALUE_REPORT = 'Business Value Report'
+export const SURFACE_TREATMENT_BUSINESS_VALUE_REPORT = 'Surface Treatment Business Value Report'
 //RE
 // export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'          						//RE
 export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'
@@ -3486,7 +3502,8 @@ export const MACHINEMASTER = "Machine Master"
 export const COSTAPPLICABILITYBASIS = "Cost Applicability Basis"
 export const MHRBASIS = "MHR Basis"
 export const ICCMASTER = "ICC Master"
-export const PAYMENTTERMMASTER = 'PaymentTerm Master'
+export const PAYMENTTERMMASTER='PaymentTerm Master'
+export const BOPHANDLINGCOST = 'Bought Out Part Handling Cost'
 
 export const TAPEANDPAINT = "Tape + Paint"
 export const TAPE = "Tape"
@@ -3504,7 +3521,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.54";
+export const VERSION = "V4.2.56";
 
 
 

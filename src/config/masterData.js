@@ -3258,6 +3258,7 @@ export const Plant = [
 export const BOP_ZBC_DOMESTIC = [
     { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
     { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Type', value: 'BOPType' },
     { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
@@ -3287,6 +3288,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
     {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3313,6 +3315,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
     }, {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP CKD',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3339,6 +3342,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
     }, {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic/BOP CKD/BOP V2V/BOP OSP',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3372,6 +3376,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'Note', value: 'Note', },
     { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
     { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Type', value: 'BOPType' }, //*
     { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
@@ -3407,6 +3412,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'Note': 'If you enter a SourceVendorCode, you must also provide the corresponding BOPNumber, BOPName, CategoryName, Effective Date,  of the Source Vendor Details',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3441,6 +3447,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP CKD',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3475,6 +3482,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic/BOP CKD/BOP V2V/BOP OSP',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3512,6 +3520,7 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: 'Note', value: 'Note', },
     { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
     { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Type', value: 'BOPType' },
     { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
@@ -3535,6 +3544,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'Note': 'If you enter a SourceVendorCode, you must also provide the corresponding BOPNumber, BOPName, CategoryName, Effective Date,  of the Source Vendor Details',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3557,6 +3567,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP CKD',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3579,6 +3590,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic/BOP CKD/BOP V2V/BOP OSP',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3606,6 +3618,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
 export const BOP_ZBC_IMPORT = [
     { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
     { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Type', value: 'BOPType' },
     { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
@@ -3638,6 +3651,7 @@ export const BOP_ZBC_IMPORT_TempData = [
     {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3668,6 +3682,7 @@ export const BOP_ZBC_IMPORT_TempData = [
     }, {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP CKD',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3698,6 +3713,7 @@ export const BOP_ZBC_IMPORT_TempData = [
     }, {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic/BOP CKD/BOP V2V/BOP OSP',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3730,6 +3746,7 @@ export const BOP_ZBC_IMPORT_TempData = [
 export const BOP_CBC_DOMESTIC = [
     { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
     { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Type', value: 'BOPType' },
     { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
@@ -3759,6 +3776,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
     {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3785,6 +3803,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
     }, {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP CKD',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3811,6 +3830,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
     }, {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic/BOP CKD/BOP V2V/BOP OSP',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3844,6 +3864,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'Note', value: 'Note', },
     { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
     { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Type', value: 'BOPType' },
     { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
@@ -3873,6 +3894,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'Note': 'If you enter a SourceVendorCode, you must also provide the corresponding BOPNumber, BOPName, CategoryName, Effective Date,  of the Source Vendor Details',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3898,6 +3920,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP CKD',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3923,6 +3946,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic/BOP CKD/BOP V2V/BOP OSP',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -3954,6 +3978,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'Note', value: 'Note', },
     { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
     { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Type', value: 'BOPType' },
     { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
@@ -3994,6 +4019,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'Note': 'If you enter a SourceVendorCode, you must also provide the corresponding BOPNumber, BOPName, CategoryName, Effective Date,  of the Source Vendor Details',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -4029,6 +4055,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP CKD',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -4064,6 +4091,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'Note': '',
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic/BOP CKD/BOP V2V/BOP OSP',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -4100,6 +4128,7 @@ export const BOP_VBC_IMPORT_TempData = [
 export const BOP_CBC_IMPORT = [
     { label: 'BOP Part No.', value: 'BoughtOutPartNumber', }, //*
     { label: 'BOP Part Name', value: 'BoughtOutPartName', }, //*
+    { label: 'BOP Type', value: 'BOPType' },
     { label: 'BOP Part Category', value: 'CategoryName', }, //*
     { label: 'PartFamilyCode', value: 'PartFamilyCode' },
     { label: 'Specification', value: 'Specification', },
@@ -4133,6 +4162,7 @@ export const BOP_CBC_IMPORT_TempData = [
     {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -4163,6 +4193,7 @@ export const BOP_CBC_IMPORT_TempData = [
     }, {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP CKD',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -4193,6 +4224,7 @@ export const BOP_CBC_IMPORT_TempData = [
     }, {
         'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
+        'BOPType': 'BOP Domestic/BOP CKD/BOP V2V/BOP OSP',
         'CategoryName': 'Machine',
         'PartFamilyCode': '111',
         'Specification': '20 mm',
@@ -8473,6 +8505,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
+    { label: "BOP Type", value: "BOPType" },
     { label: "BOP Part Category", value: "BoughtOutPartCategory", },
     { label: "Part Family (Code)", value: "PartFamily" },
     { label: "Division", value: "Division", },
@@ -8523,6 +8556,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },
     { label: "BOP Part Name", value: "BoughtOutPartName" },
+    { label: "BOP Type", value: "BOPType" },
     { label: "BOP Part Category", value: "BoughtOutPartCategory" },
     { label: "Part Family", value: "PartFamily" },
     { label: "Division", value: "Division", },

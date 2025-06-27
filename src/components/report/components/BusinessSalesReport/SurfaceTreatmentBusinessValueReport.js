@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import ReactExport from 'react-export-excel';
 import _ from "lodash"
 import DayTime from "../../../common/DayTimeWrapper";
+import ReactExport from 'react-export-excel';
 import { Row, Col } from "reactstrap";
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, DatePickerHookForm } from "../../../layout/HookFormInputs";
 import { useForm, Controller } from "react-hook-form";
@@ -19,21 +19,23 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../../../config/message";
 import LoaderCustom from "../../../common/LoaderCustom";
 import NoContentFound from "../../../common/NoContentFound";
-import { getBusinessValueReportHeads, getBusinessValueReportData } from '../../actions/ReportListing';
+import { getBusinessValueReportHeads, getSurfaceTreatmentBusinessValueReportData } from '../../actions/ReportListing';
 import { getProductGroupSelectList } from "../../../masters/actions/Part"
 import { FinancialQuarterOptions } from "../../../../config/masterData";
 import { getClientSelectList } from '../../../masters/actions/Client';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { Costratiograph } from "../../../dashboard/CostRatioGraph";
+import { colorArray } from "../../../dashboard/ChartsDashboard";
 import { PaginationWrapper } from "../../../common/commonPagination";
 import { CommonSummaryReportGraph } from "../../../dashboard/CommonSummaryReportGraph";
-import GraphOptionsList from "../../../dashboard/GraphOptionsList";
 import { hyphenFormatter } from "../../../masters/masterUtil";
+import GraphOptionsList from "../../../dashboard/GraphOptionsList";
 import { graphDropDownOptions } from "../../../../helper";
 
-const BusinessValueReport = ({ }) => { 
-  const initialConfiguration = useSelector((state) => state?.auth?.initialConfiguration)
+const SurfaceTreatmentBusinessValueReport = ({ }) => { 
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const gridOptions = {}
   const { control, register, getValues, setValue, handleSubmit, formState: { errors } } = useForm();
   const [partTypeList, setPartTypeList] = useState([])
@@ -60,7 +62,7 @@ const BusinessValueReport = ({ }) => {
   const [reportDetailsByGroup, setReportDetailsByGroup] = useState([])
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [graphType, setGraphType] = useState('Bar Chart')
-  const { businessValueReportHeads, businessValueReportData } = useSelector(state => state.report);
+  const { businessValueReportHeads, surfaceTreatmentBusinessValueReportData } = useSelector(state => state.report);
   const productGroupSelectList = useSelector(state => state.part.productGroupSelectList)
   const clientSelectList = useSelector((state) => state.client.clientSelectList)
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -75,9 +77,9 @@ const BusinessValueReport = ({ }) => {
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
   
   useEffect(() => {
-    if (businessValueReportData) {
+    if (surfaceTreatmentBusinessValueReportData) {
       // Safely retrieve the 'ReportDetails' array from `businessValueReportData`, or return an empty array if not present
-      const reportDetails = _.get(businessValueReportData, 'ReportDetails', [])
+      const reportDetails = _.get(surfaceTreatmentBusinessValueReportData, 'ReportDetails', [])
       const updatedTableData = _.map(reportDetails, row => {
         // Get the 'ProductHierarchyLevels' from the row (or an empty array if missing), 
         // then convert it into an object where each key is the 'HierarchyName' and the value is the corresponding level object
@@ -88,31 +90,32 @@ const BusinessValueReport = ({ }) => {
         return Object.assign({}, row, dynamicHierarchyFields)
       })
       setTableData(updatedTableData)
-      setTableHeaderColumnDefs(businessValueReportData?.TableHeads)
-      setReportDetailsByGroup(businessValueReportData?.ReportDetailsByGroup)
+      setTableHeaderColumnDefs(surfaceTreatmentBusinessValueReportData?.TableHeads)
+      setReportDetailsByGroup(surfaceTreatmentBusinessValueReportData?.ReportDetailsByGroup)
     }
-  }, [businessValueReportData])
+  }, [surfaceTreatmentBusinessValueReportData])
 
   useEffect(() => {
-    if (!businessValueReportHeads || !defaultTechnology || !defaultGroupBy || !technologySelectList) return
-    const defaultTechnologyFound = technologySelectList.find(item => _.get(item, 'Text', null) === defaultTechnology)
-    const defaultGroupByFound = businessValueReportHeads.find(item => _.get(item, 'Value', null) === defaultGroupBy)
-    if (defaultTechnologyFound) {
-      setValue('TechnologyName', { label: _.get(defaultTechnologyFound, 'Text', ''), value: _.get(defaultTechnologyFound, 'Value', '')})
-    }
-    if (defaultGroupBy) {
-      setValue('GroupBy', { label: _.get(defaultGroupByFound, 'Text', ''), value: _.get(defaultGroupByFound, 'Value', '') })
-    }
-  }, [businessValueReportHeads, technologySelectList, defaultTechnology, defaultGroupBy, setValue])
+      if (!businessValueReportHeads || !defaultTechnology || !defaultGroupBy || !technologySelectList) return
+      const defaultTechnologyFound = technologySelectList.find(item => item.Text === defaultTechnology)
+      const defaultGroupByFound = businessValueReportHeads.find(item => item.Value === defaultGroupBy)
+      if (defaultTechnologyFound) {
+        setValue('TechnologyName', { label: _.get(defaultTechnologyFound, 'Text', ''), value: _.get(defaultTechnologyFound, 'Value', '')})
+      }
+      if (defaultGroupBy) {
+        setValue('GroupBy', { label: _.get(defaultGroupByFound, 'Text', ''), value: _.get(defaultGroupByFound, 'Value', '') })
+      }
+    }, [businessValueReportHeads, technologySelectList, defaultTechnology, defaultGroupBy, setValue])
 
   const dispatch = useDispatch()
 
   useEffect(() => {
+
     dispatch(getPlantSelectListByType('', '', '', () => { }))
     dispatch(getBusinessValueReportHeads(() => { }))
-    dispatch(getBusinessValueReportData({}, () => {
+    dispatch(getSurfaceTreatmentBusinessValueReportData({}, () => {
       setIsLoader(false)
-    }))
+     }))
     dispatch(getProductGroupSelectList(() => { }))
     dispatch(getClientSelectList(() => { }))
     dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
@@ -168,51 +171,51 @@ const BusinessValueReport = ({ }) => {
     }
     if (label === 'FinancialYear') {
       financialYearSelectList && financialYearSelectList.map((item) => {
-          if (item?.Value === '0') return false
-          temp.push({ label: item?.Text, value: item?.Value })
-          return null
-        })
+        if (item?.Value === '0') return false
+        temp.push({ label: item?.Text, value: item?.Value })
+        return null
+      })
       return temp
     }
     if (label === 'PartFamilyCode') {
       partFamilySelectList && partFamilySelectList.map((item) => {
         if (item?.Value === '--0--') return false
-          temp.push({ label: item?.Text, value: item?.Value })
-          return null
-        })
+        temp.push({ label: item?.Text, value: item?.Value })
+        return null
+      })
       return temp
     }
-    if (label === 'PartModelName') {      
+    if (label === 'PartModelName') {
       partModelOptions && partModelOptions.map((item) => {
         if (item?.Value === '0') return false
-          temp.push({ label: item?.Text, value: item?.Value })
-          return null
-        })
+        temp.push({ label: item?.Text, value: item?.Value })
+        return null
+      })
       return temp
     }
     if (label === 'PartType') {
       partTypeList && partTypeList.map((item) => {
         if (item?.Value === '0') return false
-          temp.push({ label: item?.Text, value: item?.Value })
-          return null
-        })
+        temp.push({ label: item?.Text, value: item?.Value })
+        return null
+      })
       return temp
     }
-    
+
     if (label === 'PlantCode') {
       plantSelectList && plantSelectList.map((item) => {
         if (item?.PlantId === '0') return false
-          temp.push({ label: item?.PlantNameCode, value: item?.PlantId })
-          return null
-        })
+        temp.push({ label: item?.PlantNameCode, value: item?.PlantId })
+        return null
+      })
       return temp
     }
     if (label === 'PartNepNumber' || label === 'NepNumber') {
       nepNumberSelectList && nepNumberSelectList.map((item) => {
         if (item?.Value === '0') return false
-          temp.push({ label: item?.Text, value: item?.Value })
-          return null
-        })
+        temp.push({ label: item?.Text, value: item?.Value })
+        return null
+      })
       return temp
     }
     if (label === 'GroupBy') {
@@ -224,8 +227,8 @@ const BusinessValueReport = ({ }) => {
         } else {
           temp.push({ label: item?.Text, value: item?.Value })
         }
-          return null
-        })
+        return null
+      })
       return temp
     }
     if (IsProductHierarchy) {
@@ -343,11 +346,11 @@ const BusinessValueReport = ({ }) => {
     sortable: false,
     floatingFilter: true,
     valueFormatter: hyphenFormatter
-  }
+  };
 
   const runReport = () => {
     setIsLoader(true)
-    const values = getValues()
+    const values = getValues()    
     const data = {
       ...values,
       fromDate: DayTime(_.get(values, 'fromDate', '')).isValid() ? DayTime(_.get(values, 'fromDate', '')).format('YYYY-MM-DD') : _.get(values, 'fromDate', ''),
@@ -376,7 +379,7 @@ const BusinessValueReport = ({ }) => {
     const segmentKeys = _.map(validKeys, key => data[key].value)
     const segmentId = segmentKeys.join(',')
     data.SegmentId = segmentId
-    dispatch(getBusinessValueReportData(data, (res) => {
+    dispatch(getSurfaceTreatmentBusinessValueReportData(data, (res) => {
       setIsLoader(false)
      }))  
   }
@@ -392,32 +395,32 @@ const BusinessValueReport = ({ }) => {
   }
 
   const viewPieData = _.debounce(() => {
-    const labelArray = []
-    const dataArray = reportDetailsByGroup.filter(item => item?.ActualTotalCostPercentage > 0).map(item => {
-      const name = _.get(item, 'GroupByValue', '')
-      const truncatedPercentage = checkForDecimalAndNull(item?.ActualTotalCostPercentage, initialConfiguration?.NoOfDecimalForPrice)
-      const totalCost = checkForDecimalAndNull(item?.ActualTotalCost, initialConfiguration?.NoOfDecimalForPrice)
-      labelArray.push(`${name} (${totalCost})`)
-      return truncatedPercentage
-    })
-    setActualCostDataArray(dataArray)
-    setActualCostLabelArray(labelArray)
-    
-    const labelArray1 = []
-    const dataArray1 = reportDetailsByGroup.filter(item => item?.BudgetedTotalCostPercentage > 0).map(item => {
-      const name = _.get(item, 'GroupByValue', '')
-      const truncatedPercentage = checkForDecimalAndNull(item?.BudgetedTotalCostPercentage, initialConfiguration?.NoOfDecimalForPrice)
-      const totalCost = checkForDecimalAndNull(item?.BudgetedTotalCost, initialConfiguration?.NoOfDecimalForPrice)
-      labelArray1.push(`${name} (${totalCost})`)
-      return truncatedPercentage
-    })
-    setBudgetedCostDataArray(dataArray1)
-    setBudgetedCostLabelArray(labelArray1)
-  }, [100])
+      const labelArray = []
+      const dataArray = reportDetailsByGroup.filter(item => item?.ActualTotalCostPercentage > 0).map(item => {
+        const name = _.get(item, 'GroupByValue', '')
+        const truncatedPercentage = checkForDecimalAndNull(item?.ActualTotalCostPercentage, initialConfiguration?.NoOfDecimalForPrice)
+        const totalCost = checkForDecimalAndNull(item?.ActualTotalCost, initialConfiguration?.NoOfDecimalForPrice)
+        labelArray.push(`${name} (${totalCost})`)
+        return truncatedPercentage
+      })
+      setActualCostDataArray(dataArray)
+      setActualCostLabelArray(labelArray)
+      
+      const labelArray1 = []
+      const dataArray1 = reportDetailsByGroup.filter(item => item?.BudgetedTotalCostPercentage > 0).map(item => {
+        const name = _.get(item, 'GroupByValue', '')
+        const truncatedPercentage = checkForDecimalAndNull(item?.BudgetedTotalCostPercentage, initialConfiguration?.NoOfDecimalForPrice)
+        const totalCost = checkForDecimalAndNull(item?.BudgetedTotalCost, initialConfiguration?.NoOfDecimalForPrice)
+        labelArray1.push(`${name} (${totalCost})`)
+        return truncatedPercentage
+      })
+      setBudgetedCostDataArray(dataArray1)
+      setBudgetedCostLabelArray(labelArray1)
+    }, [100])
 
-  const valueChanged = (event) => {
-    setGraphType(event?.label)
-  }
+    const valueChanged = (event) => {
+      setGraphType(event?.label)
+    }
 
   const downloadAllData = () => {
     let button = document.getElementById('Excel-Downloads')
@@ -426,7 +429,7 @@ const BusinessValueReport = ({ }) => {
  
   const renderColumn = () => {
     return (
-      <ExcelSheet data={tableData} name={"Business Value Summary Report"}>
+      <ExcelSheet data={tableData} name={"Surface Treatment Report"}>
         {tableHeaderColumnDefs && tableHeaderColumnDefs.map((ele, index) => {
           return <ExcelColumn key={index} label={ele?.headerName} value={ele?.field} style={ele?.style} /> 
         })}
@@ -714,7 +717,7 @@ const BusinessValueReport = ({ }) => {
                 {detailAccordian ? (<i className="fa fa-minus" ></i>) : (<i className="fa fa-plus"></i>)}
               </button>
             </Col>
-             <ExcelFile filename={'Business Value Summary Report'} fileExtension={'.xls'} element={
+             <ExcelFile filename={'Surface Treatment Report'} fileExtension={'.xls'} element={
                 <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
                 </button>}>
                 {renderColumn()}
@@ -723,31 +726,32 @@ const BusinessValueReport = ({ }) => {
          { detailAccordian && 
           <div className={`ag-grid-react ag-grid-wrapper height-width-wrapper  ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className={`ag-theme-material grid-parent-wrapper mt-2 ${isLoader && "max-loader-height"} ${tableData && tableData?.length <= 0 && "overlay-contain"}`}>
-              <AgGridReact
-                defaultColDef={defaultColDef}
-                domLayout='autoHeight'
-                columnDefs={tableHeaderColumnDefs}
-                rowData={tableData}
-                pagination={true}
-                paginationPageSize={defaultPageSize}
-                onGridReady={onGridReady}
-                gridOptions={gridOptions}
-                noRowsOverlayComponent={'customNoRowsOverlay'}
-                // onFilterModified={onFloatingFilterChanged}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: 'imagClass pt-3'
-                }}
-                // rowSelection={'multiple'}
-                suppressRowClickSelection={true}
-                // onSelectionChanged={onRowSelect}
-                frameworkComponents={frameworkComponents}
-              >
-              </AgGridReact>
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  domLayout='autoHeight'
+                  columnDefs={tableHeaderColumnDefs}
+                  rowData={tableData}
+                  pagination={true}
+                  paginationPageSize={defaultPageSize}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                  // onFilterModified={onFloatingFilterChanged}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                    imagClass: 'imagClass pt-3'
+                  }}
+                  // rowSelection={'multiple'}
+                  suppressRowClickSelection={true}
+                  // onSelectionChanged={onRowSelect}
+                  frameworkComponents={frameworkComponents}
+                >
+                </AgGridReact>
                 {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
             </div>
           </div>
-        }
+       
+       }
         </div>
         </Row>
       }
@@ -756,5 +760,5 @@ const BusinessValueReport = ({ }) => {
 
 }
 
-export default BusinessValueReport
+export default SurfaceTreatmentBusinessValueReport
 
