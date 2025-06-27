@@ -58,7 +58,7 @@ function HotForging(props) {
 
   const fieldValues = useWatch({
     control,
-    name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage', 'forgingScrapRecoveryPercent', 'machiningScrapRecoveryPercent', 'tolerance'],
+    name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage', 'forgingScrapRecoveryPercent', 'machiningScrapRecoveryPercent', 'tolerance', 'forgedWeight'],
 
   })
 
@@ -69,7 +69,8 @@ function HotForging(props) {
   const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgingStockDetails !== null ? WeightCalculatorRequest.ForgingStockDetails : [])
   const [dataSend, setDataSend] = useState({IsForgedWeightManuallyEntered: isForgedWeightManuallyEntered})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
-  const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
+  const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? true : false)
+  
   const [isDisable, setIsDisable] = useState(false)
 
   useEffect(() => {
@@ -85,7 +86,7 @@ function HotForging(props) {
       calculateNetRmCostComponent()
     }
 
-  }, [fieldValues, lostWeight, forgeWeightValue])
+  }, [fieldValues, lostWeight, forgeWeightValue, isForgedWeightManuallyEntered])
 
   useEffect(() => {
     if (WeightCalculatorRequest) {
@@ -97,12 +98,14 @@ function HotForging(props) {
    * @method calculateForgeWeight
    * @description calculate forge weight
    */
-  const calculateForgeWeight = () => {
-
+  const calculateForgeWeight = () => {    
     const finishedWeight = checkForNull(getValues('finishedWeight'))
-    let forgedWeight = checkForNull(finishedWeight) + checkForNull(totalMachiningStock)
+    const forgedWeightinput = checkForNull(getValues('forgedWeight'))
+    let forgedWeight = 0
     if (isForgedWeightManuallyEntered) {
-      forgedWeight = checkForNull(forgeWeightValue)
+      forgedWeight = forgedWeightinput;
+    } else {
+      forgedWeight = checkForNull(finishedWeight) + checkForNull(totalMachiningStock);
     }
     const machiningScrapRecoveryPercent = checkForNull(getValues('machiningScrapRecoveryPercent'))
     const machiningScrapWeight = (forgedWeight - finishedWeight) * machiningScrapRecoveryPercent / 100
@@ -110,7 +113,11 @@ function HotForging(props) {
     obj.forgedWeight = forgedWeight
     obj.machiningScrapWeight = machiningScrapWeight
     setDataSend(obj)
-    setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration?.NoOfDecimalForInputOutput))
+    const currentVal = checkForDecimalAndNull(getValues('forgedWeight'), initialConfiguration?.NoOfDecimalForInputOutput)
+    const updatedVal = checkForDecimalAndNull(forgedWeight, initialConfiguration?.NoOfDecimalForInputOutput)
+    if (currentVal !== updatedVal) {
+      setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration?.NoOfDecimalForInputOutput))
+    }
     setValue('machiningScrapWeight', checkForDecimalAndNull(machiningScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput))
     setForgeWeightValue(forgedWeight)
   }
@@ -476,7 +483,7 @@ function HotForging(props) {
                       </Col>
                       <Col md="3">
                         <div className="mt-4">
-                          <span className="d-inline-block mt15">
+                          <span className={`d-inline-block mt15  ${props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? 'disabled' : ''}`}>
                             <label
                               className={`custom-checkbox mb-0`}
                               onChange={(e) => handleSelectFieldChange(e)}
@@ -485,7 +492,7 @@ function HotForging(props) {
                               <input
                                 type="checkbox"
                                 checked={!isForgedWeightManuallyEntered}
-                                disabled={false}
+                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
                               />
                               <span
                                 className="before-box"
@@ -511,7 +518,7 @@ function HotForging(props) {
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.forgedWeight}
-                            disabled={false}
+                            disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
                           />
                         </Col>
                       }

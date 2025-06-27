@@ -253,7 +253,6 @@ function MachiningStockTable(props) {
     const Breadth = checkForNull(getValues('Breadth'))
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
-    const TypesOfMachiningStockId = getValues('TypesOfMachiningStockId')
     const MachiningMultiplyingFactorPercentage = getValues('MachiningMultiplyingFactorPercentage')
     
     if (Object.keys(errors).length > 0 || 'finishedWeight' in hotcoldErrors > 0) {
@@ -267,7 +266,7 @@ function MachiningStockTable(props) {
     }
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     if (!isEdit) {
-      const isExist = tableData.findIndex(el => (String(el.TypesOfMachiningStockId) === String(TypesOfMachiningStockId)))
+      const isExist = tableData.findIndex(el => (String(el.TypesOfMachiningStockId) === String(MachiningStock?.value)))
       if (isExist !== -1) {
         Toaster.warning('Already added, Please select another shape type.')
         return false;
@@ -278,6 +277,11 @@ function MachiningStockTable(props) {
     if (yieldPercentage) {
       Toaster.warning("You have already selected Multiplying factor (Yield %). Please remove it before selecting other shape type.")
       return false
+    }
+    
+    if (tableData.length > 0 && String(MachiningStock?.value) === '21') {
+      Toaster.warning("To add Multiplying factor (Yield %), please remove other shape type first.");
+      return false;
     }
 
     let tempArray = []
@@ -839,6 +843,7 @@ function MachiningStockTable(props) {
                 <th>{`Breadth (mm)`}</th>
                 <th>{`Height (mm)`}</th>
                 <th>{`Number`}</th>
+                <th>{`Multiplying factor (Yield %)`}</th>
                 <th>{UnitFormat()}</th>
                 <th>{`Gross Weight (Kg)`}</th>
                 <th>{`Actions`}</th>
@@ -858,6 +863,7 @@ function MachiningStockTable(props) {
                         <td>{checkForDecimalAndNull(item.Breadth, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.Breadth, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.Height, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.Height, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.No, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.No, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
+                        <td>{checkForDecimalAndNull(item?.MachiningMultiplyingFactorPercentage, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item?.MachiningMultiplyingFactorPercentage, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
 
                         <td className='number-overflow'>
                           <span title={checkForDecimalAndNull(item.Volume, getConfigurationKey().NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(item.Volume, getConfigurationKey().NoOfDecimalForInputOutput)}</span>

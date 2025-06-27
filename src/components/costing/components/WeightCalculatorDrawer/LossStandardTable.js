@@ -353,6 +353,10 @@ function LossStandardTable(props) {
         Toaster.warning("You have already selected Yield Loss. Please remove it before selecting other losses.")
         return false
       }
+      if (tableData.length > 0 && String(LossOfType) === '19') {
+        Toaster.warning("To add Yield Loss, please remove other losses first.");
+        return false;
+      }
     }
 
 
@@ -575,7 +579,6 @@ function LossStandardTable(props) {
     }
 
   }
-  // console.log(props.CostingViewMode, isDisable, disableAll, fieldsEnabled);
   
   return (
     <Fragment>
@@ -775,8 +778,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossWeight}
-            // disabled={props.CostingViewMode || isDisable || disableAll || !fieldsEnabled} need to discuss
-            disabled={props.CostingViewMode || isDisable || disableAll || (!isLossStandard && !fieldsEnabled)}
+            disabled={props.CostingViewMode || isDisable || disableAll || (isFerrous && !fieldsEnabled)}
           />
         </Col>
         <Col md="3" className="pr-0">

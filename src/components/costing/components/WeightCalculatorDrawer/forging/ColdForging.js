@@ -64,7 +64,7 @@ function ColdForging(props) {
 
   const fieldValues = useWatch({
     control,
-    name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage', 'forgingScrapRecoveryPercent', 'machiningScrapRecoveryPercent', 'tolerance'],
+    name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage', 'forgingScrapRecoveryPercent', 'machiningScrapRecoveryPercent', 'tolerance', 'forgedWeight'],
 
   })
 
@@ -75,7 +75,9 @@ function ColdForging(props) {
   const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgingStockDetails !== null ? WeightCalculatorRequest.ForgingStockDetails : [])
   const [dataSend, setDataSend] = useState({IsForgedWeightManuallyEntered: isForgedWeightManuallyEntered})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
-  const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
+  // const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 && WeightCalculatorRequest && WeightCalculatorRequest?.FinishedWeight !== null ? false : true)
+  const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? true : false)
+  
   const [isDisable, setIsDisable] = useState(false)
   useEffect(() => {
     if (!CostingViewMode) {
@@ -102,11 +104,13 @@ function ColdForging(props) {
    * @description calculate forge weight
    */
   const calculateForgeWeight = () => {
-
     const finishedWeight = checkForNull(getValues('finishedWeight'))
-    let forgedWeight = checkForNull(finishedWeight) + checkForNull(totalMachiningStock)
+    const forgedWeightinput = checkForNull(getValues('forgedWeight'))
+    let forgedWeight = 0
     if (isForgedWeightManuallyEntered) {
-      forgedWeight = checkForNull(forgeWeightValue)
+      forgedWeight = forgedWeightinput;
+    } else {
+      forgedWeight = checkForNull(finishedWeight) + checkForNull(totalMachiningStock);
     }
     const machiningScrapRecoveryPercent = checkForNull(getValues('machiningScrapRecoveryPercent'))
     const machiningScrapWeight = (forgedWeight - finishedWeight) * machiningScrapRecoveryPercent / 100
@@ -114,7 +118,11 @@ function ColdForging(props) {
     obj.forgedWeight = forgedWeight
     obj.machiningScrapWeight = machiningScrapWeight
     setDataSend(obj)
-    setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration?.NoOfDecimalForInputOutput))
+    const currentVal = checkForDecimalAndNull(getValues('forgedWeight'), initialConfiguration?.NoOfDecimalForInputOutput)
+    const updatedVal = checkForDecimalAndNull(forgedWeight, initialConfiguration?.NoOfDecimalForInputOutput)
+    if (currentVal !== updatedVal) {
+      setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration?.NoOfDecimalForInputOutput))
+    }
     setValue('machiningScrapWeight', checkForDecimalAndNull(machiningScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput))
     setForgeWeightValue(forgedWeight)
   }
@@ -300,7 +308,7 @@ function ColdForging(props) {
     obj.isForgedWeightManuallyEntered = dataSend?.IsForgedWeightManuallyEntered
     let tempArr = []
     tableVal && tableVal.map(item => (
-      tempArr.push({ LossOfType: item.LossOfType, FlashLoss: item.FlashLoss, FlashLossId: item.FlashLossId, LossPercentage: item.LossPercentage, FlashLength: item.FlashLength, FlashThickness: item.FlashThickness, FlashWidth: item.FlashWidth, BarDiameter: item.BarDiameter, BladeThickness: item.BladeThickness, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000", MachiningMultiplyingFactorPercentage: item?.MachiningMultiplyingFactorPercentage })
+      tempArr.push({ LossOfType: item.LossOfType, FlashLoss: item.FlashLoss, FlashLossId: item.FlashLossId, LossPercentage: item.LossPercentage, FlashLength: item.FlashLength, FlashThickness: item.FlashThickness, FlashWidth: item.FlashWidth, BarDiameter: item.BarDiameter, BladeThickness: item.BladeThickness, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
     ))
     obj.LossOfTypeDetails = tempArr
     obj.NetLossWeight = lostWeight
@@ -308,7 +316,7 @@ function ColdForging(props) {
     let tempArray = []
 
     tableV && tableV.map(item => (
-      tempArray.push({ TypesOfMachiningStock: item.TypesOfMachiningStock, TypesOfMachiningStockId: item.TypesOfMachiningStockId, Description: item.Description, MajorDiameter: item.MajorDiameter, MinorDiameter: item.MinorDiameter, Length: item.Length, Breadth: item.Breadth, Height: item.Height, No: item.No, GrossWeight: item.GrossWeight, Volume: item.Volume, ForgingWeighCalculatorId: "00000000-0000-0000-0000-000000000000" })
+      tempArray.push({ TypesOfMachiningStock: item.TypesOfMachiningStock, TypesOfMachiningStockId: item.TypesOfMachiningStockId, Description: item.Description, MajorDiameter: item.MajorDiameter, MinorDiameter: item.MinorDiameter, Length: item.Length, Breadth: item.Breadth, Height: item.Height, No: item.No, GrossWeight: item.GrossWeight, Volume: item.Volume, ForgingWeighCalculatorId: "00000000-0000-0000-0000-000000000000", MachiningMultiplyingFactorPercentage: item?.MachiningMultiplyingFactorPercentage })
     ))
     obj.ForgingStockDetails = tempArray
     obj.TotalMachiningStock = totalMachiningStock
@@ -408,7 +416,7 @@ function ColdForging(props) {
     },
     {
       label: 'Multiplying factor (Yield %)',
-      value: 25,
+      value: 21,
     }
   ]
   const handleFinishWeight = (value) => {
@@ -481,7 +489,7 @@ function ColdForging(props) {
                               <input
                                 type="checkbox"
                                 checked={!isForgedWeightManuallyEntered}
-                                disabled={false}
+                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
                               />
                               <span
                                 className="before-box"
