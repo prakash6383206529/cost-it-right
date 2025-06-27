@@ -756,7 +756,7 @@ console.log(headerCosts,'WithoutHandling');
           baseCost = IsIncludeApplicabilityForChildParts
             ? checkForNull(headerCosts?.NetBOPOutsourcedCost) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost)
             : checkForNull(headerCosts?.NetBOPOutsourcedCost);
-        } else if (Applicability === 'BOP Without Handling Charge	') {
+        } else if (Applicability === 'BOP Without Handling Charge') {
           baseCost = IsIncludeApplicabilityForChildParts
             ? checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge) + checkForNull(ProfitDetail?.NetChildPartsBOPOutsourcedCost)
             : checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge);

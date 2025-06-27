@@ -314,57 +314,57 @@ function OtherCostDrawer(props) {
         switch (otherCostApplicability?.label) {
             case 'RM':
             case 'Part Cost':
-                totalCost = headerCosts.NetRawMaterialsCost * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetRawMaterialsCost) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetRawMaterialsCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'BOP':
-                totalCost = headerCosts.NetBoughtOutPartCost * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetBoughtOutPartCost) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBoughtOutPartCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'BOP Domestic':
-                totalCost = headerCosts.NetBOPDomesticCost * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetBOPDomesticCost) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPDomesticCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPDomesticCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'BOP CKD':
-                totalCost = headerCosts.NetBOPImportCost * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetBOPImportCost) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPImportCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPImportCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'BOP V2V':
-                totalCost = headerCosts.NetBOPSourceCost * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetBOPSourceCost) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPSourceCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPSourceCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case 'BOP OSP':
-                totalCost = headerCosts.NetBOPOutsourcedCost * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetBOPOutsourcedCost) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPOutsourcedCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPOutsourcedCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case "BOP Without Handling Charge":
-                totalCost = headerCosts.NetBoughtOutPartCostWithOutHandlingCharge * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetBoughtOutPartCostWithOutHandlingCharge) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBoughtOutPartCostWithOutHandlingCharge)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case "BOP Domestic Without Handling Charge":
-                totalCost = headerCosts.NetBOPDomesticCostWithOutHandlingCharge * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetBOPDomesticCostWithOutHandlingCharge) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPDomesticCostWithOutHandlingCharge)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPDomesticCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case "BOP CKD Without Handling Charge":
-                totalCost = headerCosts.NetBOPImportCostWithOutHandlingCharge * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetBOPImportCostWithOutHandlingCharge) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPImportCostWithOutHandlingCharge)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPImportCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case "BOP V2V Without Handling Charge":
-                totalCost = headerCosts.NetBOPSourceCostWithOutHandlingCharge * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetBOPSourceCostWithOutHandlingCharge) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPSourceCostWithOutHandlingCharge)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPSourceCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             case "BOP OSP Without Handling Charge":
-                totalCost = headerCosts.NetBOPOutsourcedCostWithOutHandlingCharge * calculatePercentage(percent)
+                totalCost = checkForNull(headerCosts.NetBOPOutsourcedCostWithOutHandlingCharge) * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBOPOutsourcedCostWithOutHandlingCharge)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBOPOutsourcedCostWithOutHandlingCharge, initialConfiguration?.NoOfDecimalForPrice))
                 break;

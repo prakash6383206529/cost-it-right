@@ -190,16 +190,16 @@ function Icc(props) {
                             totalCost = item?.TotalCost;
                             break;
                         case 'BOP Domestic':
-                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPDomesticCost) : checkForNull(headerCosts?.NetBOPDomesticCost);;
+                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPDomesticCost) : checkForNull(headerCosts?.NetBOPDomesticCost);
                             break;
                         case 'BOP CKD':
-                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPImportCost) : checkForNull(headerCosts?.NetBOPImportCost);;
+                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPImportCost) : checkForNull(headerCosts?.NetBOPImportCost);
                             break;
                         case 'BOP V2V':
-                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPSourceCost) : checkForNull(headerCosts?.NetBOPSourceCost);;
+                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPSourceCost) : checkForNull(headerCosts?.NetBOPSourceCost);
                             break;
                         case 'BOP OSP':
-                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPOutsourcedCost);;
+                            cost = IsIncludeApplicabilityForChildPartsInICC ? checkForNull(TopHeaderValues?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPOutsourcedCost) : checkForNull(headerCosts?.NetBOPOutsourcedCost);
                             break;
                         default:
                             cost = 0;

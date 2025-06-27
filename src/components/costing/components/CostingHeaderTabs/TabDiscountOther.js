@@ -1496,12 +1496,10 @@ function TabDiscountOther(props) {
         dispatch(isDiscountDataChange(false))
       }
     }
-    // else if (costData.IsAssemblyPart !== true && !partType) {
-    //   handleCommonSaveDiscountTab({ data, obj, iccObj, gotoNextValue, isNFR })
+    else if (costData.IsAssemblyPart !== true && !partType) {
+      handleCommonSaveDiscountTab({ data, obj, iccObj, gotoNextValue, isNFR })
 
-    // }
-
-
+    }
 
     setTimeout(() => {
       if (partType) {
