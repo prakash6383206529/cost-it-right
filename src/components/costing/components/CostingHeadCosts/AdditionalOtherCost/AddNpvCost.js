@@ -7,7 +7,7 @@ import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layou
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
 import { typeofNpvDropdown } from '../../../../../config/masterData'
-import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, blockInvalidNumberKeys, nonZero, decimalNumberLimit8And7 } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, blockInvalidNumberKeys, nonZero, decimalNumberLimit12And12 } from "../../../../../helper/validation";
 import NpvCost from './NpvCost'
 import { setNPVData } from '../../../actions/Costing'
 import Toaster from '../../../../common/Toaster'
@@ -509,7 +509,7 @@ function AddNpvCost(props) {
                                                     mandatory={true}
                                                     rules={{
                                                         required: true,
-                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit8And7, nonZero },
+                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit12And12, nonZero },
                                                     }}
                                                     onKeyDown={blockInvalidNumberKeys}
                                                     handleChange={handleInvestmentCostChange}
