@@ -43,7 +43,11 @@ import {
   SET_IS_MULTI_VENDOR,
   SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS,
   SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_ICC,
-  SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_PAYMENT
+  SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_PAYMENT,
+  SET_SURFACE_COST_FOR_OVERHEAD,
+  SET_SURFACE_COST_FOR_PROFIT,
+  SET_TOOL_COST_FOR_OVERHEAD,
+  SET_TOOL_COST_FOR_PROFIT
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -1019,6 +1023,26 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         IsIncludeApplicabilityForChildPartsInPayment: action.payload
       };  
+    case SET_SURFACE_COST_FOR_OVERHEAD:
+      return {
+        ...state,
+        IsIncludedSurfaceInOverhead: action.payload
+      };
+    case SET_SURFACE_COST_FOR_PROFIT:
+      return {
+        ...state,
+        IsIncludedSurfaceInProfit: action.payload
+      };
+    case SET_TOOL_COST_FOR_OVERHEAD:
+      return {
+        ...state,
+        IsIncludedToolCostInOverhead: action.payload
+      };
+    case SET_TOOL_COST_FOR_PROFIT:
+      return {
+        ...state,
+        IsIncludedToolCostInProfit: action.payload
+      };
       
     default:
       return state

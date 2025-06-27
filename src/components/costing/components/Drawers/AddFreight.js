@@ -18,6 +18,7 @@ import { getFreigtRateCriteriaSelectList, getTruckDimensionsSelectList } from '.
 import FreightCalculator from '../WeightCalculatorDrawer/FreightCalculator';
 import { getNoOfComponentsPerCrateFromPackaging } from '../../actions/CostWorking';
 import TooltipCustom from '../../../common/Tooltip';
+import { filterBOPApplicability } from '../../../common/CommonFunctions';
 
 function AddFreight(props) {
 
@@ -65,7 +66,7 @@ function AddFreight(props) {
   const truckDimensionsSelectList = useSelector(state => state.freight.truckDimensionsSelectList);
   const [freightCost, setFreightCost] = useState(rowObjData.Rate ? rowObjData.Rate : '')
   const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId||(costData?.PartType === 'Assembly' && IsMultiVendorCosting))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
   const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
   const [costingFreightCalculationDetailsId, setCostingFreightCalculationDetailsId] = useState(rowObjData?.CostingFreightCalculationDetailsId ?? null)
   const [state, setState] = useState({
@@ -77,7 +78,7 @@ function AddFreight(props) {
     hideDetailedBreakup: false,
     truckDimensionRes: {},
   })
-  const { costingData } = useSelector(state => state.costing)
+  const { costingData, OverheadProfitTabData, SurfaceTabData } = useSelector(state => state.costing)
 
   useEffect(() => {
     setTimeout(() => {
@@ -85,7 +86,7 @@ function AddFreight(props) {
     }, 200)
   }, [rowObjData]);
 
-  useEffect(() => {   
+  useEffect(() => {
     dispatch(getFreigtRateCriteriaSelectList(costData?.PlantId))
     dispatch(getFreigtFullTruckCapacitySelectList())
     dispatch(getTruckDimensionsSelectList((res) => { }));
@@ -112,7 +113,7 @@ function AddFreight(props) {
   }, [RMCCTabData, applicability])
 
   useEffect(() => {
-    dispatch(fetchCostingHeadsAPI('freight', false, false, (res) => { }))
+    dispatch(fetchCostingHeadsAPI('freight', true, false, (res) => { }))
     if (isEditFlag) {
       showFieldsFunction(rowObjData.EFreightLoadType)
     }
@@ -238,18 +239,19 @@ function AddFreight(props) {
     }
 
     if (label === 'Applicability') {
+      // Build initial list from costingHead
       costingHead && costingHead.map(item => {
         if (item.Value === '0' || item.Text === 'Fixed') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
+
+      tempList=filterBOPApplicability(costingHead,gridData,'Criteria')
+      // Apply additional filters if needed
       if (isBreakupBoughtOutPartCostingFromAPI) {
-        tempList = removeBOPfromApplicability([...temp])
-        //MINDA
-        // tempList = removeBOPFromList([...temp])
-      } else {
-        tempList = [...temp]
+        tempList = removeBOPfromApplicability([...tempList])
       }
+
       return tempList;
     }
     if (label === 'TruckDimensions') {
@@ -366,13 +368,10 @@ function AddFreight(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateCost = (Text) => {
-    const { NetRawMaterialsCost, NetBoughtOutPartCost } = headCostData;
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetBOPDomesticCost, NetBOPImportCost, NetBOPOutsourcedCost, NetBOPSourceCost, NetBOPDomesticCostWithOutHandlingCharge, NetBOPImportCostWithOutHandlingCharge, NetBOPOutsourcedCostWithOutHandlingCharge, NetBOPSourceCostWithOutHandlingCharge, NetBoughtOutPartCostWithOutHandlingCharge } = headCostData;
+    let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData?.length > 0 && OverheadProfitTabData?.[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData?.[0]?.CostingPartDetails : null;
+    const { HangerCostPerPart, PaintCost, SurfaceTreatmentCost } = SurfaceTabData[0]?.CostingPartDetails
 
-    const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.NetProcessCost + headCostData.NetOperationCost
-    const RMBOPCC = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
-    const RMBOP = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost);
-    const RMCC = checkForNull(NetRawMaterialsCost) + checkForNull(ConversionCostForCalculation);
-    const BOPCC = checkForNull(NetBoughtOutPartCost) + checkForNull(ConversionCostForCalculation)
     const RateAsPercentage = getValues('Rate');
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
     const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost)
@@ -392,38 +391,85 @@ function AddFreight(props) {
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
-
-      case 'RM + CC':
-      case 'Part Cost + CC':
-        totalFreightCost = checkForNull(RMCC) * calculatePercentage(RateAsPercentage)
+      case 'BOP Domestic':
+        totalFreightCost = checkForNull(NetBOPDomesticCost) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
+      case 'BOP CKD':
+        totalFreightCost = checkForNull(NetBOPImportCost) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
+      case 'BOP V2V':
+        totalFreightCost = checkForNull(NetBOPSourceCost) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
+      case 'BOP OSP':
+        totalFreightCost = checkForNull(NetBOPOutsourcedCost) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
+        case "BOP Without Handling Charge":
+          totalFreightCost = checkForNull(NetBoughtOutPartCostWithOutHandlingCharge) * calculatePercentage(RateAsPercentage)
+          setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setFreightCost(totalFreightCost)
+          break;
+      case "BOP Domestic Without Handling Charge":
+        totalFreightCost = checkForNull(NetBOPDomesticCostWithOutHandlingCharge) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
+      case "BOP CKD Without Handling Charge":
+        totalFreightCost = checkForNull(NetBOPImportCostWithOutHandlingCharge) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
+      case "BOP V2V Without Handling Charge":
+        totalFreightCost = checkForNull(NetBOPSourceCostWithOutHandlingCharge) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
+      case "BOP OSP Without Handling Charge":
+        totalFreightCost = checkForNull(NetBOPOutsourcedCostWithOutHandlingCharge) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
-      case 'BOP + CC':
-        totalFreightCost = checkForNull(BOPCC) * calculatePercentage(RateAsPercentage)
+      case "Hanger Cost":
+        totalFreightCost = checkForNull(HangerCostPerPart) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
-      case 'CC':
-        totalFreightCost = checkForNull(ConversionCostForCalculation) * calculatePercentage(RateAsPercentage)
+      case "Paint Cost":
+        totalFreightCost = checkForNull(PaintCost) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
+      case "Surface Treatment Cost":
+        totalFreightCost = checkForNull(SurfaceTreatmentCost) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
-      case 'RM + CC + BOP':
-      case 'Part Cost + CC + BOP':
-        totalFreightCost = checkForNull(RMBOPCC) * calculatePercentage(RateAsPercentage)
+      case "Overhead Cost":
+        totalFreightCost = checkForNull(TopHeaderValues?.OverheadCost) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+
+        break;
+      case "Profit Cost":
+        totalFreightCost = checkForNull(TopHeaderValues?.ProfitCost) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
+      case "Rejection Cost":
+        totalFreightCost = checkForNull(TopHeaderValues?.RejectionCost) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
-      case 'RM + BOP':
-      case 'Part Cost + BOP':
-        totalFreightCost = checkForNull(RMBOP) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
-        setFreightCost(totalFreightCost)
-        break;
       case 'Net Cost':
         totalFreightCost = checkForNull(totalTabCost) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
@@ -531,7 +577,7 @@ function AddFreight(props) {
           item.FreightType === 'Full Truck Load' &&
           item.Capacity === obj.Capacity &&
           item.Criteria === obj.Criteria &&
-          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true) && 
+          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true) &&
           item?.CostingFreightCalculationDetailsId === obj?.CostingFreightCalculationDetailsId
         );
 
@@ -540,7 +586,7 @@ function AddFreight(props) {
         return array.some(item =>
           item.FreightType === 'Part Truck Load' &&
           item.Criteria === obj.Criteria &&
-          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true) && 
+          (isEditFlag ? Number(item.FreightCost) === Number(obj?.FreightCost) : true) &&
           item?.CostingFreightCalculationDetailsId === obj?.CostingFreightCalculationDetailsId
         );
 
@@ -752,7 +798,7 @@ function AddFreight(props) {
                         className={`custom-checkbox w-auto mb-4 mt-4 ${(isEditFlag || state?.hideDetailedBreakup || (costingFreightCalculationDetailsId === null ? false : true)) ? 'disabled' : ''}`}
                         onChange={onShowDetailedBreakup}
                       >
-                        Detailed Breakup                      
+                        Detailed Breakup
                         <input
                           type="checkbox"
                           checked={state.isShowDetailedBreakup}

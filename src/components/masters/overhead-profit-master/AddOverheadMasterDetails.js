@@ -12,7 +12,7 @@ import { required, number, checkWhiteSpaces, percentageLimitValidation, showData
 import { CBCTypeId, EMPTY_DATA, OVERHEADMASTER, PROFITMASTER, REJECTIONMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { fetchApplicabilityList, getVendorNameByVendorSelectList, fetchSpecificationDataAPI } from '../../../actions/Common';
-import { autoCompleteDropdown, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, filterBOPApplicability, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 import { LOGISTICS } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
@@ -64,30 +64,7 @@ const AddOverheadMasterDetails = (props) => {
         }
 
         if (label === 'OverheadApplicability') {
-            if (!costingHead) return [];
-            let excludeFixed = false;
-            let includeOnlyFixed = false;
-            if (state.ApplicabilityDetails && state.ApplicabilityDetails.length > 0) {
-                const fixedExists = state.ApplicabilityDetails.some(
-                    ap => ap.Applicability?.toLowerCase() === "fixed"
-                );
-                includeOnlyFixed = fixedExists;
-                excludeFixed = !fixedExists;
-            }
-            const filtered = costingHead.filter(item => {
-                const isFixed = item.Text?.toLowerCase() === "fixed";
-                const isAlreadyUsed = state.ApplicabilityDetails?.some(
-                    ap => ap.ApplicabilityId == item.Value
-                );
-                if (Number(item.Value) === 0) return false;
-                if (includeOnlyFixed && !isFixed) return false;
-                if (excludeFixed && isFixed) return false;
-                return !isAlreadyUsed;
-            });
-            return filtered.map(item => ({
-                label: item.Text,
-                value: item.Value
-            }));
+            return filterBOPApplicability(costingHead, state?.ApplicabilityDetails,'Applicability')
         }
 
         if (label === 'ModelType') {

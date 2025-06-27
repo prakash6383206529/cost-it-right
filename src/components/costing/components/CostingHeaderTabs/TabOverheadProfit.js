@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, isOverheadProfitDataChange, setApplicabilityForChildParts, setIncludeOverheadProfitIcc, setIncludeToolCostIcc, setOverheadProfitData, setSurfaceCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, setToolCostInOverheadProfit } from '../../actions/Costing';
+import { getOverheadProfitTabData, isOverheadProfitDataChange, setApplicabilityForChildParts, setIncludeOverheadProfitIcc, setIncludeToolCostIcc, setOverheadProfitData, setSurfaceCostInOverhead, setSurfaceCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, setSurfaceCostInProfit, setToolCostInOverhead, setToolCostInOverheadProfit, setToolCostInProfit } from '../../actions/Costing';
 import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
@@ -53,23 +53,11 @@ function TabOverheadProfit(props) {
 
   useEffect(() => {
 
-    if (OverheadProfitTabData && OverheadProfitTabData.length > 0) {
-      if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit !== null && !isPressedST) {
 
-        setIsIncludeSurfaceTreatment(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
-        dispatch(setSurfaceCostInOverheadProfit(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
-      }
-    }
     if (OverheadProfitTabData && OverheadProfitTabData.length > 0) {
       if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithRejection !== null && !isPressedSTRejection) {
         dispatch(setSurfaceCostInOverheadProfitRejection(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithRejection, () => { }))
         setIsIncludeSurfaceTreatmentRejection(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithRejection)
-
-      }
-
-      if (OverheadProfitTabData[0].IsIncludeToolCostWithOverheadAndProfit !== null && !isPressedToolCost) {
-        setIsIncludeToolCost(OverheadProfitTabData[0].IsIncludeToolCostWithOverheadAndProfit)
-        dispatch(setToolCostInOverheadProfit(OverheadProfitTabData[0].IsIncludeToolCostWithOverheadAndProfit, () => { }))
       }
 
       if (OverheadProfitTabData[0].IsIncludeOverheadAndProfitInICC !== null && !isPressedOverHeadAndProfit) {
@@ -637,23 +625,6 @@ function TabOverheadProfit(props) {
 
                 <Col md="12" className="py-3 overhead-profit-tab">
                   <label
-                    id="Overhead_profit_checkbox1"
-                    className={`custom-checkbox mb-0 w-fit-content`}
-                    onChange={onPressIncludeSurfaceTreatment}
-                  >
-                    Include Surface Treatment Cost in CC for Overhead and Profit
-                    <input
-                      type="checkbox"
-                      checked={IsIncludeSurfaceTreatment}
-                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
-                    />
-                    <span
-                      className=" before-box"
-                      checked={IsIncludeSurfaceTreatment}
-                      onChange={onPressIncludeSurfaceTreatment}
-                    />
-                  </label>
-                  <label
                     id="Overhead_profit_checkbox2"
                     className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeSurfaceTreatmentRejection}
@@ -668,24 +639,6 @@ function TabOverheadProfit(props) {
                       className=" before-box"
                       checked={IsIncludeSurfaceTreatmentRejection}
                       onChange={onPressIncludeSurfaceTreatmentRejection}
-                    />
-                  </label>
-
-                  <label
-                    id="Overhead_profit_checkbox3"
-                    className={`custom-checkbox mb-0 w-fit-content`}
-                    onChange={onPressIncludeToolCost}
-                  >
-                    Include Tool cost in CC for Overhead and Profit
-                    <input
-                      type="checkbox"
-                      checked={IsIncludeToolCost}
-                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
-                    />
-                    <span
-                      className=" before-box"
-                      checked={IsIncludeToolCost}
-                      onChange={onPressIncludeToolCost}
                     />
                   </label>
                   {partType &&

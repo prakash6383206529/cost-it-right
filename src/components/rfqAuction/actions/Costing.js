@@ -67,43 +67,13 @@ import {
   SET_COMPONENT_PAYMENT_TERMS_DATA,
   SET_PAYMENT_TERM_COST,
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
-  GET_TCO_DATA,
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
-  SET_RFQ_COSTING_TYPE,
   PARTSPECIFICATIONRFQDATA,
-  GET_SAP_EVALUATIONTYPE,
-  SET_EXCHANGE_RATE_SOURCE,
-  SET_CURRENCY_SOURCE,
-  SET_EXCHANGE_RATE_DATA,
-  GET_COSTING_COST_DETAILS,
-  SET_OPERATION_APPLICABILITY_SELECT,
-  SET_PROCESS_APPLICABILITY_SELECT,
-  GET_PAINT_COAT_LIST,
-  GET_TOOL_TAB_DATA,
-  SET_BOP_REMARK,
-  SET_OVERALL_APPLICABILITY_TOOL_DATA,
-  SET_IS_CALCULATOR_EXIST,
-  GET_COSTING_DETAIL_FOR_ICC,
-  SET_ICC_COST,
-  CHECK_IS_ICC_DATA_CHANGE,
-  SET_COMPONENT_ICC_DATA,
-  SET_DISABLE_ICC_CHECKBOX,
-  SET_IS_MULTI_VENDOR,
-  SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS,
-  SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_ICC,
-  SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_PAYMENT,
-  SET_SURFACE_COST_FOR_OVERHEAD,
-  SET_SURFACE_COST_FOR_PROFIT,
-  SET_TOOL_COST_FOR_OVERHEAD,
-  SET_TOOL_COST_FOR_PROFIT,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import _ from 'lodash'
-import axiosInstance from '../../../utils/axiosInstance'
-import { loggedInUserId } from '../../../helper'
 // let config() = config
 
 /**
@@ -156,11 +126,10 @@ export function getCostingTechnologySelectList(callback) {
  * @description GET PART INFO
  */
 export function getPartInfo(PartId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     if (PartId !== '') {
       dispatch({ type: API_REQUEST })
-      const request = axios.get(`${API.getCostingPartDetails}/${PartId}/${loggedInUser?.loggedInUserId}`, config(),)
+      const request = axios.get(`${API.getCostingPartDetails}/${PartId}`, config(),)
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -187,9 +156,8 @@ export function getPartInfo(PartId, callback) {
  * @description CHECK PART WITH TECHNOLOGY IS ASSOCIATED OR NOT
  */
 export function checkPartWithTechnology(data, callback) {
-  const requestData = { LoggedInUserId: loggedInUserId(), ...data }
   return (dispatch) => {
-    const request = axiosInstance.post(API.checkPartWithTechnology, requestData, config())
+    const request = axios.post(API.checkPartWithTechnology, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -208,7 +176,7 @@ export function checkPartWithTechnology(data, callback) {
  */
 export function createCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.createCosting, data, config())
+    const request = axios.post(API.createCosting, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -226,12 +194,10 @@ export function createCosting(data, callback) {
  * @description get VBC Costing Select List By Part
  */
 export function getExistingCosting(PartId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getExistingCosting}/${PartId}/${loggedInUser?.loggedInUserId}`, config())
+    const request = axios.get(`${API.getExistingCosting}/${PartId}`, config())
     request.then((response) => {
-
       if (response.data.Result) {
         callback(response)
       }
@@ -249,7 +215,7 @@ export function getExistingCosting(PartId, callback) {
 export function updateSOBDetail(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axiosInstance.put(`${API.updateSOBDetail}`, requestData, config())
+    axios.put(`${API.updateSOBDetail}`, requestData, config())
       .then((response) => {
         callback(response)
       }).catch((error) => {
@@ -266,7 +232,7 @@ export function updateSOBDetail(requestData, callback) {
 export function updateVBCSOBDetail(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axiosInstance.put(`${API.updateVBCSOBDetail}`, requestData, config())
+    axios.put(`${API.updateVBCSOBDetail}`, requestData, config())
       .then((response) => {
         callback(response)
       }).catch((error) => {
@@ -281,7 +247,6 @@ export function updateVBCSOBDetail(requestData, callback) {
  * @description GET COSTING DETAIL BY COSTING ID
  */
 export function getBriefCostingById(CostingId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     if (CostingId !== '') {
       dispatch({
@@ -296,7 +261,7 @@ export function getBriefCostingById(CostingId, callback) {
         type: SET_COSTING_DATALIST_BY_COSTINGID,
         payload: [],
       })
-      const request = axios.get(`${API.getBriefCostingById}/${CostingId}/${loggedInUser?.loggedInUserId}`, config());
+      const request = axios.get(`${API.getBriefCostingById}/${CostingId}`, config());
       request.then((response) => {
 
         if (response.data.Result) {
@@ -422,10 +387,9 @@ export function setDiscountCost(Data, callback) {
  * @description GET PLANT DETAIL BY PLANT ID IN COSTING PLATN DRAWER
  */
 export function getZBCDetailByPlantId(PlantId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getZBCDetailByPlantId}/${PlantId}/${loggedInUser?.loggedInUserId}`, config(),)
+    const request = axios.get(`${API.getZBCDetailByPlantId}/${PlantId}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -443,10 +407,9 @@ export function getZBCDetailByPlantId(PlantId, callback) {
  * @description GET VENDOR DETAIL IN COSTING VENDOR ADD DRAWER
  */
 export function getVBCDetailByVendorId(data, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getVBCDetailByVendorId}/${data.VendorId}/${data.VendorPlantId}/${loggedInUser?.loggedInUserId}`, config(),)
+    const request = axios.get(`${API.getVBCDetailByVendorId}/${data.VendorId}/${data.VendorPlantId}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -465,10 +428,9 @@ export function getVBCDetailByVendorId(data, callback) {
  * @description GET RM+CC TAB DATA IN COSTING DETAIL
  */
 export function getRMCCTabData(data, IsUseReducer, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     let queryParams = data.EffectiveDate ? data.EffectiveDate : null
-    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}/${data.AssemCostingId}/${data.subAsmCostingId}/${queryParams}/${data?.isComponentCosting ? data?.isComponentCosting : false}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}/${data.AssemCostingId}/${data.subAsmCostingId}/${queryParams}`, config());
     request.then((response) => {
       if (IsUseReducer && response.data.Result) {
         let TabData = response.data.DataList;
@@ -610,10 +572,9 @@ export function setPaymentTermsDataInDiscountOtherTab(TabData, callback) {
  * @description GET BOP DATA IN COSTING DETAIL
  */
 export function getBOPData(data, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getBOPData}/${data.PartId}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getBOPData}/${data.PartId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -630,17 +591,16 @@ export function getBOPData(data, callback) {
  * @method getRMDrawerDataList
  * @description GET RM DATALIST IN RM DRAWER IN COSTING VBC
  */
-export function getRMDrawerDataList(data, isNFR, rmNameList, surfaceTreatment = false, callback) {
+export function getRMDrawerDataList(data, isNFR, rmNameList, callback) {
   return (dispatch) => {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&vendorId=${data.VendorId}&customerId=${data.CustomerId}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}&partId=${data.PartId}&isRFQ=${data.IsRFQ}&quotationPartId=${data.QuotationPartId}`
+    const queryParams = `technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&vendorId=${data.VendorId}&customerId=${data.CustomerId}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`
     //const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`
     const request = axios.get(`${API.getRMDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
           type: GET_RM_DRAWER_DATA_LIST,
-          payload: surfaceTreatment ? [] : response.status === 204 ? [] : response.data.DataList,
+          payload: response.status === 204 ? [] : response.data.DataList,
           isNFR: isNFR,
           rmNameList: rmNameList
         })
@@ -660,9 +620,7 @@ export function getRMDrawerDataList(data, isNFR, rmNameList, surfaceTreatment = 
  */
 export function getBOPDrawerDataList(data, callback) {
   return (dispatch) => {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&categoryId=${data.categoryId}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}&boughtOutPartChildId=${data?.boughtOutPartChildId}`;
-
+    const queryParams = `vendorId=${data.VendorId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&categoryId=${data.categoryId}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
     const request = axios.get(`${API.getBOPDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -686,12 +644,10 @@ export function getBOPDrawerDataList(data, callback) {
  */
 export function getOperationDrawerDataList(data, callback) {
   return (dispatch) => {
-    const queryParams = `loggedInUserId=${loggedInUserId()}&vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
     const request = axios.get(`${API.getOperationDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
-
-      if (response.data.Result || response.status === 204) {
-
+      if (response.data.Result) {
         callback(response);
       }
     }).catch((error) => {
@@ -708,8 +664,7 @@ export function getOperationDrawerDataList(data, callback) {
  */
 export function getProcessDrawerDataList(data, callback) {
   return (dispatch) => {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}&MinimumMachineTonnageRequired=${data?.MinimumMachineTonnageRequired}`;
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
     const request = axios.get(`${API.getProcessDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -733,7 +688,7 @@ export function getProcessDrawerDataList(data, callback) {
  */
 export function saveCostingRMCCTab(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveCostingRMCCTab, data, config())
+    const request = axios.post(API.saveCostingRMCCTab, data, config())
     request
       .then((response) => {
         callback(response)
@@ -751,7 +706,7 @@ export function saveCostingRMCCTab(data, callback) {
  */
 export function saveComponentCostingRMCCTab(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveComponentCostingRMCCTab, data, config());
+    const request = axios.post(API.saveComponentCostingRMCCTab, data, config());
     request.then((response) => {
       callback(response);
     }).catch((error) => {
@@ -767,7 +722,7 @@ export function saveComponentCostingRMCCTab(data, callback) {
  */
 export function saveAssemblyCostingRMCCTab(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveAssemblyCostingRMCCTab, data, config());
+    const request = axios.post(API.saveAssemblyCostingRMCCTab, data, config());
     request.then((response) => {
       callback(response);
     }).catch((error) => {
@@ -783,9 +738,8 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
  * @description GET SURFACE TREATMENT DATA IN COSTING DETAIL
  */
 export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
-    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.SubAsmCostingId}/${data.AssemCostingId}/${data?.isComponentCosting ? data?.isComponentCosting : false}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.SubAsmCostingId}/${data.AssemCostingId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         if (IsUseReducer && response.data.Result) {
@@ -835,15 +789,13 @@ export function setSurfaceCostInOverheadProfit(IsIncluded, callback) {
   }
 };
 
-
-
 /**
  * @method saveComponentCostingSurfaceTab
  * @description SAVE COMPONENT COSTING SURFACE TAB
  */
 export function saveCostingSurfaceTab(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveCostingSurfaceTab, data, config());
+    const request = axios.post(API.saveCostingSurfaceTab, data, config());
     request.then((response) => {
       callback(response);
     }).catch((error) => {
@@ -859,8 +811,7 @@ export function saveCostingSurfaceTab(data, callback) {
  */
 export function getSurfaceTreatmentDrawerDataList(data, callback) {
   return (dispatch) => {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`;
     const request = axios.get(`${API.getSurfaceTreatmentDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -879,13 +830,12 @@ export function getSurfaceTreatmentDrawerDataList(data, callback) {
  * @description GET OVERHEAD & PROFIT DATA IN COSTING DETAIL
  */
 export function getOverheadProfitTabData(data, IsUseReducer, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({
       type: SET_OVERHEAD_PROFIT_TAB_DATA,
       payload: [],
     });
-    const request = axios.get(`${API.getOverheadProfitTabData}/${data.CostingId}/${data.PartId}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getOverheadProfitTabData}/${data.CostingId}/${data.PartId}`, config());
     request.then((response) => {
       if (IsUseReducer && response.data.Result) {
         let TabData = response.data.DataList;
@@ -893,10 +843,6 @@ export function getOverheadProfitTabData(data, IsUseReducer, callback) {
           type: SET_OVERHEAD_PROFIT_TAB_DATA,
           payload: TabData,
         });
-        dispatch({
-          type: SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS,
-          payload: TabData[0]?.IsIncludeChildPartsApplicabilityCost === true ? true : false,
-        })
       } else {
         callback(response);
       }
@@ -942,8 +888,7 @@ export function setDiscountAndOtherCostData(TabData, callback) {
 export function getOverheadProfitDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}&partFamilyId=${data?.partFamilyId}&IsMultiVendorCosting=${data?.IsMultiVendorCosting}`
+    let queryParams = `modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}`
     const request = axios.get(`${API.getOverheadProfitDataByModelType}?${queryParams}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
@@ -964,7 +909,7 @@ export function getOverheadProfitDataByModelType(data, callback) {
  */
 export function saveCostingOverheadProfitTab(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveCostingOverheadProfitTab, data, config())
+    const request = axios.post(API.saveCostingOverheadProfitTab, data, config())
     request
       .then((response) => {
         callback(response)
@@ -982,7 +927,7 @@ export function saveCostingOverheadProfitTab(data, callback) {
  */
 export function saveAssemblyOverheadProfitTab(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveAssemblyOverheadProfitTab, data, config())
+    const request = axios.post(API.saveAssemblyOverheadProfitTab, data, config())
     request
       .then((response) => {
         callback(response)
@@ -1000,7 +945,7 @@ export function saveAssemblyOverheadProfitTab(data, callback) {
  */
 export function saveComponentOverheadProfitTab(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveComponentOverheadProfitTab, data, config())
+    const request = axios.post(API.saveComponentOverheadProfitTab, data, config())
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -1017,8 +962,7 @@ export function saveComponentOverheadProfitTab(data, callback) {
 export function getInventoryDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const request = axios.get(`${API.getInventoryDataByHeads}?loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${null}`, config());
+    const request = axios.get(`${API.getInventoryDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${null}`, config());
     request
       .then((response) => {
         callback(response)
@@ -1039,8 +983,7 @@ export function getPaymentTermsDataByHeads(data, callback) {
 
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const request = axios.get(`${API.getPaymentTermsDataByHeads}?loggedInUserId=${loggedInUser?.loggedInUserId}&vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}`, config());
+    const request = axios.get(`${API.getPaymentTermsDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}`, config());
 
     request.then((response) => {
       callback(response)
@@ -1057,13 +1000,12 @@ export function getPaymentTermsDataByHeads(data, callback) {
  * @description GET PACKAGE AND FREIGHT DATA IN COSTING DETAIL
  */
 export function getPackageFreightTabData(data, IsUseReducer, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({
       type: SET_PACKAGE_AND_FREIGHT_TAB_DATA,
       payload: [],
     });
-    const request = axios.get(`${API.getPackageFreightTabData}/${data.CostingId}/${data.PartId}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getPackageFreightTabData}/${data.CostingId}/${data.PartId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         if (IsUseReducer && response.data.Result) {
@@ -1105,7 +1047,7 @@ export function setPackageAndFreightData(TabData, callback) {
  */
 export function saveCostingPackageFreightTab(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveCostingPackageFreightTab, data, config())
+    const request = axios.post(API.saveCostingPackageFreightTab, data, config())
     request
       .then((response) => {
         callback(response)
@@ -1143,9 +1085,8 @@ export function getFreigtFullTruckCapacitySelectList() {
  * @description GET RATE CRITERIA BY CAPACITY SELECTLIST
  */
 export function getRateCriteriaByCapacitySelectList(Capacity) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
-    const request = axios.get(`${API.getRateCriteriaByCapacitySelectList}/${Capacity}/${loggedInUser?.loggedInUserId}`, config())
+    const request = axios.get(`${API.getRateCriteriaByCapacitySelectList}/${Capacity}`, config())
     request.then((response) => {
       dispatch({
         type: GET_RATE_CRITERIA_BY_CAPACITY,
@@ -1164,15 +1105,9 @@ export function getRateCriteriaByCapacitySelectList(Capacity) {
  */
 export function getRateByCapacityCriteria(data, callback) {
   return (dispatch) => {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const request = axios.get(`${API.getRateByCapacityCriteria}?loggedInUserId=${loggedInUser?.loggedInUserId}&Capacity=${data?.Capacity}&Criteria=${data?.Criteria}&plantId=${data?.PlantId}&vendorId=${data?.VendorId}&customerId=${data?.CustomerId}&effectiveDate=${data?.EffectiveDate}&costingTypeId=${data?.CostingTypeId}&EFreightLoadType=${data?.EFreightLoadType}&costingId=${data?.costingId}`, config(),)
+    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data.Capacity}&Criteria=${data.Criteria}`, config(),)
     request.then((response) => {
-      if (response?.data?.Result) {
-        callback(response)
-      } else if (response?.status === 204) {
-        Toaster.warning("There is no data for Freight.")
-        callback(response)
-      }
+      callback(response)
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
@@ -1185,23 +1120,18 @@ export function getRateByCapacityCriteria(data, callback) {
  * @description GET TOOL DATA IN COSTING DETAIL
  */
 export function getToolTabData(data, IsUseReducer, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({
       type: SET_TOOL_TAB_DATA,
       payload: [],
     });
-    const request = axios.get(`${API.getToolTabData}/${data.CostingId}/${data.PartId}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getToolTabData}/${data.CostingId}/${data.PartId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         if (IsUseReducer && response.data.Result) {
           let TabData = response.data.DataList;
           dispatch({
             type: SET_TOOL_TAB_DATA,
-            payload: TabData,
-          });
-          dispatch({
-            type: GET_TOOL_TAB_DATA,
             payload: TabData,
           });
           //callback(response);
@@ -1222,13 +1152,12 @@ export function getToolTabData(data, IsUseReducer, callback) {
  * @description GET TOOLS PROCESS WISE DATALIST BY COSTINGID
  */
 export function getToolsProcessWiseDataListByCostingID(CostingId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({
       type: SET_TOOL_PROCESS_WISE_DATALIST,
       payload: [],
     });
-    const request = axios.get(`${API.getToolsProcessWiseDataListByCostingID}/${CostingId}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getToolsProcessWiseDataListByCostingID}/${CostingId}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         let TabData = response.data.DataList;
@@ -1251,11 +1180,10 @@ export function getToolsProcessWiseDataListByCostingID(CostingId, callback) {
  * @description SET TOOL TAB DATA  
  */
 export function setToolTabData(TabData, callback) {
-  const updatedToolTabData = _.cloneDeep(TabData)
   return (dispatch) => {
     dispatch({
       type: SET_TOOL_TAB_DATA,
-      payload: updatedToolTabData,
+      payload: TabData,
     });
     callback();
   }
@@ -1267,7 +1195,7 @@ export function setToolTabData(TabData, callback) {
  */
 export function saveToolTab(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveToolTab, data, config())
+    const request = axios.post(API.saveToolTab, data, config())
     request
       .then((response) => {
         callback(response)
@@ -1284,10 +1212,9 @@ export function saveToolTab(data, callback) {
  * @description GET DISCOUNT OTHER COST IN COSTING DETAIL
  */
 export function getDiscountOtherCostTabData(data, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getDiscountOtherCostTabData}/${data.CostingId}/${data.PartId}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getDiscountOtherCostTabData}/${data.CostingId}/${data.PartId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         // dispatch({
@@ -1308,10 +1235,10 @@ export function getDiscountOtherCostTabData(data, callback) {
  * @method getExchangeRateByCurrency
  * @description GET EXCHANGE RATE BY CURRENCY
  */
-export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate, VendorId, customerId, isBudgeting, toCurrency, exchangeRateSourceName, callback) {
+export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate, VendorId, customerId, isBudgeting, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getExchangeRateByCurrency}?loggedInUserId=${loggedInUserId()}&currency=${currency}&costingHeadId=${costingHeadId}&effectiveDate=${effectiveDate}&VendorId=${!VendorId ? EMPTY_GUID : VendorId}&customerId=${!customerId ? EMPTY_GUID : customerId}&isBudgeting=${isBudgeting}&toCurrency=${toCurrency}&exchangeRateSourceName=${exchangeRateSourceName ?? ''}`, config());
+    const request = axios.get(`${API.getExchangeRateByCurrency}?currency=${currency}&costingHeadId=${costingHeadId}&effectiveDate=${effectiveDate}&VendorId=${!VendorId ? EMPTY_GUID : VendorId}&customerId=${!customerId ? EMPTY_GUID : customerId}&isBudgeting=${isBudgeting}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1334,7 +1261,7 @@ export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate
  */
 export function saveDiscountOtherCostTab(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveDiscountOtherCostTab, data, config())
+    const request = axios.post(API.saveDiscountOtherCostTab, data, config())
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -1358,7 +1285,7 @@ export function fileUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
-      callback(error.toString())
+      callback(error)
     })
   }
 }
@@ -1447,9 +1374,8 @@ export function setEmptyExistingSupplierData(callback) {
  * @description create part with supplier
  */
 export function createPartWithSupplier(data, callback) {
-  const requestData = { LoggedInUserId: loggedInUserId(), ...data }
   return (dispatch) => {
-    const request = axiosInstance.post(API.createPartWithSupplier, requestData, config())
+    const request = axios.post(API.createPartWithSupplier, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1472,11 +1398,10 @@ export function createPartWithSupplier(data, callback) {
  * @description get costing by costingId
  */
 export function getCostingByCostingId(costingId, supplier, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getCostingByCostingId}/${costingId}/${loggedInUser?.loggedInUserId}`,
+      `${API.getCostingByCostingId}/${costingId}`,
       config(),
     )
     request
@@ -1502,11 +1427,10 @@ export function getCostingByCostingId(costingId, supplier, callback) {
  * @description get all other operation for cost summary
  */
 export function getCostSummaryOtherOperation(supplierId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getCostSummaryOtherOperationList}/${supplierId}/${loggedInUser?.loggedInUserId}`,
+      `${API.getCostSummaryOtherOperationList}/${supplierId}`,
       config(),
     )
     request
@@ -1578,7 +1502,7 @@ export function setInventoryRowData(supplierColumn, data) {
  */
 export function getCostingOverHeadProByModelType(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.getCostingOverHeadProByModelType, data, config(),)
+    const request = axios.post(API.getCostingOverHeadProByModelType, data, config(),)
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -1596,7 +1520,7 @@ export function getCostingOverHeadProByModelType(data, callback) {
  */
 export function saveCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveCosting, data, config())
+    const request = axios.post(API.saveCosting, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1648,11 +1572,10 @@ export function fetchFreightHeadsAPI(callback) {
  * @description Reassign costing for approval
  */
 export function reassignCostingAPI(CostingId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: AUTH_API_REQUEST });
-    axiosInstance
-      .put(`${API.reassignCosting}/${CostingId}/${loggedInUser?.loggedInUserId}`, config())
+    axios
+      .put(`${API.reassignCosting}/${CostingId}`, config())
       .then((response) => {
         if (response.data.Result) {
           callback(response)
@@ -1673,7 +1596,7 @@ export function reassignCostingAPI(CostingId, callback) {
 export function cancelCostingAPI(CostingId, callback) {
   return (dispatch) => {
     //dispatch({ type: AUTH_API_REQUEST });
-    axiosInstance
+    axios
       .post(`${API.cancelCosting}/${CostingId}`, config())
       .then((response) => {
         if (response.data.Result) {
@@ -1695,7 +1618,7 @@ export function cancelCostingAPI(CostingId, callback) {
 export function getCostingFreight(data, callback) {
   return (dispatch) => {
     // dispatch({ type: API_REQUEST });
-    const request = axiosInstance.post(`${API.getCostingFreight}`, data, config())
+    const request = axios.post(`${API.getCostingFreight}`, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1732,7 +1655,7 @@ export function emptyCostingData() {
 export function copyCostingAPI(data, callback) {
   return (dispatch) => {
     // dispatch({ type: API_REQUEST });
-    const request = axiosInstance.post(`${API.copyCostingAPI}`, data, config())
+    const request = axios.post(`${API.copyCostingAPI}`, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1752,11 +1675,10 @@ export function copyCostingAPI(data, callback) {
  * @description Used to fetch costing details by costingId
  */
 export function getSingleCostingDetails(costingId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     const request = axios.get(
-      `${API.getCostingDetailsByCostingId}/${costingId}/${loggedInUser?.loggedInUserId}`,
+      `${API.getCostingDetailsByCostingId}/${costingId}`,
       config(),
     )
     request
@@ -1810,10 +1732,11 @@ export function storePartNumber(partNo) {
 }
 
 export function getCostingSummaryByplantIdPartNo(partNo, plantId, vendorId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
+
+
   return (dispatch) => {
     if (partNo !== '' && plantId !== '' && vendorId !== '') {
-      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}/${false}/${reactLocalStorage.getObject('CostingTypePermission').zbc}/${reactLocalStorage.getObject('CostingTypePermission').vbc}/${reactLocalStorage.getObject('CostingTypePermission').cbc}/${vendorId}/${loggedInUser?.loggedInUserId}`, config(),)
+      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}/${false}/${reactLocalStorage.getObject('CostingTypePermission').zbc}/${reactLocalStorage.getObject('CostingTypePermission').vbc}/${reactLocalStorage.getObject('CostingTypePermission').cbc}/${vendorId}`, config(),)
       request
         .then((response) => {
           if (response.data.Result || response.status === 204) {
@@ -1845,7 +1768,7 @@ export function getCostingSummaryByplantIdPartNo(partNo, plantId, vendorId, call
  */
 export function saveCopyCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveCostingCopy, data, config())
+    const request = axios.post(API.saveCostingCopy, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1872,11 +1795,10 @@ export const setCostingApprovalData = (data) => (dispatch) => {
   })
 }
 
-export function getCostingByVendorAndVendorPlant(partId, VendorId, VendorPlantId, destinationPlantId, customerId, costingTypeId, infoCategory, callback) {
+export function getCostingByVendorAndVendorPlant(partId, VendorId, VendorPlantId, destinationPlantId, customerId, costingTypeId, callback) {
   return (dispatch) => {
     if (partId !== '') {
-      const loggedInUser = { loggedInUserId: loggedInUserId() }
-      const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&partId=${partId}&VendorId=${VendorId}&vendorPlantId=${VendorPlantId}&destinationPlantId=${!destinationPlantId ? EMPTY_GUID : destinationPlantId}&customerId=${!customerId ? EMPTY_GUID : customerId}&costingTypeId=${costingTypeId}&infoCategory=${infoCategory}`
+      const queryParams = `partId=${partId}&VendorId=${VendorId}&vendorPlantId=${VendorPlantId}&destinationPlantId=${!destinationPlantId ? EMPTY_GUID : destinationPlantId}&customerId=${!customerId ? EMPTY_GUID : customerId}&costingTypeId=${costingTypeId}`
       const request = axios.get(`${API.getCostingByVendorVendorPlant}?${queryParams}`, config());
       request.then((response) => {
         if (response.data.Result || response.status === 204) {
@@ -1937,10 +1859,9 @@ export function setItemData(item, callback) {
 };
 
 export function getPartCostingPlantSelectList(partNumber, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getPartCostingPlantSelectList}/${partNumber}/${loggedInUser?.loggedInUserId}`, config())
+    const request = axios.get(`${API.getPartCostingPlantSelectList}/${partNumber}`, config())
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
@@ -1957,10 +1878,9 @@ export function getPartCostingPlantSelectList(partNumber, callback) {
 }
 
 export function getPartCostingVendorSelectList(partNumber, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getPartCostingVendorSelectList}/${partNumber}/${loggedInUser?.loggedInUserId}`, config())
+    const request = axios.get(`${API.getPartCostingVendorSelectList}/${partNumber}`, config())
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
@@ -1976,8 +1896,8 @@ export function getPartCostingVendorSelectList(partNumber, callback) {
   }
 }
 
-export function getPartSelectListByTechnology(technologyId, partNumber, partTypeId,partFamilyId, callback) {
-  return axios.get(`${API.getPartByTechnologyId}?loggedInUserId=${loggedInUserId()}&technologyId=${technologyId}&partNumber=${partNumber}&partTypeId=${partTypeId}&partFamilyId=${partFamilyId}`, config()).catch(error => {
+export function getPartSelectListByTechnology(technologyId, partNumber, partTypeId, callback) {
+  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}&partTypeId=${partTypeId}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)
@@ -2079,10 +1999,10 @@ export function setRMCutOff(cutOffObj) {
  * @method getCostingTechnologySelectList
  * @description GET TECHNOLOGY SELECTLIST
  */
-export function getCostingSpecificTechnology(loggedInUserId, callback, ListFor = '') {
+export function getCostingSpecificTechnology(loggedInUserId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getCostingSpecificTechnology}?loggedInUserId=${loggedInUserId}&ListFor=${ListFor}`, config())
+    const request = axios.get(`${API.getCostingSpecificTechnology}/${loggedInUserId}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -2111,8 +2031,7 @@ export function setPlasticArray(array, callback) {
 
 export function checkDataForCopyCosting(data, callback) {
   return (dispatch) => {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&CostingId=${data.CostingId}&EffectiveDate=${data.EffectiveDate}&ToCostingHeadId=${data.ToCostingHeadId}&ToPlantId=${data.ToPlantId}&ToVendorId=${data.ToVendorId}&ToCustomerId=${data.ToCustomerId}`
+    const queryParams = `CostingId=${data.CostingId}&EffectiveDate=${data.EffectiveDate}&ToCostingHeadId=${data.ToCostingHeadId}&ToPlantId=${data.ToPlantId}&ToVendorId=${data.ToVendorId}&ToCustomerId=${data.ToCustomerId}`
     const request = axios.get(`${API.checkDataForCopyCosting}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result) {
@@ -2132,7 +2051,7 @@ export function checkDataForCopyCosting(data, callback) {
 */
 export function saveAssemblyPartRowCostingCalculation(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveAssemblyPartRowCostingCalculation, data, config());
+    const request = axios.post(API.saveAssemblyPartRowCostingCalculation, data, config());
     request.then((response) => {
       callback(response);
     }).catch((error) => {
@@ -2196,7 +2115,7 @@ export function getNCCExistingCosting(PartId, callback) {
  */
 export function createNCCCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.createNCCCosting, data, config())
+    const request = axios.post(API.createNCCCosting, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2363,7 +2282,7 @@ export function setIdsOfProcessGroup(data) {
 export function getMachineProcessGroupDetail(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const queryParams = `loggedInUserId=${loggedInUserId()}&vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&vendorPlantId=${data.VendorPlantId}&costingTypeId=${data.CostingTypeId}&costingId=${data.CostingId}&plantId=${data.PlantId}`;
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&customerId=${data.CustomerId}&vendorPlantId=${data.VendorPlantId}&costingTypeId=${data.CostingTypeId}&costingId=${data.CostingId}&plantId=${data.PlantId}`;
     const request = axios.get(`${API.getMachineProcessGroupDetail}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -2404,8 +2323,8 @@ export function getFgWiseImpactDataForCosting(costingId, callback) {
       type: GET_FG_WISE_IMPACT_DATA,
       payload: [],
     })
-    const request = axiosInstance.post(`${API.getFgWiseImpactDataForCosting}`, costingId, config());
-    // const request = axiosInstance.post(API.getFgWiseImpactDataForCosting, costingId, config())
+    const request = axios.post(`${API.getFgWiseImpactDataForCosting}`, costingId, config());
+    // const request = axios.post(API.getFgWiseImpactDataForCosting, costingId, config())
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -2431,7 +2350,7 @@ export function getFgWiseImpactDataForCosting(costingId, callback) {
 
 export function sapPushedCostingInitialMoment(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.sapPushedCostingInitialMoment, data, config());
+    const request = axios.post(API.sapPushedCostingInitialMoment, data, config());
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -2514,8 +2433,7 @@ export function saveBOMLevel(data) {
  */
 export function checkFinalUser(data, callback) {
   return (dispatch) => {
-    const queryParams = `loggedInUserId=${loggedInUserId()}&DepartmentId=${data.DepartmentId}&UserId=${data.UserId}&TechnologyId=${data.TechnologyId}&Mode=${data.Mode}&approvalTypeId=${data?.approvalTypeId}&plantId=${data?.plantId}&divisionId=${data?.divisionId ?? null}`
-
+    const queryParams = `DepartmentId=${data.DepartmentId}&UserId=${data.UserId}&TechnologyId=${data.TechnologyId}&Mode=${data.Mode}&approvalTypeId=${data?.approvalTypeId}&plantId=${data?.plantId}`
     const request = axios.get(`${API.checkFinalUser}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result) {
@@ -2586,7 +2504,7 @@ export function setIncludeOverheadProfitIcc(IsIncluded, callback) {
  */
 export function createMultiTechnologyCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.createMultiTechnologyCosting, data, config())
+    const request = axios.post(API.createMultiTechnologyCosting, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2674,8 +2592,7 @@ export function setRejectionRecoveryData(data) {
 
 export function getCostingLabourDetails(data, callback) {
   return (dispatch) => {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&costingId=${data}`
+    const queryParams = `costingId=${data}`
     const request = axios.get(`${API.getCostingLabourDetails}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result) {
@@ -2709,7 +2626,7 @@ export function setYOYCostGrid(grid) {
 export function getYOYCostList(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const query = `loggedInUserId=${loggedInUserId()}&quotationId=${data?.quotationId ? data?.quotationId : ''}&partId=${data?.partId ? data?.partId : ''}&vendorId=${data?.vendorId ? data?.vendorId : ''}`
+    const query = `quotationId=${data?.quotationId ? data?.quotationId : ''}&partId=${data?.partId ? data?.partId : ''}&vendorId=${data?.vendorId ? data?.vendorId : ''}`
     const request = axios.get(`${API.getYOYCostList}?${query}`, config())
     request.then((response) => {
       if (response.data.Result) {
@@ -2732,7 +2649,7 @@ export function getYOYCostList(data, callback) {
 
 export function saveCostingLabourDetails(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveCostingLabourDetails, data, config())
+    const request = axios.post(API.saveCostingLabourDetails, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2747,7 +2664,7 @@ export function saveCostingLabourDetails(data, callback) {
 
 export function createPFS2Costing(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.createPFS2Costing, data, config())
+    const request = axios.post(API.createPFS2Costing, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2762,10 +2679,10 @@ export function createPFS2Costing(data, callback) {
 
 export function getLabourDetailsByFilter(data, callback) {
   return (dispatch) => {
-    const queryParams = `loggedInUserId=${loggedInUserId()}&effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${data?.labour_type_id || ''}&isRequestForCosting=${data?.isRequestForCosting || ''}&baseCostingId=${data?.baseCostingId || ''}&isZeroDataShow=${data?.isZeroDataShow || false}&isVendorDataShow=${data?.isVendorDataShow || false}&isCustomerDataShow=${data?.isCustomerDataShow || false}`
+    const queryParams = `effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${0}`
     const request = axios.get(`${API.getLabourDetailsByFilter}?${queryParams}`, config())
     request.then((response) => {
-      if (response.data.Result || response.status === 204) {
+      if (response.data.Result) {
         callback(response)
       }
     }).catch((error) => {
@@ -2780,7 +2697,7 @@ export function getLabourDetailsByFilter(data, callback) {
 export function checkPartNoExistInBop(data, callback) {
   return (dispatch) => {
     // const queryParams = `partNumber=${data.partNumber}&plantId=${data.plantId}&vendorId=${data.vendorId}&customerId=${data.customerId}`
-    const queryParams = encodeQueryParamsAndLog({ loggedInUserId: loggedInUserId(), partNumber: data.partNumber, plantId: data.plantId, vendorId: data.vendorId, customerId: data.customerId });
+    const queryParams = encodeQueryParamsAndLog({ partNumber: data.partNumber, plantId: data.plantId, vendorId: data.vendorId, customerId: data.customerId });
     const request = axios.get(`${API.checkPartNoExistInBop}?${queryParams}`, config())
     request.then((response) => {
       if (response.data) {
@@ -2867,7 +2784,7 @@ export function setCostingMode(value) {
  */
 export function getReleaseStrategyApprovalDetails(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.getReleaseStrategyApprovalDetails, data, config())
+    const request = axios.post(API.getReleaseStrategyApprovalDetails, data, config())
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -2888,7 +2805,7 @@ export function getReleaseStrategyApprovalDetails(data, callback) {
 export function updateCostingIdFromRfqToNfrPfs(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axiosInstance.post(`${API.updateCostingIdFromRfqToNfrPfs}`, requestData, config())
+    axios.post(`${API.updateCostingIdFromRfqToNfrPfs}`, requestData, config())
       .then((response) => {
         callback(response)
       }).catch((error) => {
@@ -2921,7 +2838,7 @@ export function openCloseStatus(status) {
  */
 export function getExternalIntegrationFgWiseImpactData(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.getExternalIntegrationFgWiseImpactData, data, config())
+    const request = axios.post(API.getExternalIntegrationFgWiseImpactData, data, config())
     request.then((response) => {
       if (response.data.Result || response?.status === 204) {
         dispatch({
@@ -2965,8 +2882,7 @@ export function setPaymentTermCost(data, callback) {
  */
 export function getAssemblyChildPartbyAsmCostingId(costingId, isAddedBoughtOutPartType = false, callback) {
   return (dispatch) => {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const request = axios.get(`${API.getAssemblyChildPartbyAsmCostingId}?loggedInUserId=${loggedInUser?.loggedInUserId}&asmCostingId=${costingId}&isAddedBoughtOutPartType=${isAddedBoughtOutPartType}`, config())
+    const request = axios.get(`${API.getAssemblyChildPartbyAsmCostingId}?asmCostingId=${costingId}&isAddedBoughtOutPartType=${isAddedBoughtOutPartType}`, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2985,8 +2901,7 @@ export function getAssemblyChildPartbyAsmCostingId(costingId, isAddedBoughtOutPa
  */
 export function getProcessAndOperationbyAsmAndChildCostingId(asmCostingId, childCostingId, callback) {
   return (dispatch) => {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const request = axios.get(`${API.getProcessAndOperationbyCostingId}?loggedInUserId=${loggedInUser?.loggedInUserId}&asmCostingId=${asmCostingId}&childCostingId=${childCostingId}`, config())
+    const request = axios.get(`${API.getProcessAndOperationbyCostingId}?asmCostingId=${asmCostingId}&childCostingId=${childCostingId}`, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2999,21 +2914,19 @@ export function getProcessAndOperationbyAsmAndChildCostingId(asmCostingId, child
   }
 }
 export function getCostingPaymentTermDetail(costingId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
 
-    const request = axios.get(`${API.getCostingPaymentTermDetail}/${costingId}/${loggedInUser?.loggedInUserId}`, config());
+    const request = axios.get(`${API.getCostingPaymentTermDetail}/${costingId}`, config());
     request.then((response) => {
       if (response.data?.Data || response?.status === 204) {
         const netCost = response.data?.Data?.PaymentTermDetail?.NetCost;
-        //const applicabilityCost = response.data?.Data?.ApplicabilityCost;
         dispatch({
           type: GET_COSTING_PAYMENT_TERM_DETAIL,
           payload: response?.data?.Data || {},
         });
         dispatch({
           type: SET_PAYMENT_TERM_COST,
-          payload: { NetCost: netCost/* , ApplicabilityCost: applicabilityCost  */ } || {},
+          payload: { NetCost: netCost } || {},
         });
       } else {
         Toaster.error(MESSAGES.SOME_ERROR);
@@ -3028,7 +2941,7 @@ export function getCostingPaymentTermDetail(costingId, callback) {
 }
 export function saveCostingPaymentTermDetail(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.saveCostingPaymentTermDetail, data, config())
+    const request = axios.post(API.saveCostingPaymentTermDetail, data, config())
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -3041,27 +2954,6 @@ export function saveCostingPaymentTermDetail(data, callback) {
     })
   }
 }
-export function getCostingTcoDetails(costingId, callback) {
-  return (dispatch) => {
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const request = axios.get(`${API.getCostingTcoDetails}?loggedInUserId=${loggedInUser?.loggedInUserId}&costingId=${costingId}`, config());
-    request.then((response) => {
-      if (response.data?.Data || response?.status === 204) {
-        dispatch({
-          type: GET_TCO_DATA,
-          payload: response?.data?.Data || {},
-        });
-      } else {
-        Toaster.error(MESSAGES.SOME_ERROR);
-      }
-      callback(response)
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-
-    });
-  };
-}
 
 export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
   let temp = []
@@ -3072,16 +2964,6 @@ export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
     type: SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
     payload: temp,
   })
-}
-export function setCostingtype(costingType) {
-
-  return (dispatch) => {
-    dispatch({
-      type: SET_RFQ_COSTING_TYPE,
-      payload: costingType || {},
-    });
-    // callback();
-  }
 }
 
 // export const getSpecificationDetailTco = () => {
@@ -3097,12 +2979,11 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
   return (dispatch) => {
     const url = `${API.getSpecificationDetailTco}`;
     const requestData = {
-      loggedInUserId: loggedInUserId(),
       QuotationId: quotationId,
       BaseCostingIdList: baseCostingIds
     };
 
-    axiosInstance.post(url, requestData, config())
+    axios.post(url, requestData, config())
       .then((response) => {
         if (response.data.Result || response.status === 204) {
           dispatch({
@@ -3115,514 +2996,7 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
       .catch((error) => {
         dispatch({ type: API_FAILURE });
         // Handle errors
+
       });
   };
 }
-
-export function getSpecificationDetailBpo(quotationId, bopId, callback) {
-  return (dispatch) => {
-    const url = `${API.getSpecificationDetailBop}`;
-    const requestData = {
-      QuotationId: quotationId,
-      BoughtOutPartIdList: bopId
-    };
-
-    axiosInstance.post(url, requestData, config())
-      .then((response) => {
-        if (response.data.Result || response.status === 204) {
-          dispatch({
-            type: PARTSPECIFICATIONRFQDATA,
-            payload: response.status === 204 ? [] : response.data.Data
-          });
-          callback(response);
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE });
-        // Handle errors
-      });
-  };
-}
-/**
- * @method getExternalIntegrationEvaluationType
- * @description getExternalIntegrationEvaluationType
- */
-export function getExternalIntegrationEvaluationType(data, callback) {
-
-  return (dispatch) => {
-    const request = axios.get(`${API.getEvaluationType}?plantCode=${data?.plantCode}&partNumber=${data?.partNumber}`, config())
-    request.then((response) => {
-      if (response.data.Result || response?.status === 204) {
-        dispatch({
-          type: GET_SAP_EVALUATIONTYPE,
-          payload: response?.status === 200 ? response?.data?.SelectList : [],
-        })
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: GET_SAP_EVALUATIONTYPE, payload: [] })
-      callback(error)
-      apiErrors(error)
-    })
-
-  }
-}
-
-/**
- * @method saveCostingBasicDetails
- * @description saveCostingBasicDetails
- */
-export function saveCostingBasicDetails(data, callback) {
-  return (dispatch) => {
-    const request = axiosInstance.post(API.saveCostingBasicDetails, data, config())
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    }).catch((error) => {
-      callback(error.response)
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-  }
-}
-
-export function setExchangeRateSourceValue(value) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_EXCHANGE_RATE_SOURCE,
-      payload: value
-    });
-  }
-}
-
-export function setCurrencySource(value) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_CURRENCY_SOURCE,
-      payload: value
-    });
-  }
-}
-export function exchangeRateReducer(value) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_EXCHANGE_RATE_DATA,
-      payload: value
-    });
-  }
-}
-
-/**
- * @method getCostingCostDetails
- * @description get Costing Cost Details
- */
-export function getCostingCostDetails(obj, callback) {
-  return (dispatch) => {
-    dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getCostingCostDetails}?costingId=${obj?.costingId}&subAsmCostingId=${obj?.subAsmCostingId}&asmCostingId=${obj?.asmCostingId}&loggedInUserId=${loggedInUserId()}`, config())
-    request
-      .then((response) => {
-        if (response?.data?.Result) {
-          dispatch({
-            type: GET_COSTING_COST_DETAILS,
-            payload: response?.data?.Data,
-          })
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
-  }
-}
-export function setOperationApplicabilitySelect(data) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_OPERATION_APPLICABILITY_SELECT,
-      payload: data,
-    });
-  }
-};
-
-export function setProcessApplicabilitySelect(data) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_PROCESS_APPLICABILITY_SELECT,
-      payload: data,
-    });
-  }
-};
-export function saveSurfaceTreatmentRawMaterialCalculator(data, callback) {
-  return (dispatch) => {
-    const request = axiosInstance.post(API.saveSurfaceTreatmentRawMaterialCalculator, data, config())
-    request.then((response) => {
-      callback(response)
-    }).catch((error) => {
-      callback(error.response)
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-  }
-}
-export function getSurfaceTreatmentRawMaterialCalculator(params, callback) {
-  let param = `baseCostingId=${params.BaseCostingId}&loggedInUserId=${params.LoggedInUserId}`
-  return (dispatch) => {
-    const request = axios.get(`${API.getSurfaceTreatmentRawMaterialCalculator}?${param}`, config())
-    request.then((response) => {
-      callback(response)
-    }).catch((error) => {
-      callback(error.response)
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-
-  }
-}
-
-export function getPaintCoatList(callback) {
-  return (dispatch) => {
-    const request = axiosInstance.get(API.getPaintCoatList, config())
-    request.then((response) => {
-      if (response.data.Result || response?.status === 204) {
-        dispatch({
-          type: GET_PAINT_COAT_LIST,
-          payload: response?.status === 200 ? response?.data?.SelectList : [],
-        })
-        callback(response)
-      }
-    }).catch((error) => {
-      callback(error)
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-  }
-}
-export function getCostingBopAndBopHandlingDetails(data, callback) {
-
-  return (dispatch) => {
-    const request = axios.get(`${API.getCostingBopAndBopHandlingDetails}?costingId=${data?.costingId}&subAssemblyCostingId=${data?.subAssemblyCostingId}&assemblyCostingId=${data?.assemblyCostingId}&loggedInUserId=${data?.loggedInUserId}`, config())
-    request.then((response) => {
-      if (response.data.Result || response?.status === 204) {
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      callback(error)
-      apiErrors(error)
-    })
-
-  }
-}
-/**
- * @method setBopRemark
- * @description Set the BOP remark and costingId in Redux store
- */
-export function setBopRemark(remark, bopCostingId) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_BOP_REMARK,
-      payload: { remark, bopCostingId }
-    });
-  };
-}
-
-/**
- * @method getRejectionDataByModelType
- * @description GET REJECTION DATA BY MODEL TYPE
- */
-export function getRejectionDataByModelType(data, callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${null}&rawMaterialChildId=${null}&technologyId=${data.technologyId}&partFamilyId=${data.partFamilyId}&IsMultiVendorCosting=${data?.IsMultiVendorCosting}`
-    const request = axios.get(`${API.getRejectionDataByModelType}?${queryParams}`, config(),)
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
-  }
-}
-
-/**
- * @method getIccDataByModelType
- * @description GET ICC DATA BY MODEL TYPE
- */
-export function getIccDataByModelType(data, callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    let queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&modelTypeId=${data.ModelTypeId}&methodTypeId=${data.MethodTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${null}&rawMaterialChildId=${null}&technologyId=${data.technologyId}&partFamilyId=${data.partFamilyId}&IsMultiVendorCosting=${data?.IsMultiVendorCosting}`
-    const request = axios.get(`${API.getIccDataByModelType}?${queryParams}`, config(),)
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
-  }
-}
-
-
-/**
- * @method getIccCalculation
- * @description Get ICC calculator data
-*/
-export function getIccCalculation(interestRateId,costingId, callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const loggedInUser = { loggedInUserId: loggedInUserId() }
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&interestRateId=${interestRateId}&costingId=${costingId}`
-    const request = axios.get(`${API.getIccCalculation}?${queryParams}`, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response);
-      } else {
-        Toaster.error(MESSAGES.SOME_ERROR);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      callback(error);
-      apiErrors(error);
-    });
-  };
-}
-/**
- * @method saveIccCalculation
- * @description save ICC calculator data
-*/
-export function saveIccCalculation(data, callback) {
-  return (dispatch) => {
-    const request = axiosInstance.post(API.saveIccCalculation, data, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-      callback(error);
-    });
-  };
-}
-export function setOverallApplicabilityToolData(data) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_OVERALL_APPLICABILITY_TOOL_DATA,
-      payload: data,
-    });
-  }
-}
-
-
-/**
- * @method setIsCalculatorExist
- * @description SET OVERHEAD PROFIT TAB DATA  
- */
-export function setIsCalculatorExist(isExist) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_IS_CALCULATOR_EXIST,
-      payload: isExist,
-    });
-  }
-};
-/**
- * @method saveCostingDetailForIcc
- * @description save-costing-detail-for-icc
-*/
-export function saveCostingDetailForIcc(data, callback) {
-  return (dispatch) => {
-    const request = axiosInstance.post(API.saveCostingDetailForIcc, data, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-      callback(error);
-    });
-  };
-}
-/**
- * @method getCostingDetailForIcc
- * @description get-costing-detail-for-icc
-*/
-export function getCostingDetailForIcc(costingId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
-  return (dispatch) => {
-    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&costingId=${costingId}`
-    const request = axios.get(`${API.getCostingDetailForIcc}?${queryParams}`, config());
-    request.then((response) => {
-      if (response.data?.Data || response?.status === 204) {
-        const netCost = response.data?.Data?.NetICC;
-        //const applicabilityCost = response.data?.Data?.ApplicabilityCost;
-        dispatch({
-          type: GET_COSTING_DETAIL_FOR_ICC,
-          payload: response?.data?.Data || {},
-        });
-        dispatch({
-          type: SET_ICC_COST,
-          payload: { NetCost: netCost/* , ApplicabilityCost: applicabilityCost  */ } || {},
-        });
-      } else {
-        Toaster.error(MESSAGES.SOME_ERROR);
-      }
-      callback(response)
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-
-    });
-  };
-}
-/**
- * @method setIccCost
- * @description set-costing-detail-for-icc
-*/
-export function setIccCost(data) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_ICC_COST,
-      payload: data,
-    });
-  };
-}
-
-/**
- * @method isIccDataChange
- * @description THIS METHOD IS FOR CALLING ICC API IF CHNAGES HAVE BEEN MADE 
-*/
-export function isIccDataChange(isDataChange) {
-  return (dispatch) => {
-    dispatch({
-      type: CHECK_IS_ICC_DATA_CHANGE,
-      payload: isDataChange
-    })
-  }
-}
-/**
- * @method setIccDataInDiscountOtherTab
- * @description SET COMPONENT ICC DATA IN DISCOUNT OTHER ITEM DATA  
- */
-export function setIccDataInDiscountOtherTab(TabData, callback) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_COMPONENT_ICC_DATA,
-      payload: TabData,
-    });
-    callback();
-  }
-};
-export function setDisableIccCheckBox(IsDisabled) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_DISABLE_ICC_CHECKBOX,
-      payload: IsDisabled,
-    });
-  }
-};
-
-
-/**
- * @method setIsMultiVendor
- * @description Set multi-vendor state
- */
-export function setIsMultiVendor(IsMultiVendorCosting) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_IS_MULTI_VENDOR,
-      payload: IsMultiVendorCosting
-    })
-  }
-}
-export function setIncludeApplicabilityForChildPartsInICC(IsIncludeApplicabilityForChildPartsInICC) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_ICC,
-      payload: IsIncludeApplicabilityForChildPartsInICC
-    })
-  }
-}
-export function setIncludeApplicabilityForChildPartsInPayment(IsIncludeApplicabilityForChildPartsInPayment) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_IS_INCLUDE_APPLICABILITY_FOR_CHILD_PARTS_IN_PAYMENT,
-      payload: IsIncludeApplicabilityForChildPartsInPayment
-    })
-  }
-}
-/**
- * @method setApplicabilityForChildParts
- * @description SET IS INCLUDE APPLICABLE FOR CHILD PARTS
- */
-export function setApplicabilityForChildParts(IsInclude) {
-  return (dispatch) => {
-    dispatch({
-      type:SET_IS_INCLUDE_APPLICABLE_FOR_CHILD_PARTS,
-      payload: IsInclude,
-    });
-  }
-};
-
-/**
- * @method setSurfaceCostInOverhead
- * @description SET SURFACE TREATMENT COST FOR OVERHEAD
- */
-export function setSurfaceCostInOverhead(IsIncluded) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_SURFACE_COST_FOR_OVERHEAD,
-      payload: IsIncluded,
-    });
-  }
-};
-
-/**
- * @method setSurfaceCostInProfit
- * @description SET SURFACE TREATMENT COST FOR PROFIT
- */
-export function setSurfaceCostInProfit(IsIncluded) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_SURFACE_COST_FOR_PROFIT,
-      payload: IsIncluded,
-    });
-  }
-};
-/**
- * @method setToolCostInOverhead
- * @description ADD TOOL COST IN OVERHEAD
- */
-export function setToolCostInOverhead(IsIncluded) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_TOOL_COST_FOR_OVERHEAD,
-      payload: IsIncluded,
-    });
-  }
-};
-/**
- * @method setToolCostInProfit
- * @description ADD TOOL COST IN PROFIT
- */
-export function setToolCostInProfit(IsIncluded) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_TOOL_COST_FOR_PROFIT,
-      payload: IsIncluded,
-    });
-  }
-};

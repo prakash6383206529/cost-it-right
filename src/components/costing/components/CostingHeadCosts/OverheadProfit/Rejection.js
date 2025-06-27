@@ -43,7 +43,7 @@ function Rejection(props) {
     const [percentageLimit, setPercentageLimit] = useState(false)
     const { IsIncludedSurfaceInRejection, isBreakupBoughtOutPartCostingFromAPI, IsIncludeApplicabilityForChildParts } = useSelector(state => state.costing)
     const { SurfaceTabData, rejectionRecovery, RMCCTabData, CostingEffectiveDate } = useSelector(state => state.costing)
-    const { CostingPartDetails, PartType } = RMCCTabData[0]
+    const { CostingPartDetails, PartType } = RMCCTabData?.[0]
     const [errorMessage, setErrorMessage] = useState('')
     const [isOpenRecoveryDrawer, setIsOpenRecoveryDrawer] = useState(false);
     const conditionTypeId = getCostingConditionTypes(REJECTIONMASTER);
@@ -189,6 +189,16 @@ function Rejection(props) {
         const { data } = props
         const RM = IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts?.NetRawMaterialsCost);
         const BOP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCost)) : checkForNull(headerCosts?.NetBoughtOutPartCost);
+        const BOPDomestic = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPDomesticCost)) : checkForNull(headerCosts?.NetBOPDomesticCost);
+        const BOPCKD = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPImportCost)) : checkForNull(headerCosts?.NetBOPImportCost);
+        const BOPV2V = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPSourceCost)) : checkForNull(headerCosts?.NetBOPSourceCost);
+        const BOPOSP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPOutsourcedCost)) : checkForNull(headerCosts?.NetBOPOutsourcedCost);
+        const BOPWithoutHandling=IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBoughtOutPartCostWithOutHandlingCharge);
+        const BOPDomesticWithoutHandling=IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBOPDomesticCostWithOutHandlingCharge);
+        const BOPCKDWithoutHandling=IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge);
+        const BOPV2VWithoutHandling=IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge);
+        const BOPOSPWithoutHandling=IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge);
+        
         const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetCCForOtherTechnologyCost) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
         const CC = partType ? IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
             : checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
@@ -230,6 +240,66 @@ function Rejection(props) {
                     case 'CCForMachining':
                         totalCost = (CCForMachining * calculatePercentage(item.Percentage));
                         item.Cost = CCForMachining
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                    case 'BOP Domestic':
+                        totalCost = (BOPDomestic * calculatePercentage(item.Percentage));
+                        item.Cost = BOPDomestic;
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                    case 'BOP CKD':
+                        totalCost = (BOPCKD * calculatePercentage(item.Percentage));
+                        item.Cost = BOPCKD;
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                        case 'BOP V2V': 
+                        totalCost = (BOPV2V * calculatePercentage(item.Percentage));
+                        item.Cost = BOPV2V;
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                        case 'BOP OSP':
+                        totalCost = (BOPOSP * calculatePercentage(item.Percentage));
+                        item.Cost = BOPOSP;
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                        case 'BOP Without Handling Charge':
+                        totalCost = (BOPWithoutHandling * calculatePercentage(item.Percentage));
+                        item.Cost = BOPWithoutHandling;
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                        case 'BOP Domestic Without Handling Charge':
+                        totalCost = (BOPDomesticWithoutHandling * calculatePercentage(item.Percentage));
+                        item.Cost = BOPDomesticWithoutHandling;
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                        case 'BOP CKD Without Handling Charge':
+                        totalCost = (BOPCKDWithoutHandling * calculatePercentage(item.Percentage));
+                        item.Cost = BOPCKDWithoutHandling;
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                        case 'BOP V2V Without Handling Charge':    
+                        totalCost = (BOPV2VWithoutHandling * calculatePercentage(item.Percentage));
+                        item.Cost = BOPV2VWithoutHandling;
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                        case 'BOP OSP Without Handling Charge':
+                        totalCost = (BOPOSPWithoutHandling * calculatePercentage(item.Percentage));
+                        item.Cost = BOPOSPWithoutHandling;
+                        item.TotalCost = totalCost;
+                        item.NetCost = totalCost
+                        break;
+                        case 'Labour Cost':
+                        totalCost = (headerCosts?.TotalLabourCost * calculatePercentage(item.Percentage));
+                        item.Cost = headerCosts?.TotalLabourCost;
                         item.TotalCost = totalCost;
                         item.NetCost = totalCost
                         break;
@@ -659,11 +729,20 @@ function Rejection(props) {
                 IsMultiVendorCosting: IsMultiVendorCosting
             }
             dispatch(getRejectionDataByModelType(reqParams, (res) => {
+                console.log(res,'res');
                 let data = res?.data?.Data?.CostingRejectionDetail
-                setRejectionObj(data)
-                setTimeout(() => {
-                    checkRejectionModelType(data)
-                }, 500);
+                if(data){
+                    setRejectionObj(data)
+                    setTimeout(() => {
+                        checkRejectionModelType(data)
+                    }, 500);
+                }else{
+                    setState(prev => ({
+                        ...prev,
+                        gridData: []
+                    }))
+                    setRejectionObj({}) 
+                }
             }))
         }
     }
@@ -963,7 +1042,7 @@ function Rejection(props) {
                                             )}
                                         </td>
                                         <td>{item?.Applicability === 'Fixed' ? checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.TotalCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>
-                                        {getConfigurationKey().IsRejectionRecoveryApplicable && !IdForMultiTechnology.includes(String(costData?.TechnologyId)) && <td>
+                                        {(!IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData?.PartType === 'Assembly' && !IsMultiVendorCosting)) && getConfigurationKey().IsRejectionRecoveryApplicable && applicability.label === 'RM' && <td>
 
                                             <div className='d-flex align-items-center'>
                                                 <span>{checkForDecimalAndNull(item?.CostingRejectionRecoveryDetails?.RejectionRecoveryNetCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</span>
