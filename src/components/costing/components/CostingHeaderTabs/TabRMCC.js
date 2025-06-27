@@ -73,14 +73,16 @@ function TabRMCC(props) {
 
       let TopHeaderValues = RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0]?.CostingPartDetails !== undefined ? RMCCTabData[0]?.CostingPartDetails : null;
 
+
       let topHeaderData = {};
 
       if (costData.IsAssemblyPart) {
         topHeaderData = {
+
           NetRawMaterialsCost: TopHeaderValues?.TotalRawMaterialsCostWithQuantity ? TopHeaderValues.TotalRawMaterialsCostWithQuantity : 0,
           NetBoughtOutPartCost: TopHeaderValues?.TotalBoughtOutPartCostWithQuantity ? TopHeaderValues.TotalBoughtOutPartCostWithQuantity : 0,
           NetConversionCost: TopHeaderValues?.TotalConversionCostWithQuantity ? TopHeaderValues.TotalConversionCostWithQuantity : 0,
-          TotalLabourCost: TopHeaderValues?.totalLabourCost ? TopHeaderValues.totalLabourCost : 0,
+          TotalLabourCost: TopHeaderValues?.NetLabourCost ? TopHeaderValues.NetLabourCost : 0,
           NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
           NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCostWithQuantity ? TopHeaderValues.TotalRawMaterialsCostWithQuantity + TopHeaderValues.TotalBoughtOutPartCostWithQuantity + TopHeaderValues.TotalConversionCostWithQuantity : 0,
           OtherOperationCost: TopHeaderValues?.CostingConversionCost?.NetOtherOperationCost ? TopHeaderValues.CostingConversionCost.NetOtherOperationCost : 0,
@@ -129,9 +131,13 @@ function TabRMCC(props) {
           TotalBOPSourceCostWithOutHandlingChargeSubAssembly: TopHeaderValues?.TotalBOPSourceCostWithOutHandlingChargeSubAssembly ? TopHeaderValues.TotalBOPSourceCostWithOutHandlingChargeSubAssembly : 0,
           TotalBOPOutsourcedCostWithOutHandlingChargePerAssembly: TopHeaderValues?.TotalBOPOutsourcedCostWithOutHandlingChargePerAssembly ? TopHeaderValues.TotalBOPOutsourcedCostWithOutHandlingChargePerAssembly : 0,
           TotalBOPOutsourcedCostWithOutHandlingChargeSubAssembly: TopHeaderValues?.TotalBOPOutsourcedCostWithOutHandlingChargeSubAssembly ? TopHeaderValues.TotalBOPOutsourcedCostWithOutHandlingChargeSubAssembly : 0,
+          NetBoughtOutPartCostWithOutHandlingCharge: TopHeaderValues?.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity ?? 0,
+          NetBOPDomesticCostWithOutHandlingCharge: TopHeaderValues?.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity ?? 0,
+          NetBOPImportCostWithOutHandlingCharge: TopHeaderValues?.TotalBOPImportCostWithOutHandlingChargeWithQuantity ?? 0,
+          NetBOPSourceCostWithOutHandlingCharge: TopHeaderValues?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity ?? 0,
+          NetBOPOutsourcedCostWithOutHandlingCharge: TopHeaderValues?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity ?? 0,
         }
       } else {
-
         topHeaderData = {
           NetRawMaterialsCost: TopHeaderValues?.NetRawMaterialsCost ? TopHeaderValues.NetRawMaterialsCost : 0,
           NetBoughtOutPartCost: TopHeaderValues?.NetBoughtOutPartCost ? TopHeaderValues.NetBoughtOutPartCost : 0,
@@ -261,10 +267,18 @@ function TabRMCC(props) {
     let NetCost = 0;
     NetCost = tempArr.reduce((accumulator, el) => {
 
-      if ((el.PartType === 'Part' || (el.PartType === 'BOP' && getConfigurationKey()?.IsShowDifferentBOPType))) {
+      if ((el.PartType === 'Part' || ((el.PartType === 'BOP') && getConfigurationKey()?.IsShowDifferentBOPType))) {
         switch (type) {
           case "BOP":
             return accumulator + checkForNull(el?.CostingPartDetails?.NetBoughtOutPartCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
+            case "BOP Domestic":
+            return accumulator + checkForNull(el?.CostingPartDetails?.NetBOPDomesticCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
+            case "BOP CKD":
+              return accumulator + checkForNull(el?.CostingPartDetails?.NetBOPImportCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
+              case "BOP V2V":
+            return accumulator + checkForNull(el?.CostingPartDetails?.NetBOPSourceCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
+            case "BOP OSP":
+            return accumulator + checkForNull(el?.CostingPartDetails?.NetBOPOutsourcedCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
           default:
             return accumulator + checkForNull(el?.CostingPartDetails?.NetBoughtOutPartCost) * checkForNull(el?.Quantity)
         }
@@ -787,10 +801,10 @@ function TabRMCC(props) {
         subAssemObj.CostingPartDetails.TotalBOPImportCostWithQuantity = checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPImportCostWithQuantity)
         subAssemObj.CostingPartDetails.TotalBOPDomesticCostWithQuantity = checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPDomesticCostWithQuantity)
 
-        subAssemObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(subAssemObj, "BOP Domestic"))
-        subAssemObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(subAssemObj, "BOP CKD"))
-        subAssemObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(subAssemObj, "BOP V2V"))
-        subAssemObj.CostingPartDetails.TotalBOPOutsourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(subAssemObj, "BOP OSP"))
+        subAssemObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(tempArr, "BOP Domestic"))
+        subAssemObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(subAssemObj, "BOP CKD"))
+        subAssemObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(subAssemObj, "BOP V2V"))
+        subAssemObj.CostingPartDetails.TotalBOPOutsourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(subAssemObj, "BOP OSP"))
 
         subAssemObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeSubAssembly = checkForNull(setWithoutHandlingChargeBOPCostAssembly(subAssemObj, "BOP Domestic"))
         subAssemObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeSubAssembly = checkForNull(setWithoutHandlingChargeBOPCostAssembly(subAssemObj, "BOP CKD"))
@@ -1378,10 +1392,10 @@ function TabRMCC(props) {
           assemblyObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeSubAssembly = checkForNull(setWithoutHandlingChargeBOPCostAssembly(subAssemblyArray, "BOP OSP"))/*  + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges) */
 
 
-          assemblyObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(partAssemblyArray, "BOP Domestic")) /* + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges) */
-          assemblyObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(partAssemblyArray, "BOP CKD")) /* + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges) */
-          assemblyObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(partAssemblyArray, "BOP V2V")) /* + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges) */
-          assemblyObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(partAssemblyArray, "BOP OSP"))/*  + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges) */
+          assemblyObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(partAssemblyArray, "BOP Domestic")) /* + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges) */
+          assemblyObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(partAssemblyArray, "BOP CKD")) /* + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges) */
+          assemblyObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(partAssemblyArray, "BOP V2V")) /* + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges) */
+          assemblyObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(partAssemblyArray, "BOP OSP"))/*  + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges) */
 
 
 
@@ -1680,10 +1694,10 @@ function TabRMCC(props) {
 
             //FOR COMPONENT BOPWithOutHandlingCharg
 
-            subAssemblyToUpdate.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(ccPartAssemblyArray, "BOP Domestic"))
-            subAssemblyToUpdate.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(ccPartAssemblyArray, "BOP CKD"))
-            subAssemblyToUpdate.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(ccPartAssemblyArray, "BOP V2V"))
-            subAssemblyToUpdate.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(ccPartAssemblyArray, "BOP OSP"))
+            subAssemblyToUpdate.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(ccPartAssemblyArray, "BOP Domestic"))
+            subAssemblyToUpdate.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(ccPartAssemblyArray, "BOP CKD"))
+            subAssemblyToUpdate.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(ccPartAssemblyArray, "BOP V2V"))
+            subAssemblyToUpdate.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(ccPartAssemblyArray, "BOP OSP"))
             //QUANTITY KEYS WithOutHandlingCharge
 
             subAssemblyToUpdate.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity = checkForNull(subAssemblyToUpdate?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargePerAssembly) + checkForNull(subAssemblyToUpdate?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeSubAssembly) + checkForNull(subAssemblyToUpdate?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeComponent)
@@ -1848,10 +1862,10 @@ function TabRMCC(props) {
         assemblyObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeSubAssembly = checkForNull(setWithoutHandlingChargeBOPCostAssembly(subAssemblyArray, "BOP OSP"))
 
         //FOR COPONENT BOP WITHOUT HANDLING CHARGE
-        assemblyObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(ccPartAssemblyArray, "BOP Domestic"))
-        assemblyObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(ccPartAssemblyArray, "BOP CKD"))
-        assemblyObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(ccPartAssemblyArray, "BOP V2V"))
-        assemblyObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(ccPartAssemblyArray, "BOP OSP"))
+        assemblyObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(ccPartAssemblyArray, "BOP Domestic"))
+        assemblyObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(ccPartAssemblyArray, "BOP CKD"))
+        assemblyObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(ccPartAssemblyArray, "BOP V2V"))
+        assemblyObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(ccPartAssemblyArray, "BOP OSP"))
 
         //QUANTITY KEY WITHOUT  HANDLING CHARGE
         assemblyObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargePerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeComponent);
@@ -2647,10 +2661,10 @@ function TabRMCC(props) {
             subAssembObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargePerAssembly = checkForNull(setBOPCostForAssembly(tempArr, "BOP V2V"))
             subAssembObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargePerAssembly = checkForNull(setBOPCostForAssembly(tempArr, "BOP OSP"))
 
-            subAssembObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(componentArray, "BOP Domestic"))
-            subAssembObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(componentArray, "BOP CKD"))
-            subAssembObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(componentArray, "BOP V2V"))
-            subAssembObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(componentArray, "BOP OSP"))
+            subAssembObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(componentArray, "BOP Domestic"))
+            subAssembObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(componentArray, "BOP CKD"))
+            subAssembObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(componentArray, "BOP V2V"))
+            subAssembObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(componentArray, "BOP OSP"))
 
             subAssembObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity = checkForNull(subAssembObj?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity)
             subAssembObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeWithQuantity = checkForNull(subAssembObj?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity)
@@ -2753,10 +2767,10 @@ function TabRMCC(props) {
     assemblyObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargePerAssembly = item.BOMLevel === LEVEL0 ? checkForNull(setBOPCostForAssembly(subAssemblyArray, "BOP V2V")) : checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargePerAssembly)
     assemblyObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargePerAssembly = item.BOMLevel === LEVEL0 ? checkForNull(setBOPCostForAssembly(subAssemblyArray, "BOP OSP")) : checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargePerAssembly)
 
-    assemblyObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(componentArray, "BOP Domestic"))
-    assemblyObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(componentArray, "BOP CKD"))
-    assemblyObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(componentArray, "BOP V2V"))
-    assemblyObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostForAssembly(componentArray, "BOP OSP"))
+    assemblyObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(componentArray, "BOP Domestic"))
+    assemblyObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(componentArray, "BOP CKD"))
+    assemblyObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(componentArray, "BOP V2V"))
+    assemblyObj.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeComponent = checkForNull(getBOPTotalCostWithoutHandlingChargeForAssembly(componentArray, "BOP OSP"))
 
     assemblyObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeSubAssembly = checkForNull(setWithoutHandlingChargeBOPCostAssembly(subAssemblyArray, "BOP Domestic"))
     assemblyObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeSubAssembly = checkForNull(setWithoutHandlingChargeBOPCostAssembly(subAssemblyArray, "BOP CKD"))
