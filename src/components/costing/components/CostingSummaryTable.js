@@ -1645,6 +1645,9 @@ const CostingSummaryTable = (props) => {
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
     }
+    if (!(getConfigurationKey().IsShowLineInvestmentCost)) {
+      delete templateObj.lineInvestmentCost
+    }
     if (!(getConfigurationKey()?.IsBasicRateAndCostingConditionVisible)) {
       delete templateObj?.conditionCost
       delete templateObj?.BasicRate
@@ -3711,7 +3714,7 @@ const CostingSummaryTable = (props) => {
                             </tr>
                           }
                           {
-                            initialConfiguration?.IsShowNpvCost && drawerDetailPDF && <tr><th colSpan={2}>
+                            (initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowLineInvestmentCost) && drawerDetailPDF && <tr><th colSpan={2}>
                               <ViewOtherCostDrawer
                                 isOpen={openNpvDrawer}
                                 costingSummary={true}

@@ -26,6 +26,7 @@ function ColdForging(props) {
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const { finishedWeightLabel } = useLabels()
+  const [ isForgedWeightManuallyEntered, setIsForgedWeightManuallyEntered ] = useState(WeightCalculatorRequest && WeightCalculatorRequest?.IsForgedWeightManuallyEntered !== undefined ? WeightCalculatorRequest?.IsForgedWeightManuallyEntered : false)
   const defaultValues = {
     finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '',
     forgedWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgedWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '',
@@ -63,7 +64,7 @@ function ColdForging(props) {
 
   const fieldValues = useWatch({
     control,
-    name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage', 'forgingScrapRecoveryPercent', 'machiningScrapRecoveryPercent', 'tolerance'],
+    name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage', 'forgingScrapRecoveryPercent', 'machiningScrapRecoveryPercent', 'tolerance', 'forgedWeight'],
 
   })
 
@@ -72,9 +73,11 @@ function ColdForging(props) {
   const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
   const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
   const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgingStockDetails !== null ? WeightCalculatorRequest.ForgingStockDetails : [])
-  const [dataSend, setDataSend] = useState({})
+  const [dataSend, setDataSend] = useState({IsForgedWeightManuallyEntered: isForgedWeightManuallyEntered})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
-  const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
+  // const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 && WeightCalculatorRequest && WeightCalculatorRequest?.FinishedWeight !== null ? false : true)
+  const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? true : false)
+  
   const [isDisable, setIsDisable] = useState(false)
   useEffect(() => {
     if (!CostingViewMode) {
@@ -101,16 +104,25 @@ function ColdForging(props) {
    * @description calculate forge weight
    */
   const calculateForgeWeight = () => {
-
     const finishedWeight = checkForNull(getValues('finishedWeight'))
-    const forgedWeight = checkForNull(finishedWeight) + checkForNull(totalMachiningStock)
+    const forgedWeightinput = checkForNull(getValues('forgedWeight'))
+    let forgedWeight = 0
+    if (isForgedWeightManuallyEntered) {
+      forgedWeight = forgedWeightinput;
+    } else {
+      forgedWeight = checkForNull(finishedWeight) + checkForNull(totalMachiningStock);
+    }
     const machiningScrapRecoveryPercent = checkForNull(getValues('machiningScrapRecoveryPercent'))
     const machiningScrapWeight = (forgedWeight - finishedWeight) * machiningScrapRecoveryPercent / 100
     let obj = dataSend
     obj.forgedWeight = forgedWeight
     obj.machiningScrapWeight = machiningScrapWeight
     setDataSend(obj)
-    setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration?.NoOfDecimalForInputOutput))
+    const currentVal = checkForDecimalAndNull(getValues('forgedWeight'), initialConfiguration?.NoOfDecimalForInputOutput)
+    const updatedVal = checkForDecimalAndNull(forgedWeight, initialConfiguration?.NoOfDecimalForInputOutput)
+    if (currentVal !== updatedVal) {
+      setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration?.NoOfDecimalForInputOutput))
+    }
     setValue('machiningScrapWeight', checkForDecimalAndNull(machiningScrapWeight, initialConfiguration?.NoOfDecimalForInputOutput))
     setForgeWeightValue(forgedWeight)
   }
@@ -293,6 +305,7 @@ function ColdForging(props) {
     obj.ForgingScrapCost = dataSend.forgingScrapCost
     obj.MachiningScrapCost = dataSend.machiningScrapCost
     obj.Tolerance = checkForNull(getValues('tolerance'))
+    obj.isForgedWeightManuallyEntered = dataSend?.IsForgedWeightManuallyEntered
     let tempArr = []
     tableVal && tableVal.map(item => (
       tempArr.push({ LossOfType: item.LossOfType, FlashLoss: item.FlashLoss, FlashLossId: item.FlashLossId, LossPercentage: item.LossPercentage, FlashLength: item.FlashLength, FlashThickness: item.FlashThickness, FlashWidth: item.FlashWidth, BarDiameter: item.BarDiameter, BladeThickness: item.BladeThickness, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
@@ -303,7 +316,7 @@ function ColdForging(props) {
     let tempArray = []
 
     tableV && tableV.map(item => (
-      tempArray.push({ TypesOfMachiningStock: item.TypesOfMachiningStock, TypesOfMachiningStockId: item.TypesOfMachiningStockId, Description: item.Description, MajorDiameter: item.MajorDiameter, MinorDiameter: item.MinorDiameter, Length: item.Length, Breadth: item.Breadth, Height: item.Height, No: item.No, GrossWeight: item.GrossWeight, Volume: item.Volume, ForgingWeighCalculatorId: "00000000-0000-0000-0000-000000000000" })
+      tempArray.push({ TypesOfMachiningStock: item.TypesOfMachiningStock, TypesOfMachiningStockId: item.TypesOfMachiningStockId, Description: item.Description, MajorDiameter: item.MajorDiameter, MinorDiameter: item.MinorDiameter, Length: item.Length, Breadth: item.Breadth, Height: item.Height, No: item.No, GrossWeight: item.GrossWeight, Volume: item.Volume, ForgingWeighCalculatorId: "00000000-0000-0000-0000-000000000000", MachiningMultiplyingFactorPercentage: item?.MachiningMultiplyingFactorPercentage })
     ))
     obj.ForgingStockDetails = tempArray
     obj.TotalMachiningStock = totalMachiningStock
@@ -357,6 +370,18 @@ function ColdForging(props) {
       label: 'Bar Cutting Allowance',
       value: 8,
     },
+    {
+      label: 'End Loss',
+      value: 18,
+    },
+    {
+      label: 'Yield Loss',
+      value: 19
+    },
+    {
+      label: 'Fixed Loss',
+      value: 20
+    }
   ]
 
   const tableData1 = (value = []) => {
@@ -389,6 +414,10 @@ function ColdForging(props) {
       label: 'Irregular',
       value: 10,
     },
+    {
+      label: 'Multiplying factor (Yield %)',
+      value: 21,
+    }
   ]
   const handleFinishWeight = (value) => {
 
@@ -405,6 +434,16 @@ function ColdForging(props) {
       e.preventDefault();
     }
   };
+
+  const handleSelectFieldChange = async (e) => {
+    const forgedManuallyEntered = e?.target?.checked
+    setValue('forgedWeight', 0)
+    setIsForgedWeightManuallyEntered(!forgedManuallyEntered)
+    let obj = dataSend
+    obj.IsForgedWeightManuallyEntered = !forgedManuallyEntered
+    setDataSend(obj)
+    
+  }
 
   const inputLengthTooltipMessage = <div>Input Length = (Forged Weight + Loss Weight / (π/4) * Billet Diameter<sup>2</sup>) * Density / 1000000</div>
   const endBitLossTooltipMessage = <div>End Bit Loss = ((π/4) * Billet Diameter<sup>2</sup> * End Bit Length * (Density / 1000000) / No. of Part per Length)</div>
@@ -439,8 +478,50 @@ function ColdForging(props) {
                           disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
                         />
                       </Col>
+                      <Col md="3">
+                        <div className="mt-4">
+                          <span className="d-inline-block mt15">
+                            <label
+                              className={`custom-checkbox mb-0`}
+                              onChange={(e) => handleSelectFieldChange(e)}
+                            >
+                              Machining Stock
+                              <input
+                                type="checkbox"
+                                checked={!isForgedWeightManuallyEntered}
+                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
+                              />
+                              <span
+                                className="before-box"
+                                checked={!isForgedWeightManuallyEntered}
+                                onChange={(e) => handleSelectFieldChange(e)}
+                              />
+                            </label>
+                          </span>
+                        </div>
+                      </Col>
+                      {isForgedWeightManuallyEntered &&
+                        <Col md="3">
+                          <TextFieldHookForm
+                            label={`Forged Weight(Kg)`}
+                            name={'forgedWeight'}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={false}
+                            id={'forged-weight'}
+                            handleChange={() => { }}
+                            defaultValue={''}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.forgedWeight}
+                            disabled={false}
+                          />
+                        </Col>
+                      }
 
                     </Row>
+                  {!isForgedWeightManuallyEntered && 
                     <MachiningStockTable
                       dropDownMenu={machineDropDown}
                       CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
@@ -451,11 +532,12 @@ function ColdForging(props) {
                       calculation={TotalMachiningStock}
                       hotcoldErrors={errors}
                       disableAll={disableAll}
-
+                      netWeightCost={getValues('finishedWeight')}
                     />
+                  }
                   </Col>
                 </Row>
-
+                {!isForgedWeightManuallyEntered && 
                 <Col md="3" className='mt10 px-0'>
                   <TooltipCustom disabledIcon={true} id={'forged-weight'} tooltipText={`Forged Weight = (Total Machining Stock + ${finishedWeightLabel} Weight)`} />
                   <TextFieldHookForm
@@ -474,6 +556,7 @@ function ColdForging(props) {
                     disabled={true}
                   />
                 </Col>
+                }
                 <LossStandardTable
                   dropDownMenu={dropDown}
                   CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}

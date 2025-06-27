@@ -648,7 +648,20 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.BudgetedPrice = (dataFromAPI && dataFromAPI?.BudgetedPrice) ? dataFromAPI?.BudgetedPrice : 0
   obj.BudgetedPriceVariance = (dataFromAPI && dataFromAPI?.BudgetedPriceVariance) ? dataFromAPI?.BudgetedPriceVariance : 0
   obj.CostingPartDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails
-  obj.npvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingNpvResponse?.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0)
+  let totalNpvCost = 0;
+  let totalLineInvestmentCost = 0;
+  if (dataFromAPI?.CostingPartDetails && Array.isArray(dataFromAPI?.CostingPartDetails?.CostingNpvResponse)) {
+    totalNpvCost = dataFromAPI?.CostingPartDetails?.CostingNpvResponse
+      .filter(obj => obj?.NpvType !== 'Line Investment')
+      .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.NpvCost), 0);
+
+    totalLineInvestmentCost = dataFromAPI?.CostingPartDetails?.CostingNpvResponse
+      .filter(obj => obj?.NpvType === 'Line Investment')
+      .reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.NpvCost), 0);
+  }
+  // obj.npvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingNpvResponse?.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0)
+  obj.npvCost = totalNpvCost
+  obj.lineInvestmentCost = totalLineInvestmentCost
   obj.conditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingConditionResponse?.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0)
   obj.netConditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConditionCost
   obj.netNpvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetNpvCost
