@@ -31,6 +31,7 @@ function EditPartCost(props) {
     const [gridData, setGridData] = useState([])
     const { settledCostingDetails, settledCostingDetailsView } = useSelector(state => state.subAssembly)
     const [weightedCost, setWeightedCost] = useState(0)
+
     const [costingNumberData, setCostingNumberData] = useState({})
     const [isOpen, setIsOpen] = useState(false)
     const CostingViewMode = useContext(ViewCostingContext);
@@ -113,6 +114,7 @@ function EditPartCost(props) {
                     tempObject.EffectiveDate = item?.EffectiveDate
                     tempObject.Remark = item?.Remark
                     tempObject.SourceVendor = item?.SourceVendor
+                    tempObject.BOPType = item?.BOPType 
                 }
                 tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -156,6 +158,7 @@ function EditPartCost(props) {
                     tempObject.EffectiveDate = item?.EffectiveDate
                     tempObject.Remark = item?.Remark
                     tempObject.SourceVendor = item?.SourceVendor
+                    tempObject.BOPType = item?.BOPType 
 
                 } tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -624,30 +627,174 @@ function EditPartCost(props) {
             editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = isBOPView ? checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity) : null
             editedChildPart.CostingPartDetails.BoughtOutPartRate = isBOPView ? checkForNull(weightedCost) : null
 
-            Object.assign([...tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails], { [index]: editedChildPart })
+            // Set BOP type and corresponding costs based on type
+            if (isBOPView && selectedBOPItems.length > 0) {
+                // Reset all BOP costs
+                editedChildPart.CostingPartDetails.NetBOPDomesticCost = 0
+                editedChildPart.CostingPartDetails.NetBOPImportCost = 0
+                editedChildPart.CostingPartDetails.NetBOPSourcedCost = 0
+                editedChildPart.CostingPartDetails.NetBOPOutsourcedCost = 0
+                editedChildPart.CostingPartDetails.NetBOPDomesticCostWithOutHandlingCharge = 0
+                editedChildPart.CostingPartDetails.NetBOPImportCostWithOutHandlingCharge = 0
+                editedChildPart.CostingPartDetails.NetBOPSourceCostWithOutHandlingCharge = 0
+                editedChildPart.CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge = 0
 
+                // Get assembly-level handling charges for different BOP types
+                const parentAssembly = tempsubAssemblyTechnologyArray[0]?.CostingPartDetails
+                const assemblyHandlingCharges = {
+                    domestic: checkForNull(parentAssembly?.NetBOPDomesticHandlingCost),
+                    import: checkForNull(parentAssembly?.NetBOPImportHandlingCost),
+                    source: checkForNull(parentAssembly?.NetBOPSourceHandlingCost),
+                    outsourced: checkForNull(parentAssembly?.NetBOPOutsourcedHandlingCost),
+                    bopHandlingCharge: checkForNull(parentAssembly?.BOPHandlingCharges)
+                }
+
+                // Set BOPType based on first selected BOP item
+                if (selectedBOPItems.length > 0) {
+                    editedChildPart.BOPType = selectedBOPItems[0]?.BOPType;
+                }
+                
+                // Distribute costs based on each selected BOP item's type and SOB percentage  
+                selectedBOPItems.forEach(bopItem => {
+                    const bopType = bopItem?.BOPType
+                    const quantity = checkForNull(editedChildPart?.CostingPartDetails?.Quantity)
+                    const bopNetCost = checkForNull(bopItem.NetCost) * quantity
+
+                    // Add BOP net cost to respective type (without handling charge for child part)
+                    switch (bopType) {
+                        case 'BOP Domestic':
+                            editedChildPart.CostingPartDetails.NetBOPDomesticCost += checkForNull(bopNetCost) /* + checkForNull(assemblyHandlingCharges?.domestic) */
+                            editedChildPart.CostingPartDetails.TotalBOPDomesticCostWithQuantity = checkForNull(editedChildPart.CostingPartDetails.NetBOPDomesticCost)
+                            // Add WithOutHandlingCharge keys for child parts
+                            editedChildPart.CostingPartDetails.NetBOPDomesticCostWithOutHandlingCharge += checkForNull(bopNetCost)
+                            editedChildPart.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity = checkForNull(editedChildPart.CostingPartDetails.NetBOPDomesticCostWithOutHandlingCharge)
+                            break
+                        case 'BOP CKD':
+                            editedChildPart.CostingPartDetails.NetBOPImportCost += checkForNull(bopNetCost) /* + checkForNull(assemblyHandlingCharges?.import) */
+                            editedChildPart.CostingPartDetails.TotalBOPImportCostWithQuantity = checkForNull(editedChildPart.CostingPartDetails.NetBOPImportCost)
+                            // Add WithOutHandlingCharge keys for child parts
+                            editedChildPart.CostingPartDetails.NetBOPImportCostWithOutHandlingCharge += checkForNull(bopNetCost)
+                            editedChildPart.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeWithQuantity = checkForNull(editedChildPart.CostingPartDetails.NetBOPImportCostWithOutHandlingCharge)
+                            break
+                        case 'BOP V2V':
+                            editedChildPart.CostingPartDetails.NetBOPSourceCost += checkForNull(bopNetCost) /* + checkForNull(assemblyHandlingCharges?.source) */
+                            editedChildPart.CostingPartDetails.TotalBOPSourceCostWithQuantity = checkForNull(editedChildPart.CostingPartDetails.NetBOPSourceCost)
+                            // Add WithOutHandlingCharge keys for child parts
+                            editedChildPart.CostingPartDetails.NetBOPSourceCostWithOutHandlingCharge += checkForNull(bopNetCost)
+                            editedChildPart.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeWithQuantity = checkForNull(editedChildPart.CostingPartDetails.NetBOPSourceCostWithOutHandlingCharge)
+                            break
+                        case 'BOP OSP':
+                            editedChildPart.CostingPartDetails.NetBOPOutsourcedCost += checkForNull(bopNetCost) /* + checkForNull(assemblyHandlingCharges?.outsourced) */
+                            editedChildPart.CostingPartDetails.TotalBOPOutsourcedCostWithQuantity = checkForNull(editedChildPart.CostingPartDetails.NetBOPOutsourcedCost)
+                            // Add WithOutHandlingCharge keys for child parts
+                            editedChildPart.CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge += checkForNull(bopNetCost)
+                            editedChildPart.CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity = checkForNull(editedChildPart.CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge)
+                            break
+                        default:
+                            editedChildPart.CostingPartDetails.NetBoughtOutPartCost = checkForNull(editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyHandlingCharges?.bopHandlingCharge)
+                            editedChildPart.CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge = checkForNull(editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithQuantity)
+                            editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity = checkForNull(editedChildPart.CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge)
+
+                    }
+                })
+
+                editedChildPart.CostingPartDetails.NetBoughtOutPartCost = checkForNull(editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) /* + checkForNull(assemblyHandlingCharges?.bopHandlingCharge) */
+                editedChildPart.CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge = checkForNull(editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithQuantity)
+                editedChildPart.CostingPartDetails.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity = checkForNull(editedChildPart.CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge)
+
+                // Set the primary BOP type (use the first one or most common one)
+                editedChildPart.CostingPartDetails.BOPType = selectedBOPItems[0]?.BOPType
+            }
+            
+            Object.assign([...tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails], { [index]: editedChildPart })
 
             // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
             costPerAssemblyTotalWithQuantity = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
                 return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.NetChildPartsCostWithQuantity)
             }, 0)
-            let bopCostperAssembly = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
-                return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
-            }, 0)
-            // tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyWithoutQuantity = costPerAssemblyWithoutQuantity
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost = checkForNull(bopCostperAssembly)
+
+            let bopCostperAssembly = 0;
+            let bopDomesticCost = 0;
+            let bopImportCost = 0;
+            let bopSourceCost = 0;
+            let bopOutsourceCost = 0;
+            // Calculate assembly level BOP costs by aggregating child part costs
+            tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.forEach((el) => {
+                const totalCost = checkForNull(el?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity);
+                const quantity = checkForNull(el?.CostingPartDetails?.Quantity)
+                bopCostperAssembly += totalCost;
+
+                // Add individual BOP type costs from child parts
+                const domesticCost = checkForNull(el?.CostingPartDetails?.NetBOPDomesticCost);
+                const importCost = checkForNull(el?.CostingPartDetails?.NetBOPImportCost);
+                const sourceCost = checkForNull(el?.CostingPartDetails?.NetBOPSourceCost);
+                const outsourceCost = checkForNull(el?.CostingPartDetails?.NetBOPOutsourcedCost);
+
+                if (domesticCost > 0) {
+                    bopDomesticCost += domesticCost;
+                }
+                if (importCost > 0) {
+                    bopImportCost += importCost;
+                }
+                if (sourceCost > 0) {
+                    bopSourceCost += sourceCost;
+                }
+                if (outsourceCost > 0) {
+                    bopOutsourceCost += outsourceCost;
+                }
+            });
+
+            // Get assembly-level handling charges
+            const parentAssembly = tempsubAssemblyTechnologyArray[0]?.CostingPartDetails
+            const assemblyHandlingCharges = {
+                domestic: checkForNull(parentAssembly?.NetBOPDomesticHandlingCost),
+                import: checkForNull(parentAssembly?.NetBOPImportHandlingCost),
+                source: checkForNull(parentAssembly?.NetBOPSourceHandlingCost),
+                outsourced: checkForNull(parentAssembly?.NetBOPOutsourcedHandlingCost),
+                bopHandlingCharge: checkForNull(parentAssembly?.BOPHandlingCharges)
+            }
+
+            // Set all the BOP related costs in tempsubAssemblyTechnologyArray (without handling charges first)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge = checkForNull(bopCostperAssembly)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCostWithOutHandlingCharge = checkForNull(bopDomesticCost)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPImportCostWithOutHandlingCharge = checkForNull(bopImportCost)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCostWithOutHandlingCharge = checkForNull(bopSourceCost)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge = checkForNull(bopOutsourceCost)
+
+            // Set BOP costs with handling charges (handling charges applied only at assembly level)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost = checkForNull(bopCostperAssembly) /* + checkForNull(assemblyHandlingCharges?.bopHandlingCharge) */
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCost = checkForNull(bopDomesticCost) /* + checkForNull(assemblyHandlingCharges.domestic) */
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPImportCost = checkForNull(bopImportCost) /* + checkForNull(assemblyHandlingCharges.import) */
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCost = checkForNull(bopSourceCost)/*  + checkForNull(assemblyHandlingCharges.source) */
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCost = checkForNull(bopOutsourceCost) /* + checkForNull(assemblyHandlingCharges.outsourced) */
+
+            // // Set costs with quantity (only withQuantity keys for BOP child objects)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCostWithQuantity = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBOPDomesticCostWithQuantity = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCost)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBOPImportCostWithQuantity = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPImportCost)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBOPSourceCostWithQuantity = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCost)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBOPOutsourcedCostWithQuantity = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCost)
+
+            // Set costs without handling charges with quantity
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCostWithOutHandlingCharge)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeWithQuantity = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPImportCostWithOutHandlingCharge)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeWithQuantity = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCostWithOutHandlingCharge)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge)
+
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetChildPartsCost = checkForNull(costPerAssemblyTotalWithQuantity)
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice = checkForNull(costPerAssemblyTotalWithQuantity) +
-                checkForNull(bopCostperAssembly) +
+                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost) +
                 (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
                     checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost))
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC = checkForNull(costPerAssemblyTotalWithQuantity) +
-                checkForNull(bopCostperAssembly) +
+                checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost) +
                 (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
                     checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost)) +
                 checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
                 checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
                 checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
+
             let tempArray = []
             if (!isBOPView) {
                 gridData && gridData?.map((item) => {
@@ -674,15 +821,14 @@ function EditPartCost(props) {
                     tempObject.SettledPriceConversion = item?.SettledPriceConversion
                     tempObject.SettledPriceLocalConversion = item?.SettledPriceLocalConversion
                     tempObject.Remark = item?.Remark
+                    tempObject.BOPType = item?.BOPType
                     tempArray.push(tempObject)
                 });
             }
 
-
             dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
             let obj = {
                 "BaseCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
-
                 "BaseWeightedAverageCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
                 "NetPOPrice": weightedCost,
                 "BasicRate": weightedCost,
@@ -702,6 +848,8 @@ function EditPartCost(props) {
                     checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
                 let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
+                
+                
                 dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
                     dispatch(gridDataAdded(true))
                 }))
@@ -709,9 +857,6 @@ function EditPartCost(props) {
         }
 
         props?.closeDrawer('')
-
-        // SAVE API FOR PART COST
-        // dispatch(saveEditPartCostDetails((res) => { }))
     }
 
     const tooltipText = (item) => {
@@ -739,7 +884,8 @@ function EditPartCost(props) {
                         DeltaValue: 0,
                         DeltaSign: "",
                         SOBPercentage: 0,
-                        NetCost: 0
+                        NetCost: 0,
+                        BOPType: newItem?.BOPType 
                     };
                     tempArr.push(newBOPItem);
                 }
@@ -860,13 +1006,14 @@ function EditPartCost(props) {
                                             {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
                                                 <th>{vendorLabel} (Code)</th>
                                             }
-                                            {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId)  && isBOPView &&
+                                            {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) && isBOPView &&
                                                 <th>Source {vendorLabel} (Code)</th>
                                             }
                                             {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
                                                 <th>Customer (Code)</th>
                                             }
                                             <th>Costing Number</th>
+                                            {isBOPView && <th>BOP Type</th>}
                                             <th>Settled Price ({costData?.LocalCurrency ? costData?.LocalCurrency : (props?.viewCostingData?.[props?.index]?.LocalCurrency ? props?.viewCostingData?.[props?.index]?.LocalCurrency : '-')})</th>
                                             {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <th>Delta</th>}
                                             <th>SOB%</th>
@@ -890,6 +1037,7 @@ function EditPartCost(props) {
                                                             <td>{`${item.CustomerName || '-'} (${item.CustomerCode || '-'})`}</td>
                                                         }
                                                         <td>{item.BoughtOutPartNumber || '-'}</td>
+                                                        <td>{item?.BOPType}</td>
                                                         <td>{item?.NetLandedCost ? checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}{item?.NetLandedCost && <span><TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`settled-price-${index}`} tooltipText={() => tooltipText(item)} /></span>}</td>
 
                                                         {
@@ -1008,7 +1156,7 @@ function EditPartCost(props) {
                                                 ))
                                             ) : (
                                                 <tr>
-                                                    <td colSpan={8}>
+                                                    <td colSpan={9}>
                                                         <NoContentFound title={EMPTY_DATA} />
                                                     </td>
                                                 </tr>

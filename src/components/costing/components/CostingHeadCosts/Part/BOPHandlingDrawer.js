@@ -183,7 +183,7 @@ function BOPHandlingDrawer(props) {
                 }
                 break;
             default:
-                if (item?.PartType !== "Part" && item?.PartType !== "Component") {
+                if (item?.PartType !== "Part"&& item?.PartType !== "Component" && item?.PartType !== "Component") {
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
                 } else {
                     applicabilityCost = props.netBOPCost;
