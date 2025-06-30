@@ -1976,7 +1976,7 @@ export function getCalculationCriteriaList(callback) {
  */
 export function saveBOPHandlingChargesDetails(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveBOPHandlingChargesDetails, data, config());
+    const request = axiosInstance.post(API.saveBOPHandlingChargesDetails, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);

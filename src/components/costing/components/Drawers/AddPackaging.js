@@ -333,6 +333,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(NetBOPDomesticCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
       case "BOP CKD Without Handling Charge":
@@ -341,6 +342,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(NetBOPImportCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
       case "BOP V2V Without Handling Charge":
@@ -349,6 +351,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(NetBOPSourceCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
       case "BOP OSP Without Handling Charge":
@@ -357,6 +360,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(NetBOPOutsourcedCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
 
@@ -366,6 +370,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(NetBoughtOutPartCostWithOutHandlingCharge) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
       case "Hanger Cost":
@@ -374,6 +379,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(HangerCostPerPart) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
       case "Paint Cost":
@@ -382,6 +388,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(PaintCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
       case "Surface Treatment Cost":
@@ -390,6 +397,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(SurfaceTreatmentCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
       case "Overhead Cost":
@@ -398,6 +406,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(TopHeaderValues?.OverheadCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
       case "Profit Cost":
@@ -406,6 +415,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(TopHeaderValues?.ProfitCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
       case "Rejection Cost":
@@ -414,6 +424,7 @@ function AddPackaging(props) {
         } else {
           totalPackagingCost = checkForNull(TopHeaderValues?.RejectionCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+          setPackagingCost(totalPackagingCost)
         }
         break;
       case 'Fixed':

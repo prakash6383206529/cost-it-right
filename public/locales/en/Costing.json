@@ -74,9 +74,9 @@
         "addSt": "Add a surface by clicking this button."
     },
     "overheadProfitTab": {
-        "checkBox1": "If you want to include surface treatment cost in CC for overhead and profit, click on the checkbox.",
-        "checkBox2": "If you want to include surface treatment cost in CC for rejection, click on the checkbox.",
-        "checkBox3": "If you want to include tool cost in CC for overhead and profit, click on the checkbox.",
+        "checkBox1": "If you want to include surface treatment cost in overhead and profit, click on the checkbox.",
+        "checkBox2": "If you want to include surface treatment cost in rejection, click on the checkbox.",
+        "checkBox3": "If you want to include tool cost in overhead and profit, click on the checkbox.",
         "checkBox4": "If you want to include overhead & profit in ICC, click on the checkbox.",
         "modelType": "Select the model type. Based on the model type, you will see the overhead and profit data below the table.",
         "RejectionApplicability": "Select the applicability.",
