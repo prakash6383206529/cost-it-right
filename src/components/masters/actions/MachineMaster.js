@@ -442,7 +442,7 @@ export function fileUploadMachine(data, callback) {
  */
 export function checkAndGetMachineNumber(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkAndGetMachineNumber, data, config());
+        const request = axiosInstance.post(API.checkAndGetMachineNumber, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

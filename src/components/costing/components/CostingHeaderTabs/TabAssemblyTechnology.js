@@ -88,7 +88,17 @@ function TabAssemblyTechnology(props) {
         NetCCForOtherTechnologyCost: checkForNull(TopHeaderValues?.NetCCForOtherTechnologyCost)?checkForNull(TopHeaderValues?.NetCCForOtherTechnologyCost) : 0,
         NetCCForOtherTechnologyCostForOverhead:  checkForNull(TopHeaderValues?.NetCCForOtherTechnologyCostForOverhead)?checkForNull(TopHeaderValues?.NetCCForOtherTechnologyCostForOverhead) : 0,
         NetCCForOtherTechnologyCostForProfit: checkForNull(TopHeaderValues?.NetCCForOtherTechnologyCostForProfit)? checkForNull(TopHeaderValues?.NetCCForOtherTechnologyCostForProfit): 0,
+        NetBOPDomesticCost: TopHeaderValues?.NetBOPDomesticCost ?? 0,
+        NetBOPImportCost: TopHeaderValues?.NetBOPImportCost ?? 0,
+        NetBOPSourceCost: TopHeaderValues?.NetBOPSourceCost ?? 0,
+        NetBOPOutsourcedCost: TopHeaderValues?.NetBOPOutsourcedCost ?? 0,
+        NetBoughtOutPartCostWithOutHandlingCharge: TopHeaderValues?.NetBoughtOutPartCostWithOutHandlingCharge ?? 0,
+        NetBOPDomesticCostWithOutHandlingCharge: TopHeaderValues?.NetBOPDomesticCostWithOutHandlingCharge ?? 0,
+        NetBOPImportCostWithOutHandlingCharge: TopHeaderValues?.NetBOPImportCostWithOutHandlingCharge ?? 0,
+        NetBOPSourceCostWithOutHandlingCharge: TopHeaderValues?.NetBOPSourceCostWithOutHandlingCharge ?? 0,
+        NetBOPOutsourcedCostWithOutHandlingCharge: TopHeaderValues?.NetBOPOutsourcedCostWithOutHandlingCharge ?? 0,
       }
+
       
       props.setHeaderCost(topHeaderData)
     }

@@ -63,10 +63,10 @@ function BOPCost(props) {
     openBOPHandlingDrawer: false,
     totalBOPHandlingCharges: item?.CostingPartDetails?.BOPHandlingCharges,
     showHandlingWarning: false,
-    bopDomesticCost: checkForNull(item?.CostingPartDetails?.NetBOPDomesticCost) + checkForNull(item?.CostingPartDetails?.NetBOPDomesticHandlingCost),
-    bopCKDCost: checkForNull(item?.CostingPartDetails?.NetBOPImportCost) + checkForNull(item?.CostingPartDetails?.NetBOPImportHandlingCost),
-    bopV2VCost: checkForNull(item?.CostingPartDetails?.NetBOPSourceCost) + checkForNull(item?.CostingPartDetails?.NetBOPSourceHandlingCost),
-    bopOSPCost: checkForNull(item?.CostingPartDetails?.NetBOPOutsourcedCost) + checkForNull(item?.CostingPartDetails?.NetBOPOutsourcedHandlingCost),
+    bopDomesticCost: checkForNull(item?.CostingPartDetails?.NetBOPDomesticCost),
+    bopCKDCost: checkForNull(item?.CostingPartDetails?.NetBOPImportCost),
+    bopV2VCost: checkForNull(item?.CostingPartDetails?.NetBOPSourceCost),
+    bopOSPCost: checkForNull(item?.CostingPartDetails?.NetBOPOutsourcedCost),
     bopDomesticHandlingCost: item?.CostingPartDetails?.NetBOPDomesticHandlingCost,
     bopCKDHandlingCost: item?.CostingPartDetails?.NetBOPImportHandlingCost,
     bopV2VHandlingCost: item?.CostingPartDetails?.NetBOPSourceHandlingCost,
@@ -112,12 +112,16 @@ function BOPCost(props) {
           let bopCKDCost = 0;
           let bopV2VCost = 0;
           let bopOSPCost = 0;
+          let bopDomesticHandling=IsApplyBOPHandlingCharges ? checkForNull(state.bopDomesticHandlingCost) : 0
+          let bopCKDHandling=IsApplyBOPHandlingCharges ? checkForNull(state.bopCKDHandlingCost) : 0
+          let bopV2Vhandling=IsApplyBOPHandlingCharges ? checkForNull(state.bopV2VHandlingCost) : 0
+          let bopOSPHandling=IsApplyBOPHandlingCharges ? checkForNull(state.bopOSPHandlingCost) : 0
 
           gridData.forEach(el => {
             const cost = el.NetBoughtOutPartCost || 0;
             switch (el.BOPType) {
               case "BOP Domestic":
-                bopDomesticCost += cost;
+                bopDomesticCost += cost  ;
                 break;
               case "BOP CKD":
                 bopCKDCost += cost;
@@ -132,13 +136,13 @@ function BOPCost(props) {
                 break;
             }
           });
-
+       
           setState(prevState => ({
             ...prevState,
-            bopDomesticCost: bopDomesticCost + checkForNull(state.bopDomesticHandlingCost),
-            bopCKDCost: bopCKDCost + checkForNull(state.bopCKDHandlingCost),
-            bopV2VCost: bopV2VCost + checkForNull(state.bopV2VHandlingCost),
-            bopOSPCost: bopOSPCost + checkForNull(state.bopOSPHandlingCost)
+            bopDomesticCost: checkForNull(bopDomesticCost) + bopDomesticHandling,
+            bopCKDCost: bopCKDCost + bopCKDHandling,
+            bopV2VCost: bopV2VCost + bopV2Vhandling,
+            bopOSPCost: bopOSPCost + bopOSPHandling
           }));
         }
         const BOPHandlingFields = {
@@ -168,8 +172,13 @@ function BOPCost(props) {
       }
       dispatch(saveBOPHandlingChargesDetails(data, (res) => { }))
       setValue('BOPHandlingCharges', 0)
+
       setState(prevState => ({
         ...prevState,
+        bopDomesticCost: state.bopDomesticCost - state.bopDomesticHandlingCost,
+        bopCKDCost: state.bopCKDCost - state.bopCKDHandlingCost,
+        bopV2VCost: state.bopV2VCost - state.bopV2VHandlingCost,
+        bopOSPCost: state.bopOSPCost - state.bopOSPHandlingCost,
         totalBOPHandlingCharges: 0,
         bopDomesticHandlingCost: 0,
         bopCKDHandlingCost: 0,
@@ -182,6 +191,7 @@ function BOPCost(props) {
       dispatch(setBopAddEditDeleteDisable(false))
     }
   }, [gridData, IsApplyBOPHandlingCharges]);
+
 
   /**1
    * @method netBOPCost
@@ -455,20 +465,27 @@ function BOPCost(props) {
     }))
   }
   const closeBOPHandlingDrawer = (type, totalBOPHandlingCharges, tableData) => {
+    // Get handling charges for each BOP type from the new tableData
     const bopDomesticHandling = tableData?.find(item => item.BOPType === 'BOP Domestic')?.BOPHandlingCharges || 0;
     const bopCKDHandling = tableData?.find(item => item.BOPType === 'BOP CKD')?.BOPHandlingCharges || 0;
     const bopV2VHandling = tableData?.find(item => item.BOPType === 'BOP V2V')?.BOPHandlingCharges || 0;
     const bopOSPHandling = tableData?.find(item => item.BOPType === 'BOP OSP')?.BOPHandlingCharges || 0;
-    const bopDomecticCost = state?.bopDomesticCost + checkForNull(bopDomesticHandling);
-    const bopCKDCost = state?.bopCKDCost + checkForNull(bopCKDHandling);
-    const bopV2VCost = state?.bopV2VCost + checkForNull(bopV2VHandling);
-    const bopOSPCost = state?.bopOSPCost + checkForNull(bopOSPHandling);
+
+    // Calculate total costs by adding base cost and handling charges
+    // Base costs come from state but exclude previous handling charges
+    const bopDomesticCost = (state?.bopDomesticCost - state?.bopDomesticHandlingCost) + checkForNull(bopDomesticHandling);
+    const bopCKDCost = (state?.bopCKDCost - state?.bopCKDHandlingCost) + checkForNull(bopCKDHandling);
+    const bopV2VCost = (state?.bopV2VCost - state?.bopV2VHandlingCost) + checkForNull(bopV2VHandling);
+    const bopOSPCost = (state?.bopOSPCost - state?.bopOSPHandlingCost) + checkForNull(bopOSPHandling);
+
+    // Set form values
     setValue('bopCKDHandlingCharges', checkForDecimalAndNull(bopCKDHandling, initialConfiguration.NoOfDecimalForPrice));
     setValue('bopDomesticHandlingCharges', checkForDecimalAndNull(bopDomesticHandling, initialConfiguration.NoOfDecimalForPrice));
     setValue('bopV2VHandlingCharges', checkForDecimalAndNull(bopV2VHandling, initialConfiguration.NoOfDecimalForPrice));
     setValue('bopOSPHandlingCharges', checkForDecimalAndNull(bopOSPHandling, initialConfiguration.NoOfDecimalForPrice));
     setValue('BOPHandlingCharges', checkForDecimalAndNull(totalBOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice))
 
+    // Update state with new values
     setState(prev => ({
       ...prev,
       openBOPHandlingDrawer: false,
@@ -477,7 +494,7 @@ function BOPCost(props) {
       bopCKDHandlingCost: bopCKDHandling,
       bopV2VHandlingCost: bopV2VHandling,
       bopOSPHandlingCost: bopOSPHandling,
-      bopDomesticCost: bopDomecticCost,
+      bopDomesticCost: bopDomesticCost,
       bopCKDCost: bopCKDCost,
       bopV2VCost: bopV2VCost,
       bopOSPCost: bopOSPCost
@@ -544,7 +561,7 @@ function BOPCost(props) {
               <Col className="col-md-15 cr-costlabel d-flex align-items-start justify-content-start"> <span className="d-inline-block align-middle">{`${showBopLabel()} CKD Cost: ${state.bopCKDCost !== null ? checkForDecimalAndNull(state.bopCKDCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span><div className='ml-2 mt-1'><TooltipCustom id='ckdhandling' width="350px" tooltipText={`${showBopLabel()} CKD Cost (Without Handling Charges): ${state.bopCKDCost !== null ? checkForDecimalAndNull(state.bopCKDCost - checkForNull(state.bopCKDHandlingCost), initialConfiguration?.NoOfDecimalForPrice) : 0}`} /></div></Col>
               <Col className="col-md-15 cr-costlabel d-flex align-items-start justify-content-start"> <span className="d-inline-block align-middle">{`${showBopLabel()} V2V Cost: ${state.bopV2VCost !== null ? checkForDecimalAndNull(state.bopV2VCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span><div className='ml-2 mt-1'><TooltipCustom id='v2vhandling' width="350px" tooltipText={`${showBopLabel()} V2V Cost (Without Handling Charges): ${state.bopV2VCost !== null ? checkForDecimalAndNull(state.bopV2VCost - checkForNull(state.bopV2VHandlingCost), initialConfiguration?.NoOfDecimalForPrice) : 0}`} /></div ></Col>
               <Col className="col-md-15 cr-costlabel d-flex align-items-start justify-content-start"> <span className="d-inline-block align-middle">{`${showBopLabel()} OSP Cost: ${state.bopOSPCost !== null ? checkForDecimalAndNull(state.bopOSPCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span><div className='ml-2 mt-1'><TooltipCustom id='osphandling' width="350px" tooltipText={`${showBopLabel()} OSP Cost (Without Handling Charges): ${state.bopOSPCost !== null ? checkForDecimalAndNull(state.bopOSPCost - checkForNull(state.bopOSPHandlingCost), initialConfiguration?.NoOfDecimalForPrice) : 0}`} /></div ></Col>
-              <Col className="col-md-15 cr-costlabel d-flex align-items-start justify-content-start"><span className="d-inline-block align-middle">{`${showBopLabel()} Cost: ${netBOPCost(gridData) !== null ? checkForDecimalAndNull(netBOPCost(gridData) + checkForNull(state.totalBOPHandlingCharges), initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span><div className='ml-2 mt-1'><TooltipCustom id='handling' width="350px" tooltipText={`${showBopLabel()} Cost (Without Handling Charges): ${netBOPCost(gridData) !== null ? checkForDecimalAndNull(netBOPCost(gridData) , initialConfiguration?.NoOfDecimalForPrice) : 0}`} /></div ></Col>
+              <Col className="col-md-15 cr-costlabel d-flex align-items-start justify-content-start"><span className="d-inline-block align-middle">{`${showBopLabel()} Cost: ${netBOPCost(gridData) !== null ? checkForDecimalAndNull(netBOPCost(gridData) + checkForNull(state.totalBOPHandlingCharges), initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span><div className='ml-2 mt-1'><TooltipCustom id='handling' width="350px" tooltipText={`${showBopLabel()} Cost (Without Handling Charges): ${netBOPCost(gridData) !== null ? checkForDecimalAndNull(netBOPCost(gridData), initialConfiguration?.NoOfDecimalForPrice) : 0}`} /></div ></Col>
             </Row>}
             <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
               {showDifferentBOPType() ?
