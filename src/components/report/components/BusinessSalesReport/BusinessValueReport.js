@@ -174,7 +174,7 @@ const BusinessValueReport = ({ }) => {
         })
       return temp
     }
-    if (label === 'PartFamilyCode') {
+    if (label === 'PartFamily') {
       partFamilySelectList && partFamilySelectList.map((item) => {
         if (item?.Value === '--0--') return false
           temp.push({ label: item?.Text, value: item?.Value })
@@ -299,7 +299,7 @@ const BusinessValueReport = ({ }) => {
     }
     const resultInput = inputValue.slice(0, searchCount)    
     if (inputValue?.length >= searchCount) {
-      const res = await getPartSelectListByTechnology(_.get(getValues('TechnologyName'), 'value', null), resultInput, _.get(getValues('PartType'), 'value', null), _.get(getValues('PartFamilyCode'), 'value', null));
+      const res = await getPartSelectListByTechnology(_.get(getValues('TechnologyName'), 'value', null), resultInput, _.get(getValues('PartType'), 'value', null), _.get(getValues('PartFamily'), 'value', null));
       setPartName(resultInput)
       let partDataAPI = res?.data?.SelectList
       if (inputValue) {
@@ -358,7 +358,7 @@ const BusinessValueReport = ({ }) => {
       TechnologyName: _.get(values, 'TechnologyName.value', ''),
       PartType: _.get(values, 'PartType.value', ''),
       PartGroup: _.get(values, 'GroupCode.value', ''),
-      PartFamilyCode: _.get(values, 'PartFamilyCode.value', ''),
+      PartFamilyCode: _.get(values, 'PartFamily.value', ''),
       PartNepNumber: _.get(values, 'NepNumber.value', ''),
       PlantCode: _.get(values, 'PlantCode.value', ''),
       VendorCode: _.get(values, 'VendorCode.value', ''),
