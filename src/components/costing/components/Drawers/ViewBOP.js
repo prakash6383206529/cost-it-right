@@ -68,8 +68,8 @@ function ViewBOP(props) {
                       </thead>
                       <tbody className='rm-table-body'>
                         {
-                          filteredBopData && filteredBopData.length > 0 &&
-                          filteredBopData.map((item, index) => {
+                          filteredBopData && filteredBopData?.length > 0 &&
+                          filteredBopData?.map((item, index) => {
                             return (
                                 <tr key={index}>
                                   {IsAssemblyCosting && <th>{item?.PartNumber ?? "-"}</th>}
@@ -85,7 +85,7 @@ function ViewBOP(props) {
                             )
                           })
                         }
-                        {filteredBopData && filteredBopData.length === 0 &&
+                        {filteredBopData && filteredBopData?.length === 0 &&
                           <tr>
                             <td colSpan={9}>
                               <NoContentFound title={EMPTY_DATA} />
@@ -133,7 +133,7 @@ function ViewBOP(props) {
                 viewBOPCost.map((item, index) => {
                   return (
                     <tr key={index}>
-                      {IsAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</span></td>}
+                      {IsAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.PartNumber !== null || item?.PartNumber !== "" ? item.PartNumber : ""}>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</span></td>}
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartNumber}>{item?.BOPPartNumber}</span></td>
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartName}>{item?.BOPPartName}</span></td>
                       {checkTechnologyIdAndRfq(viewCostingData) && <td><div className={getChangeHighlightClass(item?.BOPPartName, item?.UpdatedBoughtOutPartPartName)}><span title={item?.UpdatedBoughtOutPartPartName}>{item?.UpdatedBoughtOutPartPartName}</span></div></td>}
@@ -145,7 +145,7 @@ function ViewBOP(props) {
                         {checkForDecimalAndNull(item?.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice)}
                       </td>
                       {initialConfiguration?.IsShowCRMHead && <td>{item?.BoughtOutPartCRMHead}</td>}
-                      <td>{item.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-'}</td>
+                      <td>{item?.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-'}</td>
                       <td>{item?.Remark || '-'}</td>
                     </tr>
                   )
@@ -191,26 +191,24 @@ function ViewBOP(props) {
                           <thead>
                             <tr>
                               {IsAssemblyCosting && <th>{`Part No.`}</th>}
-                              <th>{`${showBopLabel()} Type`}</th>
                               <th>{`${showBopLabel()} Handling Type`}</th>
                               <th>{`Percentage`}</th>
                               <th className="costing-border-right">{`Handling Charges`}</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {filteredChargesData &&
-                              filteredChargesData.map((item, index) => {
+                            {filteredChargesData && filteredChargesData?.length > 0 &&
+                              filteredChargesData?.map((item, index) => {
                                 return (
                                   <tr key={index}>
-                                    {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                                    <td>{item?.BOPType ?? "-"}</td>
+                                    {IsAssemblyCosting && <td>{item.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}</td>}
                                     <td>{item?.BOPHandlingChargeType ?? "-"}</td>
                                     <td>{checkForDecimalAndNull(item?.BOPHandlingChargeType === 'Fixed' ? '-' : item?.BOPHandlingPercentage, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                                    <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                    <td>{checkForDecimalAndNull(item?.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                   </tr>
                                 )
                               })}
-                            {filteredChargesData && filteredChargesData.length === 0 && (
+                            {filteredChargesData && filteredChargesData?.length === 0 && (
                               <tr>
                                 <td colSpan={7}>
                                   <NoContentFound title={EMPTY_DATA} />
@@ -250,7 +248,7 @@ function ViewBOP(props) {
                         </tr>
                       )
                     })}
-                  {childPartBOPHandlingCharges && childPartBOPHandlingCharges.length === 0 && (
+                  {childPartBOPHandlingCharges && childPartBOPHandlingCharges?.length === 0 && (
                     <tr>
                       <td colSpan={7}>
                         <NoContentFound title={EMPTY_DATA} />
@@ -294,10 +292,10 @@ function ViewBOP(props) {
             </div>
           </Container>
         </Drawer> : <div className='mt-2'>
-          {(Array.isArray(viewBOPCost) && viewBOPCost.length > 0) &&
+          {(Array.isArray(viewBOPCost) && viewBOPCost?.length > 0) &&
             (showDifferentBOPType() ? differentTypeBopDataTable() : bopDataTable())
           }
-          {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || assemblyBOPHandlingCharges.length !== 0) && handlingChargeTableData())}</div>}
+          {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges?.length !== 0 || assemblyBOPHandlingCharges?.length !== 0) && handlingChargeTableData())}</div>}
     </Fragment>
   )
 }
