@@ -9,6 +9,7 @@ import EditPartCost from '../CostingHeadCosts/SubAssembly/EditPartCost'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { setCostingViewData } from '../../actions/Costing'
 import { useLabels } from '../../../../helper/core'
+import ViewMultipleTechnologyBOP from './ViewMultipleTechnologyBOP'
 
 function ViewMultipleTechnology(props) {
     const { multipleTechnologyData, isPDFShow } = props
@@ -84,40 +85,59 @@ function ViewMultipleTechnology(props) {
                             {viewMultiCost &&
                                 viewMultiCost.map((item, index) => {
                                     return (
-                                        <tr key={index}>
-                                            {props?.costingTypeId === VBCTypeId &&
-                                                <th>{`${item?.VendorName} (${item?.VendorCode})`}</th>}
-                                            {props?.costingTypeId === CBCTypeId &&
-                                                <td>{`${item?.CustomerName} (${item?.CustomerCode})`}</td>}
-                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item?.CostingNumber}>{item?.PartType === 'BOP' ? "-" : item?.CostingNumber}</span></td>
-                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartNumber}>{item?.PartNumber}</span></td>
-                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartName}>{item?.PartName}</span></td>
-                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartTypeName}>{item?.PartTypeName}</span></td>
+                                        <React.Fragment key={index}>
+                                            <tr>
+                                                {props?.costingTypeId === VBCTypeId &&
+                                                    <th>{`${item?.VendorName} (${item?.VendorCode})`}</th>}
+                                                {props?.costingTypeId === CBCTypeId &&
+                                                    <td>{`${item?.CustomerName} (${item?.CustomerCode})`}</td>}
+                                                <td className={`${isPDFShow ? '' : ''}`}><span title={item?.CostingNumber}>{item?.PartType === 'BOP' ? "-" : item?.CostingNumber}</span></td>
+                                                <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartNumber}>{item?.PartNumber}</span></td>
+                                                <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartName}>{item?.PartName}</span></td>
+                                                <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartTypeName}>{item?.PartTypeName}</span></td>
 
-                                            <td className={`${isPDFShow ? '' : ''}`}>
-                                                {(item?.PartTypeName === 'BoughtOutPart') ? <span >{'-'}</span> : <span title={item?.TechnologyName}>{item?.TechnologyName}</span>}
-                                            </td>
+                                                <td className={`${isPDFShow ? '' : ''}`}>
+                                                    {(item?.PartTypeName === 'BoughtOutPart') ? <span >{'-'}</span> : <span title={item?.TechnologyName}>{item?.TechnologyName}</span>}
+                                                </td>
 
-                                            <td> {item?.Quantity}</td>
-                                            <td>
-                                                {checkForDecimalAndNull(item?.PartTypeName === 'BOP' ? "-" : item?.NetChildPartsCost, initialConfiguration?.NoOfDecimalForPrice)}
-                                            </td>
-                                            <td>
-                                                {checkForDecimalAndNull(item?.PartTypeName === 'BOP' ? item?.NetBoughtOutPartCost : item?.NetBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice)}
-                                            </td>
-                                            <td>
-                                                {checkForDecimalAndNull(item?.PartTypeName === 'BOP' ? item?.NetBoughtOutPartCostWithQuantity : item?.NetChildPartsCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice)}
-                                            </td>
-                                            <td>
-                                                {item?.PartTypeName === 'BOP' ? item?.Remark : '-'}
-                                            </td>
-                                            <td> {<button
-                                                type="button"
-                                                title='View'
-                                                className="float-right mb-0 View "
-                                                onClick={() => viewCosting(item)}
-                                            > </button>}</td>
-                                        </tr >
+                                                <td> {item?.Quantity}</td>
+                                                <td>
+                                                    {checkForDecimalAndNull(item?.PartTypeName === 'BOP' ? "-" : item?.NetChildPartsCost, initialConfiguration?.NoOfDecimalForPrice)}
+                                                </td>
+                                                <td>
+                                                    {checkForDecimalAndNull(item?.PartTypeName === 'BOP' ? item?.NetBoughtOutPartCost : item?.NetBoughtOutPartCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice)}
+                                                </td>
+                                                <td>
+                                                    {checkForDecimalAndNull(item?.PartTypeName === 'BOP' ? item?.NetBoughtOutPartCostWithQuantity : item?.NetChildPartsCostWithQuantity, initialConfiguration?.NoOfDecimalForPrice)}
+                                                </td>
+                                                <td>
+                                                    {item?.PartTypeName === 'BOP' ? item?.Remark : '-'}
+                                                </td>
+                                                <td> {<button
+                                                    type="button"
+                                                    title='View'
+                                                    className="float-right mb-0 View "
+                                                    onClick={() => viewCosting(item)}
+                                                > </button>}</td>
+                                            </tr >
+
+                                            {isPDFShow && item?.CostingWeightedAverageSettledDetailsResponse && item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails &&
+                                            item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails && 
+                                            item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails.length > 0 &&
+                                            <>
+                                                <tr>
+                                                    <td colSpan={12}>
+                                                        <ViewMultipleTechnologyBOP
+                                                            costingTypeId = {props?.costingTypeId} 
+                                                            data={item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails}
+                                                            viewCostingData={props?.viewCostingData}
+                                                            index={index}
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            </>
+                                            }
+                                        </React.Fragment>
                                     )
                                 })}
                             {
