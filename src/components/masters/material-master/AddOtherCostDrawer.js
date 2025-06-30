@@ -47,6 +47,12 @@ function AddOtherCostDrawer(props) {
         disableCostBaseCurrency: false,
         costDropdown: []
     })
+    const [exactCostValues, setExactCostValues] = useState({
+        ApplicabilityCostCurrency: '',
+        ApplicabilityBaseCost: '',
+        CostCurrency: '',
+        CostBaseCurrency: ''
+    });
     const conditionTypeId = getCostingConditionTypes(props.rawMaterial ? RAWMATERIALCOST : COMMODITYCOST)
     useEffect(() => {
         if (!tableData || tableData.length === 0) {
@@ -76,7 +82,7 @@ function AddOtherCostDrawer(props) {
 
         // Update state
         setTotalCostBase(isOnlyDiscountCost ? discountNetCostConversion : totalCostBase);
-        setTotalCostCurrency(checkForDecimalAndNull(sumNetCost, initialConfiguration?.NoOfDecimalForPrice));
+        setTotalCostCurrency(sumNetCost);
 
     }, [tableData]);
     useEffect(() => {
@@ -135,6 +141,15 @@ function AddOtherCostDrawer(props) {
         setIsEditMode(true);
 
         let selectedData = tableData[indexValue];
+
+        // Store raw values in exactCostValues state
+        setExactCostValues({
+            ApplicabilityCostCurrency: selectedData.ApplicabilityCost,
+            ApplicabilityBaseCost: selectedData.ApplicabilityCostConversion,
+            CostCurrency: selectedData.NetCost,
+            CostBaseCurrency: isBOP || RawMaterialNonIndexed ? selectedData?.NetCost : selectedData.NetCostConversion
+        });
+
         setValue('Cost', {
             label: selectedData.CostHeaderName,
             value: selectedData.CostingConditionMasterId
@@ -152,10 +167,10 @@ function AddOtherCostDrawer(props) {
             label: selectedData.Applicability,
             value: selectedData.Applicability
         });
-        setValue('ApplicabilityCostCurrency', selectedData.ApplicabilityCost);
-        setValue('ApplicabilityBaseCost', isBOP ? selectedData.ApplicabilityCost : selectedData.ApplicabilityCostConversion);
-        setValue('CostCurrency', selectedData.NetCost);
-        setValue('CostBaseCurrency', isBOP || RawMaterialNonIndexed ? selectedData?.NetCost : selectedData.NetCostConversion);
+        setValue('ApplicabilityCostCurrency', checkForDecimalAndNull(selectedData.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice));
+        setValue('ApplicabilityBaseCost', isBOP ? checkForDecimalAndNull(selectedData.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(selectedData.ApplicabilityCostConversion, initialConfiguration?.NoOfDecimalForPrice));
+        setValue('CostCurrency', checkForDecimalAndNull(selectedData.NetCost, initialConfiguration?.NoOfDecimalForPrice));
+        setValue('CostBaseCurrency', isBOP || RawMaterialNonIndexed ? checkForDecimalAndNull(selectedData?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(selectedData.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice));
         setValue('CostDescription', selectedData.Description);
         setValue('Remark', selectedData.Remark);
         setRawMaterialCommodityIndexRateAndOtherCostDetailsId(selectedData?.RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null)
@@ -221,6 +236,10 @@ function AddOtherCostDrawer(props) {
         // Handle Basic Rate separately
         if (e?.label === 'Basic Rate') {
             let basicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency * ExchangeRate
+            setExactCostValues({
+                ApplicabilityCostCurrency: BasicRateIndexCurrency,
+                ApplicabilityBaseCost: basicRate
+            });
             setValue('ApplicabilityCostCurrency', checkForDecimalAndNull(BasicRateIndexCurrency, initialConfiguration?.NoOfDecimalForPrice));
             setValue('ApplicabilityBaseCost', checkForDecimalAndNull(basicRate, initialConfiguration?.NoOfDecimalForPrice));
             setState(prevState => ({ ...prevState, Applicability: e?.label }));
@@ -268,10 +287,20 @@ function AddOtherCostDrawer(props) {
             // You may choose to reset values or handle differently
             setValue('ApplicabilityCostCurrency', 0);
             setValue('ApplicabilityBaseCost', 0);
+            setExactCostValues({
+                ApplicabilityCostCurrency: 0,
+                ApplicabilityBaseCost: 0
+            });
         } else {
-            // Set ApplicabilityCostCurrency and ApplicabilityBaseCost if all exist
+            // Set ApplicabilityCostCurrency and ApplicabilityBaseCost if all exis
+            setExactCostValues({
+                ApplicabilityCostCurrency: total,
+                ApplicabilityBaseCost: props.rawMaterial ? total : total * ExchangeRate
+            });
             setValue('ApplicabilityCostCurrency', checkForDecimalAndNull(total, initialConfiguration?.NoOfDecimalForPrice));
             const totalBaseCost = props.rawMaterial ? total : total * ExchangeRate;
+            // console.log("here1",totalBaseCost)
+            // console.log(checkForDecimalAndNull(totalBaseCost, 3),"here2")
             setValue('ApplicabilityBaseCost', checkForDecimalAndNull(totalBaseCost, initialConfiguration?.NoOfDecimalForPrice));
         }
 
@@ -279,9 +308,17 @@ function AddOtherCostDrawer(props) {
     }
     const onPercentChange = (e) => {
         if (e?.target?.value) {
-            let applicabilityCostCurrency = props.rawMaterial ? getValues('ApplicabilityBaseCost') : getValues('ApplicabilityCostCurrency')
+             // Use exact values from state for calculation
+            let applicabilityCostCurrency = props.rawMaterial
+                ? exactCostValues.ApplicabilityBaseCost
+                : exactCostValues.ApplicabilityCostCurrency;
             let NetCost = checkForNull((e.target.value) / 100) * checkForNull(applicabilityCostCurrency)
             let NetCostConversion = props.rawMaterial ? NetCost : NetCost * ExchangeRate
+            setExactCostValues(prev => ({
+                ...prev,
+                CostCurrency: NetCost,
+                CostBaseCurrency: NetCostConversion
+            }));
             setValue('CostCurrency', checkForDecimalAndNull(NetCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('CostBaseCurrency', checkForDecimalAndNull(NetCostConversion, initialConfiguration?.NoOfDecimalForPrice))
         }
@@ -294,19 +331,51 @@ function AddOtherCostDrawer(props) {
 
     const handleCostChangeCurrency = (e) => {
         if (e?.target?.value) {
-            setValue('CostBaseCurrency', checkForDecimalAndNull((checkForNull(e.target.value) * ExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
+            const exactValue = checkForNull(e.target.value);
+            const exactBaseValue = exactValue * ExchangeRate;
+
+            // Store exact values
+            setExactCostValues(prev => ({
+                ...prev,
+                CostCurrency: exactValue,
+                CostBaseCurrency: exactBaseValue
+            }));
+
+            // Set formatted values
+            setValue('CostBaseCurrency', checkForDecimalAndNull(exactBaseValue, initialConfiguration?.NoOfDecimalForPrice));
             setState(prevState => ({ ...prevState, disableCostBaseCurrency: true }));
         } else {
-            setValue('CostBaseCurrency', '')
+            setValue('CostBaseCurrency', '');
+            setExactCostValues(prev => ({
+                ...prev,
+                CostCurrency: '',
+                CostBaseCurrency: ''
+            }));
             setState(prevState => ({ ...prevState, disableCostBaseCurrency: false }));
         }
     }
     const handleCostChangeBase = (e) => {
         if (e?.target?.value) {
-            setValue('CostCurrency', checkForDecimalAndNull((checkForNull(e.target.value) / ExchangeRate), initialConfiguration?.NoOfDecimalForPrice))
+            const exactBaseValue = checkForNull(e.target.value);
+            const exactValue = exactBaseValue / ExchangeRate;
+
+            // Store exact values
+            setExactCostValues(prev => ({
+                ...prev,
+                CostCurrency: exactValue,
+                CostBaseCurrency: exactBaseValue
+            }));
+
+            // Set formatted values
+            setValue('CostCurrency', checkForDecimalAndNull(exactValue, initialConfiguration?.NoOfDecimalForPrice));
             setState(prevState => ({ ...prevState, disableCostCurrency: true }));
         } else {
-            setValue('CostCurrency', '')
+            setValue('CostCurrency', '');
+            setExactCostValues(prev => ({
+                ...prev,
+                CostCurrency: '',
+                CostBaseCurrency: ''
+            }));
             setState(prevState => ({ ...prevState, disableCostCurrency: false }));
         }
     }
@@ -363,16 +432,16 @@ function AddOtherCostDrawer(props) {
         const newData = {
             MaterialCommodityStandardDetailsId: RowData?.MaterialCommodityStandardDetailsId, // Add MaterialCommodityStandardDetailsId
             RawMaterialCommodityIndexRateAndOtherCostDetailsId: RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null,
-            Type: getValues('Type') ? getValues('Type').label : '',
-            CostHeaderName: getValues('Cost') ? getValues('Cost').label : '',
-            Applicability: getValues('Applicability') ? getValues('Applicability').label : '',
-            ApplicabilityCost: props.rawMaterial ? getValues('ApplicabilityBaseCost') : getValues('ApplicabilityCostCurrency') ? getValues('ApplicabilityCostCurrency') : '',
-            ApplicabilityCostConversion: getValues('ApplicabilityBaseCost') ? getValues('ApplicabilityBaseCost') : '',
-            Value: getValues('Percentage') ? getValues('Percentage') : '',
-            NetCost: props.rawMaterial ? getValues('CostBaseCurrency') : getValues('CostCurrency') ? getValues('CostCurrency') : '',
-            NetCostConversion: getValues('CostBaseCurrency'),
-            Description: getValues('CostDescription') ? getValues('CostDescription') : '',
-            CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '',
+            Type: getValues('Type') ? getValues('Type').label : '-',
+            CostHeaderName: getValues('Cost') ? getValues('Cost').label : '-',
+            Applicability: getValues('Applicability') ? getValues('Applicability').label : '-',
+            ApplicabilityCost: props.rawMaterial ? exactCostValues.ApplicabilityBaseCost : exactCostValues.ApplicabilityCostCurrency ? exactCostValues.ApplicabilityCostCurrency : '-',
+            ApplicabilityCostConversion: exactCostValues.ApplicabilityBaseCost ? exactCostValues.ApplicabilityBaseCost : '-',
+            Value: getValues('Percentage') ? getValues('Percentage') : '-',
+            NetCost: props.rawMaterial ? exactCostValues.CostBaseCurrency : exactCostValues.CostCurrency,
+            NetCostConversion: exactCostValues.CostBaseCurrency,
+            Description: getValues('CostDescription') ? getValues('CostDescription') : '-',
+            CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '-',
             Remark: getValues('Remark')
         };
         // If the CostHeaderName is 'Discount Cost', prepend '-' sign
@@ -437,6 +506,12 @@ function AddOtherCostDrawer(props) {
             setType('');
             setEditIndex('');
             setIsEditMode(false)
+            setExactCostValues({
+                ApplicabilityCostCurrency: '',
+                ApplicabilityBaseCost: '',
+                CostCurrency: '',
+                CostBaseCurrency: ''
+            });
             reset({
                 Cost: '',
                 Type: '',
@@ -757,8 +832,8 @@ function AddOtherCostDrawer(props) {
                                                             <td>{item.Description}</td>
                                                             <td>{item.Type}</td>
                                                             <td>{item.Applicability}</td>
-                                                            {(!props.rawMaterial || isBOP) && <td>{item.ApplicabilityCost}</td>}
-                                                            {!isBOP && <td>{item.ApplicabilityCostConversion}</td>}
+                                                            {(!props.rawMaterial || isBOP) && <td>{checkForDecimalAndNull(item.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                                            {!isBOP && <td>{checkForDecimalAndNull(item.ApplicabilityCostConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
                                                             <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                                                             {!isBOP && <td>{checkForDecimalAndNull(item.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) !== '-' ? RawMaterialNonIndexed ? checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
