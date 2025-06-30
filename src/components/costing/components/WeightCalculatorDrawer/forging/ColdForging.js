@@ -569,7 +569,8 @@ function ColdForging(props) {
                   isPlastic={false}
                   isLossStandard={true}
                   isNonFerrous={false}
-                  disableAll={disableAll}
+                  disableAll={false}
+                  // disableAll={disableAll}
                   isFerrous={false}
                 />
 

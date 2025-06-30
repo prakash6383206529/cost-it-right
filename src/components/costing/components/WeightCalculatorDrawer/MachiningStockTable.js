@@ -51,7 +51,7 @@ function MachiningStockTable(props) {
     calculateforgingVolumeAndWeight()
     calculateTotalMachiningStock()
 
-  }, [fieldValues])
+  }, [fieldValues, props?.netWeightCost])
 
 
   const handleVolumeChange = () => {
@@ -137,6 +137,9 @@ function MachiningStockTable(props) {
       setTooltipMessageForGross('Gross Weight = (Volume * Number * Density / 1000000)')
     }
     else if (value.label === "Multiplying factor (Yield %)") {
+      if (!props?.netWeightCost) {
+        Toaster.warning("Please Select Net Weight First.")
+      }
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
@@ -259,6 +262,13 @@ function MachiningStockTable(props) {
       return false
     }
 
+    if (!isEdit) {
+      if (MachiningStock?.label === 'Multiplying factor (Yield %)' && !props?.netWeightCost) {
+        Toaster.warning("Please Select Net Weight First.")
+        return false;
+      }
+    }
+
     if (GrossWeight === 0 || (MachiningStock?.label !== 'Multiplying factor (Yield %)' && Volume === 0) || MachiningStock === '' || Description === '') {
 
       Toaster.warning("Please fill all the mandatory fields first.")
@@ -271,17 +281,16 @@ function MachiningStockTable(props) {
         Toaster.warning('Already added, Please select another shape type.')
         return false;
       }
-    }
-
-    const yieldPercentage = tableData.some(el => String(el?.TypesOfMachiningStockId) === '21')    
-    if (yieldPercentage) {
-      Toaster.warning("You have already selected Multiplying factor (Yield %). Please remove it before selecting other shape type.")
-      return false
-    }
+      const yieldPercentage = tableData.some(el => String(el?.TypesOfMachiningStockId) === '21')    
+      if (yieldPercentage) {
+        Toaster.warning("You have already selected Multiplying factor (Yield %). Please remove it before selecting other shape type.")
+        return false
+      }
     
-    if (tableData.length > 0 && String(MachiningStock?.value) === '21') {
-      Toaster.warning("To add Multiplying factor (Yield %), please remove other shape type first.");
-      return false;
+      if (tableData.length > 0 && String(MachiningStock?.value) === '21') {
+        Toaster.warning("To add Multiplying factor (Yield %), please remove other shape type first.");
+        return false;
+      }
     }
 
     let tempArray = []
@@ -356,7 +365,7 @@ function MachiningStockTable(props) {
     setIsEdit(true)
     setEditIndex(index)
     const tempObj = tableData[index]
-
+    
     setOldNetWeight(tempObj.GrossWeight)
     setValue('majorDiameter', tempObj.MajorDiameter)
     setValue('minorDiameter', tempObj.MinorDiameter)
@@ -368,6 +377,7 @@ function MachiningStockTable(props) {
     setValue('grossWeight', tempObj.GrossWeight)
     setValue('forgingVolume', tempObj.Volume)
     setValue('description', tempObj.Description)
+    setValue('MachiningMultiplyingFactorPercentage', tempObj?.MachiningMultiplyingFactorPercentage)
 
     if (tempObj.TypesOfMachiningStock === 'Circular' || tempObj.TypesOfMachiningStock === 'Semi Circular' || tempObj.TypesOfMachiningStock === 'Quarter Circular') {
       setDisableMachineType(true)
@@ -386,6 +396,13 @@ function MachiningStockTable(props) {
     else if (tempObj.TypesOfMachiningStock === 'Rectangular') {
       setDisableMachineType(true)
       setRectangularMachiningStock(true)
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setIrregularMachiningStock(false)
+    }
+    else if (tempObj.TypesOfMachiningStock === 'Multiplying factor (Yield %)') {
+      setDisableMachineType(true)
+      setRectangularMachiningStock(false)
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setIrregularMachiningStock(false)
@@ -536,7 +553,7 @@ function MachiningStockTable(props) {
               className=""
               customClassName={'withBorder'}
               errors={errors.MachiningMultiplyingFactorPercentage}
-              disabled={props.CostingViewMode || disableAll}
+              disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
             />
           </Col>
         }

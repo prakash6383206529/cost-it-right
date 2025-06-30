@@ -572,7 +572,8 @@ function HotForging(props) {
                   isPlastic={false}
                   isLossStandard={true}
                   isNonFerrous={false}
-                  disableAll={disableAll}
+                  disableAll={false}
+                  // disableAll={disableAll}
 
 
                 />

@@ -191,15 +191,15 @@ function LossStandardTable(props) {
    * @description for calculating loss weight  and net loss weight
    */
   const calculateLossWeight = () => {
-    
-    const LossPercentage = checkForNull(getValues('LossPercentage'))
-    const inputWeight = props.weightValue
     const LossOfType = getValues('LossOfType')
-    const runnerWeight = props?.isPlastic && LossOfType?.label ===`Burning Loss (${LocalizedGrossWeight} + Runner Weight)`? props?.runnerWeight : 0
-    const LossWeight = ((inputWeight + runnerWeight) * LossPercentage) / 100
-
-    setValue('LossWeight', checkForDecimalAndNull(LossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-    setLossWeight(LossWeight)
+    if (LossOfType?.label !== 'Fixed Loss') {
+      const LossPercentage = checkForNull(getValues('LossPercentage'))
+      const inputWeight = props.weightValue
+      const runnerWeight = props?.isPlastic && LossOfType?.label ===`Burning Loss (${LocalizedGrossWeight} + Runner Weight)`? props?.runnerWeight : 0
+      const LossWeight = ((inputWeight + runnerWeight) * LossPercentage) / 100
+      setValue('LossWeight', checkForDecimalAndNull(LossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+      setLossWeight(LossWeight)
+    }
   }
 
   const calculateForgeLossWeight = (value) => {
@@ -345,17 +345,16 @@ function LossStandardTable(props) {
         Toaster.warning('Already added, Please select another loss type.')
         return false;
       }
-    }
-
-    if (props?.isLossStandard) {
-     const yieldLoss = tableData.some(el => String(el?.LossOfType) === '19')
-      if (yieldLoss) {
-        Toaster.warning("You have already selected Yield Loss. Please remove it before selecting other losses.")
-        return false
-      }
-      if (tableData.length > 0 && String(LossOfType) === '19') {
-        Toaster.warning("To add Yield Loss, please remove other losses first.");
-        return false;
+      if (props?.isLossStandard) {
+        const yieldLoss = tableData.some(el => String(el?.LossOfType) === '19')
+        if (yieldLoss) {
+          Toaster.warning("You have already selected Yield Loss. Please remove it before selecting other losses.")
+          return false
+        }
+        if (tableData.length > 0 && String(LossOfType) === '19') {
+          Toaster.warning("To add Yield Loss, please remove other losses first.");
+          return false;
+        }
       }
     }
 
@@ -457,6 +456,7 @@ function LossStandardTable(props) {
 
     setDisableLossType(true)
 
+    
     if ((tempObj.LossOfType === 7 && tempObj.FlashLoss === "Use Formula")) {
       setFlashLossType(true)
       setUseformula(true)
@@ -476,6 +476,11 @@ function LossStandardTable(props) {
       setUseformula(false)
       setPercentage(false)
       setBarCuttingAllowanceLossType(true)
+    }
+    else if (tempObj.LossOfType === 20) {
+      setUseformula(false)
+      setPercentage(false)
+      setBarCuttingAllowanceLossType(false)
     }
     else {
       setPercentage(true)
