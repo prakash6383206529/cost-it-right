@@ -2740,7 +2740,24 @@ const CostingSummaryTable = (props) => {
                             <tr>
                               <td>
                                 <span className={highlighter("", "rm-reducer")}>Part Cost/Pc</span>
+                                {showDifferentBOPType() ?
+                                <>
+                                  <span className={highlighter("BopDomesticCost")}>{`${showBopLabel()} Domestic Cost`}
+                                    <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-Domestic" tooltipText={`Including Handling Cost`} />
+                                  </span>
+                                  <span className={highlighter("BopCKDCost")}>{`${showBopLabel()} CKD Cost`}
+                                    <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-CKD" tooltipText={`Including Handling Cost`} />
+                                  </span>
+                                  <span className={highlighter("BopV2VCost")}>{`${showBopLabel()} V2V Cost`}
+                                    <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-V2V" tooltipText={`Including Handling Cost`} />
+                                  </span>
+                                  <span className={highlighter("BopOSPCost")}>{`${showBopLabel()} OSP Cost`}
+                                    <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-OSP" tooltipText={`Including Handling Cost`} />
+                                  </span>
+                                </>
+                                :
                                 <span className={highlighter("", "finish-reducer")}>{showBopLabel()} Cost/Assembly (Including Handling Charge)</span>
+                                }
                                 <span className={highlighter("BurningLossWeight")}>Process Cost/Assembly</span>
                                 <span className={highlighter("ScrapWeight")}>Operation Cost/Assembly</span>
                                 <span className={highlighter("LabourCost")}>Labour Cost/Assembly</span>
@@ -2755,9 +2772,23 @@ const CostingSummaryTable = (props) => {
                                     <td className={tableDataClass(data)}>
                                       {data?.bestCost !== true && <>
                                         <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netChildPartsCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</span>
-                                        <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                        {/* <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                           <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included" tooltipText={`${checkForDecimalAndNull(data?.bopPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}`} />
-                                        </span>
+                                        </span> */}
+                                        {showDifferentBOPType() ?
+                                        <>
+                                          <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPDomesticCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+                                          <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPImportCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+                                          <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPSourceCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+                                          <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPOutsourcedCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+                                        </>
+                                        :
+                                        <>
+                                          <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                            <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included" tooltipText={`${checkForDecimalAndNull(data?.bopPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}`} />
+                                          </span>
+                                        </>
+                                        }
 
                                         {/* <span className={highlighter("rmRate")}>
                                           <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
