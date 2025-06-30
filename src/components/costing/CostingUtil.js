@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { COSTAPPLICABILITYBASIS, EMPTY_GUID, HOUR, MACHINING, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS } from "../../config/constants";
-import { checkForNull, getConfigurationKey, loggedInUserId } from "../../helper"
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
 import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
 import { PART_TYPE_ASSEMBLY, PLASTIC } from "../../config/masterData";
@@ -849,11 +849,12 @@ export const calculateTotalPercentage = (currentValue, index, rawMaterials, getV
         checkForNull(getValues(`rmGridFields.${idx}.Percentage`)) || 0);
     }, 0);
   }
+  let calculatedPercent = checkForDecimalAndNull(totalPercentage, getConfigurationKey().NoOfDecimalForPrice)
   return {
-    total: checkForNull(totalPercentage),
-    message: totalPercentage > 100 ?
-      `Total percentage is ${totalPercentage}%, must be 100% to save the values` : '',
-    isValid: totalPercentage <= 100
+    total: calculatedPercent,
+    message: calculatedPercent > 100 ?
+      `Total percentage is ${calculatedPercent}%, must be 100% to save the values` : '',
+    isValid: calculatedPercent <= 100
   };
 };
 export const NetLandedCostToolTip = (item, technologyId, IsApplyMasterBatch = false) => {
