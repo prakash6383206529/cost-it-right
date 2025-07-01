@@ -881,6 +881,7 @@ function ViewConversionCost(props) {
   };
   const paintAndMaskingTableData = () => {
     const renderPaintTable = (details) => {
+      const mainSpan = Array.isArray(paintAndTapeDetails) ? paintAndTapeDetails?.filter(el => el?.PartNumber === details?.PartNumber) : [];
       const {
         Coats = [],
         PartNumber,
@@ -913,7 +914,7 @@ function ViewConversionCost(props) {
                   <th>RM Rate (Currency)</th>
                   <th>Paint Cost</th>
                   {isPDFShow && <th>Masking/Tape Cost</th>}
-                  {isPDFShow && <th>Total Paint & Masking Cost</th>}
+                  {isPDFShow && IsAssemblyCosting && <th>Total Paint & Masking Cost</th>}
                   <th>Effective Date</th>
                 </tr>
 
@@ -922,6 +923,7 @@ function ViewConversionCost(props) {
                     <tr key={`${PartNumber}-${parentIndex}-${childIndex}`}>
                       {IsAssemblyCosting && isPDFShow && childIndex === 0 && (
                         <td rowSpan={coat?.RawMaterials?.length}>{PartNumber ?? '-'}</td>
+                        // <td rowSpan={mainSpan?.length}>{PartNumber ?? '-'}</td>
                       )}
                       {childIndex === 0 && (
                         <td rowSpan={coat?.RawMaterials?.length}>
@@ -941,8 +943,13 @@ function ViewConversionCost(props) {
                           {checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
                       )}
-                      {isPDFShow && childIndex === 0 && (
+                      {/* {isPDFShow && childIndex === 0 && (
                         <td rowSpan={coat?.RawMaterials?.length}>
+                          {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
+                        </td>
+                      )} */}
+                      {isPDFShow && IsAssemblyCosting && parentIndex === 0 && (
+                        <td rowSpan={mainSpan?.length}>
                           {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
                       )}
@@ -1002,11 +1009,15 @@ function ViewConversionCost(props) {
     if (Array.isArray(paintAndTapeDetails)) {
       const filtered = paintAndTapeDetails.filter((item) => item?.Coats?.length > 0);
 
-      return filtered.map((item, index) => (
-        <div key={index}>{renderPaintTable(item)}</div>
-      ));
-    }
+      
 
+      return filtered.map((item, index) =>{
+        // item?.PartNumber == 0
+        return(
+          <div key={index}>{renderPaintTable(item)}</div>
+        )
+      })
+    }
     return paintAndTapeDetails?.Coats?.length > 0 ? renderPaintTable(paintAndTapeDetails) : null;
   };
   return (
