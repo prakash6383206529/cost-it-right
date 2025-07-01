@@ -114,7 +114,7 @@ function EditPartCost(props) {
                     tempObject.EffectiveDate = item?.EffectiveDate
                     tempObject.Remark = item?.Remark
                     tempObject.SourceVendor = item?.SourceVendor
-                    tempObject.BOPType = item?.BOPType 
+                    tempObject.BOPType = item?.BOPType
                 }
                 tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -158,7 +158,7 @@ function EditPartCost(props) {
                     tempObject.EffectiveDate = item?.EffectiveDate
                     tempObject.Remark = item?.Remark
                     tempObject.SourceVendor = item?.SourceVendor
-                    tempObject.BOPType = item?.BOPType 
+                    tempObject.BOPType = item?.BOPType
 
                 } tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
@@ -653,7 +653,7 @@ function EditPartCost(props) {
                 if (selectedBOPItems.length > 0) {
                     editedChildPart.BOPType = selectedBOPItems[0]?.BOPType;
                 }
-                
+
                 // Distribute costs based on each selected BOP item's type and SOB percentage  
                 selectedBOPItems.forEach(bopItem => {
                     const bopType = bopItem?.BOPType
@@ -705,7 +705,7 @@ function EditPartCost(props) {
                 // Set the primary BOP type (use the first one or most common one)
                 editedChildPart.CostingPartDetails.BOPType = selectedBOPItems[0]?.BOPType
             }
-            
+
             Object.assign([...tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails], { [index]: editedChildPart })
 
             // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
@@ -729,38 +729,18 @@ function EditPartCost(props) {
                 const quantity = checkForNull(el?.CostingPartDetails?.Quantity)
                 bopCostperAssembly += totalCost;
 
-                // Add individual BOP type costs from child parts
-                const domesticCost = checkForNull(el?.CostingPartDetails?.NetBOPDomesticCost);
-                const importCost = checkForNull(el?.CostingPartDetails?.NetBOPImportCost);
-                const sourceCost = checkForNull(el?.CostingPartDetails?.NetBOPSourceCost);
-                const outsourceCost = checkForNull(el?.CostingPartDetails?.NetBOPOutsourcedCost);
-                const boughtOutPartCostWithOutHandlingCharge = checkForNull(el?.CostingPartDetails?.NetBoughtOutPartCostWithOutHandlingCharge);
-                const domesticWithOutHandlingCharge = checkForNull(el?.CostingPartDetails?.NetBOPDomesticCostWithOutHandlingCharge);
-                const importWithOutHandlingCharge = checkForNull(el?.CostingPartDetails?.NetBOPImportCostWithOutHandlingCharge);
-                const sourceWithOutHandlingCharge = checkForNull(el?.CostingPartDetails?.NetBOPSourceCostWithOutHandlingCharge);
-                const outsourcedWithOutHandlingCharge = checkForNull(el?.CostingPartDetails?.NetBOPOutsourcedCostWithOutHandlingCharge);
+                bopDomesticCost += checkForNull(el?.CostingPartDetails?.TotalBOPDomesticCostWithQuantity);
+                bopDomesticWithoutHandlingCharge += checkForNull(el?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity);
+                bopImportCost += checkForNull(el?.CostingPartDetails?.TotalBOPImportCostWithQuantity);
+                bopImportWithoutHandlingCharge += checkForNull(el?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity);
+                bopSourceCost += checkForNull(el?.CostingPartDetails?.TotalBOPSourceCostWithQuantity);
+                bopSourceWithoutHandlingCharge += checkForNull(el?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity);
+                bopOutsourceCost += checkForNull(el?.CostingPartDetails?.TotalBOPOutsourcedCostWithQuantity);
+                bopOutsourcedWithoutHandlingCharge += checkForNull(el?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity);
+                bopBoughtOutPartCostWithOutHandlingCharge += checkForNull(el?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity);
 
-                if (domesticCost > 0) {
-                    bopDomesticCost += domesticCost;
-                    bopDomesticWithoutHandlingCharge += domesticWithOutHandlingCharge;
-                }
-                if (importCost > 0) {
-                    bopImportCost += importCost;
-                    bopImportWithoutHandlingCharge += importWithOutHandlingCharge;
-                }
-                if (sourceCost > 0) {
-                    bopSourceCost += sourceCost;
-                    bopSourceWithoutHandlingCharge += sourceWithOutHandlingCharge;
-                }
-                if (outsourceCost > 0) {
-                    bopOutsourceCost += outsourceCost;
-                    bopOutsourcedWithoutHandlingCharge += outsourcedWithOutHandlingCharge;
-                }
-                bopBoughtOutPartCostWithOutHandlingCharge += boughtOutPartCostWithOutHandlingCharge;
+
             });
-
-         
-
             // Set all the BOP related costs in tempsubAssemblyTechnologyArray (without handling charges first)
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge = checkForNull(bopBoughtOutPartCostWithOutHandlingCharge)
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCostWithOutHandlingCharge = checkForNull(bopDomesticWithoutHandlingCharge)
@@ -770,9 +750,9 @@ function EditPartCost(props) {
 
             // Set BOP costs with handling charges (handling charges applied only at assembly level)
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost = checkForNull(bopCostperAssembly) /* + checkForNull(assemblyHandlingCharges?.bopHandlingCharge) */
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCost = checkForNull(bopDomesticCost) /* + checkForNull(assemblyHandlingCharges.domestic) */
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCost = checkForNull(bopDomesticCost)/*  + checkForNull(assemblyHandlingCharges.domestic) */
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPImportCost = checkForNull(bopImportCost) /* + checkForNull(assemblyHandlingCharges.import) */
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCost = checkForNull(bopSourceCost)/*  + checkForNull(assemblyHandlingCharges.source) */
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCost = checkForNull(bopSourceCost) /* + checkForNull(assemblyHandlingCharges.source) */
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCost = checkForNull(bopOutsourceCost) /* + checkForNull(assemblyHandlingCharges.outsourced) */
 
             // // Set costs with quantity (only withQuantity keys for BOP child objects)
@@ -855,8 +835,8 @@ function EditPartCost(props) {
                     checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
                 let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
-                
-                
+
+
                 dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
                     dispatch(gridDataAdded(true))
                 }))
@@ -892,7 +872,7 @@ function EditPartCost(props) {
                         DeltaSign: "",
                         SOBPercentage: 0,
                         NetCost: 0,
-                        BOPType: newItem?.BOPType 
+                        BOPType: newItem?.BOPType
                     };
                     tempArr.push(newBOPItem);
                 }

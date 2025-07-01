@@ -202,7 +202,7 @@ function BOPHandlingDrawer(props) {
     }
 
     const cancel = () => {
-        props.closeDrawer('Cancel', state.totalHandlingCharges, tableData)
+        props.closeDrawer('Cancel', state.totalHandlingCharges, tableData,item)
     }
 
     const onSubmit = debounce((values) => {
