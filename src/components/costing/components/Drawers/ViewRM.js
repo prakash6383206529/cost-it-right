@@ -326,6 +326,7 @@ function ViewRM(props) {
                     <th>{`RM Name -Grade`}</th>
                     {checkTechnologyIdAndRfq(viewCostingData) && <th>{`Updated RM Name`}</th>}
                     <th>{`RM Code`}</th>
+                    <th>{`UOM`}</th>
                     <th>{`RM Rate`}</th>
                     <th>{showRMScrapKeys(viewCostingData && Number(viewCostingData[props.index]?.technologyId))?.name}</th>
                     {isScrapRecoveryApplied && <th>{`Scrap Recovery (%)`}</th>}
@@ -369,6 +370,7 @@ function ViewRM(props) {
                         </td>
                       )}
                       <td>{item?.RawMaterialCode || '-'}</td>
+                      <td>{item?.UOM || '-'}</td>
                       <td>{checkForDecimalAndNull(item?.RMRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
                       <td>{checkForDecimalAndNull(item?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
                       {isScrapRecoveryApplied && (
