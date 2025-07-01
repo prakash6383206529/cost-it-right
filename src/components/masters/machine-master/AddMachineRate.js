@@ -790,6 +790,7 @@ class AddMachineRate extends Component {
         this.props.getClientSelectList(() => { })
       }
       this.props.change('MachineNumber', currentMachineNumber)
+      this.setState({ machineNumber: currentMachineNumber })
     });
   };
   /**
