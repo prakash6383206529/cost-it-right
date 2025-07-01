@@ -881,7 +881,6 @@ function ViewConversionCost(props) {
   };
   const paintAndMaskingTableData = () => {
     const renderPaintTable = (details) => {
-      const mainSpan = Array.isArray(paintAndTapeDetails) ? paintAndTapeDetails?.filter(el => el?.PartNumber === details?.PartNumber) : [];
       const {
         Coats = [],
         PartNumber,
@@ -893,6 +892,7 @@ function ViewConversionCost(props) {
 
       // Don't render if Coats is empty or undefined
       if (!Coats || Coats.length === 0) return null;
+      let parentRowSpan = Coats?.length || 0
 
       return (
         <Row className="firefox-spaces mb-4">
@@ -923,7 +923,6 @@ function ViewConversionCost(props) {
                     <tr key={`${PartNumber}-${parentIndex}-${childIndex}`}>
                       {IsAssemblyCosting && isPDFShow && childIndex === 0 && (
                         <td rowSpan={coat?.RawMaterials?.length}>{PartNumber ?? '-'}</td>
-                        // <td rowSpan={mainSpan?.length}>{PartNumber ?? '-'}</td>
                       )}
                       {childIndex === 0 && (
                         <td rowSpan={coat?.RawMaterials?.length}>
@@ -949,7 +948,7 @@ function ViewConversionCost(props) {
                         </td>
                       )} */}
                       {isPDFShow && IsAssemblyCosting && parentIndex === 0 && (
-                        <td rowSpan={mainSpan?.length}>
+                        <td rowSpan={parentRowSpan}>
                           {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
                       )}
