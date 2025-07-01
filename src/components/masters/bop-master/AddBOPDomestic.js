@@ -1050,7 +1050,7 @@ class AddBOPDomestic extends Component {
               technologyId: this.state?.Technology?.value,
               ...(getConfigurationKey()?.IsFetchVBCSourceVendorDataForBOP && {
                 // IsBreakupBoughtOutPart: (this?.state?.selectedBOPType?.value === "BOP V2V" || this?.state?.selectedBOPType?.value === "BOP OSP") ? true : false,
-                IsBreakupBoughtOutPart: this?.state?.IsPartOutsourced,
+                IsBreakupBoughtOutPart: this?.state?.isTechnologyVisible,
                 plantId: this?.state?.selectedPlants?.value ?? ""
               })
             };

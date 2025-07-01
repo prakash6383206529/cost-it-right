@@ -1355,7 +1355,7 @@ class AddBOPImport extends Component {
               sourceVendorId: newValue?.value,
               technologyId: this.state?.Technology?.value,
               ...(getConfigurationKey()?.IsFetchVBCSourceVendorDataForBOP && {
-                IsBreakupBoughtOutPart: this?.state?.IsPartOutsourced,
+                IsBreakupBoughtOutPart: this?.state?.isTechnologyVisible,
                 plantId: this?.state?.selectedPlants?.value ?? ""
               })
             };
