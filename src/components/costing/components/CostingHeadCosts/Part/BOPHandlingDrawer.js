@@ -156,35 +156,40 @@ function BOPHandlingDrawer(props) {
         switch (bopType.label) {
             case "BOP CKD":
                 if (item?.PartType !== "Part" && item?.PartType !== "Component"&& item?.PartType !== "BoughtOutPart") {
-                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithQuantity)
+                    // Use the base cost without handling charges to avoid compounding
+                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopCKDCost;
                 }
                 break;
             case "BOP OSP":
                 if (item?.PartType !== "Part" && item?.PartType !== "Component"&& item?.PartType !== "BoughtOutPart") {
-                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPOutsourcedCostWithQuantity)
+                    // Use the base cost without handling charges to avoid compounding
+                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopOSPCost;
                 }
                 break;
             case "BOP Domestic":
                 if (item?.PartType !== "Part" && item?.PartType !== "Component"&& item?.PartType !== "BoughtOutPart") {
-                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostWithQuantity)
+                    // Use the base cost without handling charges to avoid compounding
+                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopDomesticCost;
                 }
                 break;
             case "BOP V2V":
                 if (item?.PartType !== "Part" && item?.PartType !== "Component"&& item?.PartType !== "BoughtOutPart") {
-                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostWithQuantity)
+                    // Use the base cost without handling charges to avoid compounding
+                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity)
                 } else {
                     applicabilityCost = props.applicabilityCost?.bopV2VCost;
                 }
                 break;
             default:
                 if (item?.PartType !== "Part" && item?.PartType !== "Component"&& item?.PartType !== "BoughtOutPart") {
-                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
+                    // Use the base cost without handling charges to avoid compounding
+                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity)
                 } else {
                     applicabilityCost = props.netBOPCost;
                 }
