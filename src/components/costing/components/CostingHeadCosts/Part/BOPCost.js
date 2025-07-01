@@ -71,6 +71,7 @@ function BOPCost(props) {
     bopCKDHandlingCost: item?.CostingPartDetails?.NetBOPImportHandlingCost,
     bopV2VHandlingCost: item?.CostingPartDetails?.NetBOPSourceHandlingCost,
     bopOSPHandlingCost: item?.CostingPartDetails?.NetBOPOutsourcedHandlingCost,
+    isDataDeleted: false
   })
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
@@ -160,10 +161,10 @@ function BOPCost(props) {
       }
     }, 100)
     selectedIds(gridData)
-    if (IsApplyBOPHandlingCharges && gridData && gridData?.length > 0) {
+    if (IsApplyBOPHandlingCharges && gridData && gridData?.length > 0 ) {
 
       dispatch(setBopAddEditDeleteDisable(true))
-    } else if (!IsApplyBOPHandlingCharges && gridData && gridData?.length > 0) {
+    } else if (!IsApplyBOPHandlingCharges && gridData && gridData?.length > 0 && !state.isDataDeleted) {
       let data = {
         "BaseCostingId": item?.CostingId,
         "LoggedInUserId": loggedInUserId(),
@@ -267,14 +268,27 @@ function BOPCost(props) {
   }
 
   const deleteItem = (index) => {
-    // Filter out the item at the given index
-    const tempArr = gridData.filter((_, i) => i !== index);
-    setGridData(tempArr);
+    let tempArr = gridData && gridData.filter((el, i) => {
+      if (i === index) return false;
+      return true;
+    })
+    setGridData(tempArr)
 
-    // Update selected IDs
-    const selectedIds = tempArr.map(el => el.BoughtOutPartId);
-    setIds(selectedIds);
+    let selectedIds = []
+    tempArr.map(el => (selectedIds.push(el.BoughtOutPartId)))
+    setIds(selectedIds)
+    setState(prevState => ({
+      ...prevState,
+      isDataDeleted: true
+    }))
+    setTimeout(() => {
+      setState(prevState => ({
+        ...prevState,
+        isDataDeleted: false
+      }))
+    }, 1000)
   }
+
 
   const editItem = (index) => {
     let tempArr = gridData && gridData.find((el, i) => i === index)
@@ -284,6 +298,7 @@ function BOPCost(props) {
     }
     setEditIndex(index)
     setRowObjData(tempArr)
+   
   }
 
   const SaveItem = (index) => {
