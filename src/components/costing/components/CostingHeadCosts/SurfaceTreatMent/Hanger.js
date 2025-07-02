@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Col, Row } from 'reactstrap'
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs'
-import { Controller, useForm } from 'react-hook-form'
+import { TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { NUMBERMAXLENGTH } from '../../../../../config/masterData'
 import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLimit6, number } from '../../../../../helper'
 import { debounce } from 'lodash'
@@ -23,19 +23,26 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
         showHanger: true
     })
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
+    const hangerCost = useWatch({
+        control,
+        name: 'HangerCostPerPart',
+    });
     useEffect(() => {
         const data = isSummary ? viewCostingDataObj : item?.CostingPartDetails
         setValue(`HangerFactor`, data?.HangerRate ? checkForDecimalAndNull(data?.HangerRate, NoOfDecimalForInputOutput) : '')
         setValue(`NoOfPartsPerHanger`, data?.NumberOfPartsPerHanger ? checkForDecimalAndNull(data?.NumberOfPartsPerHanger, NoOfDecimalForInputOutput) : '')
         setValue(`HangerCostPerPart`, checkForDecimalAndNull(data?.HangerCostPerPart, NoOfDecimalForPrice))
+        setValue(`HangerRemark`, data?.HangerRemark ?? "")
     }, [viewCostingDataObj])
     const calculateHangerCost = debounce((hangerFactor, noOfPartsPerHanger) => {
         const hangerCost = checkForNull(hangerFactor) / checkForNull(noOfPartsPerHanger)
         setValue(`HangerCostPerPart`, checkForDecimalAndNull(hangerCost, NoOfDecimalForPrice))
+        let hangerRemarks = getValues("HangerRemark")
         let obj = {
             HangerRate: hangerFactor,
             NumberOfPartsPerHanger: checkForNull(noOfPartsPerHanger),
-            HangerCostPerPart: hangerCost
+            HangerCostPerPart: hangerCost,
+            HangerRemark: hangerRemarks
         }
         setSurfaceData({ Params, hangerObj: obj, type: 'Hanger' }, errors)
         // let tempArray = _.cloneDeep(JSON.parse(sessionStorage.getItem('surfaceCostingArray')))
@@ -54,6 +61,26 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
         // sessionStorage.setItem('surfaceCostingArray', JSON.stringify(tempArray))
         // dispatch(setSurfaceData(surfaceTabData, () => { }))
     }, 800)
+
+    const debouncedUpdate = useCallback(
+        debounce((value, getValues, setSurfaceData) => {
+            const { HangerFactor, NoOfPartsPerHanger, HangerCostPerPart } = getValues();
+            const obj = {
+                HangerRate: HangerFactor,
+                NumberOfPartsPerHanger: checkForNull(NoOfPartsPerHanger),
+                HangerCostPerPart: checkForDecimalAndNull(HangerCostPerPart, NoOfDecimalForPrice),
+                HangerRemark: value,
+            };
+            setSurfaceData({ Params, hangerObj: obj, type: 'Hanger' }, errors);
+        }, 300),
+        []
+    );
+
+    const handleRemark = (e) => {
+        const value = e?.target?.value;
+        debouncedUpdate(value, getValues, setSurfaceData);
+    };
+
     return (
         <>
             <Row>
@@ -142,6 +169,29 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
                         }}
                         errors={errors && errors.HangerCostPerPart}
                         disabled={true}
+                    />
+                </Col>
+                <Col md="4">
+                    <TextAreaHookForm
+                        label="Remarks"
+                        name={"HangerRemark"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={!!(checkForNull(hangerCost) > 0)}
+                        rules={{
+                            required: !!(checkForNull(hangerCost) > 0),
+                            maxLength: {
+                                value: 255,
+                                message: "Remark should be less than 255 words"
+                            },
+                        }}
+                        handleChange={handleRemark}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.HangerRemark}
+                        disabled={false}
                     />
                 </Col>
             </Row>}

@@ -50,7 +50,7 @@ function SurfaceTreatment(props) {
   const [viewExtraCost, setViewExtraCost] = useState(false)
   const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
-  const [hangerCostDetails, setHangerCostDetails] = useState({ HangerCostPerPart: checkForNull(item?.CostingPartDetails?.HangerCostPerPart) ?? 0, HangerRate: checkForNull(item?.CostingPartDetails?.HangerRate) ?? 0, NumberOfPartsPerHanger: checkForNull(item?.CostingPartDetails?.NumberOfPartsPerHanger) ?? 0 })
+  const [hangerCostDetails, setHangerCostDetails] = useState({ HangerCostPerPart: checkForNull(item?.CostingPartDetails?.HangerCostPerPart) ?? 0, HangerRate: checkForNull(item?.CostingPartDetails?.HangerRate) ?? 0, NumberOfPartsPerHanger: checkForNull(item?.CostingPartDetails?.NumberOfPartsPerHanger) ?? 0, HangerRemark: item?.CostingPartDetails?.HangerRemark })
 
   const [extraCostDetails, setExtraCostDetails] = useState({ TransportationCost: checkForNull(item?.CostingPartDetails?.TransportationCost) ?? 0, TransportationDetails: item?.CostingPartDetails?.TransportationDetails })
 
@@ -193,7 +193,8 @@ function SurfaceTreatment(props) {
           "TapeCost": item?.CostingPartDetails?.TapeCost,
           "HangerRate": item?.CostingPartDetails?.HangerRate,
           "HangerCostPerPart": item?.CostingPartDetails?.HangerCostPerPart,
-          "NumberOfPartsPerHanger": item?.CostingPartDetails?.NumberOfPartsPerHanger
+          "NumberOfPartsPerHanger": item?.CostingPartDetails?.NumberOfPartsPerHanger,
+          "HangerRemark": item?.CostingPartDetails?.HangerRemark
         },
       }
       // IN COSTING VIEW MODE
@@ -267,7 +268,7 @@ function SurfaceTreatment(props) {
     let indexForUpdate = _.findIndex(tempArray, tempArrayItem => tempArrayItem.PartNumber === item.PartNumber && tempArrayItem.AssemblyPartNumber === item.AssemblyPartNumber);
     let objectToUpdate = tempArray[indexForUpdate]
     if (obj.type === 'Hanger') {
-      setHangerCostDetails({ HangerCostPerPart: obj.hangerObj.HangerCostPerPart, HangerRate: obj.hangerObj.HangerRate, NumberOfPartsPerHanger: obj.hangerObj.NumberOfPartsPerHanger })
+      setHangerCostDetails({ HangerCostPerPart: obj.hangerObj.HangerCostPerPart, HangerRate: obj.hangerObj.HangerRate, NumberOfPartsPerHanger: obj.hangerObj.NumberOfPartsPerHanger, HangerRemark: obj?.hangerObj?.HangerRemark })
 
       // objectToUpdate.CostingPartDetails.HangerCostPerPart = obj.hangerObj.HangerCostPerPart
       // objectToUpdate.CostingPartDetails.HangerCostPerPartWithQuantity = obj.hangerObj.HangerCostPerPart
@@ -337,6 +338,12 @@ function SurfaceTreatment(props) {
       }
     }
     if (errorObjectSurfaceTreatment && (count !== 0 || countST !== 0)) return false;
+    if(hangerCostDetails && hangerCostDetails?.hasOwnProperty("HangerCostPerPart") && checkForNull(hangerCostDetails?.HangerCostPerPart) > 0){
+      if(!hangerCostDetails?.HangerRemark || hangerCostDetails?.HangerRemark === ""){
+        Toaster.warning("Please add Remarks in Hanger Cost")
+        return
+      }
+    }
 
     if (partType) {
       // WILL GET EXECUTE WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY

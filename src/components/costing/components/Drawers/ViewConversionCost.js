@@ -858,6 +858,7 @@ function ViewConversionCost(props) {
                   <th>Hanger Factor (Rate)</th>
                   <th>No. of Parts per Hanger</th>
                   <th>Hanger Cost per Part</th>
+                  <th>Remark</th>
                 </tr>
 
                 {filteredData.map((item, index) => (
@@ -870,6 +871,7 @@ function ViewConversionCost(props) {
                         ? checkForDecimalAndNull(item?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice)
                         : '-'}
                     </td>
+                    <td>{item?.HangerRemark ?? '-'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -913,6 +915,7 @@ function ViewConversionCost(props) {
                   <th>Rejection Allowance</th>
                   <th>RM Rate (Currency)</th>
                   <th>Paint Cost</th>
+                  <th>Remark</th>
                   {isPDFShow && <th>Masking/Tape Cost</th>}
                   {isPDFShow && IsAssemblyCosting && <th>Total Paint & Masking Cost</th>}
                   <th>Effective Date</th>
@@ -937,6 +940,7 @@ function ViewConversionCost(props) {
                       <td>{checkForDecimalAndNull(rm?.RejectionAllowance, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                       <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)}</td>
                       <td>{checkForDecimalAndNull(rm?.NetCost, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                      <td>{rm?.Remark ?? "-"}</td>
                       {isPDFShow && childIndex === 0 && (
                         <td rowSpan={coat?.RawMaterials?.length}>
                           {checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
@@ -969,7 +973,7 @@ function ViewConversionCost(props) {
                     <td colSpan={!isPDFShow ? 3 : 11} className="text-right">
                       <strong>Total Paint Cost:</strong>
                     </td>
-                    <td colSpan={!isPDFShow ? 2 : 0}>
+                    <td colSpan={!isPDFShow ? 3 : 0}>
                       {checkForDecimalAndNull(PaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                     </td>
                   </tr>
