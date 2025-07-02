@@ -486,16 +486,16 @@ export const findProductionPerHour = (quantity) => {
 }
 
 // TO FIND PROCESS COST IF UOM TYPE IS TIME AND ON THE BASIS OF UOM (HOURS,MINUTES,SECONDS)
-export const findProcessCost = (uom, mhr, productionPerHour, mhrWithoutInterestAndDepreciation = null) => {
+export const findProcessCost = (uom, mhr, productionPerHour, mhrWithoutInterestAndDepreciation = null, numberOfMainPower = 1) => {
   let processCost = 0;
   let processCostWithoutInterestAndDepreciation = 0;
   const multiplier = getTimeMultiplier(uom);
   if (multiplier) {
-    processCost = checkForNull((checkForNull(mhr) * multiplier) / checkForNull(productionPerHour));
+    processCost = checkForNull((checkForNull(mhr) * numberOfMainPower * multiplier) / checkForNull(productionPerHour));
 
     if (mhrWithoutInterestAndDepreciation) {
       processCostWithoutInterestAndDepreciation = checkForNull(
-        (checkForNull(mhrWithoutInterestAndDepreciation) * multiplier) / checkForNull(productionPerHour)
+        (checkForNull(mhrWithoutInterestAndDepreciation) * numberOfMainPower * multiplier) / checkForNull(productionPerHour)
       );
 
     }

@@ -12,12 +12,11 @@ import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { findProcessCost } from '../../../CostingUtil';
 import { debounce } from 'lodash';
-import { decimalNumberLimit6, maxLength8, nonZero } from '../../../../../helper/validation'
+import { decimalNumberLimit6, maxLength8, noDecimal, nonZero } from '../../../../../helper/validation'
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit } from "../../../../../helper/validation";
 
 function SheetMetalBaicDrawer(props) {
-  
   const { rmFinishWeight } = props
   const { ProcessName } = props.calculatorData
   const costData = useContext(costingInfoContext);
@@ -33,6 +32,7 @@ function SheetMetalBaicDrawer(props) {
     ProcessCost: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " " : '',
     ExtrusionSpeed: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ExtrusionSpeed : '',
     PartLength: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.PartLength : '',
+    NoOfManPower: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.NoOfManPower !== null ? WeightCalculatorRequest.NoOfManPower : 1 : 1,
   }
   
   const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
@@ -58,7 +58,7 @@ function SheetMetalBaicDrawer(props) {
   const processMHRWithOutInterestAndDepreciation = props?.calculatorData?.MHRWithOutInterestAndDepreciation || null
   const fieldValues = useWatch({
     control,
-    name: ['Efficiency', 'Cavity', 'CycleTime', 'PartLength', 'ExtrusionSpeed'],
+    name: ['Efficiency', 'Cavity', 'CycleTime', 'PartLength', 'ExtrusionSpeed', 'NoOfManPower'],
   })
 
   useEffect(() => {
@@ -132,7 +132,7 @@ function SheetMetalBaicDrawer(props) {
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
         break;
       case TIME:
-        setProcessCostTooltip('Process Cost = (( MHR * Cycle Time / 3600) * ( 100 / Efficiency)) / Cavity')
+        setProcessCostTooltip('Process Cost = (( MHR * Cycle Time / 3600) * Manpower/Run Count)')
         break;
       case DIMENSIONLESS:
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
@@ -171,6 +171,7 @@ function SheetMetalBaicDrawer(props) {
     obj.CycleTime = getValues('CycleTime')
     obj.Efficiency = getValues('Efficiency')
     obj.Cavity = getValues('Cavity')
+    obj.NoOfManPower = getValues('NoOfManPower')
     obj.Quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(processCost) / checkForNull(props.calculatorData.MHR)) : Number(quantityState)
     obj.ProcessCost = processCost
     obj.MachineRate = props?.calculatorData?.MHR
@@ -199,7 +200,7 @@ function SheetMetalBaicDrawer(props) {
   const calculateProcessCost = () => {
     const efficiency = checkForNull(getValues('Efficiency'))
     const quantityValues = checkForNull(getValues('Quantity'))
-
+    const noOfManPower = checkForNull(getValues('NoOfManPower'))
     const quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(quantityState)) : Number(checkForNull(quantityValues))
     const cavity = checkForNull(getValues('Cavity'))
     let cost, netProcessCostWithOutInterestAndDepreciation
@@ -216,7 +217,8 @@ function SheetMetalBaicDrawer(props) {
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
          netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
-          setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
+          setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation * noOfManPower)
+          cost = cost * noOfManPower
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           
@@ -224,10 +226,10 @@ function SheetMetalBaicDrawer(props) {
         case AREA:
           setDisabled(true)
           cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
-         netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
-          setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
+          netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
+          cost = cost * noOfManPower
+          setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation * noOfManPower)
           setProcessCost(cost)
-          
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case TIME:
@@ -235,7 +237,7 @@ function SheetMetalBaicDrawer(props) {
           //This need to be done later
           // cost = rate / (quantity === 0 ? 1 : quantity);
 
-          ({ processCost: cost, processCostWithoutInterestAndDepreciation: netProcessCostWithOutInterestAndDepreciation } = findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity, processMHRWithOutInterestAndDepreciation))
+          ({ processCost: cost, processCostWithoutInterestAndDepreciation: netProcessCostWithOutInterestAndDepreciation } = findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity, processMHRWithOutInterestAndDepreciation, noOfManPower))
           setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
           setProcessCost(cost)
           
@@ -246,7 +248,8 @@ function SheetMetalBaicDrawer(props) {
           setDisabled(true)
           cost = ((100 / efficiency) * (updatedQuantity) * (rate)) / cavity
           netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * updatedQuantity * processMHRWithOutInterestAndDepreciation) / cavity
-          setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
+          cost = cost * noOfManPower
+          setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation * noOfManPower)
           setProcessCost(cost)
           
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
@@ -255,7 +258,8 @@ function SheetMetalBaicDrawer(props) {
           setDisabled(true)
           cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
          netProcessCostWithOutInterestAndDepreciation = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * processMHRWithOutInterestAndDepreciation) / cavity
-          setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation)
+         cost = cost * noOfManPower
+          setNetProcessCostWithoutInterestAndDepreciation(netProcessCostWithOutInterestAndDepreciation * noOfManPower)
           setProcessCost(cost)
           
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
@@ -484,6 +488,32 @@ function SheetMetalBaicDrawer(props) {
                       disabled={(props.calculatorData.UOMType === TIME || props.CostingViewMode) ? true : false}
                     />
                   </Col>
+
+                  <Col md="4">
+                    <NumberFieldHookForm
+                      label={`Manpower/Run Count`}
+                      name={'NoOfManPower'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{
+                        required: true,
+                        validate: { number, checkWhiteSpaces, noDecimal },
+                        min: {
+                          value: 1,
+                          message: 'Manpower/Run Count should be greater than 0'
+                        },
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.NoOfManPower}
+                      disabled={props.CostingViewMode ? true : false}
+                    />
+                  </Col>
+
                   <Col md="4">
                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'process-cost'} tooltipText={processCostTooltip} />
                     <NumberFieldHookForm
