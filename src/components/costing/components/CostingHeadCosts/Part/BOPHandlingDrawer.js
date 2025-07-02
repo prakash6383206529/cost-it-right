@@ -155,39 +155,40 @@ function BOPHandlingDrawer(props) {
 
         switch (bopType.label) {
             case "BOP CKD":
-                if (item?.PartType !== "Part" && item?.PartType !== "Component"&& item?.PartType !== "BoughtOutPart") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component" && item?.PartType !== "BoughtOutPart") {
                     // Use the base cost without handling charges to avoid compounding
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity)
                 } else {
-                    applicabilityCost = props.applicabilityCost?.bopCKDCost;
+
+                    applicabilityCost = props?.applicabilityCost?.bopCKDCost - props?.applicabilityCost?.bopCKDHandlingCost;
                 }
                 break;
             case "BOP OSP":
-                if (item?.PartType !== "Part" && item?.PartType !== "Component"&& item?.PartType !== "BoughtOutPart") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component" && item?.PartType !== "BoughtOutPart") {
                     // Use the base cost without handling charges to avoid compounding
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity)
                 } else {
-                    applicabilityCost = props.applicabilityCost?.bopOSPCost;
+                    applicabilityCost = props?.applicabilityCost?.bopOSPCost - props?.applicabilityCost?.bopOSPHandlingCost;
                 }
                 break;
             case "BOP Domestic":
-                if (item?.PartType !== "Part" && item?.PartType !== "Component"&& item?.PartType !== "BoughtOutPart") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component" && item?.PartType !== "BoughtOutPart") {
                     // Use the base cost without handling charges to avoid compounding
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity)
                 } else {
-                    applicabilityCost = props.applicabilityCost?.bopDomesticCost;
+                    applicabilityCost = props?.applicabilityCost?.bopDomesticCost - props?.applicabilityCost?.bopDomesticHandlingCost;
                 }
                 break;
             case "BOP V2V":
-                if (item?.PartType !== "Part" && item?.PartType !== "Component"&& item?.PartType !== "BoughtOutPart") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component" && item?.PartType !== "BoughtOutPart") {
                     // Use the base cost without handling charges to avoid compounding
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity)
                 } else {
-                    applicabilityCost = props.applicabilityCost?.bopV2VCost;
+                    applicabilityCost = props?.applicabilityCost?.bopV2VCost - props?.applicabilityCost?.bopV2VHandlingCost;
                 }
                 break;
             default:
-                if (item?.PartType !== "Part" && item?.PartType !== "Component"&& item?.PartType !== "BoughtOutPart") {
+                if (item?.PartType !== "Part" && item?.PartType !== "Component" && item?.PartType !== "BoughtOutPart") {
                     // Use the base cost without handling charges to avoid compounding
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity)
                 } else {
@@ -207,7 +208,7 @@ function BOPHandlingDrawer(props) {
     }
 
     const cancel = () => {
-        props.closeDrawer('Cancel', state.totalHandlingCharges, tableData,item)
+        props.closeDrawer('Cancel', state.totalHandlingCharges, tableData, item)
     }
 
     const onSubmit = debounce((values) => {
@@ -413,7 +414,7 @@ function BOPHandlingDrawer(props) {
                                                         mandatory={false}
                                                         rules={{}}
                                                         handleChange={() => { }}
-                                                        defaultValue={checkForDecimalAndNull(props.applicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}
+                                                        defaultValue={checkForDecimalAndNull(props?.applicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.ApplicabilityCost}

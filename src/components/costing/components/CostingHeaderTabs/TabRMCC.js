@@ -695,6 +695,10 @@ function TabRMCC(props) {
           item.BOPType === "BOP V2V" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
         partObj.CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge = gridData?.reduce((acc, item) =>
           item.BOPType === "BOP OSP" ? acc + checkForNull(item.NetBoughtOutPartCost) : acc, 0)
+        partObj.CostingPartDetails.NetBOPDomesticHandlingCost = checkboxFields?.NetBOPDomesticHandlingCost ? checkForNull(checkboxFields?.NetBOPDomesticHandlingCost) : 0
+        partObj.CostingPartDetails.NetBOPImportHandlingCost = checkboxFields?.NetBOPImportHandlingCost ? checkForNull(checkboxFields?.NetBOPImportHandlingCost) : 0
+        partObj.CostingPartDetails.NetBOPSourceHandlingCost = checkboxFields?.NetBOPSourceHandlingCost ? checkForNull(checkboxFields?.NetBOPSourceHandlingCost) : 0
+        partObj.CostingPartDetails.NetBOPOutsourcedHandlingCost = checkboxFields?.NetBOPOutsourcedHandlingCost ? checkForNull(checkboxFields?.NetBOPOutsourcedHandlingCost) : 0
         partObj.CostingPartDetails.NetBoughtOutPartCost = checkboxFields?.IsApplyBOPHandlingCharges ? (netBOPCost(gridData) + checkForNull(checkboxFields?.BOPHandlingCharges)) : netBOPCost(gridData);
         partObj.CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge = netBOPCost(gridData);
         partObj.CostingPartDetails.IsApplyBOPHandlingCharges = checkboxFields?.IsApplyBOPHandlingCharges;
