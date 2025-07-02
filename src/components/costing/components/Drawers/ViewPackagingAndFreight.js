@@ -174,7 +174,8 @@ function ViewPackagingAndFreight(props) {
                 <th>{`Capacity`}</th>
                 <th>{`Rate/Percentage`}</th>
                 <th>{`Quantity`}</th>
-                <th className={initialConfiguration?.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
+                <th>{`Cost`}</th>
+                <th className='col-md-2'>{`Remark`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
               {freightData &&
@@ -197,8 +198,8 @@ function ViewPackagingAndFreight(props) {
                           />
                         }
                       </td >
-                      {initialConfiguration?.IsShowCRMHead && <td>{item.FreightCRMHead ? item.FreightCRMHead : '-'}</td>
-                      }
+                      <td>{item?.Remark ? item?.Remark : '-'}</td>
+                      {initialConfiguration?.IsShowCRMHead && <td>{item.FreightCRMHead ? item.FreightCRMHead : '-'}</td>}
                     </tr >
                   )
                 })}
