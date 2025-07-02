@@ -285,8 +285,9 @@ class AddMoreDetails extends Component {
         "Plant": [],
       }
       this.props.checkAndGetMachineNumber(requestData, res => {
-        let Data = res.data.DynamicData;
-        this.props.change('MachineNumber', Data.MachineNumber)
+        let Data = res?.data?.DynamicData;
+        this.props.change('MachineNumber', Data?.MachineNumber)
+        this.setState({ machineNumber: Data?.MachineNumber })
       })
     }
     if (!getConfigurationKey().IsDivisionAllowedForDepartment && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {

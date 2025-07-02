@@ -442,10 +442,10 @@ function AssemblyTechnology(props) {
             // tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCostWithOutHandlingCharge = tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCostWithOutHandlingCharge
             // tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge = tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCostWithOutHandlingCharge
             // tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge = tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCostWithOutHandlingCharge
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCost = tempsubAssemblyTechnologyArray[0].CostingPartDetails?.NetBOPDomesticCost + checkForNull(bopHandlingCharges?.domestic)
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPImportCost = tempsubAssemblyTechnologyArray[0].CostingPartDetails?.NetBOPImportCost + checkForNull(bopHandlingCharges?.import)
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCost = tempsubAssemblyTechnologyArray[0].CostingPartDetails?.NetBOPSourceCost + checkForNull(bopHandlingCharges?.source)
-            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCost = tempsubAssemblyTechnologyArray[0].CostingPartDetails?.NetBOPOutsourcedCost + checkForNull(bopHandlingCharges?.outsourced)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPDomesticCost = tempsubAssemblyTechnologyArray[0].CostingPartDetails?.NetBOPDomesticCostWithOutHandlingCharge + checkForNull(bopHandlingCharges?.domestic)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPImportCost = tempsubAssemblyTechnologyArray[0].CostingPartDetails?.NetBOPImportCostWithOutHandlingCharge + checkForNull(bopHandlingCharges?.import)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPSourceCost = tempsubAssemblyTechnologyArray[0].CostingPartDetails?.NetBOPSourceCostWithOutHandlingCharge + checkForNull(bopHandlingCharges?.source)
+            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBOPOutsourcedCost = tempsubAssemblyTechnologyArray[0].CostingPartDetails?.NetBOPOutsourcedCostWithOutHandlingCharge + checkForNull(bopHandlingCharges?.outsourced)
             tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost = totalBOPCost 
 
             // Total costs with quantity (same as Net for assembly level)
