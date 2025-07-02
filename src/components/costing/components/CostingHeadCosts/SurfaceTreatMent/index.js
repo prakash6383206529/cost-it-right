@@ -399,11 +399,22 @@ function SurfaceTreatment(props) {
     }
 
     let totalPOriceForAssembly = checkForNull(basicRate) + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost)
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, TotalCost: totalPOriceForAssembly, BasicRate: basicRate, NetPOPrice: totalPOriceForAssembly }, res => {
-      if (Number(previousTab) === 6) {
-        dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
-      }
-    }))
+    setTimeout(() => {
+      dispatch(saveDiscountOtherCostTab(
+        { 
+          ...ComponentItemDiscountData, 
+          EffectiveDate: CostingEffectiveDate, 
+          // TotalCost: totalPOriceForAssembly, 
+          // BasicRate: basicRate, 
+          // NetPOPrice: totalPOriceForAssembly 
+        }, 
+        res => {
+          if (Number(previousTab) === 6) {
+            dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, () => {}));
+          }
+        }
+      ));
+    });
     // }
   }
 
