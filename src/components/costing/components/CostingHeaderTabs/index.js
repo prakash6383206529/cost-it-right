@@ -247,7 +247,7 @@ function CostingHeaderTabs(props) {
         let basicRate
         let netPOPriceTemp
 
-        if (ComponentItemData?.PartType === "Component") {          // COMPONENT
+        if (ComponentItemData?.PartType === "Component" || ComponentItemData?.PartType === "Bought Out Part") {          // COMPONENT
           basicRate = basicRateComponent
           netPOPriceTemp = checkForNull(basicRateComponent) + checkForNull(DiscountCostData?.totalConditionCost)
         } else if (ComponentItemData?.PartType === "Part") {          // CHILD PART OF ASM : COMPONENT
