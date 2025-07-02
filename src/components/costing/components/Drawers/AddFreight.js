@@ -10,7 +10,7 @@ import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/Hoo
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, removeBOPfromApplicability } from '../../../../helper';
 import { removeBOPFromList } from '../../../../helper';
 import { CRMHeads, Fixed, FullTruckLoad, PartTruckLoad, Per_Kg_Load, Percentage, WACTypeId } from '../../../../config/constants';
-import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80 } from "../../../../helper/validation";
 import { fetchCostingHeadsAPI } from '../../../../actions/Common';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import _ from 'lodash';
@@ -35,6 +35,7 @@ function AddFreight(props) {
     IsFreightDetailedBreakup: rowObjData && rowObjData.IsFreightDetailedBreakup !== undefined ? rowObjData.IsFreightDetailedBreakup : false,
     TruckDimensions: rowObjData && rowObjData.DimensionName !== undefined ? { label: rowObjData.DimensionName, value: rowObjData.DimensionId } : [],
     CostingFreightCalculationDetailsId: rowObjData && rowObjData.CostingFreightCalculationDetailsId !== undefined ? rowObjData.CostingFreightCalculationDetailsId : '',
+    Remark: rowObjData && rowObjData.Remark !== undefined ? rowObjData?.Remark : null
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
@@ -44,6 +45,7 @@ function AddFreight(props) {
   });
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const IsAllowSingleFreightMultipleTimeInCosting = initialConfiguration?.IsAllowSingleFreightMultipleTimeInCosting
   const dispatch = useDispatch()
 
   const headCostData = useContext(netHeadCostContext)
@@ -77,6 +79,7 @@ function AddFreight(props) {
     noOfComponentsPerCrate: 0,
     hideDetailedBreakup: false,
     truckDimensionRes: {},
+    remark: ''
   })
   const { costingData, OverheadProfitTabData, SurfaceTabData } = useSelector(state => state.costing)
 
@@ -124,10 +127,14 @@ function AddFreight(props) {
 
   useEffect(() => {
     if (gridData && gridData.length > 0 && !isEditFlag) {
-      const hasDetailedBreakup = gridData?.some(item =>
+      let hasDetailedBreakup = gridData?.some(item =>
         item?.CostingFreightCalculationDetailsId &&
         item?.IsFreightDetailedBreakup === true
       );
+
+      if (IsAllowSingleFreightMultipleTimeInCosting) {
+        hasDetailedBreakup = false
+      }
 
       setState(prevState => ({
         ...prevState,
@@ -171,6 +178,7 @@ function AddFreight(props) {
       Criteria: false,
       Rate: false,
       Quantity: false,
+      Remark: true
     }
     switch (freightFlag) {
       case FullTruckLoad:
@@ -621,14 +629,27 @@ function AddFreight(props) {
       CostingFreightCalculationDetailsId: costingFreightCalculationDetailsId,
       DimensionName: state?.truckDimensions?.label,
       DimensionId: state?.truckDimensions?.value,
-      IsFreightDetailedBreakup: state?.isShowDetailedBreakup
+      IsFreightDetailedBreakup: state?.isShowDetailedBreakup,
+      Remark: data?.Remark
     }
     if (checkForNull(formData?.FreightCost) === 0) {
       Toaster.warning("Freight Cost cannot be zero.");
       return false;
     }
 
-    if (doesObjectExist(gridData, formData)) {
+    if (IsAllowSingleFreightMultipleTimeInCosting ) {
+      const keysToIgnore = ['CostingFreightCalculationDetailsId']
+      const exists = _.some(gridData, item => _.isEqualWith(item, formData, (_, __, key) => {
+          if (keysToIgnore.includes(key)) return true
+          // default key and value for everything else that's why return undefined
+          return undefined
+        })
+      )
+      if (exists) {
+        isEditFlag ? Toaster.warning("Please change the data to update Freight.") : Toaster.warning("Data already exists in the grid.")
+        return false
+      }
+    } else if (doesObjectExist(gridData, formData)) {
       isEditFlag ? Toaster.warning("Please change the data to update Freight.") : Toaster.warning("Data already exists in the grid.")
       return false;
     }
@@ -936,6 +957,27 @@ function AddFreight(props) {
                       customClassName={'withBorder'}
                       errors={errors.Quantity}
                       disabled={(freightType === Fixed || freightType === Percentage) ? true : false}
+                    />
+                  </Col>}
+
+                  {showFields?.Remark && <Col md="12">
+                    <TextFieldHookForm
+                      label="Remark"
+                      name={"Remark"}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                        validate: { checkWhiteSpaces, hashValidation, maxLength80 },
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={""}
+                      className=""
+                      customClassName={"withBorder"}
+                      errors={errors?.Remark}
+                      disabled={costingFreightCalculationDetailsId === null ? false : true}
                     />
                   </Col>}
 
