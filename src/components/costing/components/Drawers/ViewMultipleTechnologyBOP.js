@@ -60,12 +60,12 @@ const ViewMultipleTechnologyBOP = (props) => {
                             {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
                                 <td>{`${item.Customer || '-'}`}</td>
                             }
-                            <td>{item?.CostingNumber || '-'}</td>
+                            <td>{item.BoughtOutPartNumber || '-'}</td>
                             <td>{item?.BOPType ?? "-"}</td>
-                            <td>{item?.SettledPriceLocalConversion ? checkForDecimalAndNull(item?.SettledPriceLocalConversion, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}{item?.SettledPriceLocalConversion && <span><TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`settled-price-${item?.BoughtOutPartId}${index}`} tooltipText={() => tooltipText(item)} /></span>}</td>
+                            <td>{item?.SettledPrice ? checkForDecimalAndNull(item?.SettledPrice, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}{item?.SettledPrice && <span><TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`settled-price-${item?.BoughtOutPartId}${index}`} tooltipText={() => tooltipText(item)} /></span>}</td>
                             <td>{item?.Delta ?? "-"}</td>
                             {
-                                (costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && 
+                                (costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) &&
                                 <td >{item?.SOBPercentage ?? "-"}</td>
                             }
                             <td>{item?.NetCost ? checkForDecimalAndNull(item?.NetCost, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}</td>
