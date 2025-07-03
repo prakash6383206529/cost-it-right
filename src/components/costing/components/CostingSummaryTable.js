@@ -1861,7 +1861,7 @@ const CostingSummaryTable = (props) => {
       finalData = VIEW_COSTING_DATA_TEMPLATE
       temp = viewCostingData
     }
-    
+
     return (
       <ExcelSheet data={temp} name={"Costing Summary"}>
         {finalData && finalData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -2759,7 +2759,8 @@ const CostingSummaryTable = (props) => {
                       }
                       {
                         !isLogisticsTechnology ? <>
-                          {partType ? <>
+                          {partType ? 
+                          <>
                             <tr>
                               <td>
                                 <span className={highlighter("", "rm-reducer")}>Part Cost/Pc</span>
@@ -3075,7 +3076,7 @@ const CostingSummaryTable = (props) => {
                                       {showDifferentBOPType() && <TooltipCustom customClass="mt-1 ml-2 float-unset" id="net-bop-cost-summary" tooltipText={`Included Handling Charges`} />}
                                     </span>
                                   </th>
-                                  
+
                                   {viewCostingData &&
                                     viewCostingData?.map((data, index) => {
                                       return (
@@ -3648,57 +3649,7 @@ const CostingSummaryTable = (props) => {
                                   </td>
                                 )
                               })}
-                          </tr>}
-                          {getConfigurationKey()?.IsShowIncoTermFieldInCosting && <tr>
-                            <td>
-                              <span className="d-block small-grey-text"> Inco Term</span>
-                            </td>
-                            {viewCostingData &&
-                              viewCostingData?.map((data) => {
-                                return (
-                                  <td className={tableDataClass(data)}>
-                                    <span
-                                      title={`${data?.CostingIncoTermDescription} (${data?.CostingIncoTerm})`}
-                                      className={`w-fit ${highlighter("incoTerm")}`}
-                                    >
-                                      {data?.bestCost === true
-                                        ? ' '
-                                        : (data?.CostingHeading !== VARIANCE
-                                          ? `${data?.CostingIncoTermDescription} (${data?.CostingIncoTerm})`
-                                          : ''
-                                        )
-                                      }
-
-                                    </span>
-                                  </td>
-                                )
-                              })}
-                          </tr>}
-                          <tr>
-                            <td>
-                              <span className="d-block small-grey-text"> Budgeting Price</span>
-                            </td>
-                            {viewCostingData &&
-                              viewCostingData?.map((data) => {
-                                return (
-                                  <td className={tableDataClass(data)}>
-                                    <span
-                                      title={`${data?.BudgetedPrice}`}
-                                      className={`w-fit ${highlighter("BudetedPrice")}`}
-                                    >
-                                      {data?.bestCost === true
-                                        ? ' '
-                                        : (data?.CostingHeading !== VARIANCE
-                                          ? `${data?.BudgetedPrice}`
-                                          : ''
-                                        )
-                                      }
-
-                                    </span>
-                                  </td>
-                                )
-                              })}
-                          </tr>
+                          </tr>}                      
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("BasicRate", "main-row")}`}>
                               <th>Basic Price {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} </th>
@@ -3823,7 +3774,8 @@ const CostingSummaryTable = (props) => {
                                 )
                               })}
                           </tr>
-                        </>}
+                        </>
+                      }
                       {
                         <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
                           <th>Net Cost {showConvertedCurrencyCheckbox && '(Settlement Currency)'} {simulationDrawer}</th>
@@ -3859,6 +3811,60 @@ const CostingSummaryTable = (props) => {
                               </td>
                             })}
                         </tr>
+                      }
+                      {!isLogisticsTechnology &&
+                        <>
+                          {getConfigurationKey()?.IsShowIncoTermFieldInCosting && <tr>
+                            <td>
+                              <span className="d-block small-grey-text"> Inco Term</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span
+                                      title={`${data?.CostingIncoTermDescription} (${data?.CostingIncoTerm})`}
+                                      className={`w-fit ${highlighter("incoTerm")}`}
+                                    >
+                                      {data?.bestCost === true
+                                        ? ' '
+                                        : (data?.CostingHeading !== VARIANCE
+                                          ? `${data?.CostingIncoTermDescription} (${data?.CostingIncoTerm})`
+                                          : ''
+                                        )
+                                      }
+
+                                    </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>}
+                          <tr>
+                            <td>
+                              <span className="d-block small-grey-text"> Budgeting Price</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span
+                                      title={`${data?.BudgetedPrice}`}
+                                      className={`w-fit ${highlighter("BudgetedPrice")}`}
+                                    >
+                                      {data?.bestCost === true
+                                        ? ' '
+                                        : (data?.CostingHeading !== VARIANCE
+                                          ? `${data?.BudgetedPrice}`
+                                          : ''
+                                        )
+                                      }
+
+                                    </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>
+                        </>
                       }
                       {showConvertedCurrencyCheckbox &&
                         <tr className={`${highlighter("NetPOPriceLocalConversion", "main-row")} netPo-row`}>
