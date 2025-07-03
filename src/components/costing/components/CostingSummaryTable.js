@@ -1362,7 +1362,7 @@ const CostingSummaryTable = (props) => {
     return checkForDecimalAndNull(arr, initialConfiguration?.NoOfDecimalForInputOutput)
   }
   const reactToPrintTriggerDetail = useCallback(() => {
-    return <button id="costingSummary_Detailed_pdf" className="user-btn mr-1 mb-2 px-2" title='Detailed pdf' disabled={viewCostingData?.length === 1 ? false : true}> <div className='pdf-detail'></div>  D </button>
+    return <button type="button" id="costingSummary_Detailed_pdf" className="user-btn mr-1 mb-2 px-2" title='Detailed pdf' disabled={viewCostingData?.length === 1 ? false : true}> <div className='pdf-detail'></div>  D </button>
   }, [viewCostingData])
 
   const handleAfterPrintDetail = () => {
@@ -1395,7 +1395,7 @@ const CostingSummaryTable = (props) => {
     })
   }
   const reactToPrintTrigger = useCallback(() => {
-    return (simulationMode ? <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button> : <button className="user-btn mr-1 mb-2 px-2" title='pdf' id="costingSummary_pdf" disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button>)
+    return (simulationMode ? <button type="button" className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button> : <button type="button" className="user-btn mr-1 mb-2 px-2" title='pdf' id="costingSummary_pdf" disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button>)
   }, [viewCostingData])
 
   const reactToPrintContent = () => {
@@ -2344,7 +2344,7 @@ const CostingSummaryTable = (props) => {
                   </ExcelFile>}
                   {(props?.isRfqCosting && !isApproval && !drawerViewMode) && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                 </div>
-                {!simulationMode && !props?.isRfqCosting && !props?.isRfqCosting && downloadAccessibility &&
+                {((!simulationMode && !props?.isRfqCosting && !props?.isRfqCosting && downloadAccessibility) || (downloadAccessibility && props?.isApprovalListing)) &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
                     documentTitle={`${pdfName}-detailed-costing`}
@@ -2355,7 +2355,7 @@ const CostingSummaryTable = (props) => {
                     trigger={reactToPrintTriggerDetail}
                   />
                 }
-                {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && downloadAccessibility && <ReactToPrint
+                {(!simulationDrawer && !drawerViewMode && !props.isRfqCosting && downloadAccessibility || (downloadAccessibility && props?.isApprovalListing)) && <ReactToPrint
                   bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                   documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                   content={reactToPrintContent}

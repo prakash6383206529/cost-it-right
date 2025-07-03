@@ -1354,6 +1354,7 @@ function ApprovalListing(props) {
           isSimulation={false}
           simulationDrawer={false}
           selectedTechnology={technologyForCosting}
+          isApprovalListing={true}
         />
       }
     </Fragment >
