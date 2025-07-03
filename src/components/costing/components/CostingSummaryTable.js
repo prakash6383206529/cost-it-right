@@ -3849,7 +3849,7 @@ const CostingSummaryTable = (props) => {
                                   <td className={tableDataClass(data)}>
                                     <span
                                       title={`${data?.BudgetedPrice}`}
-                                      className={`w-fit ${highlighter("BudetedPrice")}`}
+                                      className={`w-fit ${highlighter("BudgetedPrice")}`}
                                     >
                                       {data?.bestCost === true
                                         ? ' '
