@@ -165,6 +165,7 @@ function FreightCost(props) {
                       <th>{`Quantity`}</th>
                       <th>{`Cost`}</th>
                       {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                      <th>{`Remark`}</th>
                       <th style={{ width: "130px", textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -194,6 +195,7 @@ function FreightCost(props) {
                             </div>
                             </td>
                             {initialConfiguration.IsShowCRMHead && <td>{item?.FreightCRMHead}</td>}
+                            <td className={`${item?.Remark ? 'col-md-2' : ''}`}>{item?.Remark ? item?.Remark : '-'}</td>
                             <td style={{ textAlign: "right" }}>
                               {!CostingViewMode && <button title='Edit' className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
                               {!CostingViewMode && <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}

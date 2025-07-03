@@ -133,7 +133,7 @@ function SurfaceTreatment(props) {
                 break;
             }
             mergedAPI(totalCostTemp, props.IsAssemblyCalculation, true, basicRateTemp)
-          } else if (tabData?.PartType === 'Component') {
+          } else if (tabData?.PartType === 'Component'||tabData?.PartType === 'Bought Out Part') {
 
             basicRateTemp = ((checkForNull(costingCostDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
               checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
@@ -337,10 +337,10 @@ function SurfaceTreatment(props) {
       }
     }
     if (errorObjectSurfaceTreatment && (count !== 0 || countST !== 0)) return false;
-
+    
     if (partType) {
       // WILL GET EXECUTE WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
-
+      
       setTimeout(() => {
         setCallAPI(true)
       }, 200);
@@ -351,16 +351,16 @@ function SurfaceTreatment(props) {
     // }
     if ((IsLocked === false || (!CostingViewMode && !IsLockTabInCBCCostingForCustomerRFQ)) && partType === false) {
       if (props.IsAssemblyCalculation) {
-
+        
         props.setAssemblySurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, props.item, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
         // props.setAssemblyTransportationCost(transportObj, transportationObject.Params, item)
         setCallAPI(true)
       } else {
-
+        
         props.setSurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
         // props.setTransportationCost(transportObj, transportationObject.Params)
         setCallAPI(true)
-
+        
       }
     }
 
@@ -532,7 +532,7 @@ function SurfaceTreatment(props) {
                     <div className="cr-process-costwrap">
                       <Row className="cr-innertool-cost">
                         {
-                          (item.PartType !== 'Part' && item.PartType !== 'Component') ?
+                          (item.PartType !== 'Part' && item.PartType !== 'Component' && item.PartType !== 'BoughtOutPart') ?
                             <>
                               <Col md="2" className="cr-costlabel">{`ST. Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
                               <Col md="2" className="cr-costlabel">{`Other Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? item?.CostingPartDetails?.TotalTransportationCostPerAssembly : checkForNull(extraCostDetails?.TransportationCost), initialConfiguration?.NoOfDecimalForPrice)}`}</Col>
