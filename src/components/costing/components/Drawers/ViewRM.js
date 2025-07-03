@@ -297,7 +297,7 @@ function ViewRM(props) {
             ))}
           </Nav>
         )}
-        <div className="col-md-11">
+        <div className="col-md-12">
           <Row>
             <Col md="12" className='mt-1'>
               <div className="left-border">Raw Material</div>

@@ -18,6 +18,7 @@ import { viewAddButtonIcon } from '../../CostingUtil'
 import Button from '../../../layout/Button'
 import PaintAndMasking from '../CostingHeadCosts/SurfaceTreatMent/PaintAndMasking'
 import DayTime from '../../../common/DayTimeWrapper'
+import _ from 'lodash'
 
 function ViewConversionCost(props) {
 
@@ -653,8 +654,8 @@ function ViewConversionCost(props) {
                 <th>{`Quantity`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Rate/UOM`}</th>
-                {initialConfiguration?.IsOperationLabourRateConfigure && surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate/UOM`}</th>}
-                {initialConfiguration?.IsOperationLabourRateConfigure && surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
+                {initialConfiguration?.IsOperationLabourRateConfigure && <th>{`Labour Rate/UOM`}</th>}
+                {initialConfiguration?.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
                 <th className={initialConfiguration?.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr >
@@ -667,8 +668,8 @@ function ViewConversionCost(props) {
                       <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
-                      {initialConfiguration?.IsOperationLabourRateConfigure && item.IsLabourRateExist === true && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>}
-                      {initialConfiguration?.IsOperationLabourRateConfigure && item.IsLabourRateExist === true && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                      {initialConfiguration?.IsOperationLabourRateConfigure && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                      {initialConfiguration?.IsOperationLabourRateConfigure && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration?.NoOfDecimalForPrice)}</td>}
                       <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       {initialConfiguration?.IsShowCRMHead && <td>{item.SurfaceTreatmentCRMHead}</td>}
                     </tr >
@@ -683,6 +684,11 @@ function ViewConversionCost(props) {
                   </tr>
                 )
               }
+               {<tr className='table-footer'>
+                  <td colSpan={6} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                  {}
+                  <td colSpan={2}>{checkForDecimalAndNull(_.sum(surfaceTreatmentCost?.map(item => item?.SurfaceTreatmentCost)))}</td>
+                </tr>}
             </tbody >
           </Table >
         </Col >
@@ -809,7 +815,7 @@ function ViewConversionCost(props) {
                   )
                 } */}
 
-                {!isPDFShow && <tr className='table-footer'>
+                {<tr className='table-footer'>
                   <td colSpan={7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
                   <td colSpan={7}>{checkForDecimalAndNull(transportCost && transportCost?.TotalTransportationCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
                 </tr>}
@@ -953,7 +959,7 @@ function ViewConversionCost(props) {
                           {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
                       )} */}
-                      {isPDFShow && IsAssemblyCosting && parentIndex === 0 && (
+                      {isPDFShow  && parentIndex === 0 && (
                         <td rowSpan={parentRowSpan}>
                           {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
