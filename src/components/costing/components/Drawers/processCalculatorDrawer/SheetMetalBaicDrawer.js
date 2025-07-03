@@ -132,7 +132,7 @@ function SheetMetalBaicDrawer(props) {
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity * (Manpower/Run Count)')
         break;
       case TIME:
-        setProcessCostTooltip('Process Cost = (MHR * (Manpower/Run Count)) / (Parts/Hour)')
+        setProcessCostTooltip('Process Cost = ((MHR / (Parts/Hour)) * (Manpower/Run Count))')
         break;
       case DIMENSIONLESS:
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity * (Manpower/Run Count)')

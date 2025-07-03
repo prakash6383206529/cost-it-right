@@ -491,11 +491,11 @@ export const findProcessCost = (uom, mhr, productionPerHour, mhrWithoutInterestA
   let processCostWithoutInterestAndDepreciation = 0;
   const multiplier = getTimeMultiplier(uom);
   if (multiplier) {
-    processCost = checkForNull((checkForNull(mhr) * numberOfMainPower * multiplier) / checkForNull(productionPerHour));
+    processCost = checkForNull(((checkForNull(mhr) * multiplier) / checkForNull(productionPerHour)) * numberOfMainPower);
 
     if (mhrWithoutInterestAndDepreciation) {
-      processCostWithoutInterestAndDepreciation = checkForNull(
-        (checkForNull(mhrWithoutInterestAndDepreciation) * numberOfMainPower * multiplier) / checkForNull(productionPerHour)
+      processCostWithoutInterestAndDepreciation = checkForNull((
+        (checkForNull(mhrWithoutInterestAndDepreciation) * multiplier) / checkForNull(productionPerHour)) * numberOfMainPower
       );
 
     }
