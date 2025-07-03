@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
 import { Drawer } from '@material-ui/core'
-import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
@@ -42,7 +42,7 @@ function AddNpvCost(props) {
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const isRfqCostingTypeDefined = IsRfqCostingType && (IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting);
-    const label = props?.totalCostFromSummary ? 'TCO Cost' : !(isRfqCostingTypeDefined) ? (islineInvestmentDrawer ? "Investment Cost (Line/Plant)" : 'Add NPV:') : 'View TCO:';
+    const label = props?.totalCostFromSummary ? 'TCO Cost' : !(isRfqCostingTypeDefined) ? (islineInvestmentDrawer ? "Investment Cost (Line/Tool)" : 'Add NPV:') : 'View TCO:';
     const CostingViewMode = useContext(ViewCostingContext);
 
     const { register, control, setValue, getValues, clearErrors, formState: { errors }, } = useForm({
@@ -90,7 +90,7 @@ function AddNpvCost(props) {
         if(islineInvestmentDrawer){
             let val = { label: 'Line Investment', value: 'Line Investment' }
             setValue("TypeOfNpv", val)
-            setDisableLineCostFields(tableData?.some(obj => obj.NpvType === 'Line Investment') || false);
+            // setDisableLineCostFields(tableData?.some(obj => obj.NpvType === 'Line Investment') || false);
         }
     }, [tableData])
 
@@ -246,7 +246,11 @@ function AddNpvCost(props) {
         const npvValue = Math.max(0, (100 - val).toFixed(2));
         setValue("UpfrontPercentage", checkForNull(val))
         setValue("NpvPercentage", checkForNull(npvValue));
-        clearErrors('NpvPercentage');
+        let clearErr = ['NpvPercentage']
+        if(val && Number(val) === 100){
+            clearErr.push('Quantity')
+        }
+        clearErrors(clearErr);
     }
 
 
@@ -299,18 +303,18 @@ function AddNpvCost(props) {
         let alreadyDataExist = false
 
         // Check if the new data to be added is a duplicate of existing data.
-        table && table.map((item, index) => {
-            if (item.NpvType === type) {
-                alreadyDataExist = true
-                indexOfNpvType = index
-            }
-        })
+        // table && table.map((item, index) => {
+        //     if (item.NpvType === type) {
+        //         alreadyDataExist = true
+        //         indexOfNpvType = index
+        //     }
+        // })
 
         // If the new data is a duplicate and we're not in edit mode, show an error message and return false.
-        if ((alreadyDataExist && !isEditMode) || (isEditMode && indexOfNpvType !== editIndex && indexOfNpvType)) {
-            Toaster.warning('Duplicate entry is not allowed.')
-            return false
-        }
+        // if ((alreadyDataExist && !isEditMode) || (isEditMode && indexOfNpvType !== editIndex && indexOfNpvType)) {
+        //     Toaster.warning('Duplicate entry is not allowed.')
+        //     return false
+        // }
 
         const [TypeOfNpv, NpvPercentage, Quantity] = getValues([
             'TypeOfNpv',
@@ -318,11 +322,12 @@ function AddNpvCost(props) {
             'Quantity'
         ])
 
-        const [investmentCost, upfrontPercentage, upfrontCost, amortizationCost] = getValues([
+        const [investmentCost, upfrontPercentage, upfrontCost, amortizationCost, description] = getValues([
             'InvestmentCost',
             'UpfrontPercentage',
             'UpfrontCost',
-            'AmortizationCost'
+            'AmortizationCost',
+            'Description'
         ])
 
         // Check for basic fields
@@ -330,7 +335,7 @@ function AddNpvCost(props) {
 
         // Check for additional fields if islineInvestmentDrawer is true
         const hasLineFields = islineInvestmentDrawer
-        ? (investmentCost !== '' && upfrontPercentage !== '' && upfrontCost !== '' && amortizationCost !== '')
+        ? (investmentCost !== '' && upfrontPercentage !== '' && upfrontCost !== '' && amortizationCost !== '' && description !== '')
         : true
 
         // If all mandatory fields are filled out, create a new object with the data and add it to the table.
@@ -344,6 +349,7 @@ function AddNpvCost(props) {
             obj.UpfrontPercentage = upfrontPercentage ? upfrontPercentage : ''
             obj.UpfrontCost = upfrontCost ? upfrontCost : ''
             obj.AmortizationCost = amortizationCost ? amortizationCost : ''
+            obj.Description = description ? description : ''
 
             if(islineInvestmentDrawer){
                 const total = checkForNull(upfrontPercentage) + checkForNull(NpvPercentage);
@@ -361,6 +367,26 @@ function AddNpvCost(props) {
                 }
             }
 
+            if (table && table?.length > 0) {
+                if (islineInvestmentDrawer) {
+                    const isDuplicateData = table?.some(item => String(item?.Description || '').toLowerCase() === String(obj?.Description || '').toLowerCase());
+                    if (isDuplicateData) {
+                        Toaster.warning('Duplicate entry is not allowed.');
+                        return false;
+                    }
+                } else {
+                    table?.forEach((item, index) => {
+                        if (item?.NpvType === type) {
+                            alreadyDataExist = true;
+                            indexOfNpvType = index;
+                        }
+                    });
+                    if ((alreadyDataExist && !isEditMode) || (isEditMode && indexOfNpvType !== editIndex && indexOfNpvType)) {
+                        Toaster.warning('Duplicate entry is not allowed.')
+                        return false
+                    }
+                }
+            }
 
             // If we're in edit mode, update the existing row with the new data.
             // Otherwise, add the new row to the end of the table.
@@ -397,6 +423,7 @@ function AddNpvCost(props) {
         setValue('UpfrontPercentage', '')
         setValue('UpfrontCost', '')
         setValue('AmortizationCost', '')
+        setValue('Description', '')
         setTotalCost('')
         setDisableAllFields(true)
         setIsEditMode(false)
@@ -443,6 +470,7 @@ function AddNpvCost(props) {
             setValue('UpfrontPercentage', Data?.UpfrontPercentage ?? 0)
             setValue('UpfrontCost', Data.UpfrontCost)
             setValue('AmortizationCost', Data.AmortizationCost)
+            setValue('Description', Data.Description)
             setValue('Total', checkForDecimalAndNull(Data.NpvCost, initialConfiguration?.NoOfDecimalForPrice))
             setTotalCost(Data.NpvCost)
             setDisableTotalCost(false)
@@ -479,9 +507,9 @@ function AddNpvCost(props) {
                                     </Col>
                                 </Row>
                                 <div className='hidepage-size'>
-                                    {!costingSummary && (initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowLineInvestmentCost) && <Row>
+                                    {!costingSummary && (initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowLineInvestmentCost) && <Row className='px-2'>
                                         {!islineInvestmentDrawer &&
-                                            <Col md="3" className='pr-1'>
+                                            <Col md="3" className='pr-1 px-1'>
                                                 <SearchableSelectHookForm
                                                     label={`Type of Investment`}
                                                     name={'TypeOfNpv'}
@@ -502,7 +530,25 @@ function AddNpvCost(props) {
                                         }
                                         {islineInvestmentDrawer &&
                                         <>
-                                            <Col md={colMd}>
+                                            <Col md="3" className='px-1'>
+                                                <TextFieldHookForm
+                                                    label={'Description'}
+                                                    name={'Description'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: true }}
+                                                    mandatory={true}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.Description}
+                                                    disabled={CostingViewMode || disableLineCostFields}
+                                                    placeholder="Enter"
+                                                />
+                                            </Col>
+                                            <Col md={colMd} className='px-1'>
                                                 <NumberFieldHookForm
                                                     label={`Investment Cost`}
                                                     name={'InvestmentCost'}
@@ -598,7 +644,7 @@ function AddNpvCost(props) {
                                                 mandatory={!islineInvestmentDrawer || Number(upfrontPercentage) !== 100}
                                                 rules={{
                                                     required: !islineInvestmentDrawer || Number(upfrontPercentage) !== 100,
-                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6, nonZero },
+                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit12And12, nonZero },
                                                 }}
                                                 onKeyDown={blockInvalidNumberKeys}
                                                 handleChange={handleQuantityChange}
@@ -614,7 +660,7 @@ function AddNpvCost(props) {
                                         </Col>
                                         {islineInvestmentDrawer &&
                                         <>
-                                            <Col md="3">
+                                            <Col md="3" className='px-1'>
                                                 <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'upFront-cost'} tooltipText={'Upfront Cost = (Investment Cost * Upfront Percentage)/100'} />
                                                 <NumberFieldHookForm
                                                     label={`Upfront Cost`}
@@ -696,8 +742,7 @@ function AddNpvCost(props) {
                                                 disabled={CostingViewMode || disableTotalCost || disableAllFields || islineInvestmentDrawer}
                                             />
                                         </Col>
-                                        <Col md="3" className="mt-4 pt-1">
-
+                                        <Col md="3" className={`${islineInvestmentDrawer ? "mt-2 mb-4 pt-1 col-md-3 px-1" : "mt-4 pt-1"}`}>
                                             <button
                                                 type="button"
                                                 className={"user-btn  pull-left mt-1"}
