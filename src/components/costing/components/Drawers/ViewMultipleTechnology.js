@@ -13,8 +13,7 @@ import ViewMultipleTechnologyBOP from './ViewMultipleTechnologyBOP'
 
 function ViewMultipleTechnology(props) {
     const { multipleTechnologyData, isPDFShow } = props
-
-    const [viewMultiCost, setViewMultiCost] = useState([])
+    const [viewMultiCost, setViewMultiCost] = useState(multipleTechnologyData || [])
     const [costingDetailId, setCostingDetailId] = useState('')
     const [openDrawer, setOpemDrawer] = useState(false)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -25,7 +24,7 @@ function ViewMultipleTechnology(props) {
     const { technologyLabel, vendorLabel } = useLabels();
     useEffect(() => {
         setViewMultiCost(multipleTechnologyData)
-    }, [])
+    }, [multipleTechnologyData])
     /**
      * @method toggleDrawer
      * @description closing drawer
@@ -57,7 +56,16 @@ function ViewMultipleTechnology(props) {
         }, 300);
     }
 
+    // Helper function to get the data to display
+    const getDisplayData = () => {
+        if (viewMultiCost && viewMultiCost.length > 0) {
+            return viewMultiCost;
+        }
+        return multipleTechnologyData || [];
+    }
+
     const multipleCost = () => {
+        const displayData = getDisplayData();
         return <>
             <Row>
                 <Col md="12">
@@ -82,8 +90,8 @@ function ViewMultipleTechnology(props) {
                             </tr >
                         </thead >
                         <tbody>
-                            {viewMultiCost &&
-                                viewMultiCost.map((item, index) => {
+                            {displayData &&
+                                displayData.map((item, index) => {
                                     return (
                                         <React.Fragment key={index}>
                                             <tr>
@@ -113,7 +121,7 @@ function ViewMultipleTechnology(props) {
                                                 <td>
                                                     {item?.PartTypeName === 'BOP' ? item?.Remark : '-'}
                                                 </td>
-                                                <td> {<button
+                                                <td> {!isPDFShow && <button
                                                     type="button"
                                                     title='View'
                                                     className="float-right mb-0 View "
@@ -122,26 +130,26 @@ function ViewMultipleTechnology(props) {
                                             </tr >
 
                                             {isPDFShow && item?.CostingWeightedAverageSettledDetailsResponse && item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails &&
-                                            item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails && 
-                                            item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails.length > 0 &&
-                                            <>
-                                                <tr>
-                                                    <td colSpan={12}>
-                                                        <ViewMultipleTechnologyBOP
-                                                            costingTypeId = {props?.costingTypeId} 
-                                                            data={item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails}
-                                                            viewCostingData={props?.viewCostingData}
-                                                            index={index}
-                                                        />
-                                                    </td>
-                                                </tr>
-                                            </>
+                                                item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails &&
+                                                item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails.length > 0 &&
+                                                <>
+                                                    <tr>
+                                                        <td colSpan={12}>
+                                                            <ViewMultipleTechnologyBOP
+                                                                costingTypeId={props?.costingTypeId}
+                                                                data={item?.CostingWeightedAverageSettledDetailsResponse?.CostingWeightedAverageSettledDetails}
+                                                                viewCostingData={props?.viewCostingData}
+                                                                index={index}
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                </>
                                             }
                                         </React.Fragment>
                                     )
                                 })}
                             {
-                                viewMultiCost?.length === 0 && (
+                                displayData?.length === 0 && (
                                     <tr>
                                         <td colSpan={9}>
                                             <NoContentFound title={EMPTY_DATA} />
@@ -181,8 +189,11 @@ function ViewMultipleTechnology(props) {
 
                         </div>
                     </Container>
-                </Drawer> : <div className='mt-2'>
-                    {viewMultiCost.length !== 0 && multipleCost()}</div>}
+                </Drawer> : 
+                <div className='mt-2'>
+                    {getDisplayData() && getDisplayData()?.length > 0 && multipleCost()}
+                </div>
+            }
             {openDrawer && <EditPartCost
                 isOpen={openDrawer}
                 closeDrawer={closeDrawerPartCost}

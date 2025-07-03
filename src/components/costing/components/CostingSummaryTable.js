@@ -1362,17 +1362,40 @@ const CostingSummaryTable = (props) => {
     return checkForDecimalAndNull(arr, initialConfiguration?.NoOfDecimalForInputOutput)
   }
   const reactToPrintTriggerDetail = useCallback(() => {
-    return <button id="costingSummary_Detailed_pdf" className="user-btn mr-1 mb-2 px-2" title='Detailed pdf' disabled={viewCostingData?.length === 1 ? false : true}> <div className='pdf-detail'></div>  D </button>
+    return <button type="button" id="costingSummary_Detailed_pdf" className="user-btn mr-1 mb-2 px-2" title='Detailed pdf' disabled={viewCostingData?.length === 1 ? false : true}> <div className='pdf-detail'></div>  D </button>
   }, [viewCostingData])
 
   const handleAfterPrintDetail = () => {
     setDrawerDetailPDF(false)
     setPdfHead(false)
     setLoader(false)
+    // Clean up multiple technology data after PDF generation
+    setViewMultipleTechnologyDrawer(false)
+    setMultipleTechnologyData([])
   }
   const handleOnBeforeGetContentDetail = () => {
     setLoader(true)
     setDrawerDetailPDF(true)
+    
+    // Set up multiple technology data for PDF rendering
+    // Find the first costing that has multiTechnologyCostingDetails
+    const costingWithMultiTech = viewCostingData?.find(
+      (data, index) => data?.multiTechnologyCostingDetails && data?.multiTechnologyCostingDetails?.length > 0
+    );
+    
+    if (costingWithMultiTech) {
+      setMultipleTechnologyData(costingWithMultiTech?.multiTechnologyCostingDetails);
+      // setViewMultipleTechnologyDrawer(true);
+      
+      // // Find and set the index
+      // const foundIndex = viewCostingData?.findIndex(
+      //   (data) => data?.multiTechnologyCostingDetails && data?.multiTechnologyCostingDetails?.length > 0
+      // );
+      // if (foundIndex !== -1) {
+      //   setIndex(foundIndex);
+      // }
+    }
+    
     return new Promise((resolve) => {
       onBeforeContentResolveDetail.current = resolve;
       setTimeout(() => {
@@ -1395,7 +1418,7 @@ const CostingSummaryTable = (props) => {
     })
   }
   const reactToPrintTrigger = useCallback(() => {
-    return (simulationMode ? <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button> : <button className="user-btn mr-1 mb-2 px-2" title='pdf' id="costingSummary_pdf" disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button>)
+    return (simulationMode ? <button type="button" className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button> : <button type="button" className="user-btn mr-1 mb-2 px-2" title='pdf' id="costingSummary_pdf" disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button>)
   }, [viewCostingData])
 
   const reactToPrintContent = () => {
@@ -2344,7 +2367,7 @@ const CostingSummaryTable = (props) => {
                   </ExcelFile>}
                   {(props?.isRfqCosting && !isApproval && !drawerViewMode) && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                 </div>
-                {!simulationMode && !props?.isRfqCosting && !props?.isRfqCosting && downloadAccessibility &&
+                {((!simulationMode && !props?.isRfqCosting && !props?.isRfqCosting && downloadAccessibility) || (downloadAccessibility && props?.isApprovalListing)) &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
                     documentTitle={`${pdfName}-detailed-costing`}
@@ -2355,7 +2378,7 @@ const CostingSummaryTable = (props) => {
                     trigger={reactToPrintTriggerDetail}
                   />
                 }
-                {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && downloadAccessibility && <ReactToPrint
+                {(!simulationDrawer && !drawerViewMode && !props.isRfqCosting && downloadAccessibility || (downloadAccessibility && props?.isApprovalListing)) && <ReactToPrint
                   bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                   documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                   content={reactToPrintContent}
@@ -2754,6 +2777,10 @@ const CostingSummaryTable = (props) => {
                                   <span className={highlighter("BopOSPCost")}>{`${showBopLabel()} OSP Cost`}
                                     <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-OSP" tooltipText={`Including Handling Cost`} />
                                   </span>
+                                  <span className={highlighter("TotalBopCost")}>{`${showBopLabel()} Total Cost`}
+                                    <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-OSP" tooltipText={`Total cost of all BOP types, including handling charges`} />
+                                  </span>
+
                                 </>
                                 :
                                 <span className={highlighter("", "finish-reducer")}>{showBopLabel()} Cost/Assembly (Including Handling Charge)</span>
@@ -2781,6 +2808,8 @@ const CostingSummaryTable = (props) => {
                                           <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPImportCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
                                           <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPSourceCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
                                           <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPOutsourcedCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+                                          <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+
                                         </>
                                         :
                                         <>
@@ -3021,6 +3050,7 @@ const CostingSummaryTable = (props) => {
                                   <span className="d-block small-grey-text">{`${showBopLabel()} CKD Cost`}</span>
                                   <span className="d-block small-grey-text">{`${showBopLabel()} V2V Cost`}</span>
                                   <span className="d-block small-grey-text">{`${showBopLabel()} OSP Cost`}</span>
+                                  <span className="d-block small-grey-text">{`${showBopLabel()} Total Cost`}</span>
                                 </td>
                                 {viewCostingData &&
                                   viewCostingData?.map((data) => {
@@ -3030,6 +3060,7 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPImportCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
                                         <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPSourceCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
                                         <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPOutsourcedCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
+                                        <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
                                       </td>
                                     )
                                   })}
