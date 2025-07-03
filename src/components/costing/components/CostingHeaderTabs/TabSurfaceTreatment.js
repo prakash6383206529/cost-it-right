@@ -628,7 +628,7 @@ function TabSurfaceTreatment(props) {
   */
   const setSurfaceCost = (surfaceGrid, params, IsGridChanged, hangerCostDetails, extraCostDetails, paintAndMaskingDetails) => {
     let arr = dispatchSurfaceCost(surfaceGrid, params, SurfaceTabData, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
-
+    
     // let arr1 = assemblyTotalSurfaceTransportCost(arr)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -673,7 +673,7 @@ function TabSurfaceTreatment(props) {
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
-
+          
 
           i.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
           i.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
@@ -688,7 +688,7 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.TransportationCost = checkForNull(extraCostDetails?.TransportationCost)
           i.CostingPartDetails.TransportationDetails = extraCostDetails?.TransportationDetails
           i.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i?.CostingPartDetails?.TransportationCost) + checkForNull(i?.CostingPartDetails?.HangerCostPerPart) + checkForNull(i?.CostingPartDetails?.TotalPaintCost);
-
+          
         } else {
 
           dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
@@ -1220,7 +1220,7 @@ function TabSurfaceTreatment(props) {
       for (let i = useLevel; i >= 0; i--) {
 
         // THIS CONDITION IS FOR CALCULATING COSTING OF PART/COMPONENT ON THE LEVEL WE ARE WORKING
-        if (item.PartType === "Part" || item.PartType === "Component") {
+        if (item.PartType === "Part" || item.PartType === "Component" || item.PartType === "Bought Out Part") {
           // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
           if (i === useLevel) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
@@ -1426,7 +1426,7 @@ function TabSurfaceTreatment(props) {
       let quant = ''
       for (let i = useLevel; i >= 0; i--) {
         // THIS CONDITION IS FOR CALCULATING COSTING OF PART/COMPONENT ON THE LEVEL WE ARE WORKING
-        if (item.PartType === "Part" || item.PartType === "Component") {
+        if (item.PartType === "Part" || item.PartType === "Component" || item.PartType === "Bought Out Part") {
 
           // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
           if (i === useLevel) {

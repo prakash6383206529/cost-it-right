@@ -131,14 +131,14 @@ function AssemblyTechnology(props) {
 
                         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
                             checkForNull(costPerPieceTotal) +
-                            checkForNull(CostPerAssemblyBOPTotal) +
+                            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost+
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost)
 
 
                         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetTotalRMBOPCC =
                             checkForNull(costPerPieceTotal) +
-                            checkForNull(CostPerAssemblyBOPTotal) +
+                            tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetBoughtOutPartCost +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetProcessCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
