@@ -661,6 +661,7 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
           i.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
           i.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
+          i.CostingPartDetails.HangerRemark = hangerCostDetails?.HangerRemark
           i.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
           i.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)
           i.CostingPartDetails.PaintConsumptionCost = checkForNull(paintAndMaskingDetails?.PaintConsumptionCost)
@@ -679,6 +680,7 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
           i.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
           i.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
+          i.CostingPartDetails.HangerRemark = hangerCostDetails?.HangerRemark
           i.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
           i.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)
           i.CostingPartDetails.PaintConsumptionCost = checkForNull(paintAndMaskingDetails?.PaintConsumptionCost)
@@ -700,6 +702,7 @@ function TabSurfaceTreatment(props) {
         partObj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
         partObj.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
         partObj.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
+        partObj.CostingPartDetails.HangerRemark = hangerCostDetails?.HangerRemark
         partObj.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
         partObj.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
         partObj.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)

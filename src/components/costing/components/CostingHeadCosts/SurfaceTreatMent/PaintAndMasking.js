@@ -1,7 +1,7 @@
 import { Drawer } from '@material-ui/core'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useRef } from 'react'
 import { Col, Container, Row, Table } from 'reactstrap'
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import Button from '../../../../layout/Button'
 import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, getConfigurationKey, loggedInUserId, maxLength7, number, percentageLimitValidation } from '../../../../../helper'
@@ -11,6 +11,7 @@ import NoContentFound from '../../../../common/NoContentFound'
 import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, NFRTypeId, PAINTTECHNOLOGY, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
+import Popup from 'reactjs-popup';
 import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator } from '../../../actions/Costing'
 import { costingInfoContext, IsNFRContext } from '../../CostingDetailStepTwo'
 import LoaderCustom from '../../../../common/LoaderCustom'
@@ -18,7 +19,7 @@ import { ViewCostingContext } from '../../CostingDetails'
 import DayTime from '../../../../common/DayTimeWrapper'
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
 const ConsumptionWithUOM = <span>Consumption (ml/ dm<sup>2</sup>)</span>
-const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Effective Date', 'Action']
+const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Remark', 'Effective Date', 'Action']
 
 const FORM_DEFAULTS = {
     mode: 'onChange',
@@ -47,6 +48,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const [calculateState, setCalculateState] = useState(INITIAL_STATE)
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
+    const paintDrawerRef = useRef();
 
     const {
         register: registerInitialForm,
@@ -137,6 +139,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                             setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rm?.RejectionAllowancePercentage, NoOfDecimalForInputOutput))
                             setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rm?.RejectionAllowance, NoOfDecimalForInputOutput))
                             setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(rm?.NetCost, NoOfDecimalForPrice))
+                            setValueTableForm(`Remark${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, rm?.Remark)
                             return null
                         })
                         return null
@@ -165,6 +168,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                 setValueTableForm(`RejectionAllowancePercentage${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
                 setValueTableForm(`RejectionAllowance${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
                 setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
+                setValueTableForm(`Remark${rm?.RawMaterialId}${rm?.RawMaterial}${pIndex}${cIndex}`, '')
             })
         })
 
@@ -201,6 +205,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         `NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
                         rm?.NetCost ? checkForDecimalAndNull(rm?.NetCost, NoOfDecimalForPrice) : ''
                     )
+                    setValueTableForm(
+                        `Remark${rm?.RawMaterialId}${rm?.RawMaterial}${newParentIndex}${childIndex}`,
+                        rm?.Remark ? rm?.Remark : ''
+                    )
                 })
             })
         }, 50)
@@ -234,6 +242,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
             setValueTableForm(`Consumption${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
             setValueTableForm(`RejectionAllowancePercentage${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
             setValueTableForm(`RejectionAllowance${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
+            setValueTableForm(`Remark${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, '')
             setValueTableForm(`NetCost${item?.RawMaterialId}${item?.RawMaterial}${calculateState?.Coats?.length}${index}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
             // return null
             return {
@@ -377,6 +386,27 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         setValueTableForm(`NetCost${rm?.RawMaterialId}${rm?.RawMaterial}${parentIndex}${childIndex}`, checkForDecimalAndNull(netCost, NoOfDecimalForPrice))
     }, 300)
 
+    const handleInputValue = debounce((value, name, parentIndex, childIndex, rm) => {
+        setValueTableForm(`${name}${item?.RawMaterialId}${parentIndex}${childIndex}`, value)
+    }, 300)
+
+    const handleRemarkPopUpClick = debounce((name, id, parentIndex, childIndex, rm) => {
+        let val = getValuesTableForm(`${name}`) || ""
+        let paintDataListTemp = [...calculateState.Coats];
+        if (paintDataListTemp[parentIndex]?.RawMaterials[childIndex]) {
+            paintDataListTemp[parentIndex].RawMaterials[childIndex] = {
+                ...paintDataListTemp[parentIndex].RawMaterials[childIndex],
+                Remark: val
+            }
+        }
+        var button = document.getElementById(id)
+        if(button) button.click()
+        setCalculateState(prev => ({
+            ...prev,
+            Coats: paintDataListTemp,
+        }))
+    }, 500)
+
     const handleSurfaceAreaForAll = (surfaceArea, parentIndex, childIndex, rm, fieldName, consumption = null) => {
         let paintDataListTemp = [...calculateState.Coats];
         if (paintDataListTemp[parentIndex]?.RawMaterials[childIndex]) {
@@ -462,6 +492,48 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         }
                     } : {})}
                 />
+            </>
+        )
+    }
+
+    const onRemarkPopUpClose = (name, id) => {
+        var button = document.getElementById(id)
+        if(button) button.click()
+    }
+
+    const renderTextArea = ({ item, name, coat, parentIndex, childIndex, required, disabled, onHandleChange, tooltipText = '', onRemarkPopUpClick }) => {
+        return (
+            <>
+                <Popup className='rm-popup' trigger={<button id={`${name}${item?.RawMaterialId}${parentIndex}${childIndex}`} title="Remark" className="Comment-box" type={'button'} />}
+                    position="top right">
+                    <TextAreaHookForm
+                        label={false}
+                        id={`${name}${item?.RawMaterialId}${parentIndex}${childIndex}`}
+                        name={`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`}
+                        Controller={Controller}
+                        control={controlTableForm}
+                        register={registerTableForm}
+                        mandatory={false}
+                        // rules={{
+                        //     maxLength: remarkError && REMARKMAXLENGTH
+                        // }}
+                        // handleChange={(e) => { setRemarkError(true) }}
+                        handleChange={onHandleChange ?? (() => { })}
+                        defaultValue={''}
+                        customClassName={'withBorder mb-0 paint-and-masking'}
+                        className=""
+                        disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                        hidden={false}
+                        validateWithRemarkValidation={true}
+                        errors={errorsTableForm[`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`]}
+                    />
+                    <Row>
+                        <Col md="12" className='remark-btn-container'>
+                            <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`, `${name}${item?.RawMaterialId}${parentIndex}${childIndex}`)} > <div className='save-icon'></div> </button>
+                            <button className='reset' onClick={() => onRemarkPopUpClose(`${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`, `${name}${item?.RawMaterialId}${parentIndex}${childIndex}`)} > <div className='cancel-icon'></div></button>
+                        </Col>
+                    </Row>
+                </Popup>
             </>
         )
     }
@@ -559,6 +631,21 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                         disabled: true,
                         tooltipText: `Net Cost = ((Part Surface Area ${hasExcludedPaintCoat(item.PaintCoatId) ? "" : "* (Consumption)/1000" }) + Rejection Allowance) * RM Rate (Currency/UOM)`
                     })}</td>
+                    <td>{renderTextArea({
+                        item: rm,
+                        name: 'Remark',
+                        coat: rm?.RawMaterial,
+                        parentIndex,
+                        childIndex,
+                        required: false,
+                        onHandleChange: e => {
+                            const { name, value } = e.target;
+                            handleInputValue(value, name, parentIndex, childIndex, rm);
+                        },
+                        onRemarkPopUpClick: (name, id) => {
+                            handleRemarkPopUpClick(name, id, parentIndex, childIndex, rm);
+                        }
+                    })}</td>
                     <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
                     {childIndex === 0 && !ViewMode && !IsLocked && (
                         <td width="50" rowSpan={item.RawMaterials.length}>
@@ -586,8 +673,25 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         }))
         setValueTableForm(`TotalPaintCost`, checkForDecimalAndNull(calculateCost, NoOfDecimalForPrice))
     }
+
+    const handleRendered = () => {
+        setTimeout(() => {
+            const paperEl = paintDrawerRef.current;
+            if (paperEl) {
+            paperEl.removeAttribute('tabindex');
+            }
+        }, 100);
+    };
+
     return (
-        <Drawer anchor={anchor} open={isOpen}>
+        <Drawer 
+            anchor={anchor} 
+            open={isOpen}
+            onRendered={handleRendered}
+            PaperProps={{
+                ref: paintDrawerRef, // this gives access to .MuiDrawer-paper DOM node
+            }}
+        >
             <div className="ag-grid-react hidepage-size">
                 <Container className="add-bop-drawer">
                     <div className="drawer-wrapper paint-and-masking layout-min-width-1000px">
@@ -705,7 +809,7 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
                                     <td colSpan={2} className="text-right">
                                         Total Paint Cost
                                     </td>
-                                    <td colSpan={3}>
+                                    <td colSpan={4}>
                                         {/* <TooltipCustom
                                             id="totalGSM"
                                             disabledIcon
