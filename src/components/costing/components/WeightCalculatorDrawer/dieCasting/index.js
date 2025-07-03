@@ -76,7 +76,7 @@ function NonFerrousCalculator(props) {
                 disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '3' ? true : false}
 
               >
-                HPDC
+                Pressure Die Casting
               </NavLink>
             </NavItem>
           </Nav>
