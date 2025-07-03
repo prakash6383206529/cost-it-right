@@ -330,6 +330,7 @@ function ViewConversionCost(props) {
                 {processGroup && <th>{`Sub Process`}</th>}
                 <th>{technologyLabel}</th>
                 <th>{`Machine Name`}</th>
+                <th>{`Cavity`}</th>
                 <th>{`Tonnage`}</th>
                 <th>{`Type`}</th>
                 <th>{`UOM`}</th>
@@ -367,6 +368,7 @@ function ViewConversionCost(props) {
                         {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{'-'}</span></td>}
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
+                        <td>{item.Cavity ? item.Cavity : '-'}</td>
                         <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                         <td>{item.Type ?? '-'}</td>
                         <td>{item.UOM ? item.UOM : '-'}</td>
