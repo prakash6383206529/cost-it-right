@@ -191,7 +191,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.HangerRemark}
-                        disabled={false}
+                        disabled={ViewMode || IsLocked}
                     />
                 </Col>
             </Row>}
