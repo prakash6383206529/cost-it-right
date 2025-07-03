@@ -126,19 +126,19 @@ function SheetMetalBaicDrawer(props) {
     setValue('CycleTime', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.CycleTime !== undefined ? WeightCalculatorRequest.CycleTime : 1)
     switch (props.calculatorData.UOMType) {
       case MASS:
-        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
+        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity * (Manpower/Run Count)')
         break;
       case AREA:
-        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
+        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity * (Manpower/Run Count)')
         break;
       case TIME:
-        setProcessCostTooltip('Process Cost = (( MHR * Cycle Time / 3600) * Manpower/Run Count)')
+        setProcessCostTooltip('Process Cost = (MHR * (Manpower/Run Count)) / (Parts/Hour)')
         break;
       case DIMENSIONLESS:
-        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
+        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity * (Manpower/Run Count)')
         break;
       case VOLUMETYPE:
-        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity')
+        setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Quantity * Rate) / Cavity * (Manpower/Run Count)')
         break;
       default:
         break;
@@ -465,7 +465,9 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
 
                   <Col md="4">
+                    {props?.calculatorData?.UOMType === TIME && <TooltipCustom disabledIcon={true} id={'parts-per-hour'} tooltipText={'Parts/Hour = (cavity * 3600 * Efficiency) / (Cycle Time * 100'} />}
                     <NumberFieldHookForm
+                      id={'parts-per-hour'}
                       label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Parts/Hour` : `Quantity`}
                       name={'Quantity'}
                       Controller={Controller}
