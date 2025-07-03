@@ -870,7 +870,7 @@ function EditPartCost(props) {
                         ...newItem,
                         DeltaValue: 0,
                         DeltaSign: "",
-                        SOBPercentage: 0,
+                        SOBPercentage: newItem?.CostingShareOfBusinessPercentage,
                         NetCost: 0,
                         BOPType: newItem?.BOPType
                     };
