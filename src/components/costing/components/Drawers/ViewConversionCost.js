@@ -992,6 +992,11 @@ function ViewConversionCost(props) {
                     </td>
                   </tr>
                 ) : null}
+                {<tr className='table-footer'>
+                  <td colSpan={IsAssemblyCosting && isPDFShow ? 7 : 6} className="text-right font-weight-600 fw-bold">{'Total Paint & Masking Cost:'}</td>
+                  { }
+                  <td colSpan={2}>{checkForDecimalAndNull(_.sum(details?.map(item => item?.TotalPaintCost)))}</td>
+                </tr>}
               </tbody>
             </Table>
 
