@@ -2016,20 +2016,15 @@ const CostingSummaryTable = (props) => {
     @page {
       size: A4 landscape;
     }
-
-    table {
+    .auto-layout-pdf-table {
       width: 100% !important;
       table-layout: auto !important;
     }
 
-    th, td {
+    .auto-layout-pdf-table th,
+    .auto-layout-pdf-table td {
       white-space: normal !important;
       word-break: break-word !important;
-    }
-
-    .pdf-table-wrapper {
-      overflow: visible !important;
-      width: auto !important;
     }
   `;
 

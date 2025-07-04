@@ -322,7 +322,7 @@ function ViewConversionCost(props) {
       <Row>
         {/*PROCESS COST GRID */}
         <Col md={`12 ${!isPDFShow && "overflow-x-auto"}`}>
-          <Table className="table cr-brdr-main conversion-cost" size="sm">
+          <Table className={`table cr-brdr-main conversion-cost ${!isPDFShow && "auto-layout-pdf-table"}`} size="sm">
 
             <tbody>
               <tr className='thead'>
