@@ -817,7 +817,8 @@ function ViewConversionCost(props) {
 
                 {<tr className='table-footer'>
                   <td colSpan={IsAssemblyCosting && isPDFShow ? 8 : 7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
-                  <td colSpan={7}>{checkForDecimalAndNull(_.sum(normalizedTransportCost?.map(item => item?.TransportationCost)), initialConfiguration?.NoOfDecimalForPrice)}</td>
+                  { }
+                  <td colSpan={7}>{checkForDecimalAndNull(_.sum(normalizedTransportCost?.map(item => item?.TotalTransportationCost)), initialConfiguration?.NoOfDecimalForPrice)}</td>
                 </tr>}
               </tbody>
             </Table>
