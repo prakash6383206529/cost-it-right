@@ -138,18 +138,14 @@ function ViewOverheadProfit(props) {
                 </tr>
               ))}
               {overheadData?.CostingApplicabilityDetails?.length && (
-                <tr class="background-light-blue">
-                  <td className={'text-start'} colSpan={3}>Total Overhead Cost</td>
-                    {viewCostingData?.map((data) => (
-                      <>
-                        <td className={'text-start'} colSpan={2}>
-                          <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}>
-                            {checkForDecimalAndNull(data?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
-                        </td>
-                      </>
-                      )
-                    )}
-                  </tr>
+                <tr className="background-light-blue">
+                  <td className="text-start" colSpan={3}>Total Overhead Cost</td>
+                  <td className="text-start" colSpan={2}>
+                    <span title={checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}>
+                      {checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}
+                    </span>
+                  </td>
+                </tr>
               )}
               {!overheadData?.CostingApplicabilityDetails?.length && (
                 <tr>
@@ -209,16 +205,12 @@ function ViewOverheadProfit(props) {
               {profitData?.CostingApplicabilityDetails?.length && (
                 <tr class="background-light-blue">
                   <td className={'text-start'} colSpan={3}>Total Profit Cost</td>
-                    {viewCostingData?.map((data) => (
-                      <>
-                        <td className={'text-start'} colSpan={2}>
-                          <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}>
-                            {checkForDecimalAndNull(data?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
-                        </td>
-                      </>
-                      )
-                    )}
-                  </tr>
+                  <td className={'text-start'} colSpan={2}>
+                    <span title={checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}>
+                      {checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}
+                    </span>
+                  </td>
+                </tr>
               )}
               {!profitData?.CostingApplicabilityDetails?.length && (
                 <tr>
@@ -296,16 +288,12 @@ function ViewOverheadProfit(props) {
               {rejectData?.CostingRejectionApplicabilityDetails?.length && (
                 <tr class="background-light-blue">
                   <td className={'text-start'} colSpan={5}>Total Rejection Cost</td>
-                    {viewCostingData?.map((data) => (
-                      <>
-                        <td className={'text-start'} colSpan={2}>
-                          <span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}>
-                            {checkForDecimalAndNull(data?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}</span>
-                        </td>
-                      </>
-                      )
-                    )}
-                  </tr>
+                  <td className={'text-start'} colSpan={2}>
+                    <span title={checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}>
+                      {checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}
+                    </span>
+                  </td>
+                </tr>
               )}
             </tbody>
           </Table>

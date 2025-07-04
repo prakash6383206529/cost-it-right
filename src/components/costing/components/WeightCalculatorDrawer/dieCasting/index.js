@@ -10,10 +10,12 @@ import {
 } from 'reactstrap'
 import classnames from 'classnames'
 import NonFerrous from './NonFerrous'
+import { useLabels } from '../../../../../helper/core'
 
 
 function NonFerrousCalculator(props) {
   const { rmRowData, item } = props
+  const { hpdcLabel } = useLabels()
 
   const getTabno = (layout) => {
     switch (layout) {
@@ -76,7 +78,7 @@ function NonFerrousCalculator(props) {
                 disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '3' ? true : false}
 
               >
-                HPDC
+                {hpdcLabel}
               </NavLink>
             </NavItem>
           </Nav>
