@@ -684,11 +684,11 @@ function ViewConversionCost(props) {
                   </tr>
                 )
               }
-               {<tr className='table-footer'>
-                  <td colSpan={6} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
-                  {}
-                  <td colSpan={2}>{checkForDecimalAndNull(_.sum(surfaceTreatmentCost?.map(item => item?.SurfaceTreatmentCost)))}</td>
-                </tr>}
+              {<tr className='table-footer'>
+                <td colSpan={partNumberList.length === 0 && IsAssemblyCosting ? 7 : 6} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                { }
+                <td colSpan={2}>{checkForDecimalAndNull(_.sum(surfaceTreatmentCost?.map(item => item?.SurfaceTreatmentCost)), initialConfiguration?.NoOfDecimalForPrice)}</td>
+              </tr>}
             </tbody >
           </Table >
         </Col >
@@ -816,8 +816,8 @@ function ViewConversionCost(props) {
                 } */}
 
                 {<tr className='table-footer'>
-                  <td colSpan={7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
-                  <td colSpan={7}>{checkForDecimalAndNull(transportCost && transportCost?.TotalTransportationCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                  <td colSpan={IsAssemblyCosting && isPDFShow ? 8 : 7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                  <td colSpan={7}>{checkForDecimalAndNull(_.sum(normalizedTransportCost?.map(item => item?.TransportationCost)), initialConfiguration?.NoOfDecimalForPrice)}</td>
                 </tr>}
               </tbody>
             </Table>
@@ -882,6 +882,11 @@ function ViewConversionCost(props) {
                     <td>{item?.HangerRemark ?? '-'}</td>
                   </tr>
                 ))}
+                {<tr className='table-footer'>
+                  <td colSpan={IsAssemblyCosting ? 3 : 2} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                  { }
+                  <td colSpan={2}>{checkForDecimalAndNull(_.sum(filteredData?.map(item => item?.HangerCostPerPart)), initialConfiguration?.NoOfDecimalForPrice)}</td>
+                </tr>}
               </tbody>
             </Table>
           </Col>
@@ -925,7 +930,7 @@ function ViewConversionCost(props) {
                   <th>Paint Cost</th>
                   <th>Remark</th>
                   {isPDFShow && <th>Masking/Tape Cost</th>}
-                  {isPDFShow && IsAssemblyCosting && <th>Total Paint & Masking Cost</th>}
+                  {isPDFShow && <th>Total Paint & Masking Cost</th>}
                   <th>Effective Date</th>
                 </tr>
 
@@ -959,7 +964,7 @@ function ViewConversionCost(props) {
                           {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
                       )} */}
-                      {isPDFShow  && parentIndex === 0 && (
+                      {isPDFShow && parentIndex === 0 && (
                         <td rowSpan={parentRowSpan}>
                           {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
@@ -1020,11 +1025,11 @@ function ViewConversionCost(props) {
     if (Array.isArray(paintAndTapeDetails)) {
       const filtered = paintAndTapeDetails.filter((item) => item?.Coats?.length > 0);
 
-      
 
-      return filtered.map((item, index) =>{
+
+      return filtered.map((item, index) => {
         // item?.PartNumber == 0
-        return(
+        return (
           <div key={index}>{renderPaintTable(item)}</div>
         )
       })
