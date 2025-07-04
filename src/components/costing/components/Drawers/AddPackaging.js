@@ -9,7 +9,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 // import { removeBOPFromList } from '../../../../helper';
 import { useDispatch, useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
-import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, checkExtraWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
 import { IdForMultiTechnology, LOGISTICS, PACK_AND_FREIGHT_PER_KG, STRINGMAXLENGTH } from '../../../../config/masterData';
 import _ from 'lodash';
 import { MESSAGES } from '../../../../config/message';
@@ -144,7 +144,15 @@ function AddPackaging(props) {
 
   const toggleDrawer = (event, formData = {}) => {
     if (IsAllowSinglePackagingMultipleTimeInCosting ) {
-      const exists = _.some(gridData, item => _.isEqual(item, formData));
+      const exists = _.some(gridData, item =>
+        _.isEqualWith(item, formData, (val1, val2, key) => {
+          if (key === 'PackagingDescription') {
+            return String(val1).toLowerCase() === String(val2).toLowerCase();
+          }
+          // fallback to lodash's default deep comparison
+          return undefined
+        })
+      )
       if (exists) {
         isEditFlag ? Toaster.warning("Please change the data to update Packaging.") : Toaster.warning("Data already exists in the grid.")
         return false
@@ -630,7 +638,7 @@ function AddPackaging(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        validate: { checkWhiteSpaces, hashValidation },
+                        validate: { checkWhiteSpaces, hashValidation, checkExtraWhiteSpaces },
                         maxLength: 80
                       }}
                       handleChange={() => { }}
