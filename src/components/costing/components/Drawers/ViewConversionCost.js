@@ -321,7 +321,7 @@ function ViewConversionCost(props) {
       </Row>
       <Row>
         {/*PROCESS COST GRID */}
-        <Col md="12">
+        <Col md={`12 ${!isPDFShow && "overflow-x-auto"}`}>
           <Table className="table cr-brdr-main conversion-cost" size="sm">
 
             <tbody>
@@ -331,13 +331,13 @@ function ViewConversionCost(props) {
                 {processGroup && <th>{`Sub Process`}</th>}
                 <th>{technologyLabel}</th>
                 <th>{`Machine Name`}</th>
-                <th>{`Cavity`}</th>
                 <th>{`Tonnage`}</th>
                 <th>{`Type`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Parts/Hour`}</th>
                 <th >{`Process Cost Applicability`}</th>
                 <th >{`Percentage`}</th>
+                <th>{`Cavity`}</th>
                 <th><span className='d-flex'>MHR  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{mhrTooltipText}</span></div>}</span></th>
 
                 {!isPDFShow && <th>{`Calculator`}</th>}
@@ -369,13 +369,13 @@ function ViewConversionCost(props) {
                         {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{'-'}</span></td>}
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
-                        <td>{item.Cavity ? item.Cavity : '-'}</td>
                         <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                         <td>{item.Type ?? '-'}</td>
                         <td>{item.UOM ? item.UOM : '-'}</td>
                         <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
                         <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>
                         <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>
+                        <td>{item.Cavity ? item.Cavity : '-'}</td>
                         <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
                         {(!isPDFShow) && <td>
                           {
