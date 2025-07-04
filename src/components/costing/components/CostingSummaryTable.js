@@ -2010,7 +2010,24 @@ const CostingSummaryTable = (props) => {
     }));
   };
 
-  const PDFPageStyle = "@page { size: A4 landscape; }";
+  // const PDFPageStyle = "@page { size: A4 landscape; }";
+
+  const PDFPageStyle = `
+    @page {
+      size: A4 landscape;
+    }
+    .auto-layout-pdf-table {
+      width: 100% !important;
+      table-layout: auto !important;
+    }
+
+    .auto-layout-pdf-table th,
+    .auto-layout-pdf-table td {
+      white-space: normal !important;
+      word-break: break-word !important;
+    }
+  `;
+
 
   const tableDataClass = (data) => {
 
