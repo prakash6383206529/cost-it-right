@@ -909,6 +909,10 @@ function ViewConversionCost(props) {
       // Don't render if Coats is empty or undefined
       if (!Coats || Coats.length === 0) return null;
       let parentRowSpan = Coats?.length || 0
+      const totalRawMaterialRows = Coats.reduce(
+        (acc, coat) => acc + (coat?.RawMaterials?.length || 0),
+        0
+      );
 
       return (
         <Row className="firefox-spaces mb-4">
@@ -930,9 +934,9 @@ function ViewConversionCost(props) {
                   <th>RM Rate (Currency)</th>
                   <th>Paint Cost</th>
                   <th>Remark</th>
+                  <th>Effective Date</th>
                   {isPDFShow && <th>Masking/Tape Cost</th>}
                   {isPDFShow && <th>Total Paint & Masking Cost</th>}
-                  <th>Effective Date</th>
                 </tr>
 
                 {Coats.map((coat, parentIndex) =>
@@ -955,22 +959,29 @@ function ViewConversionCost(props) {
                       <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)}</td>
                       <td>{checkForDecimalAndNull(rm?.NetCost, getConfigurationKey().NoOfDecimalForPrice)}</td>
                       <td>{rm?.Remark ?? "-"}</td>
-                      {isPDFShow && childIndex === 0 && (
+                      <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
+                      {/* {isPDFShow && childIndex === 0 && (
                         <td rowSpan={coat?.RawMaterials?.length}>
                           {checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
-                      )}
-                      {/* {isPDFShow && childIndex === 0 && (
-                        <td rowSpan={coat?.RawMaterials?.length}>
-                          {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
-                        </td>
                       )} */}
-                      {isPDFShow && parentIndex === 0 && (
+
+                      {isPDFShow && parentIndex === 0 && childIndex === 0 && (
+                        <td rowSpan={totalRawMaterialRows}>
+                          {checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
+                        </td>
+                      )}
+
+                      {/* {isPDFShow && parentIndex === 0 && (
                         <td rowSpan={parentRowSpan}>
                           {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
+                      )} */}
+                      {isPDFShow && parentIndex === 0 && childIndex === 0 && (
+                        <td rowSpan={totalRawMaterialRows}>
+                          {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
+                        </td>
                       )}
-                      <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
                     </tr>
                   ))
                 )}
