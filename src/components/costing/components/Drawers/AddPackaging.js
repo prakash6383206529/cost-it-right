@@ -555,11 +555,11 @@ function AddPackaging(props) {
         IsPackagingCostFixed: applicability?.label === 'Fixed' ? false : true,
         PackagingDescription: data.PackagingDescription,
         PackagingCostFixed: 0,
-        PackagingCostPercentage: PackageType ? data?.PackagingCostPercentage ? parseInt(_.get(data, 'PackagingCostPercentage', 0)) : 0 : 0,
+        PackagingCostPercentage: PackageType ? data?.PackagingCostPercentage ? Number(_.get(data, 'PackagingCostPercentage', 0)) : 0 : 0,
         PackagingCost: applicability?.label === 'Fixed' ? getValues('PackagingCost') : packagingCost,
         Applicability: applicability ? data.Applicability?.label : '',
         PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : '',
-        Rate: data?.Rate ? parseInt(_.get(data, 'Rate', 0)) : 0,
+        Rate: data?.Rate ? Number(_.get(data, 'Rate', 0)) : 0,
         Quantity: originalQuantity,
         CostingPackagingCalculationDetailsId: costingPackagingCalculationDetailsId ?? null
       }
