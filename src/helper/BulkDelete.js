@@ -32,10 +32,31 @@ function BulkDelete(props) {
 					associatedType: "master",
 					associatedMasterType: "rm",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
-					associatedMessage: _.size(notEligibleList) === 0
-						? "Are you sure you want to delete this raw material detail?"
-						: `Are you sure you want to delete this raw material detail? The following raw materials cannot be deleted because they are associated with costings: ${mastersList.join(", ")}`,
-				};
+					associatedMessage: !_.size(notEligibleList)
+					? "Are you sure you want to delete the raw material detail?"
+					: `${_.size(eligibleToDelete) ? "Are you sure you want to delete the raw material detail? " : ""}${mastersList.join(", ")} raw material(s) cannot be deleted because they are associated with costings.`
+				}
+			case 'BOP':
+				if (_.size(notEligibleList)) {
+					_.forEach(notEligibleList, item => {
+						mastersList.push(_.get(item, 'BoughtOutPartName', ''))
+					})
+				}
+				if (_.size(eligibleToDelete)) {
+					_.forEach(eligibleToDelete, item => {
+						eligibleToDeleteIds.push(_.get(item, 'BoughtOutPartId', ''))
+					})
+				}
+				return {
+					associatedKeyName: ["IsBOPAssociated", "IsRFQBoughtOutPart"],
+					associatedSuccessMessage: "BOP Deleted Successfully",
+					associatedType: "master",
+					associatedMasterType: "bop",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: !_.size(notEligibleList)
+					? "Are you sure you want to delete the BOP detail?"
+					: `${_.size(eligibleToDelete) ? "Are you sure you want to delete the BOP detail? " : ""}${mastersList.join(", ")} BOP(s) cannot be deleted because they are associated with costings.`
+				}
 			default:
 				return {
 					associatedKeyName: [],
@@ -53,8 +74,8 @@ function BulkDelete(props) {
 	// If any key (Example IsRMAssociated or IsRFQRawMaterial) is true, the item is not eligible for deletion and should be filtered out.
 	const notEligibleToDelete = _.filter(props?.bulkDeleteData, item => _.some(associatedKeyName, key => item?.[key] === true))
 
-	// EligibleToDeleteIds
-	const eligibleToDelete = _.filter(props?.bulkDeleteData, item => _.every(associatedKeyName, key => item?.[key] === false || item?.[key] === null))
+	// EligibleToDeleteIds (Example IsRMAssociated or IsRFQRawMaterial) is false, null, undefined, the item is eligible for deletion and should be filtered out.
+	const eligibleToDelete = _.filter(props?.bulkDeleteData, item => _.every(associatedKeyName, key => !Boolean(item?.[key])))
 
 	const openPopup = () => {
 		const { associatedMessage } = getAssociatedConfig(props?.type, notEligibleToDelete, eligibleToDelete)
@@ -73,16 +94,23 @@ function BulkDelete(props) {
 
 	const deleteItem = () => {
 		const { associatedSuccessMessage, associatedType, associatedMasterType, eligibleToDeleteIdsList } = getAssociatedConfig(props?.type, notEligibleToDelete, eligibleToDelete)
-		const payload = {
-			Type: associatedType,
-			MasterType: associatedMasterType,
-			GuidList: eligibleToDeleteIdsList,
-			MasterIdList: []
-		}
+		if (_.size(eligibleToDeleteIdsList)) {
+			const payload = {
+				Type: associatedType,
+				MasterType: associatedMasterType,
+				GuidList: eligibleToDeleteIdsList,
+				MasterIdList: []
+			}
 
-		dispatch(bulkDelete(payload, (res) => {
-			Toaster.success(associatedSuccessMessage)
-		}))
+			dispatch(bulkDelete(payload, (res) => {
+				if(res && res?.status === 200) {
+					Toaster.success(associatedSuccessMessage)
+				}
+				// setTimeout(() => {
+				// 		window.location.reload()
+				// 	}, 500)
+			}))
+		}
 		setShowPopup(false)
 	}
 

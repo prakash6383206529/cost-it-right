@@ -38,6 +38,7 @@ import { useLabels, useWithLocalization } from "../../../helper/core";
 import RfqMasterApprovalDrawer from "../material-master/RfqMasterApprovalDrawer";
 import CostingHeadDropdownFilter from "../material-master/CostingHeadDropdownFilter";
 import { divisionApplicableFilter } from "../masterUtil";
+import BulkDelete from "../../../helper/BulkDelete";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -1116,6 +1117,7 @@ const BOPImportListing = (props) => {
                           {
                             <Button id="bopImportListing_filterData" disabled={state.disableFilter} title={"Filtered data"} type="button" className={"user-btn mr5 Tour_List_Filter"} icon={"filter mr-0"} onClick={() => onSearch()} />
                           }
+                          <BulkDelete {...props} type={'BOP'} deletePermission={permissions?.Delete} dataCount={state?.dataCount} bulkDeleteData={selectedRowForPagination}/>
                           {permissions?.Add && (
                             <Button id="bopImportListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />
                           )}
