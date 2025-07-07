@@ -746,6 +746,11 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetBOPImportCostWithOutHandlingCharge": tabData?.CostingPartDetails?.NetBOPImportCostWithOutHandlingCharge,
       "NetBOPSourceCostWithOutHandlingCharge": tabData?.CostingPartDetails?.NetBOPSourceCostWithOutHandlingCharge,
       "NetBOPOutsourcedCostWithOutHandlingCharge": tabData?.CostingPartDetails?.NetBOPOutsourcedCostWithOutHandlingCharge,
+      "TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity,
+      "TotalBOPDomesticCostWithOutHandlingChargeWithQuantity":tabData?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity,
+      "TotalBOPImportCostWithOutHandlingChargeWithQuantity":tabData?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity,
+      "TotalBOPSourceCostWithOutHandlingChargeWithQuantity":tabData?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity,
+      "TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity":tabData?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity,
       // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
     },
     "WorkingRows": assemblyWorkingRow,
