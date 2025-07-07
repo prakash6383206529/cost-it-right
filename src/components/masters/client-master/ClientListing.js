@@ -23,6 +23,7 @@ import Button from '../../layout/Button';
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
+import BulkDelete from "../../../helper/BulkDelete";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -343,6 +344,7 @@ const ClientListing = React.memo(() => {
 
                   <Button id="clientListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />
                 )}
+                <BulkDelete type={'Customer'} deletePermission={state?.DeleteAccessibility} dataCount={state?.dataCount} bulkDeleteData={state?.selectedRowData}/>
                 {
                   state.DownloadAccessibility &&
                   <>
