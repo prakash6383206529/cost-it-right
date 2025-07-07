@@ -960,7 +960,7 @@ class AddMoreDetails extends Component {
               plantId: newValue?.value,
               effectiveDate: effectiveDate,
               costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
-              vendorId: this.state.vendorId ? this.state.vendorId : '',
+              vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value  : '',
               customerId: this.state.customerId ? this.state.customerId : '',
               toCurrency: fieldsObj?.plantCurrency,
               ExchangeSource: data?.ExchangeRateSourceName || "",
@@ -1265,7 +1265,7 @@ class AddMoreDetails extends Component {
           plantId: PlantId,
           effectiveDate: date,
           costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
-          vendorId: this.state.vendorId ? this.state.vendorId : '',
+          vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
           customerId: this.state.customerId ? this.state.customerId : '',
           toCurrency: fieldsObj?.plantCurrency,
           ExchangeSource: data?.ExchangeRateSourceName || "",
@@ -1401,7 +1401,7 @@ class AddMoreDetails extends Component {
             plantId: PlantId,
             effectiveDate: effectiveDate,
             costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
-            vendorId: this.state.vendorId ? this.state.vendorId : '',
+            vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
             customerId: this.state.customerId ? this.state.customerId : '',
             toCurrency: this.props.fieldsObj?.plantCurrency,
             ExchangeSource: data?.ExchangeRateSourceName || "",
@@ -2192,7 +2192,6 @@ class AddMoreDetails extends Component {
       if (i === processGridEditIndex) return false;
       return true;
     })
-    console.log(skipEditedItem, "SKIP EDITED ITEM")
 
     let count = 0;
     if (processName.length === 0) {
@@ -2220,7 +2219,6 @@ class AddMoreDetails extends Component {
       this.setState({ errorObj: { ...this.state.errorObj, percentage: true } })
       count++;
     }
-    console.log(count, "COUNT")
     if (count > 0) {
       return false
     }
@@ -2231,7 +2229,6 @@ class AddMoreDetails extends Component {
       Toaster.warning('Already added, Please check the values.')
       return false;
     }
-    console.log(this.props.invalid, "INVALID")
     if (this.props.invalid === true) {
       return false;
     }
@@ -3064,7 +3061,7 @@ class AddMoreDetails extends Component {
           plantId: PlantId,
           effectiveDate: effectiveDate,
           costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
-          vendorId: this.state.vendorId ? this.state.vendorId : '',
+          vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
           customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
           toCurrency: fieldsObj?.plantCurrency,
           ExchangeSource: data?.ExchangeRateSourceName || "",
