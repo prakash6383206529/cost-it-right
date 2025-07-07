@@ -5,11 +5,13 @@ import PopupMsgWrapper from '../components/common/PopupMsgWrapper'
 import Toaster from '../components/common/Toaster';
 import { bulkDelete } from '../actions/auth/AuthActions';
 import { useDispatch, useSelector } from 'react-redux'
+import { useLabels } from './core';
 
 function BulkDelete(props) {
 	const dispatch = useDispatch()
 	const [showPopup, setShowPopup] = useState(false)
 	const [popupMessage, setPopupMessage] = useState("")
+	const { vendorLabel } = useLabels()
 
 	const getAssociatedConfig = (type, notEligibleList = [], eligibleToDelete = []) => {
 		const mastersList = []
@@ -138,6 +140,25 @@ function BulkDelete(props) {
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "part",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
+			case vendorLabel:
+				if (_.size(notEligibleList)) {
+					_.forEach(notEligibleList, item => {
+						mastersList.push(_.get(item, 'VendorName', ''))
+					})
+				}
+				if (_.size(eligibleToDelete)) {
+					_.forEach(eligibleToDelete, item => {
+						eligibleToDeleteIds.push(_.get(item, 'VendorId', ''))
+					})
+				}
+				return {
+					associatedKeyName: [], //When we keep it blank then all id's eligible to delete
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "master",
+					associatedMasterType: "vendor",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
