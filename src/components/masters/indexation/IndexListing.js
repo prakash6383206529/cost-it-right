@@ -34,6 +34,7 @@ import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AddGrade from "../material-master/AddGrade";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
+import BulkDelete from "../../../helper/BulkDelete";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -441,6 +442,7 @@ const IndexListing = () => {
                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             <Button id="indexListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
                         </div>
+                        <BulkDelete type={'Index'} deletePermission={permissions?.Delete} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
                         {permissions.BulkUpload && (<Button id="index_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                         {permissions.Add && (
                             <Button id="add_index" className="mr5 Tour_List_AdCommodity" onClick={openModel} title="Add" icon={"plus"} />
