@@ -492,7 +492,7 @@ function OperationCost(props) {
 
               <div>
 
-                {(!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) &&
+                {(!CostingViewMode/*  && !IsLocked */ && !IsLockTabInCBCCostingForCustomerRFQ) &&
                   <Button
                     id="Costing_addOperation"
                     onClick={DrawerToggle}
@@ -703,7 +703,7 @@ function OperationCost(props) {
                                 options={operationApplicabilitySelect}
                                 required={true}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
-                                disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                disabled={(CostingViewMode /* || IsLocked  */|| IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
                               />
                             </td>

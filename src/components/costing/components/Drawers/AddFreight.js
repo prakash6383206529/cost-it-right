@@ -562,7 +562,11 @@ function AddFreight(props) {
   */
   const cancel = () => {
     reset({ Applicability: '' })
-    props.closeDrawer('', {})
+    let rowData = Object.keys(rowObjData)?.length > 0 ? {
+      ...rowObjData,
+      CostingFreightCalculationDetailsId: costingFreightCalculationDetailsId
+    } : {}
+    props.closeDrawer('', rowData)
   }
 
   const doesObjectExist = (array, obj) => {

@@ -1770,7 +1770,7 @@ ${isDetailedText}`
                   }} />}</div>
             </Col>
             <Col md={'2'}>
-              {(!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) &&
+              {(!CostingViewMode /* && !IsLocked */ && !IsLockTabInCBCCostingForCustomerRFQ) &&
                 <Button
                   id="Costing_addProcess"
                   onClick={DrawerToggle}
@@ -1944,7 +1944,7 @@ ${isDetailedText}`
                                 options={processApplicabilitySelect}
                                 required={false}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index, item) }}
-                                disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                disabled={(CostingViewMode /* || IsLocked */ || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
                               />
                             </td>

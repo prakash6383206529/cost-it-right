@@ -37,7 +37,7 @@ import { IsNFR, IsPartType, ViewCostingContext } from '../CostingDetails';
 
 import { useMemo } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkWhiteSpaces, decimalNumberLimit, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, positiveAndDecimalNumber, required, validateFileName } from "../../../../helper/validation";
+import { checkWhiteSpaces, decimalNumberLimit, decimalNumberLimit12And12, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, positiveAndDecimalNumber, required, validateFileName } from "../../../../helper/validation";
 import LoaderCustom from '../../../common/LoaderCustom';
 import TooltipCustom from '../../../common/Tooltip';
 import WarningMessage from '../../../common/WarningMessage';
@@ -2817,7 +2817,7 @@ function TabDiscountOther(props) {
                         mandatory={getConfigurationKey().IsBudgetedPriceRequiredForCosting ? true : false}
                         rules={{
                           required: getConfigurationKey().IsBudgetedPriceRequiredForCosting ? true : false,
-                          validate: { number, positiveAndDecimalNumber, checkWhiteSpaces /* decimalNumberLimit */ },
+                          validate: { number, positiveAndDecimalNumber, checkWhiteSpaces, decimalNumberLimit12And12 },
                         }}
                         handleChange={() => { }}
                         defaultValue={""}
