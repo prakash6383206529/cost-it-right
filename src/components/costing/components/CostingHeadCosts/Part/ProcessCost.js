@@ -1113,6 +1113,7 @@ function ProcessCost(props) {
   };
 
   const onHandleChangeApplicability = (e, index, item) => {
+    console.log(e, 'e');
     if (item?.Type === COSTAPPLICABILITYBASIS) {
       if (e?.label === APPLICABILITY_OVERHEAD_EXCL || e?.label === APPLICABILITY_PROFIT_EXCL || e?.label === APPLICABILITY_OVERHEAD_PROFIT_EXCL || e?.label === APPLICABILITY_OVERHEAD_EXCL_PROFIT || e?.label === APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL) {
         Toaster.warning("For cost applicability basis, only Overhead and Profit applicability is allowed.")
@@ -1142,8 +1143,7 @@ function ProcessCost(props) {
     if (!e) {
       tempData = {
         ...tempData,
-        CostingConditionMasterAndTypeLinkingId: null,
-        CostingConditionNumber: null,
+        CostingConversionApplicabilityDetails: [],
         NetProcessCostForOverhead: 0,
         NetProcessCostForProfit: 0,
       }
@@ -1151,8 +1151,10 @@ function ProcessCost(props) {
       //const netCosts = calculateNetCosts(tempData.ProcessCost, e?.label, "Process", tempData?.ProcessCostWithOutInterestAndDepreciation);
       tempData = {
         ...tempData,
-        CostingConditionMasterAndTypeLinkingId: e?.value,
-        CostingConditionNumber: e?.label,
+        CostingConversionApplicabilityDetails:  e && e?.map(item => ({
+          CostingConditionMasterAndTypeLinkingId: item.value,
+          CostingConditionNumber: item.label
+        }))
         // ...netCosts
       }
     }
@@ -1164,9 +1166,10 @@ function ProcessCost(props) {
         //const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e?.label, "Process", childProcess?.ProcessCostWithOutInterestAndDepreciation);
         return {
           ...childProcess,
-          CostingConditionMasterAndTypeLinkingId: e?.value,
-          CostingConditionNumber: e?.label,
-
+          CostingConversionApplicabilityDetails: e && e?.map(item => ({
+            CostingConditionMasterAndTypeLinkingId: item.value,
+            CostingConditionNumber: item.label
+          }))
           // ...childNetCosts
         };
       });
@@ -1188,8 +1191,10 @@ function ProcessCost(props) {
         checkForNull(tabData.NetOtherOperationCost !== null ? tabData.NetOtherOperationCost : 0),
       ...totals,
       CostingProcessCostResponse: apiArr,
-      CostingConditionMasterAndTypeLinkingId: e?.value,
-      CostingConditionNumber: e?.label,
+      CostingConversionApplicabilityDetails: e && e?.map(item => ({
+        CostingConditionMasterAndTypeLinkingId: item.value,
+        CostingConditionNumber: item.label
+      }))
 
     }
 
@@ -1200,7 +1205,6 @@ function ProcessCost(props) {
     dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)));
 
   }
-
 
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex, processName) => {
 
@@ -1800,7 +1804,7 @@ ${isDetailedText}`
                     {showCostBaseAppliacabilityColumns && <th style={{ width: "110px" }}>{`Percentage`}</th>}
                     <th style={{ width: "140px" }} >{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
-                    <th style={{ width: "110px" }} >{`Applicability`}</th>
+                    <th style={{ width: "160px" }} >{`Applicability`}</th>
                     <th style={{ width: "145px" }}><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -1879,7 +1883,7 @@ ${isDetailedText}`
                             <td>
                               {
                                 <>
-                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type, item?.ProcessCostWithOutInterestAndDepreciation,item?.IsDetailed)} />
+                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type, item?.ProcessCostWithOutInterestAndDepreciation, item?.IsDetailed)} />
                                   <TextFieldHookForm
                                     label=""
                                     name={`${ProcessGridFields}.${index}.ProcessCost`}
@@ -1925,7 +1929,7 @@ ${isDetailedText}`
                               </td>
                             }
 
-                            <td>
+                            <td >
                               <SearchableSelectHookForm
                                 name={`${ProcessGridFields}.${index}.CostingConditionNumber`}
                                 type="text"
@@ -1936,16 +1940,14 @@ ${isDetailedText}`
                                 register={register}
                                 mandatory={false}
                                 placeholder={'Select'}
-                                customClassName="costing-selectable-dropdown process-drawer-dropdown"
-                                defaultValue={item?.CostingConditionMasterAndTypeLinkingId ? {
-                                  label: item?.CostingConditionNumber,
-                                  value: item?.CostingConditionMasterAndTypeLinkingId
-                                } : null}
+                                customClassName="mt-2"
+                                defaultValue={item?.CostingConversionApplicabilityDetails}
                                 options={processApplicabilitySelect}
                                 required={false}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index, item) }}
                                 disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
+                                isMulti={true}
                               />
                             </td>
 
