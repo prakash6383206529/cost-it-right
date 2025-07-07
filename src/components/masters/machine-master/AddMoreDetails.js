@@ -665,6 +665,8 @@ class AddMoreDetails extends Component {
                 labourTypeId: el.LabourTypeId,
                 LabourCostPerAnnum: el.LabourCostPerAnnum,
                 NumberOfLabour: el.NumberOfLabour,
+                LabourCostPerMonth: el.LabourRatePerMonth,
+                LabourCostPerShift: el.LabourRatePerShift,
                 LabourCost: el.LabourCost,
                 NumberOfShift: el.NumberOfShift,
                 LabourDetailId: el.LabourDetailId,
@@ -1470,8 +1472,12 @@ class AddMoreDetails extends Component {
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
             this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration?.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerMonth', checkForDecimalAndNull(Data.LabourRatePerMonth, getConfigurationKey()?.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerShift', checkForDecimalAndNull(Data.LabourRatePerShift, getConfigurationKey()?.NoOfDecimalForPrice))
           } else {
             this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration?.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerMonth', checkForDecimalAndNull(Data.LabourRatePerMonth, getConfigurationKey()?.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerShift', checkForDecimalAndNull(Data.LabourRatePerShift, getConfigurationKey()?.NoOfDecimalForPrice))
           }
         })
       });
@@ -1874,6 +1880,8 @@ class AddMoreDetails extends Component {
       labourTypeName: labourType.label,
       labourTypeId: labourType.value,
       LabourCostPerAnnum: LabourPerCost,
+      LabourCostPerMonth: fieldsObj?.LabourCostPerMonth,
+      LabourCostPerShift: fieldsObj?.LabourCostPerShift,
       NumberOfShift: LabourWorkingShift,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
@@ -1894,6 +1902,8 @@ class AddMoreDetails extends Component {
       LabourCRMHead: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
+      this.props.change('LabourCostPerMonth', '')
+      this.props.change('LabourCostPerShift', '')
       this.props.change('NumberOfLabour', '')
       this.props.change('LabourCost', '')
       this.props.change('LabourWorkingShift', '')
@@ -2078,7 +2088,7 @@ class AddMoreDetails extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, percentage: true } })
         count++;
       }
-      if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
+      if ((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
         Toaster.warning('Please fill all mandatory fields');
         return false;
       }
@@ -5140,6 +5150,32 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+                            <Col md="2">
+                              <Field
+                                label={`Cost/Month  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
+                                name={"LabourCostPerMonth"}
+                                type="text"
+                                placeholder={'-'}
+                                component={renderTextInputField}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="2">
+                              <Field
+                                label={`Cost/Shift  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
+                                name={"LabourCostPerShift"}
+                                type="text"
+                                placeholder={'-'}
+                                component={renderTextInputField}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
                             <Col md="2" className='p-relative'>
                               <Field
                                 label={`No. of People`}
@@ -5229,6 +5265,8 @@ class AddMoreDetails extends Component {
                                     {getConfigurationKey().IsShowCRMHead && <th>{`CRM Head`}</th>}
                                     <th>{`Labour Type`}</th>
                                     <th>{`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                    <th>{`Cost/Month (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                    <th>{`Cost/Shift (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`No of People (All Shifts)`}</th>
                                     <th>{`No. of Shifts`}</th>
                                     <th>{`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
@@ -5245,6 +5283,8 @@ class AddMoreDetails extends Component {
                                           {getConfigurationKey().IsShowCRMHead && <td>{item.LabourCRMHead}</td>}
                                           <td>{item.labourTypeName}</td>
                                           <td>{item.LabourCostPerAnnum}</td>
+                                          <td>{item?.LabourCostPerMonth ?? "-"}</td>
+                                          <td>{item?.LabourCostPerShift ?? "-"}</td>
                                           <td>{item.NumberOfLabour}</td>
                                           <td>{item.NumberOfShift}</td>
                                           <td>{item.LabourCost}</td>
@@ -5265,7 +5305,7 @@ class AddMoreDetails extends Component {
                                 {this.state.labourGrid?.length > 0 &&
                                   <tfoot>
                                     <tr className="bluefooter-butn">
-                                      <td colSpan={getConfigurationKey().IsShowCRMHead ? '5' : '4'} className="text-right">{`Total Labour Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}):`}</td>
+                                      <td colSpan={getConfigurationKey().IsShowCRMHead ? '7' : '6'} className="text-right">{`Total Labour Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}):`}</td>
                                       <td colSpan={"2"}>{this.calculateTotalLabourCost()}</td>
                                     </tr>
                                   </tfoot>}
@@ -5823,7 +5863,7 @@ class AddMoreDetails extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, machine, labour, fuel, auth, } = state;
-  const fieldsObj = selector(state, 'MachineCost', 'AccessoriesCost', 'InstallationCharges', 'LabourCostPerAnnum', 'TotalCost', "LabourWorkingShift",
+  const fieldsObj = selector(state, 'MachineCost', 'AccessoriesCost', 'InstallationCharges', 'LabourCostPerAnnum', 'LabourCostPerMonth', 'LabourCostPerShift', 'TotalCost', "LabourWorkingShift",
     'LoanPercentage', 'LoanValue', 'EquityPercentage', 'EquityValue', 'RateOfInterestPercentage', 'RateOfInterestValue',
     'WorkingHoursPerShift', 'NumberOfWorkingDaysPerYear', 'EfficiencyPercentage', 'NumberOfWorkingHoursPerYear',
     'DepreciationRatePercentage', 'LifeOfAssetPerYear', 'CastOfScrap', 'DepreciationAmount',
@@ -5859,6 +5899,8 @@ function mapStateToProps(state) {
       Description: machineData.Description,
       Specification: machineData.Specification,
       LabourCostPerAnnum: machineData.LabourCostPerAnnum,
+      LabourCostPerMonth: machineData?.LabourCostPerMonth,
+      LabourCostPerShift: machineData?.LabourCostPerShift,
       TotalCost: machineData.TotalCost,
       LoanPercentage: machineData.LoanPercentage,
       LoanValue: machineData.LoanValue,
