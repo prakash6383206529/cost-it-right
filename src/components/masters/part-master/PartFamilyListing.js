@@ -35,6 +35,7 @@ import Switch from "react-switch";
 import { useLabels, useWithLocalization } from "../../../helper/core";
 import { divisionApplicableFilter } from "../masterUtil";
 import PartFamilyDrawer from "./AddPartFamily";
+import BulkDelete from "../../../helper/BulkDelete";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -629,6 +630,7 @@ const PartFamilyListing = (props) => {
                 >
                   <div className="filter mr-0"></div>
                 </button>
+                <BulkDelete {...props} type={'Part Family'} deletePermission={permissions?.Delete} dataCount={state?.dataCount} bulkDeleteData={selectedRowForPagination}/>
                 {permissions.Add && (
                   <button
                     type="button"
