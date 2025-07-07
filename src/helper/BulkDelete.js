@@ -181,6 +181,25 @@ function BulkDelete(props) {
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
+			case 'Plant':
+				if (_.size(notEligibleList)) {
+					_.forEach(notEligibleList, item => {
+						mastersList.push(_.get(item, 'PlantName', ''))
+					})
+				}
+				if (_.size(eligibleToDelete)) {
+					_.forEach(eligibleToDelete, item => {
+						eligibleToDeleteIds.push(_.get(item, 'PlantId', ''))
+					})
+				}
+				return {
+					associatedKeyName: ['IsAssociated'],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "master",
+					associatedMasterType: "plant",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
 			default:
 				return {
 					associatedKeyName: [],
