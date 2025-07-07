@@ -323,7 +323,7 @@ function AddAssemblyProcess(props) {
                 </button>
                 <button
                   id="AddAssemblyProcess_Save"
-                    disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ || IsLocked ? true : false}
+                    disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ /* || IsLocked */ ? true : false}
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >

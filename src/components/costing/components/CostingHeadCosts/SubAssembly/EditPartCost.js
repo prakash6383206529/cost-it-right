@@ -77,7 +77,7 @@ function EditPartCost(props) {
                 setValue(`${PartCostFields}.${index}.DeltaValue`, item?.DeltaValue)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, item?.DeltaSign)
                 setValue(`${PartCostFields}.${index}.SOBPercentage`, item?.SOBPercentage)
-                setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice))
+                setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice))
                 return null
             })
             //calculateSelectedBOPWeightedCost();

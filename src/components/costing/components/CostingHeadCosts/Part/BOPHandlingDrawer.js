@@ -128,6 +128,10 @@ function BOPHandlingDrawer(props) {
 
     const handleDelete = (indexValue) => {
         let updatedData = tableData.filter((_, index) => index !== indexValue);
+        
+        if(updatedData.length === 0){
+            setState(prevState => ({ ...prevState, totalHandlingCharges: 0 }))
+        }
         setTableData(updatedData);
         resetData();
     };

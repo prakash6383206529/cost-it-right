@@ -323,7 +323,7 @@ function AddAssemblyOperation(props) {
                 </button>
                 <button
                   id="AddAssemblyOperation_Save"
-                  disabled={(CostingViewMode || IsLocked)}
+                  disabled={(CostingViewMode /* || IsLocked */)}
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >

@@ -11,6 +11,15 @@ import DayTime from '../../../common/DayTimeWrapper'
 function ViewBOP(props) {
   const { viewBOPData, isPDFShow } = props
   const { BOPData, childPartBOPHandlingCharges, IsAssemblyCosting, partType ,assemblyBOPHandlingCharges} = viewBOPData || {}  
+  
+  
+  
+  // Combine childPartBOPHandlingCharges and assemblyBOPHandlingCharges
+  const combinedBOPHandlingCharges = [
+    ...(childPartBOPHandlingCharges || []),
+    ...(assemblyBOPHandlingCharges || [])
+  ]
+  
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
@@ -170,14 +179,14 @@ function ViewBOP(props) {
             <br />
             <Row>
               <Col md="12">
-                <div className="left-border">{IsAssemblyCosting ? `Assembly's ${showBopLabel()} Handling Charge:` : `${showBopLabel()} Handling Charge:`}</div>
+                <div className="left-border">{/* IsAssemblyCosting ? `Assembly's ${showBopLabel()} Handling Charge:` :  */`Part's ${showBopLabel()} Handling Charges:`}</div>
               </Col>
             </Row>
 
             {showDifferentBOPType() ?
             <>
               {['Domestic', 'CKD', 'V2V', 'OSP'].map(bopType => {
-                const filteredChargesData = childPartBOPHandlingCharges?.filter(item => item.BOPType === `BOP ${bopType}`) ?? [];
+                const filteredChargesData = combinedBOPHandlingCharges?.filter(item => item.BOPType === `BOP ${bopType}`) ?? [];
                 return(
                   <React.Fragment key={bopType}>
                     <Row>
@@ -236,8 +245,8 @@ function ViewBOP(props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {childPartBOPHandlingCharges &&
-                    childPartBOPHandlingCharges.map((item, index) => {
+                  {combinedBOPHandlingCharges &&
+                    combinedBOPHandlingCharges?.map((item, index) => {
                       return (
                         <tr key={index}>
                           {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
@@ -248,7 +257,7 @@ function ViewBOP(props) {
                         </tr>
                       )
                     })}
-                  {childPartBOPHandlingCharges && childPartBOPHandlingCharges?.length === 0 && (
+                  {combinedBOPHandlingCharges && combinedBOPHandlingCharges?.length === 0 && (
                     <tr>
                       <td colSpan={7}>
                         <NoContentFound title={EMPTY_DATA} />
@@ -262,7 +271,7 @@ function ViewBOP(props) {
         </Row>
     </>
   }
-  return (
+   return (
     <Fragment>
       {!isPDFShow ?
         <Drawer
@@ -295,7 +304,7 @@ function ViewBOP(props) {
           {(Array.isArray(viewBOPCost) && viewBOPCost?.length > 0) &&
             (showDifferentBOPType() ? differentTypeBopDataTable() : bopDataTable())
           }
-          {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges?.length !== 0 || assemblyBOPHandlingCharges?.length !== 0) && handlingChargeTableData())}</div>}
+          {(combinedBOPHandlingCharges && combinedBOPHandlingCharges?.length !== 0 && handlingChargeTableData())}</div>}
     </Fragment>
   )
 }
