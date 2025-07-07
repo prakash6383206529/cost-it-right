@@ -34,6 +34,7 @@ import { showTitleForActiveToggle } from '../../../../src/helper/util';
 import Switch from "react-switch";
 import { useLabels, useWithLocalization } from "../../../helper/core";
 import { divisionApplicableFilter } from "../masterUtil";
+import BulkDelete from "../../../helper/BulkDelete";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -766,6 +767,7 @@ const IndivisualPartListing = (props) => {
                 >
                   <div className="filter mr-0"></div>
                 </button>
+                <BulkDelete {...props} type={'Part'} deletePermission={permissions?.Delete} dataCount={state?.dataCount} bulkDeleteData={selectedRowForPagination}/>
                 {permissions.Add && (
                   <button
                     type="button"

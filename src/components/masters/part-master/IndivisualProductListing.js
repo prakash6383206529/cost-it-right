@@ -31,6 +31,7 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useLabels, useWithLocalization } from "../../../helper/core";
+import BulkDelete from "../../../helper/BulkDelete";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -333,6 +334,7 @@ const IndivisualProductListing = (props) => {
         <Col md="6" className="search-user-block pr-0">
           <div className="d-flex justify-content-end bd-highlight w100">
             <div>
+              <BulkDelete {...props} type={'Product'} deletePermission={permissions?.Delete} dataCount={dataCount} bulkDeleteData={selectedRowData}/>
               {permissions.Add && (
                 <button
                   type="button"
