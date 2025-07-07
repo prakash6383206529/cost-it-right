@@ -14,6 +14,17 @@ function BulkDelete(props) {
 	const getAssociatedConfig = (type, notEligibleList = [], eligibleToDelete = []) => {
 		const mastersList = []
 		const eligibleToDeleteIds = []
+		const defaultToaster = 'Deleted Successfully'
+
+		const generateAssociatedMessage = () => {
+			const hasNotEligible = _.size(notEligibleList) > 0
+			const hasEligible = _.size(eligibleToDelete) > 0
+			if (!hasNotEligible) {
+				return `Are you sure you want to delete the ${type} detail?`;
+			}
+			return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""}${mastersList.join(", ")} ${type}(s) cannot be deleted because they are associated with costings.`;
+		}
+
 		switch (type) {
 			case 'RM':
 				if (_.size(notEligibleList)) {
@@ -28,13 +39,11 @@ function BulkDelete(props) {
 				}
 				return {
 					associatedKeyName: ["IsRMAssociated", "IsRFQRawMaterial"],
-					associatedSuccessMessage: "Raw Materials Deleted Successfully",
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "rm",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
-					associatedMessage: !_.size(notEligibleList)
-					? "Are you sure you want to delete the raw material detail?"
-					: `${_.size(eligibleToDelete) ? "Are you sure you want to delete the raw material detail? " : ""}${mastersList.join(", ")} raw material(s) cannot be deleted because they are associated with costings.`
+					associatedMessage: generateAssociatedMessage()
 				}
 			case 'BOP':
 				if (_.size(notEligibleList)) {
@@ -49,13 +58,30 @@ function BulkDelete(props) {
 				}
 				return {
 					associatedKeyName: ["IsBOPAssociated", "IsRFQBoughtOutPart"],
-					associatedSuccessMessage: "BOP Deleted Successfully",
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "bop",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
-					associatedMessage: !_.size(notEligibleList)
-					? "Are you sure you want to delete the BOP detail?"
-					: `${_.size(eligibleToDelete) ? "Are you sure you want to delete the BOP detail? " : ""}${mastersList.join(", ")} BOP(s) cannot be deleted because they are associated with costings.`
+					associatedMessage: generateAssociatedMessage()
+				}
+			case 'Machine':
+				if (_.size(notEligibleList)) {
+					_.forEach(notEligibleList, item => {
+						mastersList.push(_.get(item, 'MachineNumber', ''))
+					})
+				}
+				if (_.size(eligibleToDelete)) {
+					_.forEach(eligibleToDelete, item => {
+						eligibleToDeleteIds.push(_.get(item, 'MachineId', ''))
+					})
+				}
+				return {
+					associatedKeyName: ["IsMachineAssociated"],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "master",
+					associatedMasterType: "machine",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
 				}
 			default:
 				return {
