@@ -960,7 +960,7 @@ class AddMoreDetails extends Component {
               plantId: newValue?.value,
               effectiveDate: effectiveDate,
               costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
-              vendorId: this.state.vendorId ? this.state.vendorId : '',
+              vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value  : '',
               customerId: this.state.customerId ? this.state.customerId : '',
               toCurrency: fieldsObj?.plantCurrency,
               ExchangeSource: data?.ExchangeRateSourceName || "",
@@ -1265,7 +1265,7 @@ class AddMoreDetails extends Component {
           plantId: PlantId,
           effectiveDate: date,
           costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
-          vendorId: this.state.vendorId ? this.state.vendorId : '',
+          vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
           customerId: this.state.customerId ? this.state.customerId : '',
           toCurrency: fieldsObj?.plantCurrency,
           ExchangeSource: data?.ExchangeRateSourceName || "",
@@ -1401,7 +1401,7 @@ class AddMoreDetails extends Component {
             plantId: PlantId,
             effectiveDate: effectiveDate,
             costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
-            vendorId: this.state.vendorId ? this.state.vendorId : '',
+            vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
             customerId: this.state.customerId ? this.state.customerId : '',
             toCurrency: this.props.fieldsObj?.plantCurrency,
             ExchangeSource: data?.ExchangeRateSourceName || "",
@@ -2192,7 +2192,6 @@ class AddMoreDetails extends Component {
       if (i === processGridEditIndex) return false;
       return true;
     })
-    console.log(skipEditedItem, "SKIP EDITED ITEM")
 
     let count = 0;
     if (processName.length === 0) {
@@ -2220,7 +2219,6 @@ class AddMoreDetails extends Component {
       this.setState({ errorObj: { ...this.state.errorObj, percentage: true } })
       count++;
     }
-    console.log(count, "COUNT")
     if (count > 0) {
       return false
     }
@@ -2231,7 +2229,6 @@ class AddMoreDetails extends Component {
       Toaster.warning('Already added, Please check the values.')
       return false;
     }
-    console.log(this.props.invalid, "INVALID")
     if (this.props.invalid === true) {
       return false;
     }
@@ -2829,7 +2826,7 @@ class AddMoreDetails extends Component {
       Specification: fieldsObj.Specification,
 
       // Costs and financial details
-      MachineCost: values.MachineCost,
+      MachineCost: values?.MachineCost || 0,
       AccessoriesCost: values.AccessoriesCost,
       InstallationCharges: values.InstallationCharges,
       TotalCost: machineFullValue.totalCost,
@@ -2962,7 +2959,7 @@ class AddMoreDetails extends Component {
   loanToggle = () => {
     const { isLoanOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
+    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLoanOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2980,7 +2977,7 @@ class AddMoreDetails extends Component {
     const { isWorkingOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
+    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isWorkingOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -3064,7 +3061,7 @@ class AddMoreDetails extends Component {
           plantId: PlantId,
           effectiveDate: effectiveDate,
           costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
-          vendorId: this.state.vendorId ? this.state.vendorId : '',
+          vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
           customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
           toCurrency: fieldsObj?.plantCurrency,
           ExchangeSource: data?.ExchangeRateSourceName || "",
@@ -3109,7 +3106,7 @@ class AddMoreDetails extends Component {
     const { isLabourOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
+    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLabourOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0 || machineType?.length === 0) {
       Toaster.warning('Please fill the mandatory fields.');
       scroll.scrollToTop();
       return false;
@@ -3124,10 +3121,21 @@ class AddMoreDetails extends Component {
   processToggle = () => {
     const { isProcessOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
+    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isProcessOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
+      return false;
+    }
+    if(checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear) === 0 && this.state?.labourGrid?.length === 0){
+      Toaster.warning('Please fill Working Hours and Labour data');
+      return false;
+    }
+    if(checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear) === 0){
+      Toaster.warning('Please fill Working Hours data');
+      return false;
+    }
+    if(this.state?.labourGrid?.length === 0){
+      Toaster.warning('Please fill Labour data');
       return false;
     }
     this.setState({ isProcessOpen: !isProcessOpen })
@@ -3735,7 +3743,9 @@ class AddMoreDetails extends Component {
                             disabled={isEditFlag || disableAllForm ? true : false}
                             className=" "
                             customClassName="withBorder"
-                          />
+                          >
+                            <WarningMessage dClass="mt-1" message={`Machine Cost must be 0 when calculating with labour-only data`} />
+                          </Field>
                         </Col>
                         <Col md="3">
                           <Field
@@ -4810,7 +4820,7 @@ class AddMoreDetails extends Component {
                                 <Field
                                   name="FuelTypeId"
                                   type="text"
-                                  label="Fuel t"
+                                  label="Fuel"
                                   component={searchableSelect}
                                   placeholder={isEditFlag || disableAllForm ? '-' : 'Select'}
                                   options={this.renderListing('fuel')}
@@ -5843,7 +5853,7 @@ function mapStateToProps(state) {
       TonnageCapacity: machineData.TonnageCapacity,
       Manufacture: machineData.Manufacture,
       YearOfManufacturing: machineData.YearOfManufacturing,
-      MachineCost: machineData.MachineCost,
+      MachineCost: machineData.MachineCost || 0,
       AccessoriesCost: machineData.AccessoriesCost,
       InstallationCharges: machineData.InstallationCharges,
       Description: machineData.Description,

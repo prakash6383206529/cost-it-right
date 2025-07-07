@@ -9,7 +9,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 // import { removeBOPFromList } from '../../../../helper';
 import { useDispatch, useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
-import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, checkExtraWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
 import { IdForMultiTechnology, LOGISTICS, PACK_AND_FREIGHT_PER_KG, STRINGMAXLENGTH } from '../../../../config/masterData';
 import _ from 'lodash';
 import { MESSAGES } from '../../../../config/message';
@@ -52,6 +52,7 @@ function AddPackaging(props) {
   });
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const IsAllowSinglePackagingMultipleTimeInCosting = initialConfiguration?.IsAllowSinglePackagingMultipleTimeInCosting
   const headCostData = useContext(netHeadCostContext)
   const costData = useContext(costingInfoContext);
   const dispatch = useDispatch()
@@ -142,6 +143,21 @@ function AddPackaging(props) {
   // }, [PackageType]);
 
   const toggleDrawer = (event, formData = {}) => {
+    if (IsAllowSinglePackagingMultipleTimeInCosting ) {
+      const exists = _.some(gridData, item =>
+        _.isEqualWith(item, formData, (val1, val2, key) => {
+          if (key === 'PackagingDescription') {
+            return String(val1).toLowerCase() === String(val2).toLowerCase();
+          }
+          // fallback to lodash's default deep comparison
+          return undefined
+        })
+      )
+      if (exists) {
+        isEditFlag ? Toaster.warning("Please change the data to update Packaging.") : Toaster.warning("Data already exists in the grid.")
+        return false
+      }
+    }
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -175,6 +191,33 @@ function AddPackaging(props) {
       // Add PACK_AND_FREIGHT_PER_KG if not in removeApplicability
       if (!removeApplicability?.includes(PACK_AND_FREIGHT_PER_KG)) {
         tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
+      }
+      // Allow only selected multiple Packaging Options if IsAllowSinglePackagingMultipleTimeInCosting is true from webconfig
+      if (IsAllowSinglePackagingMultipleTimeInCosting) {
+        const AllowedMultiplePackagingOptions = ['CC', 'Fixed', 'Hanger Cost', 'Net Cost', 'Overhead Cost', 'Paint Cost', 'Profit Cost', 'Rejection Cost', 'RM', 'Surface Treatment Cost']
+        const onlyMainBOPAdded = _.some(gridData, data => _.get(data, 'Applicability', '') === 'BOP')
+
+        _.forEach(costingHead, item => {
+          if (item.Value === '0') return
+          const itemText = _.get(item, 'Text', '')
+          const itemValue = _.get(item, 'Value', '')
+          const alreadyExists = _.some(tempList, list => _.get(list, 'label', '') === itemText)
+          if (_.includes(AllowedMultiplePackagingOptions, itemText) && !alreadyExists) {
+            tempList.push({ label: itemText, value: itemValue })
+          }
+          // allow BOP option to select multiple times only if BOP is in gridData and no other BOP childs will be there in gridData.
+          else if (itemText === 'BOP' && onlyMainBOPAdded && !alreadyExists) {
+            tempList.push({ label: itemText, value: itemValue })
+          }
+        })
+
+        const alreadyExists = _.some(tempList, list => _.get(list, 'label', '') === PACK_AND_FREIGHT_PER_KG)
+        // Add per kg field if IsAllowSinglePackagingMultipleTimeInCosting is true
+        if (!alreadyExists) {
+          tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
+        }
+        // Arrange them in alphabetical order
+        tempList = _.sortBy(tempList, 'label');
       }
 
       return tempList;
@@ -512,11 +555,11 @@ function AddPackaging(props) {
         IsPackagingCostFixed: applicability?.label === 'Fixed' ? false : true,
         PackagingDescription: data.PackagingDescription,
         PackagingCostFixed: 0,
-        PackagingCostPercentage: PackageType ? data.PackagingCostPercentage : 0,
+        PackagingCostPercentage: PackageType ? data?.PackagingCostPercentage ? Number(_.get(data, 'PackagingCostPercentage', 0)) : 0 : 0,
         PackagingCost: applicability?.label === 'Fixed' ? getValues('PackagingCost') : packagingCost,
         Applicability: applicability ? data.Applicability?.label : '',
         PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : '',
-        Rate: getValues('Rate'),
+        Rate: data?.Rate ? Number(_.get(data, 'Rate', 0)) : 0,
         Quantity: originalQuantity,
         CostingPackagingCalculationDetailsId: costingPackagingCalculationDetailsId ?? null
       }
@@ -595,7 +638,7 @@ function AddPackaging(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        validate: { checkWhiteSpaces, hashValidation },
+                        validate: { checkWhiteSpaces, hashValidation, checkExtraWhiteSpaces },
                         maxLength: 80
                       }}
                       handleChange={() => { }}

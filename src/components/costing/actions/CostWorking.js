@@ -1145,9 +1145,9 @@ export function bulkUploadCosting(data, costingVersion, callback) {
     if (costingVersion === 'V2' || costingVersion === 'V4') {  // BULK UPLOAD NEW COSTING
       request = axiosInstance.post(API.uploadCosting, data, config());
     } else if (costingVersion === 'V3') { //  BULK UPLOAD COSTING FOR SHEET METAL
-      request = axiosInstance.post(API.uploadSheetMetal, data, config());
+      request = axios.post(API.uploadSheetMetal, data, config());
     } else {  // BULK UPLOAD OLD COSTING
-      request = axiosInstance.post(API.uploadOldCosting, data, config());
+      request = axios.post(API.uploadOldCosting, data, config());
     }
     request.then((response) => {
       if (response.status === 200) {
@@ -1293,14 +1293,15 @@ export function getProcessDefaultCalculation(processCalculationId, callback) {
 */
 
 export function plasticBulkUploadCosting(data, costingVersion, callback) {
+  console.log("data",data);
 
   return (dispatch) => {
 
     let request;
     if (costingVersion === 'V2' || costingVersion === 'V4') {  // BULK UPLOAD NEW COSTING
-      request = axiosInstance.post(API.uploadPlasticCosting, data, config());
+      request = axios.post(API.uploadPlasticCosting, data, config());
     } else {  // BULK UPLOAD OLD COSTING
-      request = axiosInstance.post(API.uploadPlasticOldCosting, data, config());
+      request = axios.post(API.uploadPlasticOldCosting, data, config());
     }
     request.then((response) => {
       if (response.status === 200) {
@@ -1322,9 +1323,9 @@ export function machiningBulkUploadCosting(data, costingVersion, callback) {
 
     let request;
     if (costingVersion === 'V2' || costingVersion === 'V4') {  // BULK UPLOAD NEW COSTING
-      request = axiosInstance.post(API.uploadMachiningCosting, data, config());
+      request = axios.post(API.uploadMachiningCosting, data, config());
     } else {  // BULK UPLOAD OLD COSTING
-      request = axiosInstance.post(API.uploadMachiningOldCosting, data, config());
+      request = axios.post(API.uploadMachiningOldCosting, data, config());
     }
     request.then((response) => {
       if (response.status === 200) {
@@ -1344,7 +1345,7 @@ export function machiningBulkUploadCosting(data, costingVersion, callback) {
 export function corrugatedBoxBulkUploadCosting(data, callback) {
 
   return (dispatch) => {
-    const request = axiosInstance.post(API.uploadCorrugatedBoxCosting, data, config());
+    const request = axios.post(API.uploadCorrugatedBoxCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1362,7 +1363,7 @@ export function corrugatedBoxBulkUploadCosting(data, callback) {
 export function assemblyBulkUploadCosting(data, callback) {
 
   return (dispatch) => {
-    const request = axiosInstance.post(API.uploadAssemblyCosting, data, config());
+    const request = axios.post(API.uploadAssemblyCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1472,7 +1473,7 @@ export function saveRawMaterialCalculationForRubberStandard(data, callback) {
 
 export function wiringHarnessBulkUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.uploadWiringHarnessCosting, data, config());
+    const request = axios.post(API.uploadWiringHarnessCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1489,7 +1490,7 @@ export function wiringHarnessBulkUploadCosting(data, callback) {
 
 export function diecastingBulkUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.uploadDiecastingCosting, data, config());
+    const request = axios.post(API.uploadDiecastingCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1649,7 +1650,7 @@ export function getRawMaterialCalculationForInsulation(costingId, rawMaterialId,
  */
 export function InsulationBulkUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.uploadInsulationCosting, data, config());
+    const request = axios.post(API.uploadInsulationCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
 
@@ -1671,7 +1672,7 @@ export function InsulationBulkUploadCosting(data, callback) {
  */
 export function ElectricalStampingCostingBulkImport(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.uploadElectricalStampingCosting, data, config());
+    const request = axios.post(API.uploadElectricalStampingCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1692,7 +1693,7 @@ export function ElectricalStampingCostingBulkImport(data, callback) {
  */
 export function MonocartonBulkUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axiosInstance.post(API.uploadMonocartonCosting, data, config());
+    const request = axios.post(API.uploadMonocartonCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);

@@ -896,13 +896,13 @@ function LossStandardTable(props) {
 
           </Table>
           <div className="col-md-12 text-right bluefooter-butn border">
-            {props.isPlastic &&
+            {props.isPlastic && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting &&
               <span className="w-50 d-inline-block text-left">
                 {`${props.isStamping ? "Total" : "Burning"} Loss ${isFerrous ? "Wt" : "Weight"}: `}
                 {checkForDecimalAndNull(burningWeight, trim)}
               </span>}
             {!props.isStamping && <span className="w-50 d-inline-block">
-              {`${props.isPlastic ? 'Other' : 'Net'} Loss ${isFerrous ? "Wt" : "Weight"}: `}
+              {`${(props.isPlastic && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting) ? 'Other' : 'Net'} Loss ${isFerrous ? "Wt" : "Weight"}: `}
               {checkForDecimalAndNull(findLostWeight(tableData, props?.isPlastic), trim)}
             </span>}
           </div>
