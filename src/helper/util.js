@@ -1130,10 +1130,12 @@ export function isRMDivisorApplicable(technology) {
 
 export function findLostWeight(tableVal, isPlastic = false) {
   let sum = 0
+  const isShowBurningAllowance = !!getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting
   tableVal && tableVal.map(item => {
-    if ((Number(item.LossOfType) === 2 || Number(item.LossOfType) === 3) && isPlastic) {
+    // ((Number(item.LossOfType) === 2 || Number(item.LossOfType) === 3) && isPlastic)
+    if(((Number(item.LossOfType) === 2 || Number(item.LossOfType) === 3)) && isPlastic && isShowBurningAllowance){
       return false
-    } else {
+    }else{
       sum = sum + item.LossWeight
     }
     return null
