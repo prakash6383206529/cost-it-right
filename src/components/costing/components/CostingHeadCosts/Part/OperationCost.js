@@ -77,7 +77,7 @@ function OperationCost(props) {
       PartNumber: props.item.PartNumber,
       PartType: props.item.PartType
     }
-    if (!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) {
+    if (!CostingViewMode && ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) {
       // IF TECHNOLOGY IS ASSEMBLY FOR COSTING THIS ILL BE EXECUTED ELSE FOR PART COSTING AND ASSEMBLY COSTING
       if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId) || (costData?.PartType === 'Assembly' && IsMultiVendorCosting)) {
         // FUTURE CONDITION FROM API RESPONCE TO CHECK IF DATA IS CHANGED OR NOT
@@ -492,7 +492,7 @@ function OperationCost(props) {
 
               <div>
 
-                {(!CostingViewMode/*  && !IsLocked */ && !IsLockTabInCBCCostingForCustomerRFQ) &&
+                {(!CostingViewMode && ((item?.PartType === 'Component' || item?.PartType === 'Part'|| item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) &&
                   <Button
                     id="Costing_addOperation"
                     onClick={DrawerToggle}
@@ -559,7 +559,7 @@ function OperationCost(props) {
                                     handleQuantityChange(e, index)
                                   }}
                                   errors={errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index] !== undefined ? errors?.OperationGridFields?.[index]?.Quantity : ''}
-                                  disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                  disabled={(CostingViewMode || ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 />
                               }
                             </td>
@@ -709,8 +709,8 @@ function OperationCost(props) {
                             </td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Edit' id={`operationCost_edit${index}`} className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                                {(!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' id={`operationCost_delete${index}`} className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
+                                {(!CostingViewMode && ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Edit' id={`operationCost_edit${index}`} className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                                {(!CostingViewMode && ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' id={`operationCost_delete${index}`} className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
                                 <Popup trigger={<button id={`operationCost_popUpTriggerss${props.IsAssemblyCalculation}${index}`} title="Remark" className="operation Comment-box align-middle" type={'button'} />}
                                   position={'top right'}
                                   onOpen={() => handleRemarkPopup("open", `${OperationGridFields}.${index}.remarkPopUp`)}

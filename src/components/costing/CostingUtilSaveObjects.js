@@ -46,6 +46,7 @@ export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicR
         "NetBOPImportCostWithOutHandlingCharge": rmccData?.CostingPartDetails?.NetBOPImportCostWithOutHandlingCharge || null,
         "NetBOPSourceCostWithOutHandlingCharge": rmccData?.CostingPartDetails?.NetBOPSourceCostWithOutHandlingCharge || null,
         "NetBOPOutsourcedCostWithOutHandlingCharge": rmccData?.CostingPartDetails?.NetBOPOutsourcedCostWithOutHandlingCharge || null,
+        "NetCastingNormApplicabilityCost": rmccData?.CostingPartDetails?.NetCastingNormApplicabilityCost || null,
 
         CostingPartDetails: { ...rmccData?.CostingPartDetails, BasicRate: basicRate, NetPOPrice: netPOPrice },
     }

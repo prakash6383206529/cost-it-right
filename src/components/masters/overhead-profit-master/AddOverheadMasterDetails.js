@@ -9,7 +9,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import DayTime from '../../common/DayTimeWrapper';
 import { useTranslation } from 'react-i18next';
 import { required, number, checkWhiteSpaces, percentageLimitValidation, showDataOnHover, getConfigurationKey, checkForNull,maxLength7 } from "../../../helper";
-import { CBCTypeId, EMPTY_DATA, OVERHEADMASTER, PROFITMASTER, REJECTIONMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, EMPTY_DATA, OVERHEADMASTER, PROFITMASTER, REJECTIONMASTER, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount, DIECASTING, FORGING, FERROUSCASTING } from '../../../config/constants';
 import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { fetchApplicabilityList, getVendorNameByVendorSelectList, fetchSpecificationDataAPI } from '../../../actions/Common';
 import { autoCompleteDropdown, filterBOPApplicability, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
@@ -35,6 +35,14 @@ const AddOverheadMasterDetails = (props) => {
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
     // const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
+    // Common utility function to check if Casting Norm should be shown
+    const shouldShowCastingNorm = () => {
+        const selectedTechnologies = state?.selectedTechnologies || [];
+        return selectedTechnologies.some(tech => 
+            tech?.label === DIECASTING || tech?.label === FERROUSCASTING
+        );
+    };
 
     // DO NOT REMOVE THIS (useEffect) CODE
     // useEffect(() => {
@@ -64,7 +72,18 @@ const AddOverheadMasterDetails = (props) => {
         }
 
         if (label === 'OverheadApplicability') {
-            return filterBOPApplicability(costingHead, state?.ApplicabilityDetails,'Applicability')
+            // Get filtered applicability list
+            const filteredApplicability = filterBOPApplicability(costingHead, state?.ApplicabilityDetails,'Applicability');
+            
+            // Further filter to show/hide "Casting norm" based on technology selection
+            const finalFiltered = filteredApplicability.filter(item => {
+                if (item?.label === 'Casting Norm') {
+                    return shouldShowCastingNorm();
+                }
+                return true; // Keep all other applicabilities
+            });
+            
+            return finalFiltered;
         }
 
         if (label === 'ModelType') {

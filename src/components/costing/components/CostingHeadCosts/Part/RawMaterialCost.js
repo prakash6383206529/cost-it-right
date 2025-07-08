@@ -28,7 +28,7 @@ import TourWrapper from '../../../../common/Tour/TourWrapper'
 import { Steps } from '../../TourMessages'
 import { useTranslation } from 'react-i18next'
 import { getRMFromNFR } from '../../../../masters/nfr/actions/nfr'
-import { isLockRMAndBOPForCostAppliacabilityProcess, NetLandedCostToolTip } from '../../../CostingUtil'
+import { isLockRMAndBOPForCostAppliacabilityProcess, NetLandedCostToolTip, calculateCastingNormApplicabilityCost } from '../../../CostingUtil'
 import { useLabels } from '../../../../../helper/core'
 
 let counter = 0;
@@ -113,7 +113,7 @@ function RawMaterialCost(props) {
   const { nfrDetailsForDiscount, currencySource, exchangeRateData } = useSelector(state => state.costing)
   const { finishWeightLabel } = useLabels()
    const processArr = item && Object.keys(item).length>0 ? item?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse:[]
-   
+
 
   const dispatch = useDispatch()
 
@@ -167,11 +167,11 @@ function RawMaterialCost(props) {
         return setGridLength(0)
       case Ferrous_Casting:
       case RUBBER:
-        case RUBBER:
+      case RUBBER:
           if(gridData && gridData.length > 0){
-            let arr = [...gridData]
-            setGridData(arr)
-          }
+          let arr = [...gridData]
+          setGridData(arr)
+        }
       case CORRUGATEDBOX:
         if (props.data && props.data[0]?.RawMaterialCalculatorId) {
           setIsMultiCalculatorData(true)
@@ -308,7 +308,8 @@ function RawMaterialCost(props) {
             UOMSymbol: el.UOMSymbol,
             ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
             CurrencyExchangeRate: el.CurrencyExchangeRate,
-            EffectiveDate: el.EffectiveDate
+            EffectiveDate: el.EffectiveDate,
+            CastingNormApplicabilityCost: 0
           }
         })
 
@@ -343,7 +344,8 @@ function RawMaterialCost(props) {
           ScrapRecoveryPercentage: 100,
           ConvertedExchangeRateId: rowData.ConvertedExchangeRateId === EMPTY_GUID ? null : rowData.ConvertedExchangeRateId,
           CurrencyExchangeRate: rowData.CurrencyExchangeRate,
-          EffectiveDate: rowData.EffectiveDate
+          EffectiveDate: rowData.EffectiveDate,
+          CastingNormApplicabilityCost: 0
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
@@ -586,6 +588,8 @@ function RawMaterialCost(props) {
       const ScrapCost = (checkForNull(tempData.FinishWeight) < 0) ? 0 : scrapWeight * tempData.ScrapRate;
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+      // Calculate CastingNormApplicabilityCost
+      const CastingNormApplicabilityCost = calculateCastingNormApplicabilityCost(GrossWeight, tempData?.CastingWeight, tempData?.RMRate, costData?.TechnologyId);
       if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
         return false
       }
@@ -599,7 +603,8 @@ function RawMaterialCost(props) {
         IsCalculatedEntry: false,
         RawMaterialCalculatorId: null,
         CutOffRMC: CutOffRMC,
-        ScrapWeight: scrapWeight
+        ScrapWeight: scrapWeight,
+        CastingNormApplicabilityCost: CastingNormApplicabilityCost
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -609,6 +614,8 @@ function RawMaterialCost(props) {
         const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * GrossWeight;
         const ScrapRate = (tempData.ScrapRate * scrapWeight)
         const NetLandedCost = isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull((RMRatePlusMasterBatch - ScrapRate) / RMDivisor, initialConfiguration?.NoOfDecimalForPrice) : (RMRatePlusMasterBatch - ScrapRate);
+        // Calculate CastingNormApplicabilityCost for master batch
+        const CastingNormApplicabilityCost = calculateCastingNormApplicabilityCost(GrossWeight, tempData?.CastingWeight, tempData.RMRate, costData?.TechnologyId);
 
         tempData = {
           ...tempData,
@@ -618,7 +625,8 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
-          ScrapWeight: scrapWeight
+          ScrapWeight: scrapWeight,
+          CastingNormApplicabilityCost: CastingNormApplicabilityCost
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
       }
@@ -748,6 +756,7 @@ function RawMaterialCost(props) {
       const ScrapCost = (checkForNull(tempData.FinishWeight) < 0) ? 0 : scrapWeight * tempData.ScrapRate;
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+      const CastingNormApplicabilityCost = calculateCastingNormApplicabilityCost(GrossWeight, tempData?.CastingWeight, tempData.RMRate, costData?.TechnologyId);
       if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
         return false
       }
@@ -762,7 +771,8 @@ function RawMaterialCost(props) {
         IsCalculatedEntry: false,
         RawMaterialCalculatorId: null,
         CutOffRMC: CutOffRMC,
-        ScrapWeight: scrapWeight
+        ScrapWeight: scrapWeight,
+        CastingNormApplicabilityCost: CastingNormApplicabilityCost
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -775,7 +785,7 @@ function RawMaterialCost(props) {
         const ScrapRate = (tempData.ScrapRate * scrapWeight)
 
         const NetLandedCost = isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull((RMRatePlusMasterBatch - ScrapRate) / RMDivisor, initialConfiguration?.NoOfDecimalForPrice) : (RMRatePlusMasterBatch - ScrapRate);
-
+        const CastingNormApplicabilityCost = calculateCastingNormApplicabilityCost(GrossWeight, tempData?.CastingWeight, tempData.RMRate, costData?.TechnologyId);
 
         tempData = {
           ...tempData,
@@ -785,7 +795,8 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
-          ScrapWeight: scrapWeight
+          ScrapWeight: scrapWeight,
+          CastingNormApplicabilityCost: CastingNormApplicabilityCost
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
       }
@@ -821,6 +832,7 @@ function RawMaterialCost(props) {
       }
 
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
+      const CastingNormApplicabilityCost = calculateCastingNormApplicabilityCost(GrossWeight, tempData?.CastingWeight, tempData?.RMRate, costData?.TechnologyId);
 
       tempData = {
         ...tempData,
@@ -829,6 +841,7 @@ function RawMaterialCost(props) {
         NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration?.NoOfDecimalForPrice) : NetLandedCost,
         ScrapWeight: recoveredScrapWeight,
         CutOffRMC: CutOffRMC,
+        CastingNormApplicabilityCost: CastingNormApplicabilityCost,
       }
 
       tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -844,13 +857,15 @@ function RawMaterialCost(props) {
       const scrapWeight = checkForNull(GrossWeight - FinishWeight);
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
+      const CastingNormApplicabilityCost = calculateCastingNormApplicabilityCost(GrossWeight, tempData?.CastingWeight, tempData.RMRate, costData?.TechnologyId);
 
       tempData = {
         ...tempData,
         ScrapRecoveryPercentage: ScrapRecoveryPercentage,
         IsScrapRecoveryPercentageApplied: true,
         NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration?.NoOfDecimalForPrice) : NetLandedCost,
-        ScrapWeight: scrapWeight
+        ScrapWeight: scrapWeight,
+        CastingNormApplicabilityCost: CastingNormApplicabilityCost
       }
 
       tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -916,6 +931,7 @@ function RawMaterialCost(props) {
       const scrapWeight = weightData?.ScrapWeight ? ScrapWeight : checkForNull(GrossWeight - FinishWeight)
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+      const CastingNormApplicabilityCost = calculateCastingNormApplicabilityCost(GrossWeight, weightData?.CastingWeight, tempData.RMRate, costData?.TechnologyId, weightData?.NetRMRate);
       tempData = {
         ...tempData,
         FinishWeight: FinishWeight ? FinishWeight : 0,
@@ -930,11 +946,12 @@ function RawMaterialCost(props) {
         BurningLossWeight: weightData?.BurningValue,
         ScrapWeight: scrapWeight,
         IsCalculaterAvailable: true,
-        CalculatorType: weightData?.CalculatorType ?? calculatorTypeStore ? weightData?.CalculatorType : ''
+        CalculatorType: weightData?.CalculatorType ?? calculatorTypeStore ? weightData?.CalculatorType : '',
+        CastingNormApplicabilityCost: CastingNormApplicabilityCost
         // IsScrapRecoveryPercentageApplied: true
       }
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
-
+      
       if (Number(costData?.TechnologyId) !== Number(RUBBER)) {
         setTimeout(() => {
           setValue(`${rmGridFields}.${editIndex}.GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -961,10 +978,13 @@ function RawMaterialCost(props) {
 
 
             if (existingRM) {
+              const grossWeight = weightData?.GrossWeight || 0;
+              const finishWeight = weightData?.FinishWeight || 0;
+              const CastingNormApplicabilityCost = calculateCastingNormApplicabilityCost(grossWeight, weightData?.CastingWeight, existingRM.RMRate, costData?.TechnologyId, weightData?.NetRMRate);
               return {
                 ...existingRM,
-                FinishWeight: weightData?.FinishWeight || 0,
-                GrossWeight: weightData?.GrossWeight || 0,
+                FinishWeight: finishWeight,
+                GrossWeight: grossWeight,
                 NetLandedCost: index === 0 ? weightData.RawMaterialCost : 0,
                 WeightCalculatorRequest: weightData,
                 WeightCalculationId: weightData.WeightCalculationId,
@@ -974,12 +994,13 @@ function RawMaterialCost(props) {
                 ScrapRecoveryPercentage: weightData.RecoveryPercentage,
                 ScrapWeight: weightData?.ScrapWeight || 0,
                 Percentage: calculatedRM?.Percentage || 0,
-                CalculatorType: weightData.CalculatorType ?? calculatorTypeStore ? weightData.CalculatorType : ''
+                CalculatorType: weightData.CalculatorType ?? calculatorTypeStore ? weightData.CalculatorType : '',
+                CastingNormApplicabilityCost: CastingNormApplicabilityCost
               };
             }
             return null;
           }).filter(Boolean); // Remove any null entries
-
+          
           setGridData(updatedGridData);
 
           // Use Promise to ensure state is updated before setting form values
@@ -1000,8 +1021,11 @@ function RawMaterialCost(props) {
           updatedData = gridData.map((item, index) => {
             const weightItem = weightData?.RawMaterialRubberStandardWeightCalculator.find(wItem => wItem.RawMaterialId === item.RawMaterialId);
             if (weightItem) {
-              item.FinishWeight = weightItem.FinishWeight || 0;
-              item.GrossWeight = weightItem.GrossWeight || 0;
+              const grossWeight = weightItem.GrossWeight || 0;
+              const finishWeight = weightItem.FinishWeight || 0;
+              const CastingNormApplicabilityCost = calculateCastingNormApplicabilityCost(grossWeight, weightData?.CastingWeight, item.RMRate, costData?.TechnologyId);
+              item.FinishWeight = finishWeight;
+              item.GrossWeight = grossWeight;
               item.ScrapWeight = weightItem.ScrapWeight || 0;
               item.Percentage = weightItem?.Percentage;
               item.NetLandedCost = weightItem?.NetRMCost;
@@ -1014,8 +1038,9 @@ function RawMaterialCost(props) {
               item.IsCalculaterAvailable = true;
               item.CutOffRMC = CutOffRMC;
               item.ScrapRecoveryPercentage = RecoveryPercentage;
-              item.CalculatorType = weightData?.CalculatorType ?? calculatorTypeStore ? weightData?.CalculatorType : ''
-              item.IsVolumeAutoCalculate = weightItem?.IsVolumeAutoCalculate ?? false
+              item.CalculatorType = weightData?.CalculatorType ?? calculatorTypeStore ? weightData?.CalculatorType : '';
+              item.IsVolumeAutoCalculate = weightItem?.IsVolumeAutoCalculate ?? false;
+              item.CastingNormApplicabilityCost = CastingNormApplicabilityCost;
 
               setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightItem?.GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
               setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightItem?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -1026,7 +1051,7 @@ function RawMaterialCost(props) {
             return item;
           });
           const usedRmData = weightData?.usedRmData || []
-
+          
           if (usedRmData?.length > 0) {
             updatedData = updatedData.filter(rmData => usedRmData.find(usedRmData => usedRmData?.RawMaterialId === rmData?.RawMaterialId));
           }
@@ -1036,8 +1061,11 @@ function RawMaterialCost(props) {
           selectedIds(updatedData)
         } else {
           gridData && gridData.map((item, index) => {
-            item.FinishWeight = weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight ? weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight : 0
-            item.GrossWeight = weightData?.CostingRubberCalculationRawMaterials[index].GrossWeight ? weightData?.CostingRubberCalculationRawMaterials[index].GrossWeight : 0
+            const grossWeight = weightData?.CostingRubberCalculationRawMaterials[index].GrossWeight ? weightData?.CostingRubberCalculationRawMaterials[index].GrossWeight : 0;
+            const finishWeight = weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight ? weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight : 0;
+            const CastingNormApplicabilityCost = calculateCastingNormApplicabilityCost(grossWeight, weightData?.CastingWeight, item.RMRate, costData?.TechnologyId);
+            item.FinishWeight = finishWeight
+            item.GrossWeight = grossWeight
             item.NetLandedCost = index === 0 ? weightData?.RawMaterialCost : 0
             item.WeightCalculatorRequest = weightData
             item.WeightCalculationId = weightData?.WeightCalculationId
@@ -1048,9 +1076,10 @@ function RawMaterialCost(props) {
             item.ScrapRecoveryPercentage = RecoveryPercentage
             item.ScrapWeight = weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight ? weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight : 0
             item.Percentage = weightData?.CostingRubberCalculationRawMaterials[index]?.Percentage
+            item.CastingNormApplicabilityCost = CastingNormApplicabilityCost
             return item
           })
-
+          
           setTimeout(() => {
             setGridData(gridData)
             gridData && gridData.map((item, index) => {

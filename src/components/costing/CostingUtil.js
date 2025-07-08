@@ -4,7 +4,7 @@ import { COSTAPPLICABILITYBASIS, EMPTY_GUID, HOUR, MACHINING, MICROSECONDS, MILL
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
 import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
-import { PART_TYPE_ASSEMBLY, PLASTIC } from "../../config/masterData";
+import { Ferrous_Casting, PART_TYPE_ASSEMBLY, PLASTIC } from "../../config/masterData";
 import { checkDivisionByPlantAndGetDivisionIdByPart } from "../../actions/Common";
 import Toaster from "../common/Toaster";
 import { MESSAGES } from "../../config/message";
@@ -160,6 +160,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "NetSurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost,
           "NetPOPrice": (sTSubAssembly !== undefined && Object.keys(sTSubAssembly).length > 0) ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(sTSubAssembly?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.NetTotalRMBOPCC,
           "NetTotalRMBOPCC": item?.CostingPartDetails?.NetTotalRMBOPCC,
+          "NetCastingNormApplicabilityCost": item?.CostingPartDetails?.NetCastingNormApplicabilityCost,
 
 
 
@@ -251,6 +252,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "CostingId": tabData && tabData.CostingId,
       "CostingNumber": tabData && tabData.CostingNumber,
       "NetRawMaterialsCost": tabData && tabData?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+      "NetCastingNormApplicabilityCost": tabData && tabData?.CostingPartDetails?.NetCastingNormApplicabilityCost,
       "NetBoughtOutPartCost": tabData && tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
       "BOPHandlingCharges": tabData && tabData?.CostingPartDetails?.BOPHandlingCharges,
       "IsApplyBOPHandlingCharges": tabData && tabData?.CostingPartDetails?.IsApplyBOPHandlingCharges,
@@ -655,10 +657,10 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
         "TotalBOPSourceCostWithQuantity": item?.CostingPartDetails?.TotalBOPSourceCostWithQuantity,
         "TotalBOPOutsourcedCostWithQuantity": item?.CostingPartDetails?.TotalBOPOutsourcedCostWithQuantity,
         "TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity,
-        "TotalBOPDomesticCostWithOutHandlingChargeWithQuantity":item?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity,
-        "TotalBOPImportCostWithOutHandlingChargeWithQuantity":item?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity,
-        "TotalBOPSourceCostWithOutHandlingChargeWithQuantity":item?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity,
-        "TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity":item?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity,
+        "TotalBOPDomesticCostWithOutHandlingChargeWithQuantity": item?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity,
+        "TotalBOPImportCostWithOutHandlingChargeWithQuantity": item?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity,
+        "TotalBOPSourceCostWithOutHandlingChargeWithQuantity": item?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity,
+        "TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity": item?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity,
 
         "Remark": item.Remark ?? ""
       }
@@ -747,10 +749,10 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetBOPSourceCostWithOutHandlingCharge": tabData?.CostingPartDetails?.NetBOPSourceCostWithOutHandlingCharge,
       "NetBOPOutsourcedCostWithOutHandlingCharge": tabData?.CostingPartDetails?.NetBOPOutsourcedCostWithOutHandlingCharge,
       "TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargeWithQuantity,
-      "TotalBOPDomesticCostWithOutHandlingChargeWithQuantity":tabData?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity,
-      "TotalBOPImportCostWithOutHandlingChargeWithQuantity":tabData?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity,
-      "TotalBOPSourceCostWithOutHandlingChargeWithQuantity":tabData?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity,
-      "TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity":tabData?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity,
+      "TotalBOPDomesticCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity,
+      "TotalBOPImportCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity,
+      "TotalBOPSourceCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity,
+      "TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity,
       // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
     },
     "WorkingRows": assemblyWorkingRow,
@@ -965,4 +967,25 @@ export const isLockRMAndBOPForCostAppliacabilityProcess = (processArr) => {
 
     return tempArr.length > 0 ? true : false
   }
+}
+
+/**
+ * @method calculateCastingNormApplicabilityCost
+ * @description Calculate Casting Norm Applicability Cost for ferrous and die casting technologies
+
+ */
+export const calculateCastingNormApplicabilityCost = (grossWeight, castingWeight, rmRate, technologyId = null, netRmRate = null) => {
+  const validGrossWeight = checkForNull(grossWeight);
+  const validCastingWeight = checkForNull(castingWeight);
+  
+  
+  let effectiveRate = 0;
+  if (Number(technologyId) === Ferrous_Casting) { // Ferrous_Casting
+    
+    effectiveRate = checkForNull(netRmRate);
+  } else {
+    effectiveRate = checkForNull(rmRate);
+  }
+
+  return (validGrossWeight - validCastingWeight) * effectiveRate;
 }
