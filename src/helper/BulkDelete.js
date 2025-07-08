@@ -326,6 +326,16 @@ function BulkDelete(props) {
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
+			case 'Raw Material Approval':
+				extractDeletionData('RawMaterialId', 'RawMaterialId')
+				return {
+					associatedKeyName: [],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "master",
+					associatedMasterType: "",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
 			default:
 				return {
 					associatedKeyName: [],

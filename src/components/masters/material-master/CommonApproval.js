@@ -35,13 +35,14 @@ import { resetStatePagination, updateCurrentRowIndex, updatePageNumber } from '.
 import SendForApproval from '../../vendorManagement/approval/SendForApproval';
 import { useLabels } from '../../../helper/core';
 import CostingHeadDropdownFilter from './CostingHeadDropdownFilter';
+import BulkDelete from '../../../helper/BulkDelete';
 
 const gridOptions = {
 };
 
 function CommonApproval(props) {
     const searchRef = useRef(null);
-
+    const [dataCount, setDataCount] = useState(0)
     const [gridApi, setGridApi] = useState(null);     // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
     const [gridColumnApi, setGridColumnApi] = useState(null);   // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -77,6 +78,7 @@ function CommonApproval(props) {
     const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
     const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
     const [selectedMachineIds, setSelectedMachineIds] = useState(new Set());
+    const BulkDeleteType = _.get(props, 'BulkDeleteType', '')
     useEffect(() => {
         dispatch(agGridStatus("", ""))
         dispatch(setSelectedRowForPagination([]))
@@ -319,6 +321,7 @@ function CommonApproval(props) {
         dispatch(setSelectedRowForPagination([]))
         setSelectedRowData([])
         setSelectedMachineIds(new Set());
+        setDataCount(0)
         if (searchRef.current) {
             searchRef.current.value = '';
         }
@@ -616,6 +619,7 @@ function CommonApproval(props) {
             const selectedRows = gridApi?.getSelectedRows();
             dispatch(setSelectedRowForPagination(selectedRows));
             setSelectedRowData(selectedRows);
+            setDataCount(selectedRows.length)
         } else {
             // Original logic for other master types
             var selectedRows = gridApi && gridApi?.getSelectedRows();
@@ -678,6 +682,7 @@ function CommonApproval(props) {
                 dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
                     setSelectedRowData(uniqeArray)
             }
+            setDataCount(uniqeArray.length)
         }
     }
 
@@ -842,6 +847,7 @@ function CommonApproval(props) {
      * @description confirm delete Item.
      */
     const deleteItem = (id) => {
+        
         setShowPopup(true)
         setDeletedId(id)
     }
@@ -884,6 +890,7 @@ function CommonApproval(props) {
         }));
 
         setShowPopup(false);
+
     };
 
     const onPopupConfirm = () => {
@@ -1007,7 +1014,7 @@ function CommonApproval(props) {
                             {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                         </div>
-
+                        {BulkDeleteType && <BulkDelete type={BulkDeleteType} deletePermission={true} dataCount={dataCount} bulkDeleteData={selectedRowData}/>}
                         <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                             <div className="refresh mr-0"></div>
                         </button>
