@@ -2969,7 +2969,7 @@ class AddMoreDetails extends Component {
   loanToggle = () => {
     const { isLoanOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLoanOpen === false) || effectiveDate === '' || Object.keys(selectedPlants || {})?.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
