@@ -19,15 +19,16 @@ function BulkDelete(props) {
 		const defaultToaster = 'Deleted Successfully'
 
 		const generateAssociatedMessage = () => {
+			const commonMessageMasters = ['Overhead', 'Profits'] 
 			const hasNotEligible = _.size(notEligibleList) > 0
 			const hasEligible = _.size(eligibleToDelete) > 0
 			if (!hasNotEligible) {
 				return `Are you sure you want to delete the ${type} detail?`;
 			}
-			if (type === 'Overhead') {
-				return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""} Overheads without a delete icon cannot be deleted as they are associated with costings.`
+			if (_.includes(commonMessageMasters, type)) {
+				return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""} The selected ${type} items without a delete icon cannot be deleted as they are associated with costings.`
 			}
-			return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""}${mastersList.join(", ")} ${type}(s) cannot be deleted because they are associated with costings.`;
+			return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""}${mastersList.join(", ")} ${type}(s) cannot be deleted as they are associated with costings.`;
 		}
 
 		switch (type) {
@@ -313,7 +314,26 @@ function BulkDelete(props) {
 					associatedKeyName: ['IsOverheadAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "material",
+					associatedMasterType: "overhead",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
+			case 'Profits':
+				if (_.size(notEligibleList)) {
+					_.forEach(notEligibleList, item => {
+						mastersList.push(_.get(item, 'ProfitId', ''))
+					})
+				}
+				if (_.size(eligibleToDelete)) {
+					_.forEach(eligibleToDelete, item => {
+						eligibleToDeleteIds.push(_.get(item, 'ProfitId', ''))
+					})
+				}
+				return {
+					associatedKeyName: ['IsProfitAssociated'],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "master",
+					associatedMasterType: "profit",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
