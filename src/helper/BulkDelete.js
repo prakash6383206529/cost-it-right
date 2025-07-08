@@ -32,7 +32,7 @@ function BulkDelete(props) {
 		}
 
 		const generateAssociatedMessage = () => {
-			const commonMessageMasters = ['Overhead', 'Profits', 'Labour', 'Fuel', 'Power', 'Volume'] 
+			const commonMessageMasters = ['Overhead', 'Profits', 'Labour', 'Fuel', 'Power', 'Volume', 'Freight'] 
 			const hasNotEligible = _.size(notEligibleList) > 0
 			const hasEligible = _.size(eligibleToDelete) > 0
 			if (!hasNotEligible) {
@@ -263,6 +263,16 @@ function BulkDelete(props) {
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "exchangeRate",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
+			case 'Freight':
+				extractDeletionData('FreightId', 'FreightId')
+				return {
+					associatedKeyName: ['IsFreightAssociated'],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "master",
+					associatedMasterType: "freight",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
