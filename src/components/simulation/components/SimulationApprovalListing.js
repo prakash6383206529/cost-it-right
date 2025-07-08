@@ -81,6 +81,7 @@ function SimulationApprovalListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
     const [simulationId, setSimulationId] = useState(null);
+    const BulkDeleteType = _.get(props, 'BulkDeleteType', '')
     const [selectedDataObj, setSelectedDataObj] = useState({
         DisplayStatus: [],
         DepartmentId: [],
@@ -951,7 +952,7 @@ function SimulationApprovalListing(props) {
                                                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                                 <button disabled={disableFilter} id="Simulation_Approval_Filter" title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                             </div >
-                                            <BulkDelete type={'Simulation History'} deletePermission={true} dataCount={dataCount} bulkDeleteData={selectedRowData}/>
+                                            {BulkDeleteType && <BulkDelete type={'Simulation History'} deletePermission={true} dataCount={dataCount} bulkDeleteData={selectedRowData}/>}
                                             <button type="button" id="Simulation_Approval_Reset" className="user-btn  mr5" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>

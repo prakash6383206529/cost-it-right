@@ -148,7 +148,7 @@ function SimulationTab(props) {
                                 <Simulation activeTab={activeTab} isFromApprovalListing={location?.state?.isFromApprovalListing} approvalProcessId={location?.state?.approvalProcessId} master={location?.state?.master} preserveData={location?.state?.preserveData} statusForLinkedToken={location?.state?.statusForLinkedToken} approvalTypeId={location?.state?.approvalTypeId} DepartmentId={location?.state?.DepartmentId} handleEditMasterPage={handleEditMasterPage} showverifyPage={showverifyPage} render={render} showCompressedColumns={showCompressedColumns} />
                             </TabPane>}
                             {activeTab === "2" && <TabPane tabId="2">
-                                <SimulationApprovalListing activeTab={activeTab} />
+                                <SimulationApprovalListing activeTab={activeTab} BulkDeleteType={'Simulation History'}/>
                             </TabPane>}
                             {activeTab === "3" && <TabPane tabId="3">
                                 <ImpactedDataList activeTab={activeTab} />
