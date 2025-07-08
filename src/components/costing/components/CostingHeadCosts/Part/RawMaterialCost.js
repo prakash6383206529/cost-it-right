@@ -1613,6 +1613,7 @@ function RawMaterialCost(props) {
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
+                      {getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial && <th>{`Inco Terms`}</th>}
                       {showCalculatorFunctionHeader() && <th className={`text-center weight-calculator`}>{`Weight Calculator`}</th>}
                       {<th>{`Gross Weight`}</th>}
                       {<th>{`${finishWeightLabel} Weight`}</th>}
@@ -1638,6 +1639,7 @@ function RawMaterialCost(props) {
                             <td>{checkForDecimalAndNull(item?.RMRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{checkForDecimalAndNull(item?.ScrapRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{item.UOM ?? '-'}</td>
+                            {getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial && <td>{item?.IncoTermDescriptionAndIncoTerm ?? '-'}</td>}
                             {
                               showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) &&
                               <td className="text-center">
