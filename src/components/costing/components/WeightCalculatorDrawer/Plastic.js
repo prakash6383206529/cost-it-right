@@ -39,6 +39,7 @@ function Plastic(props) {
   const costData = useContext(costingInfoContext)
   const dispatch = useDispatch()
   const { getPlasticData } = useSelector(state => state.costing)
+  const isShowBurningAllowance = !!getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest.RunnerWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RunnerWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
@@ -147,7 +148,7 @@ function Plastic(props) {
       scrapWeight = calculateScrapWeight(grossWeight, finishedWeight, scrapRecoveryPercent)
       setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     }
-    const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
+    const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + (isShowBurningAllowance ? getValues('burningAllownace') : 0) // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
     const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
     const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
@@ -400,6 +401,7 @@ function Plastic(props) {
                     disabled={true}
                   />
                 </Col>
+                {!!getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting &&
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'burning-allowance'} tooltipText={'Burning Allowance = (RM Rate * Burning Loss Weight)'} />
                   <TextFieldHookForm
@@ -418,6 +420,7 @@ function Plastic(props) {
                     disabled={true}
                   />
                 </Col>
+                }
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={'RM Cost = (Input Weight * RM Rate + Burning Allowance)'} />
                   <TextFieldHookForm

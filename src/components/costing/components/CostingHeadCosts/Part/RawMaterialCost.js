@@ -1617,7 +1617,7 @@ function RawMaterialCost(props) {
                       {<th>{`Gross Weight`}</th>}
                       {<th>{`${finishWeightLabel} Weight`}</th>}
                       {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
-                      {costData?.TechnologyId === PLASTIC && <th>{'Burning Loss Weight'}</th>}
+                      {(costData?.TechnologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting) && <th>{'Burning Loss Weight'}</th>}
                       {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery (%)`}</th>}
                       {<th className='scrap-weight'>Scrap Weight </th>}
                       {/* //Add i here for MB+ */}
@@ -1715,7 +1715,7 @@ function RawMaterialCost(props) {
                             }
                             {costData?.TechnologyId === Ferrous_Casting && <td>{checkForDecimalAndNull(item.Percentage, initialConfiguration?.NoOfDecimalForPrice)}</td>}
                             {
-                              costData?.TechnologyId === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                              (costData?.TechnologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting) && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                             }
                             {
                               isScrapRecoveryPercentageApplied &&

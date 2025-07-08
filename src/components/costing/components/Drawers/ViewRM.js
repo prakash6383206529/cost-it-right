@@ -342,7 +342,7 @@ function ViewRM(props) {
                     {!isPDFShow && viewCostingData[props.index]?.technologyId !== Ferrous_Casting && viewCostingData[props.index]?.technologyId !== RUBBER && (getTechnology.includes(viewCostingData[props.index]?.technologyId)) && <th>{`Calculator`}</th>}
                     {IsShowFreightAndShearingCostFields() && <th>{`Freight Cost`}</th>}
                     {IsShowFreightAndShearingCostFields() && <th>{`Shearing Cost`}</th>}
-                    {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && <th>{`Burning Loss Weight`}</th>}
+                    {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting && <th>{`Burning Loss Weight`}</th>}
                     {viewCostingData[0]?.technologyId === DIE_CASTING && <th>Casting Weight</th>}
                     {viewCostingData[0]?.technologyId === DIE_CASTING && <th>Melting Loss (Loss%)</th>}
                     <th>{`Net RM Cost ${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''}`}</th>
@@ -401,7 +401,7 @@ function ViewRM(props) {
                       )}
                       {IsShowFreightAndShearingCostFields() && (<td>{item?.ShearingCost ? checkForDecimalAndNull(item?.ShearingCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       )}
-                      {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && (<td>{item?.BurningLossWeight ? checkForDecimalAndNull(item?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>
+                      {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting && (<td>{item?.BurningLossWeight ? checkForDecimalAndNull(item?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>
                       )}
                       {viewCostingData[0]?.technologyId === DIE_CASTING && (<td>{item?.CastingWeight ? checkForDecimalAndNull(item?.CastingWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>
                       )}
