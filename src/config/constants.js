@@ -658,7 +658,7 @@ export const API = {
   getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
   getCostingBopAndBopHandlingDetails: `${BASE_URL}/costing/get-costing-bop-and-bop-handling-details`,
   getApplicabilityList: `${BASE_URL}/costing/select-list-get-applicability-data`,
-  getBopTypeList: `${BASE_URL}/costing/select-list-get-bop-type`, 
+  getBopTypeList: `${BASE_URL}/costing/select-list-get-bop-type`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -763,8 +763,8 @@ export const API = {
   uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
   uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
   uploadMonocartonCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-mono-carton-box`,
-  saveBOPHandlingChargesDetails:`${BASE_URL}/costing/save-costing-bought-out-part-handling-charge-details`,
-  getBOPHandlingChargesDetails:`${BASE_URL}/costing/get-costing-bought-out-part-handling-charge-details`,
+  saveBOPHandlingChargesDetails: `${BASE_URL}/costing/save-costing-bought-out-part-handling-charge-details`,
+  getBOPHandlingChargesDetails: `${BASE_URL}/costing/get-costing-bought-out-part-handling-charge-details`,
 
 
   //COST SUMMARY
@@ -2834,7 +2834,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     label: 'Budgeted Price Variance',
     value: 'BudgetedPriceVariance'
   },
-  
+
   {
     label: 'Hundi/Discount Applicability',
     value: 'otherDiscountApplicablity'
@@ -3502,7 +3502,7 @@ export const MACHINEMASTER = "Machine Master"
 export const COSTAPPLICABILITYBASIS = "Cost Applicability Basis"
 export const MHRBASIS = "MHR Basis"
 export const ICCMASTER = "ICC Master"
-export const PAYMENTTERMMASTER='PaymentTerm Master'
+export const PAYMENTTERMMASTER = 'PaymentTerm Master'
 export const BOPHANDLINGCOST = 'Bought Out Part Handling Cost'
 
 export const TAPEANDPAINT = "Tape + Paint"
@@ -3521,7 +3521,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
 //VERSION 
-export const VERSION = "V4.2.56";
+export const VERSION = "V4.2.57";
 
 
 

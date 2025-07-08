@@ -8,7 +8,7 @@ import {
   SAVE_BOP_COSTING_SUCCESS, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET, RUBBER_CALCULATOR_RESET, GET_CARRIER_TYPE_LIST_SUCCESS,
   SET_PACKAGING_CALCULATOR_AVAILABLE,
   SET_FREIGHT_CALCULATOR_AVAILABLE,
-  GET_TYPE_OF_COST_SUCCESS,GET_CALCULATION_CRITERIA_LIST_SUCCESS,SET_BOP_ADD_EDIT_DELETE_DISABLE
+  GET_TYPE_OF_COST_SUCCESS, GET_CALCULATION_CRITERIA_LIST_SUCCESS, SET_BOP_ADD_EDIT_DELETE_DISABLE
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -740,7 +740,7 @@ export function getOtherOperationList(supplierId, callback) {
  * @method getCostingOtherOperation
  * @description add other operation to costing
  */
-export function getCostingOtherOperation(costingId, callback) { 
+export function getCostingOtherOperation(costingId, callback) {
   const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     // dispatch({
@@ -1143,7 +1143,7 @@ export function bulkUploadCosting(data, costingVersion, callback) {
   return (dispatch) => {
     let request;
     if (costingVersion === 'V2' || costingVersion === 'V4') {  // BULK UPLOAD NEW COSTING
-      request = axiosInstance.post(API.uploadCosting, data, config());
+      request = axios.post(API.uploadCosting, data, config());
     } else if (costingVersion === 'V3') { //  BULK UPLOAD COSTING FOR SHEET METAL
       request = axiosInstance.post(API.uploadSheetMetal, data, config());
     } else {  // BULK UPLOAD OLD COSTING
