@@ -6,6 +6,7 @@ import Toaster from '../components/common/Toaster';
 import { bulkDelete } from '../actions/auth/AuthActions';
 import { useDispatch, useSelector } from 'react-redux'
 import { useLabels } from './core';
+import { PENDING, DRAFT } from '../config/constants';
 
 function BulkDelete(props) {
 	const dispatch = useDispatch()
@@ -319,7 +320,7 @@ function BulkDelete(props) {
 			case 'Simulation History':
 				extractDeletionData('ApprovalNumber', 'SimulationId')
 				return {
-					associatedKeyName: [],
+					associatedKeyName: ['Status'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "simulation",
 					associatedMasterType: "",
@@ -329,7 +330,7 @@ function BulkDelete(props) {
 			case 'Raw Material Approval':
 				extractDeletionData('RawMaterialId', 'RawMaterialId')
 				return {
-					associatedKeyName: [],
+					associatedKeyName: ['Status'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "rm",
@@ -339,7 +340,7 @@ function BulkDelete(props) {
 			case 'BOP Approval':
 				extractDeletionData('BoughtOutPartId', 'BoughtOutPartId')
 				return {
-					associatedKeyName: [],
+					associatedKeyName: ['Status'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "bop",
@@ -349,7 +350,7 @@ function BulkDelete(props) {
 			case 'Operation Approval':
 				extractDeletionData('OperationId', 'OperationId')
 				return {
-					associatedKeyName: [],
+					associatedKeyName: ['Status'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "operation",
@@ -371,10 +372,21 @@ function BulkDelete(props) {
 	const { associatedKeyName } = getAssociatedConfig(props?.type)
 
 	// If any key (Example IsRMAssociated or IsRFQRawMaterial) is true, the item is not eligible for deletion and should be filtered out.
-	const notEligibleToDelete = _.filter(props?.bulkDeleteData, item => _.some(associatedKeyName, key => item?.[key] === true))
+	const notEligibleToDelete = _.filter(props?.bulkDeleteData, item => _.some(associatedKeyName, key => {
+		if (key === 'Status') {
+			return item?.[key] === PENDING
+		}
+		return item?.[key] === true
+	}))
 
 	// EligibleToDeleteIds (Example IsRMAssociated or IsRFQRawMaterial) is false, null, undefined, the item is eligible for deletion and should be filtered out.
-	const eligibleToDelete = _.filter(props?.bulkDeleteData, item => _.every(associatedKeyName, key => !Boolean(item?.[key])))
+	const eligibleToDelete = _.filter(props?.bulkDeleteData, item => _.every(associatedKeyName, key => {
+		if (key === 'Status') {
+			return item?.Status === DRAFT
+		}
+		return !Boolean(item?.[key]);
+	}))
+
 
 	const openPopup = () => {
 		const { associatedMessage } = getAssociatedConfig(props?.type, notEligibleToDelete, eligibleToDelete)
