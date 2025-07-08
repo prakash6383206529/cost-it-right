@@ -2328,10 +2328,11 @@ class AddMachineRate extends Component {
                               maxLength80,
                               checkSpacesInString,
                               hashValidation,
-                              (this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? required : null
+                              (this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING || getConfigurationKey()?.IsMachineNameRequired) 
+                              ? required : null
                             ].filter(Boolean)}
                             component={renderText}
-                            required={(this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? true : false}
+                            required={(this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING || getConfigurationKey()?.IsMachineNameRequired) ? true : false}
                             onChange={this.handleMachineName}
                             disabled={(isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
                             className=" "

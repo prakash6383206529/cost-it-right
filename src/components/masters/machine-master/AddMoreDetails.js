@@ -665,6 +665,8 @@ class AddMoreDetails extends Component {
                 labourTypeId: el.LabourTypeId,
                 LabourCostPerAnnum: el.LabourCostPerAnnum,
                 NumberOfLabour: el.NumberOfLabour,
+                LabourCostPerMonth: el.LabourCostPerMonth,
+                LabourCostPerShift: el.LabourCostPerShift,
                 LabourCost: el.LabourCost,
                 NumberOfShift: el.NumberOfShift,
                 LabourDetailId: el.LabourDetailId,
@@ -1470,8 +1472,12 @@ class AddMoreDetails extends Component {
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
             this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration?.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerMonth', checkForDecimalAndNull(Data.LabourRatePerMonth, getConfigurationKey()?.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerShift', checkForDecimalAndNull(Data.LabourRatePerShift, getConfigurationKey()?.NoOfDecimalForPrice))
           } else {
             this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration?.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerMonth', checkForDecimalAndNull(Data.LabourRatePerMonth, getConfigurationKey()?.NoOfDecimalForPrice))
+            this.props.change('LabourCostPerShift', checkForDecimalAndNull(Data.LabourRatePerShift, getConfigurationKey()?.NoOfDecimalForPrice))
           }
         })
       });
@@ -1874,6 +1880,8 @@ class AddMoreDetails extends Component {
       labourTypeName: labourType.label,
       labourTypeId: labourType.value,
       LabourCostPerAnnum: LabourPerCost,
+      LabourCostPerMonth: fieldsObj?.LabourCostPerMonth,
+      LabourCostPerShift: fieldsObj?.LabourCostPerShift,
       NumberOfShift: LabourWorkingShift,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
@@ -1894,6 +1902,8 @@ class AddMoreDetails extends Component {
       LabourCRMHead: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
+      this.props.change('LabourCostPerMonth', '')
+      this.props.change('LabourCostPerShift', '')
       this.props.change('NumberOfLabour', '')
       this.props.change('LabourCost', '')
       this.props.change('LabourWorkingShift', '')
@@ -2078,7 +2088,7 @@ class AddMoreDetails extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, percentage: true } })
         count++;
       }
-      if (checkForNull(fieldsObj?.MachineCost) === 0 || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
+      if ((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
         Toaster.warning('Please fill all mandatory fields');
         return false;
       }
@@ -2959,7 +2969,7 @@ class AddMoreDetails extends Component {
   loanToggle = () => {
     const { isLoanOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLoanOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2977,7 +2987,7 @@ class AddMoreDetails extends Component {
     const { isWorkingOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isWorkingOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0) {
+    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isWorkingOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -3047,7 +3057,7 @@ class AddMoreDetails extends Component {
     const { isPowerOpen, machineType, selectedPlants, effectiveDate, IsUsesSolarPower, machineFullValue } = this.state
     const { fieldsObj } = this.props
     const { initialConfiguration } = this.props
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -3106,7 +3116,7 @@ class AddMoreDetails extends Component {
     const { isLabourOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLabourOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0 || machineType?.length === 0) {
+    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLabourOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0 || machineType?.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
       Toaster.warning('Please fill the mandatory fields.');
       scroll.scrollToTop();
       return false;
@@ -3545,12 +3555,13 @@ class AddMoreDetails extends Component {
                               maxLength80,
                               checkSpacesInString,
                               hashValidation,
-                              (this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? required : null
+                              (this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING || getConfigurationKey()?.IsMachineNameRequired) 
+                              ? required : null
                             ].filter(Boolean)}
                             //RE SPECIFIC MACHINE NAME REQUIRED
                             //  validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
-                            required={(this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? true : false}
+                            required={(this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING || getConfigurationKey()?.IsMachineNameRequired) ? true : false}
                             disabled={this.state.isViewFlag ? true : false}
                             // disabled={(this.state.isViewFlag || this.state.isEditFlag) ? true : false}  //RE 
                             className=" "
@@ -5126,6 +5137,32 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
+                                label={`Cost/Shift (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
+                                name={"LabourCostPerShift"}
+                                type="text"
+                                placeholder={'-'}
+                                component={renderTextInputField}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="2">
+                              <Field
+                                label={`Cost/Month (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
+                                name={"LabourCostPerMonth"}
+                                type="text"
+                                placeholder={'-'}
+                                component={renderTextInputField}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="2">
+                              <Field
                                 label={`Cost/Annum  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
                                   (this?.state?.currency?.label || 'Currency')})`}
                                 name={"LabourCostPerAnnum"}
@@ -5228,6 +5265,8 @@ class AddMoreDetails extends Component {
                                   <tr>
                                     {getConfigurationKey().IsShowCRMHead && <th>{`CRM Head`}</th>}
                                     <th>{`Labour Type`}</th>
+                                    <th>{`Cost/Shift (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                    <th>{`Cost/Month (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`No of People (All Shifts)`}</th>
                                     <th>{`No. of Shifts`}</th>
@@ -5236,18 +5275,19 @@ class AddMoreDetails extends Component {
                                   </tr>
                                 </thead>
                                 <tbody >
-
                                   {
                                     this.state.labourGrid &&
                                     this.state.labourGrid.map((item, index) => {
                                       return (
                                         <tr key={index}>
                                           {getConfigurationKey().IsShowCRMHead && <td>{item.LabourCRMHead}</td>}
-                                          <td>{item.labourTypeName}</td>
-                                          <td>{item.LabourCostPerAnnum}</td>
-                                          <td>{item.NumberOfLabour}</td>
-                                          <td>{item.NumberOfShift}</td>
-                                          <td>{item.LabourCost}</td>
+                                          <td>{item?.labourTypeName ?? "-"}</td>
+                                          <td>{item?.LabourCostPerShift ?? "-"}</td>
+                                          <td>{item?.LabourCostPerMonth ?? "-"}</td>
+                                          <td>{item?.LabourCostPerAnnum ?? "-"}</td>
+                                          <td>{item?.NumberOfLabour ?? "-"}</td>
+                                          <td>{item?.NumberOfShift ?? "-"}</td>
+                                          <td>{item?.LabourCost ?? "-"}</td>
                                           <td>
                                             <button title='Edit' className="Edit mr-2" type={'button'} disabled={disableAllForm} onClick={() => this.editLabourItemDetails(index)} />
                                             <button title='Delete' className="Delete" type={'button'} disabled={disableAllForm} onClick={() => this.deleteLabourItem(index)} />
@@ -5265,7 +5305,7 @@ class AddMoreDetails extends Component {
                                 {this.state.labourGrid?.length > 0 &&
                                   <tfoot>
                                     <tr className="bluefooter-butn">
-                                      <td colSpan={getConfigurationKey().IsShowCRMHead ? '5' : '4'} className="text-right">{`Total Labour Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}):`}</td>
+                                      <td colSpan={getConfigurationKey().IsShowCRMHead ? '7' : '6'} className="text-right">{`Total Labour Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}):`}</td>
                                       <td colSpan={"2"}>{this.calculateTotalLabourCost()}</td>
                                     </tr>
                                   </tfoot>}
@@ -5823,7 +5863,7 @@ class AddMoreDetails extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, machine, labour, fuel, auth, } = state;
-  const fieldsObj = selector(state, 'MachineCost', 'AccessoriesCost', 'InstallationCharges', 'LabourCostPerAnnum', 'TotalCost', "LabourWorkingShift",
+  const fieldsObj = selector(state, 'MachineCost', 'AccessoriesCost', 'InstallationCharges', 'LabourCostPerAnnum', 'LabourCostPerMonth', 'LabourCostPerShift', 'TotalCost', "LabourWorkingShift",
     'LoanPercentage', 'LoanValue', 'EquityPercentage', 'EquityValue', 'RateOfInterestPercentage', 'RateOfInterestValue',
     'WorkingHoursPerShift', 'NumberOfWorkingDaysPerYear', 'EfficiencyPercentage', 'NumberOfWorkingHoursPerYear',
     'DepreciationRatePercentage', 'LifeOfAssetPerYear', 'CastOfScrap', 'DepreciationAmount',
@@ -5859,6 +5899,8 @@ function mapStateToProps(state) {
       Description: machineData.Description,
       Specification: machineData.Specification,
       LabourCostPerAnnum: machineData.LabourCostPerAnnum,
+      LabourCostPerMonth: machineData?.LabourCostPerMonth,
+      LabourCostPerShift: machineData?.LabourCostPerShift,
       TotalCost: machineData.TotalCost,
       LoanPercentage: machineData.LoanPercentage,
       LoanValue: machineData.LoanValue,
