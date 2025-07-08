@@ -2969,7 +2969,7 @@ class AddMoreDetails extends Component {
   loanToggle = () => {
     const { isLoanOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
-    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLoanOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0) {
+    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLoanOpen === false) || effectiveDate === '' || Object.keys(selectedPlants || {})?.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -2987,7 +2987,7 @@ class AddMoreDetails extends Component {
     const { isWorkingOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isWorkingOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0) {
+    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isWorkingOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -3057,7 +3057,7 @@ class AddMoreDetails extends Component {
     const { isPowerOpen, machineType, selectedPlants, effectiveDate, IsUsesSolarPower, machineFullValue } = this.state
     const { fieldsObj } = this.props
     const { initialConfiguration } = this.props
-    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
+    if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
@@ -3116,7 +3116,7 @@ class AddMoreDetails extends Component {
     const { isLabourOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLabourOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0 || machineType?.length === 0) {
+    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLabourOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0 || machineType?.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
       Toaster.warning('Please fill the mandatory fields.');
       scroll.scrollToTop();
       return false;
@@ -3555,12 +3555,13 @@ class AddMoreDetails extends Component {
                               maxLength80,
                               checkSpacesInString,
                               hashValidation,
-                              (this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? required : null
+                              (this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING || getConfigurationKey()?.IsMachineNameRequired) 
+                              ? required : null
                             ].filter(Boolean)}
                             //RE SPECIFIC MACHINE NAME REQUIRED
                             //  validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
-                            required={(this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING) ? true : false}
+                            required={(this.state.selectedTechnology?.value == MACHINING || this.state.selectedTechnology?.value == FORGING || getConfigurationKey()?.IsMachineNameRequired) ? true : false}
                             disabled={this.state.isViewFlag ? true : false}
                             // disabled={(this.state.isViewFlag || this.state.isEditFlag) ? true : false}  //RE 
                             className=" "
