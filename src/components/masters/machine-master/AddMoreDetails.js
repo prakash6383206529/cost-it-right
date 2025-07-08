@@ -665,8 +665,8 @@ class AddMoreDetails extends Component {
                 labourTypeId: el.LabourTypeId,
                 LabourCostPerAnnum: el.LabourCostPerAnnum,
                 NumberOfLabour: el.NumberOfLabour,
-                LabourCostPerMonth: el.LabourRatePerMonth,
-                LabourCostPerShift: el.LabourRatePerShift,
+                LabourCostPerMonth: el.LabourCostPerMonth,
+                LabourCostPerShift: el.LabourCostPerShift,
                 LabourCost: el.LabourCost,
                 NumberOfShift: el.NumberOfShift,
                 LabourDetailId: el.LabourDetailId,
@@ -5136,15 +5136,12 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`Cost/Annum  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                label={`Cost/Shift (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
                                   (this?.state?.currency?.label || 'Currency')})`}
-                                name={"LabourCostPerAnnum"}
+                                name={"LabourCostPerShift"}
                                 type="text"
                                 placeholder={'-'}
-                                //validate={[required]}
                                 component={renderTextInputField}
-                                //onChange={this.handleLabourCalculation}
-                                //required={true}
                                 disabled={true}
                                 className=" "
                                 customClassName="withBorder"
@@ -5152,7 +5149,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`Cost/Month  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                label={`Cost/Month (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
                                   (this?.state?.currency?.label || 'Currency')})`}
                                 name={"LabourCostPerMonth"}
                                 type="text"
@@ -5165,12 +5162,15 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`Cost/Shift  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                label={`Cost/Annum  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
                                   (this?.state?.currency?.label || 'Currency')})`}
-                                name={"LabourCostPerShift"}
+                                name={"LabourCostPerAnnum"}
                                 type="text"
                                 placeholder={'-'}
+                                //validate={[required]}
                                 component={renderTextInputField}
+                                //onChange={this.handleLabourCalculation}
+                                //required={true}
                                 disabled={true}
                                 className=" "
                                 customClassName="withBorder"
@@ -5264,9 +5264,9 @@ class AddMoreDetails extends Component {
                                   <tr>
                                     {getConfigurationKey().IsShowCRMHead && <th>{`CRM Head`}</th>}
                                     <th>{`Labour Type`}</th>
-                                    <th>{`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
-                                    <th>{`Cost/Month (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Cost/Shift (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                    <th>{`Cost/Month (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                    <th>{`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`No of People (All Shifts)`}</th>
                                     <th>{`No. of Shifts`}</th>
                                     <th>{`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
@@ -5274,20 +5274,19 @@ class AddMoreDetails extends Component {
                                   </tr>
                                 </thead>
                                 <tbody >
-
                                   {
                                     this.state.labourGrid &&
                                     this.state.labourGrid.map((item, index) => {
                                       return (
                                         <tr key={index}>
                                           {getConfigurationKey().IsShowCRMHead && <td>{item.LabourCRMHead}</td>}
-                                          <td>{item.labourTypeName}</td>
-                                          <td>{item.LabourCostPerAnnum}</td>
-                                          <td>{item?.LabourCostPerMonth ?? "-"}</td>
+                                          <td>{item?.labourTypeName ?? "-"}</td>
                                           <td>{item?.LabourCostPerShift ?? "-"}</td>
-                                          <td>{item.NumberOfLabour}</td>
-                                          <td>{item.NumberOfShift}</td>
-                                          <td>{item.LabourCost}</td>
+                                          <td>{item?.LabourCostPerMonth ?? "-"}</td>
+                                          <td>{item?.LabourCostPerAnnum ?? "-"}</td>
+                                          <td>{item?.NumberOfLabour ?? "-"}</td>
+                                          <td>{item?.NumberOfShift ?? "-"}</td>
+                                          <td>{item?.LabourCost ?? "-"}</td>
                                           <td>
                                             <button title='Edit' className="Edit mr-2" type={'button'} disabled={disableAllForm} onClick={() => this.editLabourItemDetails(index)} />
                                             <button title='Delete' className="Delete" type={'button'} disabled={disableAllForm} onClick={() => this.deleteLabourItem(index)} />
