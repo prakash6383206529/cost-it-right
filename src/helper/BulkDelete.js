@@ -316,6 +316,16 @@ function BulkDelete(props) {
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
+			case 'Simulation History':
+				extractDeletionData('ApprovalNumber', 'SimulationId')
+				return {
+					associatedKeyName: [],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "simulation",
+					associatedMasterType: "",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
 			default:
 				return {
 					associatedKeyName: [],
