@@ -357,6 +357,16 @@ function BulkDelete(props) {
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
+			case 'Costing Approval':
+				extractDeletionData('CostingNumber', 'CostingId')
+				return {
+					associatedKeyName: ['Status'],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "costing",
+					associatedMasterType: "",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
 			default:
 				return {
 					associatedKeyName: [],
@@ -419,9 +429,9 @@ function BulkDelete(props) {
 				if(res && res?.status === 200) {
 					Toaster.success(associatedSuccessMessage)
 				} 
-				// setTimeout(() => {
-				// 		window.location.reload()
-				// 	}, 500)
+				setTimeout(() => {
+						window.location.reload()
+					}, 500)
 			}))
 		}
 		setShowPopup(false)
