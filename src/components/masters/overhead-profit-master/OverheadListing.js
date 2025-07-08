@@ -35,6 +35,7 @@ import { ApplyPermission } from '.';
 import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
+import BulkDelete from '../../../helper/BulkDelete';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -720,7 +721,7 @@ function OverheadListing(props) {
                                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                         </div>
-
+                                        <BulkDelete type={'Overhead'} deletePermission={DeleteAccessibility} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
                                         {AddAccessibility && (
                                             <button
                                                 type="button"

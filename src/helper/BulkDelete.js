@@ -24,6 +24,9 @@ function BulkDelete(props) {
 			if (!hasNotEligible) {
 				return `Are you sure you want to delete the ${type} detail?`;
 			}
+			if (type === 'Overhead') {
+				return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""} Overheads without a delete icon cannot be deleted as they are associated with costings.`
+			}
 			return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""}${mastersList.join(", ")} ${type}(s) cannot be deleted because they are associated with costings.`;
 		}
 
@@ -289,6 +292,25 @@ function BulkDelete(props) {
 				}
 				return {
 					associatedKeyName: ['IsAssociated'],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "master",
+					associatedMasterType: "material",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
+			case 'Overhead':
+				if (_.size(notEligibleList)) {
+					_.forEach(notEligibleList, item => {
+						mastersList.push(_.get(item, 'OverheadId', ''))
+					})
+				}
+				if (_.size(eligibleToDelete)) {
+					_.forEach(eligibleToDelete, item => {
+						eligibleToDeleteIds.push(_.get(item, 'OverheadId', ''))
+					})
+				}
+				return {
+					associatedKeyName: ['IsOverheadAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "material",
