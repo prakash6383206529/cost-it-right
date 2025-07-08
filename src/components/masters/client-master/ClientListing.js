@@ -340,11 +340,11 @@ const ClientListing = React.memo(() => {
             <Col md="10" className="filter-block"></Col>
             <Col md="2" className="search-user-block">
               <div className="d-flex justify-content-end bd-highlight">
+              <BulkDelete type={'Customer'} deletePermission={state?.DeleteAccessibility} dataCount={state?.dataCount} bulkDeleteData={state?.selectedRowData}/>
                 {state.AddAccessibility && (
 
                   <Button id="clientListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />
                 )}
-                <BulkDelete type={'Customer'} deletePermission={state?.DeleteAccessibility} dataCount={state?.dataCount} bulkDeleteData={state?.selectedRowData}/>
                 {
                   state.DownloadAccessibility &&
                   <>

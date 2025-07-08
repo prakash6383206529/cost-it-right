@@ -27,6 +27,7 @@ import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctio
 import Button from '../../layout/Button';
 import { useLabels } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
+import BulkDelete from '../../../helper/BulkDelete';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -337,7 +338,7 @@ function LabourListing(props) {
     filterList()
   }
 
-  const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, } = state
+  const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, DeleteAccessibility } = state
   const ExcelFile = ReactExport.ExcelFile;
 
   if (toggleForm) {
@@ -409,6 +410,7 @@ function LabourListing(props) {
                   ) : (
                     ""
                   )}
+                  <BulkDelete type={'Labour'} deletePermission={DeleteAccessibility} dataCount={state?.dataCount} bulkDeleteData={state?.selectedRowData}/>
                   {AddAccessibility && (
                     <Button id="labourListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
                   )}

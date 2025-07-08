@@ -18,8 +18,21 @@ function BulkDelete(props) {
 		const eligibleToDeleteIds = []
 		const defaultToaster = 'Deleted Successfully'
 
+		const extractDeletionData = (param1, param2) => {
+			if (_.size(notEligibleList)) {
+				_.forEach(notEligibleList, item => {
+					mastersList.push(_.get(item, param1, ''))
+				})
+			}
+			if (_.size(eligibleToDelete)) {
+				_.forEach(eligibleToDelete, item => {
+					eligibleToDeleteIds.push(_.get(item, param2, ''))
+				})
+			}
+		}
+
 		const generateAssociatedMessage = () => {
-			const commonMessageMasters = ['Overhead', 'Profits'] 
+			const commonMessageMasters = ['Overhead', 'Profits', 'Labour'] 
 			const hasNotEligible = _.size(notEligibleList) > 0
 			const hasEligible = _.size(eligibleToDelete) > 0
 			if (!hasNotEligible) {
@@ -33,16 +46,7 @@ function BulkDelete(props) {
 
 		switch (type) {
 			case 'RM':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'RawMaterialName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'RawMaterialId', ''))
-					})
-				}
+				extractDeletionData('RawMaterialName', 'RawMaterialId')
 				return {
 					associatedKeyName: ["IsRMAssociated", "IsRFQRawMaterial"],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -52,16 +56,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'BOP':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'BoughtOutPartName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'BoughtOutPartId', ''))
-					})
-				}
+				extractDeletionData('BoughtOutPartName', 'BoughtOutPartId')
 				return {
 					associatedKeyName: ["IsBOPAssociated", "IsRFQBoughtOutPart"],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -71,16 +66,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Machine':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'MachineNumber', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'MachineId', ''))
-					})
-				}
+				extractDeletionData('MachineNumber', 'MachineId')
 				return {
 					associatedKeyName: ["IsMachineAssociated"],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -91,16 +77,7 @@ function BulkDelete(props) {
 				}
 			case 'Assembly':
 			case 'Part':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'PartName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'PartId', ''))
-					})
-				}
+				extractDeletionData('PartName', 'PartId')
 				return {
 					associatedKeyName: ["IsAssociate"],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -110,16 +87,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Product':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'ProductName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'ProductId', ''))
-					})
-				}
+				extractDeletionData('ProductName', 'ProductId')
 				return {
 					associatedKeyName: [], //When we keep it blank then all id's eligible to delete
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -129,16 +97,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Part Family':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'PartFamilyName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'PartFamilyId', ''))
-					})
-				}
+				extractDeletionData('PartFamilyName', 'PartFamilyId')
 				return {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -148,16 +107,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case vendorLabel:
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'VendorName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'VendorId', ''))
-					})
-				}
+				extractDeletionData('VendorName', 'VendorId')
 				return {
 					associatedKeyName: [], //When we keep it blank then all id's eligible to delete
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -167,16 +117,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Customer':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'CompanyName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'ClientId', ''))
-					})
-				}
+				extractDeletionData('CompanyName', 'ClientId')
 				return {
 					associatedKeyName: [], //When we keep it blank then all id's eligible to delete
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -186,16 +127,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Plant':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'PlantName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'PlantId', ''))
-					})
-				}
+				extractDeletionData('PlantName', 'PlantId')
 				return {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -205,16 +137,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Index Data':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'CommodityStandardName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'CommodityIndexRateDetailId', ''))
-					})
-				}
+				extractDeletionData('CommodityStandardName', 'CommodityIndexRateDetailId')
 				return {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -224,16 +147,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Commodity Index':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'CommodityName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'IndexExchangeCommodityLinkingId', ''))
-					})
-				}
+				extractDeletionData('CommodityName', 'IndexExchangeCommodityLinkingId')
 				return {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -243,16 +157,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Commodity Standard':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'CommodityStandardName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'CommodityStandardId', ''))
-					})
-				}
+				extractDeletionData('CommodityStandardName', 'CommodityStandardId')
 				return {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -262,16 +167,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Standardized Commodity':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'CommodityStandardName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'CommodityStandardizationId', ''))
-					})
-				}
+				extractDeletionData('CommodityStandardName', 'CommodityStandardizationId')
 				return {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -281,16 +177,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Index':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'IndexExchangeName', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'IndexExchangeId', ''))
-					})
-				}
+				extractDeletionData('IndexExchangeName', 'IndexExchangeId')
 				return {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -300,16 +187,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Overhead':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'OverheadId', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'OverheadId', ''))
-					})
-				}
+				extractDeletionData('OverheadId', 'OverheadId')
 				return {
 					associatedKeyName: ['IsOverheadAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -319,21 +197,22 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Profits':
-				if (_.size(notEligibleList)) {
-					_.forEach(notEligibleList, item => {
-						mastersList.push(_.get(item, 'ProfitId', ''))
-					})
-				}
-				if (_.size(eligibleToDelete)) {
-					_.forEach(eligibleToDelete, item => {
-						eligibleToDeleteIds.push(_.get(item, 'ProfitId', ''))
-					})
-				}
+				extractDeletionData('ProfitId', 'ProfitId')
 				return {
 					associatedKeyName: ['IsProfitAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "profit",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
+			case 'Labour':
+				extractDeletionData('LabourId', 'LabourId')
+				return {
+					associatedKeyName: ['IsLabourAssociated'],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "master",
+					associatedMasterType: "labour",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
