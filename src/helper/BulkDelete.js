@@ -207,12 +207,22 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Labour':
-				extractDeletionData('LabourId', 'LabourId')
+				extractDeletionData('LabourDetailsId', 'LabourDetailsId')
 				return {
 					associatedKeyName: ['IsLabourAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "labour",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
+			case 'Operation':
+				extractDeletionData('OperationCode', 'OperationId')
+				return {
+					associatedKeyName: ['IsOperationAssociated'],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "master",
+					associatedMasterType: "operation",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
