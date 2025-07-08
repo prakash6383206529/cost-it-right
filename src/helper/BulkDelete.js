@@ -332,7 +332,17 @@ function BulkDelete(props) {
 					associatedKeyName: [],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "",
+					associatedMasterType: "rm",
+					eligibleToDeleteIdsList: eligibleToDeleteIds,
+					associatedMessage: generateAssociatedMessage()
+				}
+			case 'BOP Approval':
+				extractDeletionData('BoughtOutPartId', 'BoughtOutPartId')
+				return {
+					associatedKeyName: [],
+					associatedSuccessMessage: `${type} ${defaultToaster}`,
+					associatedType: "master",
+					associatedMasterType: "bop",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
