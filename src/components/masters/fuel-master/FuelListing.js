@@ -27,6 +27,7 @@ import { checkMasterCreateByCostingPermission } from "../../common/CommonFunctio
 import { useLabels, useWithLocalization } from "../../../helper/core";
 import Switch from 'react-switch'
 import CostingHeadDropdownFilter from "../material-master/CostingHeadDropdownFilter";
+import BulkDelete from "../../../helper/BulkDelete";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -301,6 +302,7 @@ const combinedCostingHeadRenderer = (props) => {
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
+                <BulkDelete type={'Fuel'} deletePermission={permissions?.Delete} dataCount={state?.dataCount} bulkDeleteData={state?.selectedRowData}/>
                 {permissions.Add && !state.isImport && (<Button id="fuelListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
                 {permissions.BulkUpload && (<Button id="fuelListing_bulkUpload" className={"user-btn mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />)}
                 {permissions.Download && (
