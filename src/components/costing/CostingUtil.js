@@ -919,8 +919,16 @@ export const viewAddButtonIcon = (data, type, CostingViewMode) => {
 }
 export const handleRemarkPopup = (event, id) => {
   if (event === "open") {
+    const popupMsgWrapperCommonClass = '.hl-textarea-h'
+    const textAreaFound = $('body').find(popupMsgWrapperCommonClass)
+
     $('body').find('.MuiPaper-root.MuiDrawer-paper').css('overflow', 'hidden')
     $('body').find(`[id="${id}"]`).focus()
+    if (textAreaFound.length > 0) {
+      const textAreaEl = textAreaFound.get(0)
+      textAreaEl.focus()
+      textAreaEl.setSelectionRange(textAreaEl?.value?.length, textAreaEl?.value?.length)
+    }
   } else {
     $('body').find('.MuiPaper-root.MuiDrawer-paper').css('overflow', '')
   }

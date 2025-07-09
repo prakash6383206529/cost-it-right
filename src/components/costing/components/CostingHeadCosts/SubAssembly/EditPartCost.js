@@ -25,6 +25,7 @@ import LoaderCustom from '../../../../common/Loader';
 import DayTime from '../../../../common/DayTimeWrapper';
 import Popup from 'reactjs-popup';
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
+import { handleRemarkPopup } from '../../../CostingUtil';
 function EditPartCost(props) {
     const drawerRef = useRef();
 
@@ -213,6 +214,12 @@ function EditPartCost(props) {
             })
         }
     }, [])
+
+      useEffect(() => {
+        setTimeout(() => {
+            handleRemarkPopup(openRemarkPopUp ? 'open': '')
+        }, 200)
+      }, [openRemarkPopUp])
 
     // useEffect(() => {
     //     if (isBOPView && selectedBOPItems.length > 0) {
