@@ -9,7 +9,7 @@ import { fetchApplicabilityList, fetchCostingHeadsAPI, fetchModelTypeAPI } from 
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import { getRejectionDataByModelType, isOverheadProfitDataChange, setOverheadProfitErrors, setPlasticArray, setRejectionRecoveryData } from '../../../actions/Costing';
-import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
+import { CASTING_NORM, IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import { number, percentageLimitValidation, isNumber, checkWhiteSpaces, NoSignNoDecimalMessage, nonZero, decimalAndNumberValidation, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from "../../../../../helper/validation";
@@ -67,7 +67,6 @@ function Rejection(props) {
 
     const dispatch = useDispatch()
 
-    // Common utility function to check if Casting Norm should be shown
     const shouldShowCastingNorm = () => {
         // If partType is false, always show casting norm
         // If partType is true, show only when IsIncludeApplicabilityForChildParts is true
@@ -81,7 +80,7 @@ function Rejection(props) {
             if (applicabilityText === 'Casting Norm') {
                 return shouldShowCastingNorm();
             }
-            return true; // Keep all other applicabilities
+            return true; 
         });
     };
 
@@ -186,10 +185,10 @@ function Rejection(props) {
                 if (item.Text === 'Casting Norm') {
                     // Show "Casting Norm" only when partType is true (multi-vendor case) AND IsIncludeApplicabilityForChildParts is true
                     if (shouldShowCastingNorm()) {
-                        temp.push({ label: item.Text, value: item.Value });
+                        temp.push({ label: item?.Text, value: item?.Value });
                     }
                 } else {
-                    temp.push({ label: item.Text, value: item.Value });
+                    temp.push({ label: item?.Text, value: item?.Value });
                 }
                 return null;
             });
@@ -237,7 +236,6 @@ function Rejection(props) {
             prevData.CostingRejectionApplicabilityDetails = prevData.CostingRejectionApplicabilityDetails.filter(item => item.Applicability !== "Surface Treatment");
         }
 
-        // Filter out "Casting Norm" from API data if conditions are not met
         if (prevData?.CostingRejectionApplicabilityDetails) {
             prevData.CostingRejectionApplicabilityDetails = filterCastingNormApplicability(prevData?.CostingRejectionApplicabilityDetails, null, 'Applicability');
         }

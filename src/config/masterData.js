@@ -7359,6 +7359,7 @@ export const WIREFORMING = 25
 export const ELECTRICAL_STAMPING = 26
 export const INSULATION = 28
 export const TOOLING_ID = 27
+export const CASTING_NORM=146
 
 // PART TYPE
 export const PART_TYPE_ASSEMBLY = 1
