@@ -3121,9 +3121,13 @@ class AddMoreDetails extends Component {
     const { isLabourOpen, machineType, selectedPlants, effectiveDate } = this.state
     const { fieldsObj } = this.props
 
-    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLabourOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0 || machineType?.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
+    if (((fieldsObj?.MachineCost === undefined || fieldsObj?.MachineCost === "") && isLabourOpen === false) || effectiveDate === '' || Object.keys(selectedPlants)?.length === 0 || (getConfigurationKey()?.IsMachineNameRequired && !fieldsObj?.MachineName)) {
       Toaster.warning('Please fill the mandatory fields.');
       scroll.scrollToTop();
+      return false;
+    }
+    if(machineType?.length === 0){
+      Toaster.warning('Please select Machine Type');
       return false;
     }
     this.setState({ isLabourOpen: !isLabourOpen })
@@ -3141,15 +3145,15 @@ class AddMoreDetails extends Component {
       scroll.scrollToTop();
       return false;
     }
-    if(checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear) === 0 && this.state?.labourGrid?.length === 0){
+    if(checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear) === 0 && this.state?.labourGrid?.length === 0 && !checkForNull(fieldsObj?.MachineCost)){
       Toaster.warning('Please fill Working Hours and Labour data');
       return false;
     }
-    if(checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear) === 0){
+    if(checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear) === 0 && !checkForNull(fieldsObj?.MachineCost)){
       Toaster.warning('Please fill Working Hours data');
       return false;
     }
-    if(this.state?.labourGrid?.length === 0){
+    if(this.state?.labourGrid?.length === 0 && !checkForNull(fieldsObj?.MachineCost)){
       Toaster.warning('Please fill Labour data');
       return false;
     }
