@@ -19,7 +19,7 @@ import _, { debounce } from 'lodash'
 import ScrollToTop from '../../../common/ScrollToTop';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
+import { PART_TYPE_ASSEMBLY, Ferrous_Casting } from '../../../../config/masterData';
 import { createSaveComponentObject } from '../../CostingUtilSaveObjects';
 import { PreviousTabData } from '.';
 import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL, BOP, LEVEL0, LEVEL1, TOOLINGPART } from '../../../../config/constants';
@@ -136,10 +136,12 @@ function TabRMCC(props) {
           NetBOPImportCostWithOutHandlingCharge: TopHeaderValues?.TotalBOPImportCostWithOutHandlingChargeWithQuantity ?? 0,
           NetBOPSourceCostWithOutHandlingCharge: TopHeaderValues?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity ?? 0,
           NetBOPOutsourcedCostWithOutHandlingCharge: TopHeaderValues?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity ?? 0,
+          NetCastingNormApplicabilityCost: TopHeaderValues?.NetCastingNormApplicabilityCost ?? 0,
         }
       } else {
         topHeaderData = {
           NetRawMaterialsCost: TopHeaderValues?.NetRawMaterialsCost ? TopHeaderValues.NetRawMaterialsCost : 0,
+          NetCastingNormApplicabilityCost: TopHeaderValues?.NetCastingNormApplicabilityCost ?? 0,
           NetBoughtOutPartCost: TopHeaderValues?.NetBoughtOutPartCost ? TopHeaderValues.NetBoughtOutPartCost : 0,
           NetConversionCost: TopHeaderValues?.NetConversionCost ? TopHeaderValues.NetConversionCost : 0,
           NetProcessCost: TopHeaderValues?.CostingConversionCost?.NetProcessCost ? TopHeaderValues.CostingConversionCost.NetProcessCost : 0,
@@ -271,13 +273,13 @@ function TabRMCC(props) {
         switch (type) {
           case "BOP":
             return accumulator + checkForNull(el?.CostingPartDetails?.NetBoughtOutPartCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
-            case "BOP Domestic":
+          case "BOP Domestic":
             return accumulator + checkForNull(el?.CostingPartDetails?.NetBOPDomesticCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
-            case "BOP CKD":
-              return accumulator + checkForNull(el?.CostingPartDetails?.NetBOPImportCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
-              case "BOP V2V":
+          case "BOP CKD":
+            return accumulator + checkForNull(el?.CostingPartDetails?.NetBOPImportCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
+          case "BOP V2V":
             return accumulator + checkForNull(el?.CostingPartDetails?.NetBOPSourceCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
-            case "BOP OSP":
+          case "BOP OSP":
             return accumulator + checkForNull(el?.CostingPartDetails?.NetBOPOutsourcedCostWithOutHandlingCharge) * checkForNull(el?.Quantity)
           default:
             return accumulator + checkForNull(el?.CostingPartDetails?.NetBoughtOutPartCost) * checkForNull(el?.Quantity)
@@ -369,6 +371,13 @@ function TabRMCC(props) {
       } else {
         return accummlator + checkForNull(item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) * checkForNull(item?.Quantity)
       }
+    }, 0)
+    return total
+  }
+  const setCastingNormApplicabilityCostForAssembly = (arr) => {
+    const total = arr && arr.reduce((accummlator, item) => {
+      return accummlator + checkForNull(item?.CostingPartDetails?.NetCastingNormApplicabilityCost) * checkForNull(item?.Quantity)
+
     }, 0)
     return total
   }
@@ -639,6 +648,7 @@ function TabRMCC(props) {
     let partObj = obj
 
     let GrandTotalCost = 0
+    let NetCastingNormApplicabilityCost = 0
     let sumForBasicRate = (checkForNull(CostingDataList[0]?.NetSurfaceTreatmentCost) + checkForNull(CostingDataList[0]?.NetOverheadAndProfitCost) + checkForNull(CostingDataList[0]?.NetPackagingAndFreight) + checkForNull(CostingDataList[0]?.ToolCost) + checkForNull(CostingDataList[0]?.NetOtherCost)) - checkForNull(CostingDataList[0]?.NetDiscountsCost)
     switch (type) {
       case 'RM':
@@ -647,9 +657,15 @@ function TabRMCC(props) {
         // if (partObj?.CostingPartDetails?.IsRMCutOffApplicable !== true) {
         isAllFalse = _.map(gridData, 'IsCutOffApplicable').every(v => v === false)    // if all not false means true exist
         // }
-
-
         GrandTotalCost = checkForNull(netRMCost(gridData)) + checkForNull(partObj?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(partObj?.CostingPartDetails?.NetConversionCost)
+        // For ferrous casting, only take first object's CastingNormApplicabilityCost instead of summing all
+        const technologyId = Number(isPartType?.value) !== PART_TYPE_ASSEMBLY ? obj?.TechnologyId : RMCCTabData[0]?.TechnologyId;
+        if (Number(technologyId) === Ferrous_Casting) {
+          NetCastingNormApplicabilityCost = checkForNull(gridData?.[0]?.CastingNormApplicabilityCost);
+        } else {
+          NetCastingNormApplicabilityCost = gridData?.map(item => item?.CastingNormApplicabilityCost).reduce((acc, item) => acc + checkForNull(item), 0);
+        }
+        
         partObj.CostingPartDetails.CostingRawMaterialsCost = gridData;
         gridData[0]?.WeightCalculatorRequest?.MinimumMachineTonnageRequired && getConfigurationKey()?.IsMachineTonnageFilterEnabledInCosting && (partObj.CostingPartDetails.MinimumMachineTonnageRequired = gridData[0]?.WeightCalculatorRequest?.MinimumMachineTonnageRequired);
         partObj.CostingPartDetails.NetRawMaterialsCost = netRMCost(gridData);
@@ -674,6 +690,7 @@ function TabRMCC(props) {
         partObj.CostingPartDetails.BasicRate = checkForNull(partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity) +
           checkForNull(partObj?.CostingPartDetails?.NetBoughtOutPartCost) + checkForNull(partObj?.CostingPartDetails?.NetProcessCost) +
           checkForNull(partObj?.CostingPartDetails?.NetOperationCost)
+        partObj.CostingPartDetails.NetCastingNormApplicabilityCost = NetCastingNormApplicabilityCost
 
         // partObj.CostingPartDetails.NetPOPrice = gridData[0]?.WeightCalculationId;
         break;
@@ -769,6 +786,7 @@ function TabRMCC(props) {
     switch (type) {
       case 'RM':
         subAssemObj.CostingPartDetails.NetRawMaterialsCost = setRMCostForSubAssembly(tempArr)
+        subAssemObj.CostingPartDetails.NetCastingNormApplicabilityCost = setCastingNormApplicabilityCostForAssembly(tempArr)
         subAssemObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = subAssemObj?.CostingPartDetails?.NetRawMaterialsCost;
         subAssemObj.CostingPartDetails.RawMaterialCostWithCutOff = setRMCCutOffSubAssembly(tempArr)
         subAssemObj.CostingPartDetails.NetTotalRMBOPCC = subAssemObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + checkForNull(subAssemObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(subAssemObj?.CostingPartDetails?.TotalConversionCostWithQuantity);
@@ -885,6 +903,7 @@ function TabRMCC(props) {
         break;
       case 'Sub Assembly':
         subAssemObj.CostingPartDetails.NetRawMaterialsCost = setRMCostForSubAssembly(tempArr)
+        subAssemObj.CostingPartDetails.NetCastingNormApplicabilityCost = setCastingNormApplicabilityCostForAssembly(tempArr)
         subAssemObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = checkForNull(subAssemObj?.CostingPartDetails?.NetRawMaterialsCost)
         subAssemObj.CostingPartDetails.RawMaterialCostWithCutOff = checkForNull(subAssemObj?.CostingPartDetails?.RawMaterialCostWithCutOff) * checkForNull(quantity)
         subAssemObj.CostingPartDetails.NetBoughtOutPartCost = setBOPCostAssembly(tempArr)
@@ -900,7 +919,7 @@ function TabRMCC(props) {
         // subAssemObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeWithQuantity = checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargePerAssembly) + checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeSubAssembly) + checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeComponent)
         // subAssemObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeWithQuantity = checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargePerAssembly) + checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeSubAssembly) + checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeComponent)
         // subAssemObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity = checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargePerAssembly) + checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeSubAssembly) + checkForNull(subAssemObj?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeComponent)
-  
+
         subAssemObj.CostingPartDetails.NetConversionCost = setConversionCostForSubAssembly(tempArr) + checkForNull(subAssemObj?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(subAssemObj?.CostingPartDetails?.TotalWeldingCostPerAssembly) + checkForNull(subAssemObj?.CostingPartDetails?.TotalProcessCostPerAssembly)
         subAssemObj.CostingPartDetails.NetTotalRMBOPCC = checkForNull(subAssemObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(subAssemObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(subAssemObj?.CostingPartDetails?.TotalConversionCostWithQuantity);
         subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(subAssemObj?.CostingPartDetails?.NetTotalRMBOPCC) * checkForNull(subAssemObj?.CostingPartDetails?.Quantity);
@@ -989,6 +1008,7 @@ function TabRMCC(props) {
       let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
 
       newItem.CostingPartDetails.NetRawMaterialsCost = checkForNull(obj?.CostingPartDetails?.NetRawMaterialsCost)
+      newItem.CostingPartDetails.NetCastingNormApplicabilityCost = checkForNull(obj?.CostingPartDetails?.NetCastingNormApplicabilityCost)
       newItem.CostingPartDetails.RawMaterialCostWithCutOff = checkForNull(obj?.CostingPartDetails?.RawMaterialCostWithCutOff)
       newItem.CostingPartDetails.IsApplyBOPHandlingCharges = obj?.CostingPartDetails?.IsApplyBOPHandlingCharges;
       newItem.CostingPartDetails.BOPHandlingChargeApplicability = obj?.CostingPartDetails?.BOPHandlingChargeApplicability;
@@ -1235,6 +1255,7 @@ function TabRMCC(props) {
           // }
 
           assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.NetCastingNormApplicabilityCost = setCastingNormApplicabilityCostForAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.RawMaterialCostWithCutOff = setRMCutOffCostForAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostWithQuantity)
           let arrayToCheck = tempArrForCosting && tempArrForCosting.filter(costingItem => costingItem.PartNumber !== params.PartNumber)
@@ -1410,7 +1431,7 @@ function TabRMCC(props) {
           assemblyObj.CostingPartDetails.TotalBOPSourceCostWithOutHandlingChargeWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargePerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeComponent)
           assemblyObj.CostingPartDetails.TotalBOPImportCostWithOutHandlingChargeWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargePerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeComponent)
           assemblyObj.CostingPartDetails.TotalBOPDomesticCostWithOutHandlingChargeWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargePerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargeComponent)
-    
+
 
 
 
@@ -1658,6 +1679,7 @@ function TabRMCC(props) {
             subAssemblyToUpdate.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = 0
             subAssemblyToUpdate.CostingPartDetails.RawMaterialCostWithCutOff = 0
             subAssemblyToUpdate.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(childArray)
+            subAssemblyToUpdate.CostingPartDetails.NetCastingNormApplicabilityCost = setCastingNormApplicabilityCostForAssembly(childArray)
             subAssemblyToUpdate.CostingPartDetails.RawMaterialCostWithCutOff = setRMCutOffCostForAssembly(childArray)
             subAssemblyToUpdate.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(childArray) + checkForNull(subAssemblyToUpdate?.CostingPartDetails?.BOPHandlingCharges)
             subAssemblyToUpdate.CostingPartDetails.TotalBoughtOutPartCostPerAssembly = setBOPCostForAssembly(childArray, "BOP") + checkForNull(childArray?.CostingPartDetails?.BOPHandlingCharges)
@@ -1824,6 +1846,7 @@ function TabRMCC(props) {
 
         assemblyObj.CostingChildPartDetails = subAssemblyArray
         assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(subAssemblyArray)
+        assemblyObj.CostingPartDetails.NetCastingNormApplicabilityCost = setCastingNormApplicabilityCostForAssembly(subAssemblyArray)
         assemblyObj.CostingPartDetails.RawMaterialCostWithCutOff = setRMCutOffCostForAssembly(subAssemblyArray)
         assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(subAssemblyArray) + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges)
 
@@ -1979,6 +2002,7 @@ function TabRMCC(props) {
           newItem.CostingPartDetails.BOPHandlingPercentage = obj?.CostingPartDetails?.BOPHandlingPercentage;
           newItem.CostingPartDetails.BOPHandlingCharges = obj?.CostingPartDetails?.BOPHandlingCharges;
           newItem.CostingPartDetails.NetRawMaterialsCost = checkForNull(obj?.CostingPartDetails?.NetRawMaterialsCost)
+          newItem.CostingPartDetails.NetCastingNormApplicabilityCost = checkForNull(obj?.CostingPartDetails?.NetCastingNormApplicabilityCost)
           newItem.CostingPartDetails.TotalRawMaterialsCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity)
           newItem.CostingPartDetails.RawMaterialCostWithCutOff = checkForNull(obj?.CostingPartDetails?.RawMaterialCostWithCutOff)
           newItem.CostingPartDetails.NetBoughtOutPartCost = checkForNull(obj?.CostingPartDetails?.NetBoughtOutPartCost)

@@ -658,7 +658,7 @@ export const API = {
   getCostingCostDetails: `${BASE_URL}/costing/get-costing-cost-details`,
   getCostingBopAndBopHandlingDetails: `${BASE_URL}/costing/get-costing-bop-and-bop-handling-details`,
   getApplicabilityList: `${BASE_URL}/costing/select-list-get-applicability-data`,
-  getBopTypeList: `${BASE_URL}/costing/select-list-get-bop-type`, 
+  getBopTypeList: `${BASE_URL}/costing/select-list-get-bop-type`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -2466,6 +2466,7 @@ export const VBC_COSTING = 'Costing - VBC';
 export const CBC_COSTING = 'Costing - CBC';
 export const NCC_COSTING = 'Costing - NCC';
 export const WAC_COSTING = 'Costing - WAC';
+export const CASTINGNORM = "Casting Norm"
 
 export const costingTypeLabel = [ZBC_COSTING, VBC_COSTING, CBC_COSTING, NCC_COSTING, WAC_COSTING]
 
@@ -2834,7 +2835,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     label: 'Budgeted Price Variance',
     value: 'BudgetedPriceVariance'
   },
-  
+
   {
     label: 'Hundi/Discount Applicability',
     value: 'otherDiscountApplicablity'
@@ -3502,7 +3503,7 @@ export const MACHINEMASTER = "Machine Master"
 export const COSTAPPLICABILITYBASIS = "Cost Applicability Basis"
 export const MHRBASIS = "MHR Basis"
 export const ICCMASTER = "ICC Master"
-export const PAYMENTTERMMASTER='PaymentTerm Master'
+export const PAYMENTTERMMASTER = 'PaymentTerm Master'
 export const BOPHANDLINGCOST = 'Bought Out Part Handling Cost'
 
 export const TAPEANDPAINT = "Tape + Paint"
