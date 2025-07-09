@@ -33,21 +33,24 @@ function BulkDelete(props) {
 		}
 
 		const generateAssociatedMessage = () => {
-			const commonMessageMasters = ['Overhead', 'Profits', 'Labour', 'Fuel', 'Power', 'Volume', 'Freight', 'Interest Rate', 'Rejection'] 
+			const commonMessageMasters = ['Overhead', 'Profits', 'Labour', 'Fuel', 'Power', 'Volume', 'Freight', 'Interest Rate', 'Rejection']
+			const commonApprovalMessageMasters = ['Raw Material Approval', 'BOP Approval', 'Operation Approval', 'Costing Approval', 'Simulation History'] 
 			const hasNotEligible = _.size(notEligibleList) > 0
 			const hasEligible = _.size(eligibleToDelete) > 0
 			if (!hasNotEligible) {
 				return `Are you sure you want to delete the ${type} detail?`;
 			}
 			if (_.includes(commonMessageMasters, type)) {
-				return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""} The selected ${type} items without a delete icon cannot be deleted as they are associated with costings.`
+				return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""} The selected ${type} items without a delete icon cannot be deleted as they are associated.`
+			} else if (_.includes(commonApprovalMessageMasters, type)) {
+				return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""} Token number ${mastersList.join(", ")} cannot be deleted as there status is pending for approval.`
 			}
-			return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""}${mastersList.join(", ")} ${type}(s) cannot be deleted as they are associated with costings.`;
+			return `${hasEligible ? `Are you sure you want to delete the ${type} detail? ` : ""} ${mastersList.join(", ")} ${type} cannot be deleted as they are associated.`;
 		}
 
 		switch (type) {
 			case 'RM':
-				extractDeletionData('RawMaterialName', 'RawMaterialId')
+				extractDeletionData('RawMaterialCode', 'RawMaterialId')
 				return {
 					associatedKeyName: ["IsRMAssociated", "IsRFQRawMaterial"],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -57,7 +60,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'BOP':
-				extractDeletionData('BoughtOutPartName', 'BoughtOutPartId')
+				extractDeletionData('BoughtOutPartNumber', 'BoughtOutPartId')
 				return {
 					associatedKeyName: ["IsBOPAssociated", "IsRFQBoughtOutPart"],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -78,7 +81,7 @@ function BulkDelete(props) {
 				}
 			case 'Assembly':
 			case 'Part':
-				extractDeletionData('PartName', 'PartId')
+				extractDeletionData('PartNumber', 'PartId')
 				return {
 					associatedKeyName: ["IsAssociate"],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -88,7 +91,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Product':
-				extractDeletionData('ProductName', 'ProductId')
+				extractDeletionData('ProductNumber', 'ProductId')
 				return {
 					associatedKeyName: [], //When we keep it blank then all id's eligible to delete
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -98,7 +101,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Part Family':
-				extractDeletionData('PartFamilyName', 'PartFamilyId')
+				extractDeletionData('PartFamilyCode', 'PartFamilyId')
 				return {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -328,7 +331,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Raw Material Approval':
-				extractDeletionData('RawMaterialId', 'RawMaterialId')
+				extractDeletionData('ApprovalNumber', 'RawMaterialId')
 				return {
 					associatedKeyName: ['Status'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -338,7 +341,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'BOP Approval':
-				extractDeletionData('BoughtOutPartId', 'BoughtOutPartId')
+				extractDeletionData('ApprovalNumber', 'BoughtOutPartId')
 				return {
 					associatedKeyName: ['Status'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -348,7 +351,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Operation Approval':
-				extractDeletionData('OperationId', 'OperationId')
+				extractDeletionData('ApprovalNumber', 'OperationId')
 				return {
 					associatedKeyName: ['Status'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -358,7 +361,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Costing Approval':
-				extractDeletionData('CostingNumber', 'CostingId')
+				extractDeletionData('ApprovalNumber', 'CostingId')
 				return {
 					associatedKeyName: ['Status'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -392,7 +395,7 @@ function BulkDelete(props) {
 	// EligibleToDeleteIds (Example IsRMAssociated or IsRFQRawMaterial) is false, null, undefined, the item is eligible for deletion and should be filtered out.
 	const eligibleToDelete = _.filter(props?.bulkDeleteData, item => _.every(associatedKeyName, key => {
 		if (key === 'Status') {
-			return item?.Status === DRAFT
+			return item?.[key] === DRAFT
 		}
 		return !Boolean(item?.[key]);
 	}))

@@ -375,7 +375,10 @@ const IndivisualPartListing = (props) => {
     ID.partId = rowData.PartId;
     ID.partApprovedId = rowData.PartApprovedId;
     ID.partBudgetedId = rowData.PartBudgetedId;
-
+    let isDeleteButton = false
+    if (permissions?.Delete && !rowData?.IsAssociate) {
+      isDeleteButton = true;
+    }
     return (
       <>
         {permissions.View && (
@@ -394,7 +397,7 @@ const IndivisualPartListing = (props) => {
             onClick={() => viewOrEditItemDetails(cellValue, false)}
           />
         )}
-        {permissions.Delete && (
+        {isDeleteButton && (
           <button
             title="Delete"
             className="Delete Tour_List_Delete"
