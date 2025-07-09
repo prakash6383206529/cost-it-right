@@ -222,6 +222,11 @@ function AddRM(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
+
+  const hyphenFormatter = (props) => {
+    const cellValue = props?.value;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+  }
   const frameworkComponents = {
     netLandedFormat: netLandedFormat,
     currencyFormatter: currencyFormatter,
@@ -229,7 +234,8 @@ function AddRM(props) {
     customNoRowsOverlay: NoContentFound,
     priceFormatter: priceFormatter,
     sourceVendorFormatter: sourceVendorFormatter,
-    effectiveDateFormatter: effectiveDateFormatter
+    effectiveDateFormatter: effectiveDateFormatter,
+    hyphenFormatter: hyphenFormatter
   };
 
   const isRowSelectable = (rowNode) => {
@@ -366,6 +372,7 @@ function AddRM(props) {
                         <AgGridColumn field="CostingCurrency" headerName="Costing Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="UOM"></AgGridColumn>
+                        {getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial && <AgGridColumn field="IncoTermDescriptionAndIncoTerm" headerName="Inco Terms" tooltipField='IncoTermDescriptionAndIncoTerm' cellRenderer='hyphenFormatter'></AgGridColumn>}
                         <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'priceFormatter'}></AgGridColumn>
                         <AgGridColumn field="ScrapRate" headerName={showRMScrapKeys(costData?.TechnologyId)?.name} cellRenderer={'priceFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCombine" headerName={`Net Cost ${sourceCurrencyFormatter(currencySource?.label)}/UOM`} cellRenderer={'netLandedFormat'}></AgGridColumn>

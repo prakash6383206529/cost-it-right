@@ -83,7 +83,6 @@ class AddMoreDetails extends Component {
       WorkingHrPrYr: 0,
       isFinalUserEdit: false,
       MachineID: EMPTY_GUID,
-
       shiftType: [],
       approvalObj: {},
       depreciationType: [],
@@ -759,6 +758,10 @@ class AddMoreDetails extends Component {
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
             this.props.change('Percentage', (this.state.isProcessGroup && !this.state.isViewMode && Data?.MachineProcessRates[0]?.Type === COSTAPPLICABILITYBASIS) ? Data?.MachineProcessRates[0]?.Percentage : '')
             this.props.change('NumberOfWorkingHoursPerYear', Data.NumberOfWorkingHoursPerYear ? Data.NumberOfWorkingHoursPerYear : '')
+            this.props.change('PowerRatingPerKW', Data?.PowerRatingPerKW ? Data?.PowerRatingPerKW : '')
+            this.props.change('UtilizationFactorPercentage', Data.UtilizationFactorPercentage ? Data.UtilizationFactorPercentage : '')
+            this.props.change('TotalPowerCostPerYear', Data.TotalPowerCostPerYear ? Data.TotalPowerCostPerYear : '')
+            this.props.change('TotalPowerCostPerHour', Data.TotalPowerCostPerHour ? Data.TotalPowerCostPerHour : '')
           }, 2000)
         }
       })
@@ -1729,10 +1732,10 @@ class AddMoreDetails extends Component {
     const { fieldsObj, initialConfiguration } = this.props;
     const { IsUsesFuel, machineFullValue } = this.state;
 
-
+    let isStandardType = getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Standard || getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === undefined
     if (IsUsesFuel) {
 
-      const FuelCostPerUnit = checkForNull(machineFullValue?.FuelCostPerUnit)
+      const FuelCostPerUnit = isStandardType ? checkForNull(machineFullValue?.FuelCostPerUnit) : fieldsObj?.PowerCostPerUnit;
       const ConsumptionPerYear = checkForNull(fieldsObj?.ConsumptionPerYear)
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
@@ -1747,7 +1750,7 @@ class AddMoreDetails extends Component {
       const NumberOfWorkingHoursPerYear = checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear)  //state
       const UtilizationFactorPercentage = checkForNull(fieldsObj?.UtilizationFactorPercentage)
       const PowerRatingPerKW = checkForNull(fieldsObj?.PowerRatingPerKW)
-      const PowerCostPerUnit = checkForNull(machineFullValue?.PowerCostPerUnit); // may be state
+      const PowerCostPerUnit = isStandardType ? checkForNull(machineFullValue?.PowerCostPerUnit) : fieldsObj?.PowerCostPerUnit; // may be state
       const totalPowerCostPerHour = PowerRatingPerKW * calculatePercentage(UtilizationFactorPercentage) * checkForNull(PowerCostPerUnit)
       const totalPowerCostPrYer = totalPowerCostPerHour * NumberOfWorkingHoursPerYear
       machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
@@ -2821,6 +2824,7 @@ class AddMoreDetails extends Component {
           PlantCode: ''
         }]
         : [];
+    let isStandardType = getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Standard || getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === undefined
 
     // Return full request object with all fields
     return {
@@ -2886,9 +2890,9 @@ class AddMoreDetails extends Component {
       // Power and fuel details
       IsUsesFuel,
       PowerId: powerIdFromAPI || null,
-      UtilizationFactorPercentage: values.UtilizationFactorPercentage,
-      PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
-      PowerRatingPerKW: values.PowerRatingPerKW,
+      UtilizationFactorPercentage: values.UtilizationFactorPercentage || machineFullValue?.UtilizationFactorPercentage,
+      PowerCostPerUnit: isStandardType ? machineFullValue.PowerCostPerUnit : fieldsObj.PowerCostPerUnit,
+      PowerRatingPerKW: values.PowerRatingPerKW || machineFullValue?.PowerRatingPerKW,
       TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
       TotalPowerCostPerHour: machineFullValue.TotalPowerCostPerHour,
       IsUsesSolarPower,
@@ -3062,7 +3066,8 @@ class AddMoreDetails extends Component {
       scroll.scrollToTop();
       return false;
     }
-    if (!isPowerOpen) {
+    let isStandardType = getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === FUELANDPOWER_CALCULATION_TYPE.Standard || getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster === undefined
+    if (!isPowerOpen && isStandardType) {
       const baseCurrency = reactLocalStorage.getObject("baseCurrency")
       const data = this.props.data ?? {};
       const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
@@ -5066,6 +5071,7 @@ class AddMoreDetails extends Component {
                               parentState={this.state}
                               setParentState={updatedState => this.setState(updatedState)}
                               fieldsObj={this.props.fieldsObj}
+                              change={this.props.change}
                             />
                           </div>
                         }
