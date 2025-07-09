@@ -382,13 +382,18 @@ const VendorListing = (props) => {
   const buttonFormatter = (props) => {
     const cellValue = props?.value;
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
+    let isDeleteButton = false
+    const rowData = props?.data
+    if (DeleteAccessibility && !rowData.IsAssociated) {
+        isDeleteButton = true
+    }    
     return (
       <>
         {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
         )}
         {EditAccessibility && (<Button id={`vebdorListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
-        {DeleteAccessibility && (<Button id={`vendorListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
+        {isDeleteButton && (<Button id={`vendorListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
         )}
       </>
     );

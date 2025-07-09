@@ -306,6 +306,7 @@ const IndexListing = () => {
     const onRowSelect = () => {
         const selectedRows = state.gridApi?.getSelectedRows();
         setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
+        setDataCount(selectedRows.length)
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -442,7 +443,7 @@ const IndexListing = () => {
                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             <Button id="indexListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
                         </div>
-                        <BulkDelete type={'Index'} deletePermission={permissions?.Delete} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
+                        <BulkDelete type={'Index'} deletePermission={permissions?.Delete} dataCount={dataCount} bulkDeleteData={state?.selectedRowData}/>
                         {permissions.BulkUpload && (<Button id="index_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                         {permissions.Add && (
                             <Button id="add_index" className="mr5 Tour_List_AdCommodity" onClick={openModel} title="Add" icon={"plus"} />

@@ -106,14 +106,14 @@ function BulkDelete(props) {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "part",
+					associatedMasterType: "partfamily",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
 			case vendorLabel:
 				extractDeletionData('VendorName', 'VendorId')
 				return {
-					associatedKeyName: [], //When we keep it blank then all id's eligible to delete
+					associatedKeyName: ['IsAssociated'], //When we keep it blank then all id's eligible to delete
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
 					associatedMasterType: "vendor",
@@ -146,7 +146,7 @@ function BulkDelete(props) {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "material",
+					associatedMasterType: "indexdata",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
@@ -156,7 +156,7 @@ function BulkDelete(props) {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "material",
+					associatedMasterType: "manageindexes",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
@@ -166,7 +166,7 @@ function BulkDelete(props) {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "material",
+					associatedMasterType: "commoditystandard",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
@@ -176,7 +176,7 @@ function BulkDelete(props) {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "material",
+					associatedMasterType: "standardizedcommodity",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
@@ -186,7 +186,7 @@ function BulkDelete(props) {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "material",
+					associatedMasterType: "manageindexes",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
@@ -211,7 +211,7 @@ function BulkDelete(props) {
 					associatedMessage: generateAssociatedMessage()
 				}
 			case 'Labour':
-				extractDeletionData('LabourDetailsId', 'LabourDetailsId')
+				extractDeletionData('LabourId', 'LabourId')
 				return {
 					associatedKeyName: ['IsLabourAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
@@ -266,7 +266,7 @@ function BulkDelete(props) {
 					associatedKeyName: [],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "exchangeRate",
+					associatedMasterType: "exchangerate",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
@@ -286,7 +286,7 @@ function BulkDelete(props) {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "interestRate",
+					associatedMasterType: "interestrate",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
@@ -296,7 +296,7 @@ function BulkDelete(props) {
 					associatedKeyName: ['IsAssociated'],
 					associatedSuccessMessage: `${type} ${defaultToaster}`,
 					associatedType: "master",
-					associatedMasterType: "interestRate",
+					associatedMasterType: "paymentterm",
 					eligibleToDeleteIdsList: eligibleToDeleteIds,
 					associatedMessage: generateAssociatedMessage()
 				}
