@@ -6,7 +6,7 @@ import AddInterestRate from './AddInterestRate';
 import AddPaymentTerms from './AddPaymentTerms';
 import InterestRateListing from './InterestRateListing';
 import PaymentTermsListing from './PaymentTermsListing';
-import { ADDITIONAL_MASTERS, OVERHEAD_AND_PROFIT } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, INTEREST_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import ScrollToTop from '../../common/ScrollToTop';
 import { MESSAGES } from '../../../config/message';
@@ -55,8 +55,8 @@ const InterestRatePayment = () => {
   const applyPermission = (topAndLeftMenuData) => {
     if (topAndLeftMenuData !== undefined) {
       const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
-      const accessData = Data && Data.Pages.find(el => el.PageName === OVERHEAD_AND_PROFIT)
-      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+      const accessData = Data && Data.Pages?.find(el => el.PageName === INTEREST_RATE)
+      const permmisionData = accessData && accessData?.Actions && checkPermission(accessData?.Actions)
 
       if (permmisionData !== undefined) {
         setState(prevState => ({

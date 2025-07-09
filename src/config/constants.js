@@ -2466,6 +2466,7 @@ export const VBC_COSTING = 'Costing - VBC';
 export const CBC_COSTING = 'Costing - CBC';
 export const NCC_COSTING = 'Costing - NCC';
 export const WAC_COSTING = 'Costing - WAC';
+export const CASTINGNORM = "Casting Norm"
 
 export const costingTypeLabel = [ZBC_COSTING, VBC_COSTING, CBC_COSTING, NCC_COSTING, WAC_COSTING]
 

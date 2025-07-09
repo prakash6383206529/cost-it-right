@@ -18,6 +18,7 @@ import { useLabels } from '../../../../../helper/core'
 function Plastic(props) {
     const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox, activeTab } = props
     const { finishedWeightLabel, finishWeightLabel } = useLabels()
+    const isShowBurningAllowance = !!getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting
 
     let totalRM
     if (!isSummary) {
@@ -188,12 +189,12 @@ function Plastic(props) {
             setValue('inputWeightWithReuse', checkForDecimalAndNull(inputWeightWithReuse, getConfigurationKey().NoOfDecimalForInputOutput))
         }
         if (excludeRunnerWeight) {
-            rmCost = ((checkForNull(grossWeight) - checkForNull(runnerWeight)) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
+            rmCost = ((checkForNull(grossWeight) - checkForNull(runnerWeight)) * checkForNull(totalRM)) + (isShowBurningAllowance ? getValues('burningAllownace') : 0) // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
         } else {
             if (isScrapReuse) {
-                rmCost = (checkForNull(inputWeightWithReuse) * checkForNull(totalRM)) + getValues('burningAllownace')
+                rmCost = (checkForNull(inputWeightWithReuse) * checkForNull(totalRM)) + (isShowBurningAllowance ? getValues('burningAllownace') : 0)
             } else {
-                rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace')
+                rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + (isShowBurningAllowance ? getValues('burningAllownace') : 0)
             }
         }
         const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
@@ -378,7 +379,7 @@ function Plastic(props) {
 
                             <Row className={'mt25'}>
                                 <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={`${LocalizedInputWeight} = (${LocalizedGrossWeight} + Runner Weight + Other Loss Weight)`} />
+                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={`${LocalizedInputWeight} = (${LocalizedGrossWeight} + Runner Weight +${isShowBurningAllowance ? " Other" : " Net"} Loss Weight)`} />
                                     <TextFieldHookForm
                                         label={`${LocalizedInputWeight} (Kg)`}
                                         name={'grossWeight'}
@@ -552,24 +553,26 @@ function Plastic(props) {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'burning-allowance'} tooltipText={'Burning Allowance = (RM Rate * Burning Loss Weight)'} />
-                                    <TextFieldHookForm
-                                        label={`Burning Allowance`}
-                                        name={'burningAllownace'}
-                                        Controller={Controller}
-                                        id={'burning-allowance'}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.burningAllownace}
-                                        disabled={true}
-                                    />
-                                </Col>
+                                {!!getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting &&
+                                    <Col md="3">
+                                        <TooltipCustom disabledIcon={true} id={'burning-allowance'} tooltipText={'Burning Allowance = (RM Rate * Burning Loss Weight)'} />
+                                        <TextFieldHookForm
+                                            label={`Burning Allowance`}
+                                            name={'burningAllownace'}
+                                            Controller={Controller}
+                                            id={'burning-allowance'}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.burningAllownace}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                }
                                 {String(activeTab) === '1' && <Col md="3">
                                     <div className="mt-3">
                                         <span className="d-inline-block mt15">
@@ -593,7 +596,7 @@ function Plastic(props) {
                                     </div>
                                 </Col>}
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={`RM Cost = (${isScrapReuse ? `I${LocalizedInputWeight} (with Re-use)` : LocalizedInputWeight} ${excludeRunnerWeight ? '- Runner Weight' : ''} * RM Rate) + Burning Allowance`} />
+                                    <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={`RM Cost = (${isScrapReuse ? `I${LocalizedInputWeight} (with Re-use)` : LocalizedInputWeight} ${excludeRunnerWeight ? '- Runner Weight' : ''} * RM Rate) ${isShowBurningAllowance ? " + Burning Allowance" : ""}`} />
                                     <TextFieldHookForm
                                         label={`RM Cost`}
                                         name={'rmCost'}

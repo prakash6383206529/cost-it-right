@@ -39,7 +39,7 @@ function AddOtherDiscount(props) {
     const costData = useContext(costingInfoContext);
     const [applicabilityCost, setApplicabilityCost] = useState('')
     const dispatch = useDispatch()
-    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, IccCost } = useSelector(state => state.costing)
+    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, IccCost, ToolTabData } = useSelector(state => state.costing)
     const { currencySource } = useSelector((state) => state?.costing);
     const fieldValuesForPercent = useWatch({
         control,
@@ -66,7 +66,7 @@ function AddOtherDiscount(props) {
     useEffect(() => {
         let request = partType ? 'multiple technology assembly' : 'other cost'
         let isRequestForMultiTechnology = partType ? true : false
-        dispatch(fetchCostingHeadsAPI(request, false, isRequestForMultiTechnology, (res) => { }))
+        dispatch(fetchCostingHeadsAPI(request, true, isRequestForMultiTechnology, (res) => { }))
     }, [])
 
     const renderListing = (label) => {
@@ -388,6 +388,21 @@ function AddOtherDiscount(props) {
                 totalCost = checkForNull(dataList?.ToolCost) * calculatePercentage(percent)
                 setApplicabilityCost(dataList?.ToolCost)
                 setValue('ApplicabilityCost', checkForDecimalAndNull(dataList?.ToolCost, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case 'Net Tool Amortization Cost':
+                totalCost = (ToolTabData?.[0]?.CostingPartDetails?.NetToolAmortizationCost) * calculatePercentage(percent)
+                setApplicabilityCost(ToolTabData?.[0]?.CostingPartDetails?.NetToolAmortizationCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(ToolTabData?.[0]?.CostingPartDetails?.NetToolAmortizationCost, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case 'Net Tool Interest Cost (per pcs)':
+                totalCost = (ToolTabData?.[0]?.CostingPartDetails?.NetToolInterestCost) * calculatePercentage(percent)
+                setApplicabilityCost(ToolTabData?.[0]?.CostingPartDetails?.NetToolInterestCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(ToolTabData?.[0]?.CostingPartDetails?.NetToolInterestCost, initialConfiguration?.NoOfDecimalForPrice))
+                break;
+            case 'Net Tool Maintenance Cost (per pcs)':
+                totalCost = (ToolTabData?.[0]?.CostingPartDetails?.NetToolMaintenanceCost) * calculatePercentage(percent)
+                setApplicabilityCost(ToolTabData?.[0]?.CostingPartDetails?.NetToolMaintenanceCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(ToolTabData?.[0]?.CostingPartDetails?.NetToolMaintenanceCost, initialConfiguration?.NoOfDecimalForPrice))
                 break;
             default:
                 totalCost = getValues('ApplicabilityCost')

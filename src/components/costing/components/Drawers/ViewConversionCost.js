@@ -18,6 +18,7 @@ import { viewAddButtonIcon } from '../../CostingUtil'
 import Button from '../../../layout/Button'
 import PaintAndMasking from '../CostingHeadCosts/SurfaceTreatMent/PaintAndMasking'
 import DayTime from '../../../common/DayTimeWrapper'
+import _ from 'lodash'
 
 function ViewConversionCost(props) {
 
@@ -320,8 +321,8 @@ function ViewConversionCost(props) {
       </Row>
       <Row>
         {/*PROCESS COST GRID */}
-        <Col md="12">
-          <Table className="table cr-brdr-main conversion-cost" size="sm">
+        <Col md={`12 ${!isPDFShow && "overflow-x-auto"}`}>
+          <Table className={`table cr-brdr-main conversion-cost ${isPDFShow && "auto-layout-pdf-table"}`} size="sm">
 
             <tbody>
               <tr className='thead'>
@@ -336,6 +337,7 @@ function ViewConversionCost(props) {
                 <th>{`Parts/Hour`}</th>
                 <th >{`Process Cost Applicability`}</th>
                 <th >{`Percentage`}</th>
+                <th>{`Cavity`}</th>
                 <th><span className='d-flex'>MHR  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{mhrTooltipText}</span></div>}</span></th>
 
                 {!isPDFShow && <th>{`Calculator`}</th>}
@@ -373,6 +375,7 @@ function ViewConversionCost(props) {
                         <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
                         <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>
                         <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>
+                        <td>{item.Cavity ? item.Cavity : '-'}</td>
                         <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
                         {(!isPDFShow) && <td>
                           {
@@ -651,8 +654,8 @@ function ViewConversionCost(props) {
                 <th>{`Quantity`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Rate/UOM`}</th>
-                {initialConfiguration?.IsOperationLabourRateConfigure && surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate/UOM`}</th>}
-                {initialConfiguration?.IsOperationLabourRateConfigure && surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
+                {initialConfiguration?.IsOperationLabourRateConfigure && <th>{`Labour Rate/UOM`}</th>}
+                {initialConfiguration?.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
                 <th className={initialConfiguration?.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
                 {initialConfiguration?.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr >
@@ -665,8 +668,8 @@ function ViewConversionCost(props) {
                       <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
-                      {initialConfiguration?.IsOperationLabourRateConfigure && item.IsLabourRateExist === true && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>}
-                      {initialConfiguration?.IsOperationLabourRateConfigure && item.IsLabourRateExist === true && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                      {initialConfiguration?.IsOperationLabourRateConfigure && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                      {initialConfiguration?.IsOperationLabourRateConfigure && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration?.NoOfDecimalForPrice)}</td>}
                       <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       {initialConfiguration?.IsShowCRMHead && <td>{item.SurfaceTreatmentCRMHead}</td>}
                     </tr >
@@ -681,6 +684,11 @@ function ViewConversionCost(props) {
                   </tr>
                 )
               }
+              {<tr className='table-footer'>
+                <td colSpan={partNumberList.length === 0 && IsAssemblyCosting ? 7 : 6} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                { }
+                <td colSpan={2}>{checkForDecimalAndNull(_.sum(surfaceTreatmentCost?.map(item => item?.SurfaceTreatmentCost)), initialConfiguration?.NoOfDecimalForPrice)}</td>
+              </tr>}
             </tbody >
           </Table >
         </Col >
@@ -807,9 +815,10 @@ function ViewConversionCost(props) {
                   )
                 } */}
 
-                {!isPDFShow && <tr className='table-footer'>
-                  <td colSpan={7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
-                  <td colSpan={7}>{checkForDecimalAndNull(transportCost && transportCost?.TotalTransportationCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                {<tr className='table-footer'>
+                  <td colSpan={IsAssemblyCosting && isPDFShow ? 8 : 7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                  { }
+                  <td colSpan={7}>{checkForDecimalAndNull(_.sum(normalizedTransportCost?.map(item => item?.TotalTransportationCost)), initialConfiguration?.NoOfDecimalForPrice)}</td>
                 </tr>}
               </tbody>
             </Table>
@@ -858,6 +867,7 @@ function ViewConversionCost(props) {
                   <th>Hanger Factor (Rate)</th>
                   <th>No. of Parts per Hanger</th>
                   <th>Hanger Cost per Part</th>
+                  <th>Remark</th>
                 </tr>
 
                 {filteredData.map((item, index) => (
@@ -870,8 +880,14 @@ function ViewConversionCost(props) {
                         ? checkForDecimalAndNull(item?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice)
                         : '-'}
                     </td>
+                    <td>{item?.HangerRemark ?? '-'}</td>
                   </tr>
                 ))}
+                {<tr className='table-footer'>
+                  <td colSpan={IsAssemblyCosting ? 3 : 2} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                  { }
+                  <td colSpan={2}>{checkForDecimalAndNull(_.sum(filteredData?.map(item => item?.HangerCostPerPart)), initialConfiguration?.NoOfDecimalForPrice)}</td>
+                </tr>}
               </tbody>
             </Table>
           </Col>
@@ -892,6 +908,11 @@ function ViewConversionCost(props) {
 
       // Don't render if Coats is empty or undefined
       if (!Coats || Coats.length === 0) return null;
+      let parentRowSpan = Coats?.length || 0
+      const totalRawMaterialRows = Coats.reduce(
+        (acc, coat) => acc + (coat?.RawMaterials?.length || 0),
+        0
+      );
 
       return (
         <Row className="firefox-spaces mb-4">
@@ -912,9 +933,10 @@ function ViewConversionCost(props) {
                   <th>Rejection Allowance</th>
                   <th>RM Rate (Currency)</th>
                   <th>Paint Cost</th>
+                  <th>Remark</th>
+                  <th>Effective Date</th>
                   {isPDFShow && <th>Masking/Tape Cost</th>}
                   {isPDFShow && <th>Total Paint & Masking Cost</th>}
-                  <th>Effective Date</th>
                 </tr>
 
                 {Coats.map((coat, parentIndex) =>
@@ -936,17 +958,30 @@ function ViewConversionCost(props) {
                       <td>{checkForDecimalAndNull(rm?.RejectionAllowance, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                       <td>{checkForDecimalAndNull(rm?.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)}</td>
                       <td>{checkForDecimalAndNull(rm?.NetCost, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                      {isPDFShow && childIndex === 0 && (
+                      <td>{rm?.Remark ?? "-"}</td>
+                      <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
+                      {/* {isPDFShow && childIndex === 0 && (
                         <td rowSpan={coat?.RawMaterials?.length}>
                           {checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
+                      )} */}
+
+                      {isPDFShow && parentIndex === 0 && childIndex === 0 && (
+                        <td rowSpan={totalRawMaterialRows}>
+                          {checkForDecimalAndNull(TapeCost, getConfigurationKey().NoOfDecimalForPrice)}
+                        </td>
                       )}
-                      {isPDFShow && childIndex === 0 && (
-                        <td rowSpan={coat?.RawMaterials?.length}>
+
+                      {/* {isPDFShow && parentIndex === 0 && (
+                        <td rowSpan={parentRowSpan}>
+                          {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
+                        </td>
+                      )} */}
+                      {isPDFShow && parentIndex === 0 && childIndex === 0 && (
+                        <td rowSpan={totalRawMaterialRows}>
                           {checkForDecimalAndNull(TotalPaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                         </td>
                       )}
-                      <td>{rm?.EffectiveDate != null ? DayTime(rm.EffectiveDate).format('DD/MM/YYYY') : ''}</td>
                     </tr>
                   ))
                 )}
@@ -963,11 +998,16 @@ function ViewConversionCost(props) {
                     <td colSpan={!isPDFShow ? 3 : 11} className="text-right">
                       <strong>Total Paint Cost:</strong>
                     </td>
-                    <td colSpan={!isPDFShow ? 2 : 0}>
+                    <td colSpan={!isPDFShow ? 3 : 0}>
                       {checkForDecimalAndNull(PaintCost, getConfigurationKey().NoOfDecimalForPrice)}
                     </td>
                   </tr>
                 ) : null}
+                {/* {IsAssemblyCosting && isPDFShow && <tr className='table-footer'>
+                  <td colSpan={IsAssemblyCosting && isPDFShow ? 7 : 6} className="text-right font-weight-600 fw-bold">{'Total Paint & Masking Cost:'}</td>
+                  {console.log(details)}
+                  <td colSpan={2}>{checkForDecimalAndNull(_.sum(details?.map(item => item?.TotalPaintCost)), getConfigurationKey().NoOfDecimalForPrice)}</td>
+                </tr>} */}
               </tbody>
             </Table>
 
@@ -1002,11 +1042,15 @@ function ViewConversionCost(props) {
     if (Array.isArray(paintAndTapeDetails)) {
       const filtered = paintAndTapeDetails.filter((item) => item?.Coats?.length > 0);
 
-      return filtered.map((item, index) => (
-        <div key={index}>{renderPaintTable(item)}</div>
-      ));
-    }
 
+
+      return filtered.map((item, index) => {
+        // item?.PartNumber == 0
+        return (
+          <div key={index}>{renderPaintTable(item)}</div>
+        )
+      })
+    }
     return paintAndTapeDetails?.Coats?.length > 0 ? renderPaintTable(paintAndTapeDetails) : null;
   };
   return (

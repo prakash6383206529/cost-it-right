@@ -254,6 +254,7 @@ function CostingDetailSimulationDrawer(props) {
                                     isRfqCosting={props?.isRfqCosting}
                                     isRejectedSummaryTable={props?.isRejectedSummaryTable} isFromAssemblyTechnology={props?.isFromAssemblyTechnology}
                                     showAddToComparison={false}
+                                    isApprovalListing={!!props?.isApprovalListing}
                                 />
                             </form>
                         </div>
