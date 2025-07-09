@@ -428,10 +428,10 @@ function BulkDelete(props) {
 			dispatch(bulkDelete(payload, (res) => {
 				if(res && res?.status === 200) {
 					Toaster.success(associatedSuccessMessage)
-				} 
-				setTimeout(() => {
+					setTimeout(() => {
 						window.location.reload()
 					}, 500)
+				} 
 			}))
 		}
 		setShowPopup(false)
