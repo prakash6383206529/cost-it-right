@@ -44,6 +44,7 @@ const ViewMultipleTechnologyBOP = (props) => {
                         {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <th>Delta</th>}
                         <th>SOB%</th>
                         <th>Net Cost ({currencySource?.label ? currencySource?.label : '-'})</th>
+                        <th>Remark</th>
                         {<th>Effective Date</th>}
                     </tr >
                 </thead >
@@ -69,6 +70,7 @@ const ViewMultipleTechnologyBOP = (props) => {
                                 <td >{item?.SOBPercentage ?? "-"}</td>
                             }
                             <td>{item?.NetCost ? checkForDecimalAndNull(item?.NetCost, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}</td>
+                            <td>{item?.Remark ? item?.Remark : '-'}</td>
                             <td>{item?.EffectiveDate ? DayTime(item?.EffectiveDate).format('DD-MM-YYYY') : '-'}</td>
                         </tr>
                     )
