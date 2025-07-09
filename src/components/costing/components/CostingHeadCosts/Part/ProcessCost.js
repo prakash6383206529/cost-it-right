@@ -7,11 +7,11 @@ import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '.
 import AddProcess from '../../Drawers/AddProcess';
 import { calculateNetCosts, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, getOverheadAndProfitCostTotal } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_OVERHEAD_EXCL_PROFIT, APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL, APPLICABILITY_OVERHEAD_PROFIT, APPLICABILITY_OVERHEAD_PROFIT_EXCL, APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL, COSTAPPLICABILITYBASIS, CRMHeads, DISPLAY_HOURS, DISPLAY_MICROSECONDS, DISPLAY_MILISECONDS, DISPLAY_MINUTES, DISPLAY_SECONDS, EMPTY_DATA, EMPTY_GUID, FASTNERS, HOUR, MASS, MHRBASIS, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS, TIME, defaultPageSize } from '../../../../../config/constants';
+import { APPLICABILITY_OVERHEAD, APPLICABILITY_OVERHEAD_EXCL, APPLICABILITY_PROFIT, APPLICABILITY_PROFIT_EXCL, APPLICABILITY_REJECTION, APPLICABILITY_REJECTION_EXCL, COSTAPPLICABILITYBASIS, CRMHeads, DISPLAY_HOURS, DISPLAY_MICROSECONDS, DISPLAY_MILISECONDS, DISPLAY_MINUTES, DISPLAY_SECONDS, EMPTY_DATA, EMPTY_GUID, FASTNERS, HOUR, MASS, MHRBASIS, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS, TIME, defaultPageSize } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
-import { gridDataAdded, isDataChange, setIdsOfProcess, setIdsOfProcessGroup, setProcessGroupGrid, setRMCCErrors, setSelectedDataOfCheckBox } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setIdsOfProcess, setIdsOfProcessGroup, setProcessApplicabilitySelect, setProcessGroupGrid, setRMCCErrors, setSelectedDataOfCheckBox } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
@@ -114,7 +114,6 @@ function ProcessCost(props) {
     }
   }, [])
 
-
   /**
    *
    * @param {*} arr
@@ -200,6 +199,7 @@ function ProcessCost(props) {
           props?.setAssemblyProcessCost(tabData?.CostingProcessCostResponse ? tabData?.CostingProcessCostResponse : [], Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
         }
         else {
+          
           props.setConversionCost(tabData, Params, item)
         }
       }
@@ -321,11 +321,13 @@ function ProcessCost(props) {
       tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
       const overheadCosts = getOverheadAndProfitCostTotal(tempArray, "Overhead");
       const profitCosts = getOverheadAndProfitCostTotal(tempArray, "Profit");
+      const rejectionCosts = getOverheadAndProfitCostTotal(tempArray, "Rejection");
 
       const totals = {
         NetProcessCost: tempArray?.reduce((acc, el) => acc + checkForNull(el.ProcessCost), 0) || 0,
         NetProcessCostForOverhead: overheadCosts.overheadProcessCost,
         NetProcessCostForProfit: profitCosts.profitProcessCost,
+        NetProcessCostForRejection: rejectionCosts.rejectionProcessCost,
       }
 
       // const totals = tempArray?.reduce((acc, el) => ({
@@ -375,10 +377,8 @@ function ProcessCost(props) {
         ProcessCalculationId: EMPTY_GUID,
         ProcessCalculatorId: weightData.ProcessCalculationId,
         WeightCalculatorRequest: weightData,
-        CostingConditionMasterAndTypeLinkingId: processTempData?.Applicability?.value || null,
-        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === processTempData?.Applicability?.value)?.label || null,
+        CostingConversionApplicabilityDetails: processTempData?.Applicability,
         Cavity: weightData?.Cavity
-
         //...netCosts
       }
 
@@ -396,11 +396,13 @@ function ProcessCost(props) {
         NetProcessCost: acc.NetProcessCost + checkForNull(el.ProcessCost),
         NetProcessCostForOverhead: acc.NetProcessCostForOverhead + checkForNull(el.NetProcessCostForOverhead),
         NetProcessCostForProfit: acc.NetProcessCostForProfit + checkForNull(el.NetProcessCostForProfit),
+        NetProcessCostForRejection: acc.NetProcessCostForRejection + checkForNull(el.NetProcessCostForRejection),
         Quantity: acc.Quantity + checkForNull(el.Quantity)
       }), {
         NetProcessCost: 0,
         NetProcessCostForOverhead: 0,
         NetProcessCostForProfit: 0,
+        NetProcessCostForRejection: 0,
         Quantity: 0
       });
 
@@ -412,8 +414,7 @@ function ProcessCost(props) {
         ProductionPerHour: tempData.UOMType !== TIME ? '' : ProductionPerHour,
         ProcessCost: groupTotals.NetProcessCost,
         ProcessList: gridTempArr,
-        CostingConditionMasterAndTypeLinkingId: processTempData.Applicability?.value || null,
-        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === processTempData.Applicability?.value)?.label || null,
+        CostingConversionApplicabilityDetails: processTempData.Applicability,
         ...groupTotals // Add net cost totals to the group
 
       }
@@ -423,10 +424,12 @@ function ProcessCost(props) {
         NetProcessCost: acc.NetProcessCost + checkForNull(el.ProcessCost),
         NetProcessCostForOverhead: acc.NetProcessCostForOverhead + checkForNull(el.NetProcessCostForOverhead),
         NetProcessCostForProfit: acc.NetProcessCostForProfit + checkForNull(el.NetProcessCostForProfit),
+        NetProcessCostForRejection: acc.NetProcessCostForRejection + checkForNull(el.NetProcessCostForRejection),
       }), {
         NetProcessCost: 0,
         NetProcessCostForOverhead: 0,
         NetProcessCostForProfit: 0,
+        NetProcessCostForRejection: 0,
       });
 
       tempArr = {
@@ -580,7 +583,10 @@ function ProcessCost(props) {
         // el.CostingConditionNumber = processApplicabilitySelect?.find(type => type?.value === el?.Applicability?.value)?.label || null
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el?.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el?.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue(`${ProcessGridFields}.${index}.CostingConditionNumber`, el?.CostingConditionNumber ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
+        setValue(`${ProcessGridFields}.${index}.CostingConditionNumber`, el?.CostingConversionApplicabilityDetails?.map(item => ({
+          label: item.CostingConditionNumber,
+          value: item.CostingConditionMasterAndTypeLinkingId
+        })))
         setValue(`${ProcessGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
         return null
       })
@@ -665,8 +671,7 @@ function ProcessCost(props) {
               ConvertedExchangeRateId: el?.ConvertedExchangeRateId === EMPTY_GUID ? null : el?.ConvertedExchangeRateId,
               CurrencyExchangeRate: el?.CurrencyExchangeRate,
               IsDetailed: el?.IsDetailed,
-              CostingConditionNumber: el?.CostingConditionNumber,
-              CostingConditionMasterAndTypeLinkingId: el?.CostingConditionMasterAndTypeLinkingId,
+              CostingConversionApplicabilityDetails: el?.CostingConversionApplicabilityDetails,
               Type: el?.Type,
               Percentage: el?.Type === COSTAPPLICABILITYBASIS ? el?.Percentage : '-',
               Applicability: el?.Type === COSTAPPLICABILITYBASIS ? el?.Applicability : '-',
@@ -720,8 +725,7 @@ function ProcessCost(props) {
             ConvertedExchangeRateId: item.ConvertedExchangeRateId === EMPTY_GUID ? null : item.ConvertedExchangeRateId,
             CurrencyExchangeRate: item.CurrencyExchangeRate,
             IsDetailed: item.IsDetailed,
-            CostingConditionNumber: item?.CostingConditionNumber,
-            CostingConditionMasterAndTypeLinkingId: item?.CostingConditionMasterAndTypeLinkingId,
+            CostingConversionApplicabilityDetails: item?.CostingConversionApplicabilityDetails,
             Type: item?.Type,
             Percentage: item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-',
             Applicability: item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-',
@@ -781,8 +785,7 @@ function ProcessCost(props) {
             ConvertedExchangeRateId: item?.ConvertedExchangeRateId === EMPTY_GUID ? null : item?.ConvertedExchangeRateId,
             CurrencyExchangeRate: el?.CurrencyExchangeRate,
             IsDetailed: el?.IsDetailed,
-            CostingConditionNumber: el?.CostingConditionNumber,
-            CostingConditionMasterAndTypeLinkingId: el?.CostingConditionMasterAndTypeLinkingId,
+            CostingConversionApplicabilityDetails: el?.CostingConversionApplicabilityDetails,
             Type: el?.Type,
             Percentage: el?.Type === COSTAPPLICABILITYBASIS ? el?.Percentage : '-',
             Applicability: el?.Type === COSTAPPLICABILITYBASIS ? el?.Applicability : '-',
@@ -877,7 +880,10 @@ function ProcessCost(props) {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el?.ProcessCost, initialConfiguration?.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, checkForDecimalAndNull(el?.Quantity, getConfigurationKey()?.NoOfDecimalForInputOutput))
         setValue(`${ProcessGridFields}.${i}.remarkPopUp`, el?.Remark)
-        setValue(`${ProcessGridFields}.${i}.CostingConditionNumber`, el?.CostingConditionNumber ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
+        setValue(`${ProcessGridFields}.${i}.CostingConditionNumber`, el?.CostingConversionApplicabilityDetails?.map(item => ({
+          label: item.CostingConditionNumber,
+          value: item.CostingConditionMasterAndTypeLinkingId
+        })))
         setValue(`${ProcessGridFields}.${i}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
 
         return null
@@ -1003,8 +1009,7 @@ function ProcessCost(props) {
         ProductionPerHour: tempData.UOMType !== TIME ? '-' : productionPerHour,
         ProcessCost: processCostResult?.processCost,
         ProcessCostWithOutInterestAndDepreciation: processCostResult?.processCostWithoutInterestAndDepreciation,
-        CostingConditionMasterAndTypeLinkingId: tempData?.CostingConditionMasterAndTypeLinkingId || null,
-        CostingConditionNumber: tempData?.CostingConditionNumber || null,
+        CostingConversionApplicabilityDetails: tempData?.CostingConversionApplicabilityDetails,
         MHRWithOutInterestAndDepreciation: tempData?.MHRWithOutInterestAndDepreciation,
         //...netCosts
       }
@@ -1106,17 +1111,45 @@ function ProcessCost(props) {
 
     const overheadCosts = getOverheadAndProfitCostTotal(tempArray, "Overhead");
     const profitCosts = getOverheadAndProfitCostTotal(tempArray, "Profit");
+    const rejectionCosts = getOverheadAndProfitCostTotal(tempArray, "Rejection");
 
     return {
       NetProcessCost: tempArray?.reduce((acc, el) => acc + checkForNull(el.ProcessCost), 0) || 0,
       NetProcessCostForOverhead: overheadCosts.overheadProcessCost,
       NetProcessCostForProfit: profitCosts.profitProcessCost,
+      NetProcessCostForRejection: rejectionCosts.rejectionProcessCost,
     };
   };
 
   const onHandleChangeApplicability = (e, index, item) => {
+    // Check if any applicability is being duplicated
+    if (e && Array.isArray(e)) {
+      const labels = e.map(item => item.label.toLowerCase());
+      
+      // Check for duplicates using Set
+      if (new Set(labels).size !== labels.length) {
+        Toaster.warning(`Duplicate applicability is not allowed`);
+        return false;
+      }
+
+      // Define conflicting pairs
+      const conflictingPairs = [
+        ['overhead', 'overhead(excluding int. + dep.)'],
+        ['profit', 'profit(excluding int. + dep.)'], 
+        ['rejection', 'rejection(excluding int. + dep.)']
+      ];
+
+      // Check for conflicts
+      for (const [type1, type2] of conflictingPairs) {
+        if (labels.includes(type1) && labels.includes(type2)) {
+          const capitalizedType = type1.charAt(0).toUpperCase() + type1.slice(1);
+          Toaster.warning(`Cannot select both ${capitalizedType} and ${capitalizedType}(Excluding Int. + Dep.)`);
+          return false;
+        }
+      }
+    }
     if (item?.Type === COSTAPPLICABILITYBASIS) {
-      if (e?.label === APPLICABILITY_OVERHEAD_EXCL || e?.label === APPLICABILITY_PROFIT_EXCL || e?.label === APPLICABILITY_OVERHEAD_PROFIT_EXCL || e?.label === APPLICABILITY_OVERHEAD_EXCL_PROFIT || e?.label === APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL) {
+      if (e?.label === APPLICABILITY_OVERHEAD_EXCL || e?.label === APPLICABILITY_PROFIT_EXCL ) {
         Toaster.warning("For cost applicability basis, only Overhead and Profit applicability is allowed.")
 
         return false
@@ -1130,9 +1163,6 @@ function ProcessCost(props) {
     const isExcludingApplicability = [
       APPLICABILITY_OVERHEAD_EXCL,
       APPLICABILITY_PROFIT_EXCL,
-      APPLICABILITY_OVERHEAD_PROFIT_EXCL,
-      APPLICABILITY_OVERHEAD_EXCL_PROFIT,
-      APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
     ].includes(e?.label);
 
     // Show warning if excluding applicability selected but not detailed form
@@ -1144,17 +1174,19 @@ function ProcessCost(props) {
     if (!e) {
       tempData = {
         ...tempData,
-        CostingConditionMasterAndTypeLinkingId: null,
-        CostingConditionNumber: null,
+        CostingConversionApplicabilityDetails: [],
         NetProcessCostForOverhead: 0,
         NetProcessCostForProfit: 0,
+        NetProcessCostForRejection: 0,
       }
     } else {
       //const netCosts = calculateNetCosts(tempData.ProcessCost, e?.label, "Process", tempData?.ProcessCostWithOutInterestAndDepreciation);
       tempData = {
         ...tempData,
-        CostingConditionMasterAndTypeLinkingId: e?.value,
-        CostingConditionNumber: e?.label,
+        CostingConversionApplicabilityDetails:  e && e?.map(item => ({
+          CostingConditionMasterAndTypeLinkingId: item.value,
+          CostingConditionNumber: item.label
+        }))
         // ...netCosts
       }
     }
@@ -1166,9 +1198,10 @@ function ProcessCost(props) {
         //const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e?.label, "Process", childProcess?.ProcessCostWithOutInterestAndDepreciation);
         return {
           ...childProcess,
-          CostingConditionMasterAndTypeLinkingId: e?.value,
-          CostingConditionNumber: e?.label,
-
+          CostingConversionApplicabilityDetails: e && e?.map(item => ({
+            CostingConditionMasterAndTypeLinkingId: item.value,
+            CostingConditionNumber: item.label
+          }))
           // ...childNetCosts
         };
       });
@@ -1190,9 +1223,6 @@ function ProcessCost(props) {
         checkForNull(tabData.NetOtherOperationCost !== null ? tabData.NetOtherOperationCost : 0),
       ...totals,
       CostingProcessCostResponse: apiArr,
-      CostingConditionMasterAndTypeLinkingId: e?.value,
-      CostingConditionNumber: e?.label,
-
     }
 
     // Update all state
@@ -1200,9 +1230,7 @@ function ProcessCost(props) {
     setTabData(tempArr);
     setGridData(gridTempArr);
     dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)));
-
   }
-
 
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex, processName) => {
 
@@ -1240,8 +1268,7 @@ function ProcessCost(props) {
         ProcessCost: processCost,
         ProcessCostWithOutInterestAndDepreciation: ProcessCostWithOutInterestAndDepreciation,
         //...netCosts,
-        CostingConditionMasterAndTypeLinkingId: parentApplicability,
-        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === parentApplicability)?.label,
+        CostingConversionApplicabilityDetails: parentApplicability,
       }
     } else {
       // Set process cost to 0 when quantity is empty/null/undefined
@@ -1263,11 +1290,13 @@ function ProcessCost(props) {
       Quantity: acc?.Quantity + checkForNull(el?.Quantity),
       NetProcessCostForOverhead: acc?.NetProcessCostForOverhead + checkForNull(el?.NetProcessCostForOverhead),
       NetProcessCostForProfit: acc?.NetProcessCostForProfit + checkForNull(el?.NetProcessCostForProfit),
+      NetProcessCostForRejection: acc?.NetProcessCostForRejection + checkForNull(el?.NetProcessCostForRejection),
     }), {
       ProcessCost: 0,
       Quantity: 0,
       NetProcessCostForOverhead: 0,
       NetProcessCostForProfit: 0,
+      NetProcessCostForRejection: 0,
     });
 
     let groupProductionPerHour = findProductionPerHour(groupTotals.Quantity)
@@ -1331,11 +1360,11 @@ function ProcessCost(props) {
     }));
 
     // Calculate totals for all operations
-    const operationNetCosts = calculateNetCostTotals(operationsWithNetCosts, ['NetOperationCostForOverhead', 'NetOperationCostForProfit']
+    const operationNetCosts = calculateNetCostTotals(operationsWithNetCosts, ['NetOperationCostForOverhead', 'NetOperationCostForProfit','NetOperationCostForRejection']
     );
 
     // Calculate process net costs
-    const processNetCosts = calculateNetCostTotals(gridData, ['NetProcessCostForOverhead', 'NetProcessCostForProfit',]
+    const processNetCosts = calculateNetCostTotals(gridData, ['NetProcessCostForOverhead', 'NetProcessCostForProfit','NetProcessCostForRejection']
     );
 
     const tempArr = {
@@ -1803,7 +1832,7 @@ ${isDetailedText}`
                     <th style={{ width: "100px" }}>{`Cavity`}</th>
                     <th style={{ width: "140px" }} >{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
-                    <th style={{ width: "110px" }} >{`Applicability`}</th>
+                    <th style={{ width: "160px" }} >{`Applicability`}</th>
                     <th style={{ width: "145px" }}><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -1883,7 +1912,7 @@ ${isDetailedText}`
                             <td>
                               {
                                 <>
-                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type, item?.ProcessCostWithOutInterestAndDepreciation,item?.IsDetailed)} />
+                                  <TooltipCustom disabledIcon={true} id={`process-net-cost${index}`} tooltipText={processNetCostFormula(item.UOM, item?.Type, item?.ProcessCostWithOutInterestAndDepreciation, item?.IsDetailed)} />
                                   <TextFieldHookForm
                                     label=""
                                     name={`${ProcessGridFields}.${index}.ProcessCost`}
@@ -1928,8 +1957,7 @@ ${isDetailedText}`
                                 />
                               </td>
                             }
-
-                            <td>
+                            <td >
                               <SearchableSelectHookForm
                                 name={`${ProcessGridFields}.${index}.CostingConditionNumber`}
                                 type="text"
@@ -1940,16 +1968,17 @@ ${isDetailedText}`
                                 register={register}
                                 mandatory={false}
                                 placeholder={'Select'}
-                                customClassName="costing-selectable-dropdown process-drawer-dropdown"
-                                defaultValue={item?.CostingConditionMasterAndTypeLinkingId ? {
-                                  label: item?.CostingConditionNumber,
-                                  value: item?.CostingConditionMasterAndTypeLinkingId
-                                } : null}
+                                customClassName="mt-2"
+                                defaultValue={item?.CostingConversionApplicabilityDetails?.map(item => ({
+                                  label: item.CostingConditionNumber,
+                                  value: item.CostingConditionMasterAndTypeLinkingId
+                                }))}
                                 options={processApplicabilitySelect}
                                 required={false}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index, item) }}
                                 disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
+                                isMulti={true}
                               />
                             </td>
 
