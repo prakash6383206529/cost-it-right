@@ -2849,7 +2849,7 @@ class AddMachineRate extends Component {
                                     id="AddMachineRate_Save"
                                     type="submit"
                                     className="user-btn mr5 save-btn"
-                                    disabled={isViewMode || setDisable || disableSendForApproval || this.state?.showWarning || this.state.showPlantWarning || this.state.machineNumber === ''}
+                                    disabled={false}
                                   >
                                     <div className={"save-icon"}></div>
                                     {isEditFlag ? "Update" : "Save"}

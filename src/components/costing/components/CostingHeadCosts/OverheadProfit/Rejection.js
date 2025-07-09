@@ -198,12 +198,12 @@ function Rejection(props) {
         const BOPCKDWithoutHandling=IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBOPImportCostWithOutHandlingCharge);
         const BOPV2VWithoutHandling=IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBOPSourceCostWithOutHandlingCharge);
         const BOPOSPWithoutHandling=IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge);
-        
-        const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetCCForOtherTechnologyCost) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
-        const CC = partType ? IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
-            : checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
-            : IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
-                : checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost);
+        console.log(headerCosts,'headerCosts')
+        const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetCCForOtherTechnologyCostForRejection) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts?.NetCCForOtherTechnologyCostForRejection)
+        const CC = partType ? IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + checkForNull(headerCosts?.NetProcessCostForRejection) + checkForNull(headerCosts?.NetOperationCostForRejection) - checkForNull(headerCosts?.NetCCForOtherTechnologyCostForRejection)
+            : checkForNull(headerCosts?.NetProcessCostForRejection) + checkForNull(headerCosts?.NetOperationCostForRejection) - checkForNull(headerCosts?.NetCCForOtherTechnologyCostForRejection)
+            : IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCostForRejection)
+                : checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCostForRejection);
 
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
@@ -319,10 +319,20 @@ function Rejection(props) {
     const checkRejectionApplicability = (applicability) => {
         const RM = IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts.NetRawMaterialsCost);
         const BOP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts.NetBoughtOutPartCost)) : checkForNull(headerCosts.NetBoughtOutPartCost);
-        const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts.NetCCForOtherTechnologyCost) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts.NetCCForOtherTechnologyCost)
+        const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection)
         const CC = IsIncludeApplicabilityForChildParts ?
-            checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + (partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts.NetCCForOtherTechnologyCost)) :
-            partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts.NetCCForOtherTechnologyCost);
+            checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - 
+            checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + 
+            (partType ? checkForNull(headerCosts.NetProcessCostForRejection) + 
+            checkForNull(headerCosts.NetOperationCostForRejection) : 
+            checkForNull(headerCosts.NetConversionCost) - 
+            checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) - 
+            checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection)) :
+            partType ? checkForNull(headerCosts.NetProcessCostForRejection) + 
+            checkForNull(headerCosts.NetOperationCostForRejection) : 
+            checkForNull(headerCosts.NetConversionCost) - 
+            checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) - 
+            checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection);
 
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)

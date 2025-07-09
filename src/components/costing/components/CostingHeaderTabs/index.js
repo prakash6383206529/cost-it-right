@@ -42,7 +42,7 @@ import { useTranslation } from 'react-i18next';
 import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
 import Toaster from '../../../common/Toaster';
 import TabToolCost from './TabToolCost';
-import { getCostingCondition, getExchangeRateSource, getTaxCodeSelectList } from '../../../../actions/Common';
+import { fetchApplicabilityList, getCostingCondition, getExchangeRateSource, getTaxCodeSelectList } from '../../../../actions/Common';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import { getCurrencySelectList } from '../../../masters/actions/ExchangeRateMaster';
@@ -207,7 +207,7 @@ function CostingHeaderTabs(props) {
     const currentTabData = RMCCTabData?.[0];
     if (currentTabData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse?.length > 0) {
       const operations = currentTabData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse;
-      const hasMissingApplicability = operations?.some(item => !item?.CostingConditionMasterAndTypeLinkingId);
+      const hasMissingApplicability = operations?.some(item => !item?.CostingConversionApplicabilityDetails);
       if (operations?.length > 0 && hasMissingApplicability) {
         Toaster.warning('Please select Applicability for all operations');
         return false;
@@ -436,23 +436,23 @@ function CostingHeaderTabs(props) {
 
   useEffect(() => {
     const operationConditionTypeId = getCostingConditionTypes(COSTINGOVERHEADANDPROFTOPERATION)
-    dispatch(getCostingCondition(null, operationConditionTypeId, isRequestForMultiTechnology, (res) => {
-      if (res?.data?.DataList) {
-        const operationData = res?.data?.DataList.map(item => ({
-          label: item?.CostingConditionNumber,
-          value: item?.CostingConditionMasterId
-        }));
+    dispatch(fetchApplicabilityList(null, operationConditionTypeId, isRequestForMultiTechnology, (res) => {
+      if (res?.data?.SelectList) {
+        const operationData = res?.data?.SelectList.map(item => ({
+          label: item?.Text,
+          value: item?.Value
+        })).filter(item => item.value !== "0");
         dispatch(setOperationApplicabilitySelect(operationData));
       }
     }))
 
     const processConditionTypeId = getCostingConditionTypes(COSTINGOVERHEADANDPROFTFORPROCESS)
-    dispatch(getCostingCondition(null, processConditionTypeId, isRequestForMultiTechnology, (res) => {
-      if (res?.data?.DataList) {
-        const processData = res?.data?.DataList.map(item => ({
-          label: item?.CostingConditionNumber,
-          value: item?.CostingConditionMasterId
-        }));
+    dispatch(fetchApplicabilityList(null, processConditionTypeId, isRequestForMultiTechnology, (res) => {
+      if (res?.data?.SelectList) {
+        const processData = res?.data?.SelectList.map(item => ({
+          label: item?.Text,
+          value: item?.Value
+        })).filter(item => item.value !== "0");
         dispatch(setProcessApplicabilitySelect(processData));
       }
     }))

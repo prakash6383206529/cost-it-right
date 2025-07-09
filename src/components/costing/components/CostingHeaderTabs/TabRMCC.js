@@ -159,6 +159,10 @@ function TabRMCC(props) {
           NetCCForOtherTechnologyCost: TopHeaderValues?.NetCCForOtherTechnologyCost ?? 0,
           NetCCForOtherTechnologyCostForOverhead: TopHeaderValues?.NetCCForOtherTechnologyCostForOverhead ?? 0,
           NetCCForOtherTechnologyCostForProfit: TopHeaderValues?.NetCCForOtherTechnologyCostForProfit ?? 0,
+          NetOperationCostForRejection:TopHeaderValues?.NetOperationCostForRejection??0,
+          NetProcessCostForRejection:TopHeaderValues?.NetProcessCostForRejection??0,
+          NetWeldingCostForRejection:TopHeaderValues?.NetWeldingCostForRejection??0,
+          NetCCForOtherTechnologyCostForRejection:TopHeaderValues?.NetCCForOtherTechnologyCostForRejection??0,
           MinimumMachineTonnageRequired: TopHeaderValues?.MinimumMachineTonnageRequired ? TopHeaderValues.MinimumMachineTonnageRequired : null,
           NetBOPDomesticCost: TopHeaderValues?.NetBOPDomesticCost ?? 0,
           NetBOPImportCost: TopHeaderValues?.NetBOPImportCost ?? 0,
@@ -717,6 +721,10 @@ function TabRMCC(props) {
         partObj.CostingPartDetails.NetWeldingCost = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, Number(isPartType?.value) !== PART_TYPE_ASSEMBLY ? obj?.TechnologyId : RMCCTabData[0]?.TechnologyId)?.weldingCost
         partObj.CostingPartDetails.NetWeldingCostForOverhead = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, Number(isPartType?.value) !== PART_TYPE_ASSEMBLY ? obj?.TechnologyId : RMCCTabData[0]?.TechnologyId)?.overheadWeldingCost;
         partObj.CostingPartDetails.NetWeldingCostForProfit = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, Number(isPartType?.value) !== PART_TYPE_ASSEMBLY ? obj?.TechnologyId : RMCCTabData[0]?.TechnologyId)?.profitWeldingCost;
+        partObj.CostingPartDetails.NetOperationCostForRejection = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, Number(isPartType?.value) !== PART_TYPE_ASSEMBLY ? obj?.TechnologyId : RMCCTabData[0]?.TechnologyId)?.rejectionOperationCost;
+        partObj.CostingPartDetails.NetProcessCostForRejection = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, Number(isPartType?.value) !== PART_TYPE_ASSEMBLY ? obj?.TechnologyId : RMCCTabData[0]?.TechnologyId)?.rejectionProcessCost;
+        partObj.CostingPartDetails.NetWeldingCostForRejection = getOverheadAndProfitCostTotal(gridData?.CostingOperationCostResponse, Number(isPartType?.value) !== PART_TYPE_ASSEMBLY ? obj?.TechnologyId : RMCCTabData[0]?.TechnologyId)?.rejectionWeldingCost;
+        partObj.CostingPartDetails.NetCCForOtherTechnologyCostForRejection = getOverheadAndProfitCostTotal(gridData?.CostingProcessCostResponse, Number(isPartType?.value) !== PART_TYPE_ASSEMBLY ? obj?.TechnologyId : RMCCTabData[0]?.TechnologyId)?.ccForOtherTechnologyCostForRejection;
         // partObj.CostingPartDetails.NetOperationCostForOverheadExcl = gridData?.NetOperationCostForOverheadExcl
         // partObj.CostingPartDetails.NetOperationCostForProfitExcl = gridData?.NetOperationCostForProfitExcl
 
@@ -2408,7 +2416,7 @@ function TabRMCC(props) {
   const saveCosting = debounce(handleSubmit(() => {
     if (ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse?.length > 0) {
       const operations = ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse;
-      const hasMissingApplicability = operations?.some(item => !item?.CostingConditionMasterAndTypeLinkingId);
+      const hasMissingApplicability = operations?.some(item => !item?.CostingConversionApplicabilityDetails);
       if (operations?.length > 0 && hasMissingApplicability) {
         Toaster.warning('Please select Applicability for all operations');
         return false;

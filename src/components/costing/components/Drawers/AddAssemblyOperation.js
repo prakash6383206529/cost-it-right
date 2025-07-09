@@ -169,7 +169,7 @@ function AddAssemblyOperation(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
-    const hasMissingApplicability = operationGridData?.some(item => !item?.CostingConditionMasterAndTypeLinkingId);
+    const hasMissingApplicability = operationGridData?.some(item => !item?.CostingConversionApplicabilityDetails);
     if (operationGridData?.length > 0 && hasMissingApplicability) {
       Toaster.warning('Please select Applicability for all operations');
       return false;
