@@ -3,12 +3,13 @@ import { Col, Row } from 'reactstrap'
 import { TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { NUMBERMAXLENGTH } from '../../../../../config/masterData'
-import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLimit6, number } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength250, number } from '../../../../../helper'
 import { debounce } from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSurfaceData } from '../../../actions/Costing'
 import _ from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip'
+import { useLabels } from '../../../../../helper/core'
 
 const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Params, item }) => {
     const { register, control, formState: { errors }, setValue, getValues } = useForm({
@@ -22,6 +23,7 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
     const [state, setState] = useState({
         showHanger: true
     })
+    const { remarkProcessNameLabel } = useLabels()
     const { NoOfDecimalForInputOutput, NoOfDecimalForPrice } = useSelector(state => state.auth.initialConfiguration)
     const hangerCost = useWatch({
         control,
@@ -101,6 +103,27 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
             {(state.showHanger || isSummary) && <Row>
                 <Col md="4">
                     <TextFieldHookForm
+                        label={`${remarkProcessNameLabel}`}
+                        name={"HangerRemark"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={!!(checkForNull(hangerCost) > 0)}
+                        rules={{
+                            required: !!(checkForNull(hangerCost) > 0),
+                            validate: { checkWhiteSpaces, hashValidation, maxLength250 },
+
+                        }}
+                        handleChange={handleRemark}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.HangerRemark}
+                        disabled={ViewMode || IsLocked}
+                    />
+                </Col>
+                <Col md="4">
+                    <TextFieldHookForm
                         label="Hanger Factor (Rate)"
                         name={`HangerFactor`}
                         Controller={Controller}
@@ -169,29 +192,6 @@ const Hanger = ({ ViewMode, isSummary, viewCostingDataObj, setSurfaceData, Param
                         }}
                         errors={errors && errors.HangerCostPerPart}
                         disabled={true}
-                    />
-                </Col>
-                <Col md="4">
-                    <TextAreaHookForm
-                        label="Remarks"
-                        name={"HangerRemark"}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={!!(checkForNull(hangerCost) > 0)}
-                        rules={{
-                            required: !!(checkForNull(hangerCost) > 0),
-                            maxLength: {
-                                value: 255,
-                                message: "Remark should be less than 255 words"
-                            },
-                        }}
-                        handleChange={handleRemark}
-                        defaultValue={""}
-                        className=""
-                        customClassName={"withBorder"}
-                        errors={errors.HangerRemark}
-                        disabled={ViewMode || IsLocked}
                     />
                 </Col>
             </Row>}

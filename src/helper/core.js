@@ -52,6 +52,7 @@ export const useLabels = () => {
     drawing : tMasterLabels('Drawing', { defaultValue: 'Drawing' }),
     hpdcLabel: tMasterLabels('hpdcLabel', { defaultValue: 'HPDC' }),
     groupCodeLabel: tMasterLabels('GroupCodeLabel', { defaultValue: 'Group Code' }),
+    remarkProcessNameLabel: tMasterLabels('RemarkProcessNameLabel', { defaultValue: 'Remark' }),
   };
 };
 

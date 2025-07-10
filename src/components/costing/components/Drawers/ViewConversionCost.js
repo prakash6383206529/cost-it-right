@@ -71,7 +71,7 @@ function ViewConversionCost(props) {
   const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
   const ConsumptionWithUOM = <span>Consumption (ml/ dm<sup>2</sup>)</span>
   const dispatch = useDispatch()
-  const { technologyLabel } = useLabels();
+  const { technologyLabel, remarkProcessNameLabel } = useLabels();
 
   useEffect(() => {
     if (IsAssemblyCosting === true && isPDFShow === false) {
@@ -867,7 +867,7 @@ function ViewConversionCost(props) {
                   <th>Hanger Factor (Rate)</th>
                   <th>No. of Parts per Hanger</th>
                   <th>Hanger Cost per Part</th>
-                  <th>Remark</th>
+                  <th>{remarkProcessNameLabel}</th>
                 </tr>
 
                 {filteredData.map((item, index) => (
