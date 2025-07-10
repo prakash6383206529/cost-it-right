@@ -391,6 +391,7 @@ class AddIndivisualProduct extends Component {
         const { handleSubmit, initialConfiguration, t, productHierarchyData } = this.props;
         const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
         const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
+        const groupCodeLabel = LabelsClass(t, 'MasterLabels').groupCodeLabel;
         const productLabel = productHierarchyData.length > 0 ? productHierarchyData[productHierarchyData?.length - 1]?.ProductHierarchyName : 'Product'
         const { isEditFlag, isViewMode, setDisable } = this.state;
         return (
@@ -472,7 +473,7 @@ class AddIndivisualProduct extends Component {
                                                         initialConfiguration?.IsGroupCodeDisplay && (
                                                             <Col md="3" className="d-flex">
                                                                 <Field
-                                                                    label={`Group Code`}
+                                                                    label={`${groupCodeLabel}`}
                                                                     name={"ProductGroupCode"}
                                                                     type="text"
                                                                     placeholder={isViewMode ? '-' : "Enter"}

@@ -26,6 +26,7 @@ import PaintAndMasking from './PaintAndMasking';
 import ExtraCost from './ExtraCost';
 import _ from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip';
+import { useLabels } from '../../../../../helper/core';
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
   const previousTab = useContext(PreviousTabData) || 0;
@@ -35,6 +36,7 @@ function SurfaceTreatment(props) {
     reValidateMode: 'onChange',
   });
   const dispatch = useDispatch()
+  const { remarkProcessNameLabel } = useLabels()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
@@ -340,7 +342,7 @@ function SurfaceTreatment(props) {
     if (errorObjectSurfaceTreatment && (count !== 0 || countST !== 0)) return false;
     if(hangerCostDetails && hangerCostDetails?.hasOwnProperty("HangerCostPerPart") && checkForNull(hangerCostDetails?.HangerCostPerPart) > 0){
       if(!hangerCostDetails?.HangerRemark || hangerCostDetails?.HangerRemark === ""){
-        Toaster.warning("Please add Remarks in Hanger Cost")
+        Toaster.warning(`Please add ${remarkProcessNameLabel} in Hanger Cost`)
         return
       }
     }

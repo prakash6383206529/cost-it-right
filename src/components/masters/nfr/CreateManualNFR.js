@@ -35,6 +35,7 @@ import { Steps } from './TourMessages';
 import { autoCompleteDropdownPart } from '../../common/CommonFunctions';
 import { maxLength20, validateFileName, minLength3, maxLength512, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import AddForecast from './AddForecast';
+import { useLabels } from '../../../helper/core';
 // Assets
 import redcrossImg from '../../../assests/images/red-cross.png';
 import BOMViewer from '../part-master/BOMViewer';
@@ -50,6 +51,7 @@ function CreateManualNFR(props) {
         reValidateMode: 'onChange'
     })
     const dispatch = useDispatch();
+    const { groupCodeLabel } = useLabels()
 
     // Redux selectors
     const plantSelectList = useSelector(state => state?.comman?.plantSelectList);
@@ -1049,7 +1051,7 @@ function CreateManualNFR(props) {
                                     </Col>
                                     <Col md="3">
                                         <SearchableSelectHookForm
-                                            label={"Group Code"}
+                                            label={`${groupCodeLabel}`}
                                             name={`GroupCode`}
                                             id="AddNFR_Group_Code"
                                             placeholder={"Select"}
@@ -1128,7 +1130,7 @@ function CreateManualNFR(props) {
                                                     <th>Part Name</th>
                                                     <th>Description</th>
                                                     <th>UOM</th>
-                                                    <th>Group Code</th>
+                                                    <th>{groupCodeLabel}</th>
                                                     <th>Segment</th>
                                                     <th>Action</th>
                                                 </tr>
