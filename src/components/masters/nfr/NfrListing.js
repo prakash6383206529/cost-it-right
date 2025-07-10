@@ -33,6 +33,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import _ from 'lodash';
 import { NFR_LISTING_DOWNLOAD_EXCEL } from '../../../config/masterData';
 import { filterParams } from '../../common/DateFilter';
+import { useLabels } from '../../../helper/core';
 // import { ExcelFile } from 'react-excel';
 const ExcelFile = ReactExport.ExcelFile;
 
@@ -98,6 +99,7 @@ function NfrListing(props) {
     const [filterModel, setFilterModel] = useState({});
     const [warningMessage, setWarningMessage] = useState(false);
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
+    const { groupCodeLabel } = useLabels()
 
     const floatingFilterNfr = {
         maxValue: 12,
@@ -765,7 +767,7 @@ function NfrListing(props) {
                                                 <AgGridColumn field="CustomerPartNo" headerName="Part No." minWidth={160} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                
                                                 <AgGridColumn field="PartName" headerName="Part Name" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="GroupCode" headerName='Group Code' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="GroupCode" headerName={`${groupCodeLabel}`} minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 {/* <AgGridColumn field="PartDescription" headerName="Part Description" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn> */}
                                                 <AgGridColumn field="Segment" headerName="Segment" minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant Name' minWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
