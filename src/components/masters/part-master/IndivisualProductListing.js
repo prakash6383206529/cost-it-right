@@ -152,6 +152,12 @@ const IndivisualProductListing = (props) => {
     const cellValue = props?.valueFormatted
       ? props.valueFormatted
       : props?.value;
+    
+    let isDeleteButton = false
+    const rowData = props?.data
+    if (permissions?.Delete && !rowData.IsAssociated) {
+        isDeleteButton = true
+    } 
     return (
       <>
         {permissions.View && (
@@ -170,7 +176,7 @@ const IndivisualProductListing = (props) => {
             onClick={() => viewOrEditItemDetails(cellValue, false)}
           />
         )}
-        {permissions.Delete && (
+        {isDeleteButton && (
           <button
             title="Delete"
             className="Delete Tour_List_Delete"

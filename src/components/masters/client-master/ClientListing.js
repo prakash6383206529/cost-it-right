@@ -121,6 +121,11 @@ const ClientListing = React.memo(() => {
   const buttonFormatter = (props) => {
     const { ViewAccessibility, EditAccessibility, DeleteAccessibility } = state;
     const cellValue = props?.value;
+    let isDeleteButton = false
+    const rowData = props?.data
+    if (DeleteAccessibility && !rowData.IsAssociated) {
+        isDeleteButton = true
+    }  
 
     return (
       <>
@@ -128,7 +133,7 @@ const ClientListing = React.memo(() => {
         )}
         {EditAccessibility && (<Button id={`clientListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
-        {DeleteAccessibility && (<Button id={`clientListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
+        {isDeleteButton && (<Button id={`clientListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
         )}
       </>
     );
