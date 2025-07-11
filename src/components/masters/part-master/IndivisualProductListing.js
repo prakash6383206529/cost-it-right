@@ -58,7 +58,7 @@ const IndivisualProductListing = (props) => {
   const { initialConfiguration } = useSelector((state) => state.auth);
   const [showExtraData, setShowExtraData] = useState(false)
   const [render, setRender] = useState(false)
-  const { revisionNoLabel, drawingNoLabel } = useLabels()
+  const { revisionNoLabel, drawingNoLabel, groupCodeLabel } = useLabels()
   const { t } = useTranslation("common")
   useEffect(() => {
 
@@ -448,7 +448,7 @@ const IndivisualProductListing = (props) => {
             <AgGridColumn field="ProductName" headerName={`${productLabel} Name`}></AgGridColumn>
             <AgGridColumn
               field="ProductGroupCode"
-              headerName="Group Code"
+              headerName={`${groupCodeLabel}`}
               cellRenderer={"hyphenFormatter"}
             ></AgGridColumn>
             <AgGridColumn

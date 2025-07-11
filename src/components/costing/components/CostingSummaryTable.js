@@ -2949,7 +2949,7 @@ const CostingSummaryTable = (props) => {
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss (Loss%)</span>}
-                                    {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && <span className={highlighter("BurningLossWeight")}>Burning Loss Weight </span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting && <span className={highlighter("BurningLossWeight")}>Burning Loss Weight </span>}
                                     <span className={highlighter("ScrapWeight")}>Scrap Weight</span>
                                     {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("YieldPercentage")}>Yield % </span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("EffectiveDate")}>RM Base (Effective Date) </span>}
@@ -2993,7 +2993,7 @@ const CostingSummaryTable = (props) => {
                                             {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration?.NoOfDecimalForInputOutput) : ''} */}
                                           </span>}
 
-                                          {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && <span className={highlighter("BurningLossWeight")}>
+                                          {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting && <span className={highlighter("BurningLossWeight")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</span> : '')}
                                             {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration?.NoOfDecimalForInputOutput) : ''} */}
                                           </span>}

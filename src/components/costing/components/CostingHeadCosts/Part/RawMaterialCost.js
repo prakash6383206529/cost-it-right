@@ -1642,11 +1642,12 @@ function RawMaterialCost(props) {
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
+                      {getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial && <th>{`Inco Terms`}</th>}
                       {showCalculatorFunctionHeader() && <th className={`text-center weight-calculator`}>{`Weight Calculator`}</th>}
                       {<th>{`Gross Weight`}</th>}
                       {<th>{`${finishWeightLabel} Weight`}</th>}
                       {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
-                      {costData?.TechnologyId === PLASTIC && <th>{'Burning Loss Weight'}</th>}
+                      {(costData?.TechnologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting) && <th>{'Burning Loss Weight'}</th>}
                       {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery (%)`}</th>}
                       {<th className='scrap-weight'>Scrap Weight </th>}
                       {/* //Add i here for MB+ */}
@@ -1667,6 +1668,7 @@ function RawMaterialCost(props) {
                             <td>{checkForDecimalAndNull(item?.RMRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{checkForDecimalAndNull(item?.ScrapRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{item.UOM ?? '-'}</td>
+                            {getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial && <td>{item?.IncoTermDescriptionAndIncoTerm ?? '-'}</td>}
                             {
                               showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) &&
                               <td className="text-center">
@@ -1744,7 +1746,7 @@ function RawMaterialCost(props) {
                             }
                             {costData?.TechnologyId === Ferrous_Casting && <td>{checkForDecimalAndNull(item.Percentage, initialConfiguration?.NoOfDecimalForPrice)}</td>}
                             {
-                              costData?.TechnologyId === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
+                              (costData?.TechnologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting) && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                             }
                             {
                               isScrapRecoveryPercentageApplied &&

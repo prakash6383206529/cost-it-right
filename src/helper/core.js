@@ -51,6 +51,8 @@ export const useLabels = () => {
     weldingMaterialRate: tMasterLabels('WeldingMaterialRate', { defaultValue: 'Welding Material Rate' }),
     drawing : tMasterLabels('Drawing', { defaultValue: 'Drawing' }),
     hpdcLabel: tMasterLabels('hpdcLabel', { defaultValue: 'HPDC' }),
+    groupCodeLabel: tMasterLabels('GroupCodeLabel', { defaultValue: 'Group Code' }),
+    remarkProcessNameLabel: tMasterLabels('RemarkProcessNameLabel', { defaultValue: 'Remark' }),
   };
 };
 
@@ -60,7 +62,8 @@ export const LabelsClass = (t, ns) => {
     BOPVendorLabel: t('BOPVendorLabel', { ns, defaultValue: 'BOP Vendor' }),
     revisionNoLabel: t('RevisionNoLabel', { ns, defaultValue: 'Revision No.' }),
     drawingNoLabel: t('DrawingNoLabel', { ns, defaultValue: 'Drawing No.' }),
-    weldingMaterialRate: t('WeldingMaterialRate', { ns, defaultValue: 'Welding Material Rate' })
+    weldingMaterialRate: t('WeldingMaterialRate', { ns, defaultValue: 'Welding Material Rate' }),
+    groupCodeLabel: t('GroupCodeLabel', {ns, defaultValue: 'Group Code'})
   }
 }
 

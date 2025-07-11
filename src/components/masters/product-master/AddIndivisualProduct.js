@@ -19,6 +19,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { LabelsClass } from '../../../helper/core';
+import { withTranslation } from 'react-i18next';
 
 class AddIndivisualProduct extends Component {
   constructor(props) {
@@ -311,6 +312,7 @@ class AddIndivisualProduct extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
     const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
+    const groupCodeLabel = LabelsClass(t, 'MasterLabels').groupCodeLabel;
     const { isEditFlag, } = this.state;
     return (
       <>
@@ -402,7 +404,7 @@ class AddIndivisualProduct extends Component {
                             initialConfiguration?.IsGroupCodeDisplay && (
                               <Col md="3">
                                 <Field
-                                  label={`Group Code`}
+                                  label={`${groupCodeLabel}`}
                                   name={"GroupCode"}
                                   type="text"
                                   placeholder={""}
