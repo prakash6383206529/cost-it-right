@@ -672,6 +672,7 @@ class AddIndivisualPart extends Component {
     const { isEditFlag, isViewMode, setDisable } = this.state;
     const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
     const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
+    const groupCodeLabel = LabelsClass(t, 'MasterLabels').groupCodeLabel;
 
 
     return (
@@ -756,7 +757,7 @@ class AddIndivisualPart extends Component {
 
                             <Col md="3">
                               <Field
-                                label="Group Code"
+                                label={`${groupCodeLabel}`}
                                 name="ProductGroup"
                                 type="text"
                                 title={showDataOnHover(this?.state?.ProductGroup)}
@@ -776,7 +777,7 @@ class AddIndivisualPart extends Component {
                           ) :
                             <Col md="3">
                               <Field
-                                label={`Group Code`}
+                                label={`${groupCodeLabel}`}
                                 name={"GroupCode"}
                                 type="text"
                                 placeholder={isViewMode ? '-' : "Enter"}
