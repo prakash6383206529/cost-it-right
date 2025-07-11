@@ -1794,6 +1794,7 @@ ${isDetailedText}`
                   <tr>
                     <th style={{ width: "220px" }}>{`Process`}</th>
                     {processGroup && <th style={{ width: "150px" }}>{`Sub Process`}</th>}
+                    <th style={{ width: "100px" }}>{`Machine Name`}</th>
                     <th style={{ width: "150px" }}>{`Machine Tonnage`}</th>
                     <th style={{ width: "150px" }}><span>Machine Rate <TooltipCustom customClass="float-unset" tooltipClass="mhr-tooltip" id={`mhr-info`} tooltipText={mhrTooltipText} /></span></th>
                     <th style={{ width: "150px" }}>{`Type`}</th>
@@ -1830,6 +1831,7 @@ ${isDetailedText}`
                                 {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
                             </td>
                             {processGroup && <td className='text-overflow'><span title={item.ProcessName}>{'-'}</span></td>}
+                            <td>{item.MachineName ? item.MachineName : '-'}</td>
                             <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                             <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
                             <td>{item.Type ?? '-'}</td>
