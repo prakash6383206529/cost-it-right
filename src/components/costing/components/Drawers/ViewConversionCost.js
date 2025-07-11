@@ -437,6 +437,7 @@ function ViewConversionCost(props) {
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Operation Code`}</th>
+                <th>{`Description`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
@@ -461,6 +462,7 @@ function ViewConversionCost(props) {
                         <td>
                           {item.OperationCode ? item.OperationCode : '-'}
                         </td>
+                        <td>{item.Description ? item.Description : '-'}</td>
                         <td>{item.UOM ? item.UOM : '-'}</td>
                         <td>{item.Rate ? item.Rate : '-'}</td>
                         <td>{item.Quantity ? item.Quantity : '-'}</td>
@@ -587,6 +589,7 @@ function ViewConversionCost(props) {
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Operation Code`}</th>
+                <th>{`Description`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
@@ -607,6 +610,7 @@ function ViewConversionCost(props) {
                       <td>
                         {item.OtherOperationCode ? item.OtherOperationCode : '-'}
                       </td>
+                      <td>{item.Description ? item.Description : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.Rate ? item.Rate : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
@@ -653,6 +657,7 @@ function ViewConversionCost(props) {
               <tr className='thead'>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
+                <th>{`Description`}</th>
                 <th>{`Quantity`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Rate/UOM`}</th>
@@ -667,6 +672,7 @@ function ViewConversionCost(props) {
                     <tr key={index}>
                       {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</span></td>
+                      <td>{item.Description ? item.Description : '-'}</td>
                       <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration?.NoOfDecimalForPrice) : 0}</td>
