@@ -1474,7 +1474,7 @@ class AddMoreDetails extends Component {
 
         }
         this.props.getLabourCost(dataObj, effectiveDate, res => {
-          let Data = res.data.DynamicData;
+          let Data = _.get(res, 'data.DynamicData') ?? _.get(res, 'data.Data', [])
           this.setState({ labourDetailId: Data.LabourDetailId })
           this.props.change('LabourWorkingShift', checkForNull(shiftType?.value))
           if (res && res.data && res.data.Message !== '') {
