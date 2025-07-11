@@ -315,7 +315,8 @@ function ProcessCost(props) {
         WeightCalculatorRequest: weightData,
         ProcessCostWithOutInterestAndDepreciation: weightData?.ProcessCostWithOutInterestAndDepreciation || null,
         MHRWithOutInterestAndDepreciation: weightData?.MHRWithOutInterestAndDepreciation || null,
-        Cavity: weightData?.Cavity
+        Cavity: weightData?.Cavity,
+        NoOfManPower: weightData?.NoOfManPower
         // ...netCosts
       }
       tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
@@ -377,7 +378,8 @@ function ProcessCost(props) {
         WeightCalculatorRequest: weightData,
         CostingConditionMasterAndTypeLinkingId: processTempData?.Applicability?.value || null,
         CostingConditionNumber: processApplicabilitySelect.find(type => type.value === processTempData?.Applicability?.value)?.label || null,
-        Cavity: weightData?.Cavity
+        Cavity: weightData?.Cavity,
+        NoOfManPower: weightData?.NoOfManPower
 
         //...netCosts
       }
@@ -1800,7 +1802,8 @@ ${isDetailedText}`
                     <th style={{ width: "180px" }}><span>Quantity/Cycle time <TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`quantity-info`} tooltipText={tooltipText} /></span></th>
                     {showCostBaseAppliacabilityColumns && <th style={{ width: "150px" }}>{`Process Cost Applicability`}</th>}
                     {showCostBaseAppliacabilityColumns && <th style={{ width: "110px" }}>{`Percentage`}</th>}
-                    <th style={{ width: "100px" }}>{`Cavity`}</th>
+                    <th style={{ width: "50px" }}>{`Cavity`}</th>
+                    <th style={{ width: "100px" }}>{`Manpower/Run Count`}</th>
                     <th style={{ width: "140px" }} >{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
                     <th style={{ width: "110px" }} >{`Applicability`}</th>
@@ -1880,6 +1883,7 @@ ${isDetailedText}`
                             {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>}
                             {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>}
                             <td>{item?.Cavity || '-'}</td>
+                            <td>{item?.NoOfManPower || '-'}</td>
                             <td>
                               {
                                 <>

@@ -338,6 +338,7 @@ function ViewConversionCost(props) {
                 <th >{`Process Cost Applicability`}</th>
                 <th >{`Percentage`}</th>
                 <th>{`Cavity`}</th>
+                <th>{`Manpower/Run Count`}</th>
                 <th><span className='d-flex'>MHR  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{mhrTooltipText}</span></div>}</span></th>
 
                 {!isPDFShow && <th>{`Calculator`}</th>}
@@ -376,6 +377,7 @@ function ViewConversionCost(props) {
                         <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>
                         <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>
                         <td>{item.Cavity ? item.Cavity : '-'}</td>
+                        <td>{item.NoOfManPower ? item.NoOfManPower : '-'}</td>
                         <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
                         {(!isPDFShow) && <td>
                           {
