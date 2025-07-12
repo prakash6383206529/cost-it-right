@@ -151,13 +151,20 @@ function AddAssemblyOperation(props) {
         // Update overhead and profit costs
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetOperationCostForOverhead = getOverheadAndProfitCostTotal(grid, "Overhead")?.overheadOperationCost;
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetOperationCostForProfit = getOverheadAndProfitCostTotal(grid, "Profit")?.profitOperationCost;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetOperationCostForRejection = getOverheadAndProfitCostTotal(grid, "Rejection")?.rejectionOperationCost;
+
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetWeldingCostForOverhead = getOverheadAndProfitCostTotal(grid, "Overhead")?.overheadWeldingCost;
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetWeldingCostForProfit = getOverheadAndProfitCostTotal(grid, "Profit")?.profitWeldingCost;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetWeldingCostForRejection = getOverheadAndProfitCostTotal(grid, "Rejection")?.rejectionWeldingCost;
+
+
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCostPerAssemblyForOverhead = getOverheadAndProfitCostTotal(grid, "Overhead")?.overheadOperationCost;
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCostPerAssemblyForProfit = getOverheadAndProfitCostTotal(grid, "Profit")?.profitOperationCost;
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalWeldingCostPerAssemblyForOverhead = getOverheadAndProfitCostTotal(grid, "Overhead")?.overheadWeldingCost;
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalWeldingCostPerAssemblyForProfit = getOverheadAndProfitCostTotal(grid, "Profit")?.profitWeldingCost;
-        // Update Redux state
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalWeldingCostPerAssemblyForRejection = getOverheadAndProfitCostTotal(grid, "Rejection")?.rejectionWeldingCost;
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCostPerAssemblyForRejection = getOverheadAndProfitCostTotal(grid, "Rejection")?.rejectionOperationCost;
+
 
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }));
       }

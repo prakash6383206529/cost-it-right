@@ -228,10 +228,11 @@ function Rejection(props) {
         const CC = IsIncludeApplicabilityForChildParts ?
             checkForNull(data?.CostingPartDetails?.NetChildPartsOperationCostForRejection)
             + checkForNull(data?.CostingPartDetails?.NetChildPartsProcessCostForRejection)
-            + checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection)
+            +checkForNull(data?.CostingPartDetails?.NetChildPartsWeldingCostForRejection)
+            + checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection)
             :
-            checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection)
-
+            checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection)
+        
         let prevData = _.cloneDeep(dataObj)
         let newData = [];
         if (!IsIncludedSurfaceInRejection && prevData?.CostingRejectionApplicabilityDetails) {
@@ -368,10 +369,12 @@ function Rejection(props) {
         const CC = IsIncludeApplicabilityForChildParts ?
             checkForNull(data?.CostingPartDetails?.NetChildPartsOperationCostForRejection)
             + checkForNull(data?.CostingPartDetails?.NetChildPartsProcessCostForRejection)
-            + checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection)
-            :
-            checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection)
+            +checkForNull(data?.CostingPartDetails?.NetChildPartsWeldingCostForRejection)
 
+            + checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection)
+            :
+            checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection)
+        
         const CastingNorm = checkForNull(data?.CostingPartDetails?.NetCastingNormApplicabilityCost)
 
         const SurfaceCost = IsIncludedSurfaceInRejection

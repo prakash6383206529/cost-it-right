@@ -35,7 +35,7 @@ function TabRMCC(props) {
 
   const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC, ErrorObjOverheadProfit, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData,
     OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, masterBatchObj, costingData, isBreakupBoughtOutPartCostingFromAPI, CostingDataList, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
-
+  
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
@@ -138,11 +138,10 @@ function TabRMCC(props) {
           NetBOPOutsourcedCostWithOutHandlingCharge: TopHeaderValues?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity ?? 0,
           NetCastingNormApplicabilityCost: TopHeaderValues?.NetCastingNormApplicabilityCost ?? 0,
 
-          NetProcessCostForRejection: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalProcessCostComponentForRejection) + checkForNull(TopHeaderValues?.TotalProcessCostSubAssemblyForOverhead) + checkForNull(TopHeaderValues?.TotalProcessCostComponentForOverhead) : 0,
-          NetOperationCostForRejection: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalOperationCostComponentForRejection) + checkForNull(TopHeaderValues?.TotalOperationCostPerAssemblyForRejection) + checkForNull(TopHeaderValues?.TotalOperationCostSubAssemblyForRejection) : 0,
-          NetWeldingCostForRejection: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalWeldingCostComponentForRejection) + checkForNull(TopHeaderValues?.TotalWeldingCostPerAssemblyForRejection) + checkForNull(TopHeaderValues?.TotalWeldingCostSubAssemblyForRejection) : 0,
+          NetProcessCostForRejection: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalProcessCostComponentForRejection) + checkForNull(TopHeaderValues?.TotalProcessCostSubAssemblyForRejection) + checkForNull(TopHeaderValues?.TotalProcessCostPerAssemblyForRejection) : 0,
+          NetOperationCostForRejection: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalOperationCostComponentForRejection) + checkForNull(TopHeaderValues?.TotalOperationCostSubAssemblyForRejection) + checkForNull(TopHeaderValues?.TotalOperationCostPerAssemblyForRejection) : 0,
+          NetWeldingCostForRejection: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalWeldingCostComponentForRejection) + checkForNull(TopHeaderValues?.TotalWeldingCostSubAssemblyForRejection) + checkForNull(TopHeaderValues?.TotalWeldingCostPerAssemblyForRejection) : 0,
           NetCCForOtherTechnologyCostForRejection: TopHeaderValues ? checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostComponentForRejection) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostPerAssemblyForRejection) + checkForNull(TopHeaderValues?.TotalCCForOtherTechnologyCostSubAssemblyForRejection) : 0,
-
         }
       } else {
         topHeaderData = {
@@ -912,7 +911,7 @@ function TabRMCC(props) {
 
         subAssemObj.CostingPartDetails.TotalProcessCostComponentForRejection = checkForNull(getOverheadAndProfitTotalCostForAssembly(tempArr, 'Rejection', 'Process'))
         subAssemObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Rejection', 'Process'))
-        console.log("111", subAssemObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection)
+
         subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostComponentForRejection = checkForNull(getOverheadAndProfitTotalCostForAssembly(tempArr, 'Rejection', 'CCForOtherTechnology'))
         subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForRejection = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Rejection', 'CCForOtherTechnology'))
 
@@ -1010,7 +1009,7 @@ function TabRMCC(props) {
         subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForProfit = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Profit', 'CCForOtherTechnology'))
 
         subAssemObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Rejection', 'Process'))
-        console.log("22", subAssemObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection)
+
         subAssemObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssemblyForRejection = checkForNull(setOverheadAndProfitCostForAssembly(tempArr, 'Rejection', 'CCForOtherTechnology'))
 
 
@@ -1641,7 +1640,7 @@ function TabRMCC(props) {
           assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Overhead', 'Process')
           assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'Process')
           assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Rejection', 'Process')
-          console.log("333", assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection)
+
 
 
           //FOR OTHER PROCES TECHNOLOGY
@@ -1867,7 +1866,7 @@ function TabRMCC(props) {
             subAssemblyToUpdate.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Overhead', 'Process')
             subAssemblyToUpdate.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Profit', 'Process')
             subAssemblyToUpdate.CostingPartDetails.TotalProcessCostSubAssemblyForRejection = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Rejection', 'Process')
-            console.log("44", subAssemblyToUpdate.CostingPartDetails.TotalProcessCostSubAssemblyForRejection)
+
             // FOR COMPONENT (PROCESS)
             subAssemblyToUpdate.CostingPartDetails.TotalProcessCostComponent = getProcessTotalCostForAssembly(ccPartAssemblyArray)
             subAssemblyToUpdate.CostingPartDetails.TotalProcessCostComponentForOverhead = getOverheadAndProfitTotalCostForAssembly(ccPartAssemblyArray, 'Overhead', 'Process')
@@ -2058,7 +2057,7 @@ function TabRMCC(props) {
         assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Overhead', 'Process')
         assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Profit', 'Process')
         assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection = setOverheadAndProfitCostForAssembly(ccSubAssemblyArray, 'Rejection', 'Process')
-        console.log("555", assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection)
+
 
 
         // FOR SUB ASSEMBLY ( Other Technology Process)
@@ -2236,7 +2235,7 @@ function TabRMCC(props) {
           newItem.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = checkForNull(obj?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead)
           newItem.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = checkForNull(obj?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit)
           newItem.CostingPartDetails.TotalProcessCostSubAssemblyForRejection = checkForNull(obj?.CostingPartDetails?.TotalProcessCostSubAssemblyForRejection)
-          console.log("bbb", newItem.CostingPartDetails.TotalProcessCostSubAssemblyForRejection)
+
 
 
           //Sub Assembly (Other Technology Process)
@@ -3090,7 +3089,7 @@ function TabRMCC(props) {
                   subAssembObj.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Overhead', 'Process')
                   subAssembObj.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'Process')
                   subAssembObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection = setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Rejection', 'Process')
-                  console.log("7777", subAssembObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection)
+
 
 
 
@@ -3233,7 +3232,7 @@ function TabRMCC(props) {
             assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Overhead', 'Process'))
             assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Profit', 'Process'))
             assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection = checkForNull(setOverheadAndProfitCostForAssembly(subAssemblyArray, 'Rejection', 'Process'))
-            console.log("888", assemblyObj.CostingPartDetails.TotalProcessCostSubAssemblyForRejection)
+
 
 
             assemblyObj.CostingPartDetails.TotalCCForOtherTechnologyCostSubAssembly = checkForNull(setProcessCostForAssembly(subAssemblyArray, RMCCTabData[0]?.TechnologyId, "CCForOtherTechnology"))
@@ -3436,7 +3435,7 @@ function TabRMCC(props) {
           newItem.CostingPartDetails.TotalProcessCostSubAssemblyForOverhead = checkForNull(obj?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead)
           newItem.CostingPartDetails.TotalProcessCostSubAssemblyForProfit = checkForNull(obj?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit)
           newItem.CostingPartDetails.TotalProcessCostSubAssemblyForRejection = checkForNull(obj?.CostingPartDetails?.TotalProcessCostSubAssemblyForRejection)
-          console.log("aaa", newItem.CostingPartDetails.TotalProcessCostSubAssemblyForRejection)
+
 
           newItem.CostingPartDetails.TotalProcessCostPerAssembly = checkForNull(obj?.CostingPartDetails?.TotalProcessCostPerAssembly)
           newItem.CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = checkForNull(obj?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead)
@@ -3525,6 +3524,7 @@ function TabRMCC(props) {
                       <tbody>
                         {
                           RMCCTabData && RMCCTabData.map((item, index) => {
+
                             if (item?.CostingPartDetails && (item?.CostingPartDetails?.PartType === 'Component' || isBreakupBoughtOutPartCostingFromAPI)) {
                               return (
                                 < >
