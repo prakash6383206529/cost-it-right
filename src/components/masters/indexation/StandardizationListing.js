@@ -28,6 +28,7 @@ import Toaster from "../../common/Toaster";
 import PaginationControls from "../../common/Pagination/PaginationControls";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
+import BulkDelete from "../../../helper/BulkDelete";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -458,6 +459,7 @@ const StandardizationListing = (props) => {
                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             <Button id="rmDetailList_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
                         </div>
+                        <BulkDelete {...props} type={'Standardized Commodity'} deletePermission={permissions?.Delete} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
                         {permissions.BulkUpload && (<Button id="rmDetail_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
 
                         {permissions.Add && (

@@ -38,6 +38,7 @@ import { useTranslation } from 'react-i18next';
 import RfqMasterApprovalDrawer from '../material-master/RfqMasterApprovalDrawer';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
+import BulkDelete from '../../../helper/BulkDelete';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -957,6 +958,7 @@ const BOPDomesticListing = (props) => {
                     )}
                   </div>
                   <Button id="bopDomesticListing_filter" className={"mr5 Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
+                  <BulkDelete {...props} type={'BOP'} deletePermission={permissions?.Delete} dataCount={state?.dataCount} bulkDeleteData={selectedRowForPagination}/>
                   {permissions?.Add && (
                     <Button id="bopDomesticListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />
                   )}

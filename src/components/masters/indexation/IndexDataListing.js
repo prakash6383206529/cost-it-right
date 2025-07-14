@@ -31,6 +31,7 @@ import AddRMDrawer from "../material-master/AddRMDrawer";
 import DayTime from "../../common/DayTimeWrapper";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
+import BulkDelete from "../../../helper/BulkDelete";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -566,16 +567,7 @@ const IndexDataListing = (props) => {
                         {/* {permissions?.Add && (
             <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )} */}
-                        {permissions?.Delete && <Button
-                            title={"Delete"}
-                            // variant="Delete" 
-                            className={"mr-1"}
-                            icon={"delete-primary"}
-                            id={`rmMaterialList_edit_delete${props?.rowIndex}`}
-                            onClick={() => deleteItem(props?.rowIndex)}
-                            buttonName={`${dataCount === 0 ? "" : "(" + dataCount + ")"}`}
-                            disabled={dataCount === 0 ? true : false}
-                        />}
+                        <BulkDelete {...props} type={'Index Data'} deletePermission={permissions?.Delete} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
                         {permissions?.BulkUpload && (<Button id="rmMaterialListing_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                         {permissions?.Download && (
                             <>

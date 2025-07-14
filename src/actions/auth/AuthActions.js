@@ -2467,3 +2467,25 @@ export function revokeDelegation(data, callback) {
         });
     }
 }
+
+export function bulkDelete(data, callback) {
+    const requestData = {
+        loggedInUserId: loggedInUserId(),
+        ...data
+    }
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axiosInstance.post(API.bulkDelete, requestData, config())
+        request.then((response) => {
+            if (response && response?.status === 200) {
+                dispatch({ type: API_SUCCESS })
+                callback(response)
+            }
+        }).catch((error) => {
+            Toaster.error(error?.response?.data?.Message)
+            callback(error)
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
