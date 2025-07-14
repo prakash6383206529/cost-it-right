@@ -63,14 +63,15 @@ function BOPCost(props) {
     openBOPHandlingDrawer: false,
     totalBOPHandlingCharges: item?.CostingPartDetails?.BOPHandlingCharges,
     showHandlingWarning: false,
-    bopDomesticCost: checkForNull(item?.CostingPartDetails?.NetBOPDomesticCost) + checkForNull(item?.CostingPartDetails?.NetBOPDomesticHandlingCost),
-    bopCKDCost: checkForNull(item?.CostingPartDetails?.NetBOPImportCost) + checkForNull(item?.CostingPartDetails?.NetBOPImportHandlingCost),
-    bopV2VCost: checkForNull(item?.CostingPartDetails?.NetBOPSourceCost) + checkForNull(item?.CostingPartDetails?.NetBOPSourceHandlingCost),
-    bopOSPCost: checkForNull(item?.CostingPartDetails?.NetBOPOutsourcedCost) + checkForNull(item?.CostingPartDetails?.NetBOPOutsourcedHandlingCost),
+    bopDomesticCost: checkForNull(item?.CostingPartDetails?.NetBOPDomesticCost),
+    bopCKDCost: checkForNull(item?.CostingPartDetails?.NetBOPImportCost),
+    bopV2VCost: checkForNull(item?.CostingPartDetails?.NetBOPSourceCost),
+    bopOSPCost: checkForNull(item?.CostingPartDetails?.NetBOPOutsourcedCost),
     bopDomesticHandlingCost: item?.CostingPartDetails?.NetBOPDomesticHandlingCost,
     bopCKDHandlingCost: item?.CostingPartDetails?.NetBOPImportHandlingCost,
     bopV2VHandlingCost: item?.CostingPartDetails?.NetBOPSourceHandlingCost,
     bopOSPHandlingCost: item?.CostingPartDetails?.NetBOPOutsourcedHandlingCost,
+    isDataDeleted: false
   })
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
@@ -112,6 +113,10 @@ function BOPCost(props) {
           let bopCKDCost = 0;
           let bopV2VCost = 0;
           let bopOSPCost = 0;
+          let bopDomesticHandling = IsApplyBOPHandlingCharges ? checkForNull(state.bopDomesticHandlingCost) : 0
+          let bopCKDHandling = IsApplyBOPHandlingCharges ? checkForNull(state.bopCKDHandlingCost) : 0
+          let bopV2Vhandling = IsApplyBOPHandlingCharges ? checkForNull(state.bopV2VHandlingCost) : 0
+          let bopOSPHandling = IsApplyBOPHandlingCharges ? checkForNull(state.bopOSPHandlingCost) : 0
 
           gridData.forEach(el => {
             const cost = el.NetBoughtOutPartCost || 0;
@@ -135,10 +140,10 @@ function BOPCost(props) {
 
           setState(prevState => ({
             ...prevState,
-            bopDomesticCost: bopDomesticCost + checkForNull(state.bopDomesticHandlingCost),
-            bopCKDCost: bopCKDCost + checkForNull(state.bopCKDHandlingCost),
-            bopV2VCost: bopV2VCost + checkForNull(state.bopV2VHandlingCost),
-            bopOSPCost: bopOSPCost + checkForNull(state.bopOSPHandlingCost)
+            bopDomesticCost: checkForNull(bopDomesticCost) + bopDomesticHandling,
+            bopCKDCost: bopCKDCost + bopCKDHandling,
+            bopV2VCost: bopV2VCost + bopV2Vhandling,
+            bopOSPCost: bopOSPCost + bopOSPHandling
           }));
         }
         const BOPHandlingFields = {
@@ -159,7 +164,7 @@ function BOPCost(props) {
     if (IsApplyBOPHandlingCharges && gridData && gridData?.length > 0) {
 
       dispatch(setBopAddEditDeleteDisable(true))
-    } else if (!IsApplyBOPHandlingCharges && gridData && gridData?.length > 0) {
+    } else if (!IsApplyBOPHandlingCharges && gridData && gridData?.length > 0 && !state.isDataDeleted) {
       let data = {
         "BaseCostingId": item?.CostingId,
         "LoggedInUserId": loggedInUserId(),
@@ -170,13 +175,16 @@ function BOPCost(props) {
       setValue('BOPHandlingCharges', 0)
       setState(prevState => ({
         ...prevState,
+        bopDomesticCost: state.bopDomesticCost - state.bopDomesticHandlingCost,
+        bopCKDCost: state.bopCKDCost - state.bopCKDHandlingCost,
+        bopV2VCost: state.bopV2VCost - state.bopV2VHandlingCost,
+        bopOSPCost: state.bopOSPCost - state.bopOSPHandlingCost,
         totalBOPHandlingCharges: 0,
         bopDomesticHandlingCost: 0,
         bopCKDHandlingCost: 0,
         bopV2VHandlingCost: 0,
         bopOSPHandlingCost: 0,
       }))
-
       dispatch(setBopAddEditDeleteDisable(false))
     } else if (!IsApplyBOPHandlingCharges && gridData && gridData?.length === 0) {
       dispatch(setBopAddEditDeleteDisable(false))
@@ -256,79 +264,99 @@ function BOPCost(props) {
     })
   }
 
-  const deleteItem = (index) => {
-    // Filter out the item at the given index
-    const tempArr = gridData.filter((_, i) => i !== index);
-    setGridData(tempArr);
+  const deleteItem = (id) => {
+    let tempArr = gridData && gridData.filter((el) => {
+      if (el?.BoughtOutPartId === id) return false;
+      return true;
+    })
+    setGridData(tempArr)
 
-    // Update selected IDs
-    const selectedIds = tempArr.map(el => el.BoughtOutPartId);
-    setIds(selectedIds);
+    let selectedIds = []
+    tempArr.map(el => (selectedIds.push(el.BoughtOutPartId)))
+    setIds(selectedIds)
+    setState(prevState => ({
+      ...prevState,
+      isDataDeleted: true
+    }))
+    setTimeout(() => {
+      setState(prevState => ({
+        ...prevState,
+        isDataDeleted: false
+      }))
+    }, 1000)
   }
 
-  const editItem = (index) => {
-    let tempArr = gridData && gridData.find((el, i) => i === index)
+
+  const editItem = (id) => {
+    let tempArr = gridData && gridData.find((el) => el?.BoughtOutPartId === id)
     if (editIndex !== '') {
       let tempArr = Object.assign([...gridData], { [editIndex]: rowObjData })
       setGridData(tempArr)
     }
-    setEditIndex(index)
+    setEditIndex(id)
     setRowObjData(tempArr)
   }
 
-  const SaveItem = (index) => {
-    if (errors?.bopGridFields && (errors?.bopGridFields[index]?.Quantity !== undefined && Object.keys(errors?.bopGridFields[index]?.Quantity).length !== 0)) {
-      return false
+  const SaveItem = (id) => {
+    // Find the item being edited by id
+    const itemIndex = gridData.findIndex(item => item.BoughtOutPartId === id);
+    const bopGridData = gridData[itemIndex];
+
+    // Validate quantity errors
+    if (errors?.bopGridFields?.[id]?.Quantity) {
+      return false;
     }
-    let bopGridData = gridData[index]
-    if (gridData && gridData.filter(e => e?.Quantity === 0)?.length > 0) {
-      Toaster.warning('Quantity cannot be zero')
-      return false
+
+    // Check for zero quantity
+    if (bopGridData.Quantity === 0) {
+      Toaster.warning('Quantity cannot be zero');
+      return false;
     }
+
+    // Additional validation for Number UOM
     if (bopGridData.BoughtOutPartUOM === 'Number') {
-
-      let isValid = Number.isInteger(bopGridData.Quantity);
-      if (bopGridData.Quantity === 0) {
-        Toaster.warning('Number should not be zero')
-        return false
-      }
+      const isValid = Number.isInteger(bopGridData.Quantity);
       if (!isValid) {
-        return false
+        Toaster.warning('Quantity must be a whole number');
+        return false;
       }
     }
 
-    setEditIndex('')
+    // Clear edit mode
+    setEditIndex('');
   }
 
-  const CancelItem = (index) => {
+  const CancelItem = (id) => {
+    const index = gridData.findIndex(item => item.BoughtOutPartId === id);
     let tempArr = Object.assign([...gridData], { [index]: rowObjData })
     setEditIndex('')
     setGridData(tempArr)
     setRowObjData({})
-    setValue(`${bopGridFields}.${index}.Quantity`, tempArr[index]?.Quantity)
+    setValue(`${bopGridFields}.${id}.Quantity`, tempArr[index]?.Quantity)
     errors.bopGridFields = {}
   }
 
-  const handleQuantityChange = (event, index) => {
+  const handleQuantityChange = (event, id) => {
     let tempArr = [];
-    let tempData = gridData[index];
+    let tempData = gridData.find((el) => el?.BoughtOutPartId === id);
 
     if (!isNaN(event.target.value) && event.target.value !== '') {
       const NetBoughtOutPartCost = tempData.LandedCostINR * checkForNull(event.target.value);
       tempData = { ...tempData, Quantity: checkForNull(event.target.value), NetBoughtOutPartCost: NetBoughtOutPartCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
+      tempArr = gridData.map(el => el.BoughtOutPartId === id ? tempData : el)
+      
       setGridData(tempArr)
     }
   }
 
-  const onCRMHeadChange = (e, index) => {
+  const onCRMHeadChange = (e, id) => {
     let tempArr = []
-    let tempData = gridData[index]
+    let tempData = gridData.find((el) => el?.BoughtOutPartId === id);
     tempData = {
       ...tempData,
       BoughtOutPartCRMHead: e?.label
     }
-    tempArr = Object.assign([...gridData], { [index]: tempData })
+    tempArr = Object.assign([...gridData], { [id]: tempData })
     setGridData(tempArr)
   }
 
@@ -378,9 +406,10 @@ function BOPCost(props) {
    * @method onRemarkButtonClick
    * @description Open remark popup for a specific BOP item
    */
-  const onRemarkButtonClick = (index) => {
+  const onRemarkButtonClick = (id) => {
+    const index = gridData.findIndex(item => item.BoughtOutPartId === id);
     setCurrentRemarkIndex(index);
-    setRemark(gridData[index]?.Remark || "");
+    setRemark(gridData[index]?.Remark ?? "");
     setRemarkAccept(true);
   };
 
@@ -455,14 +484,20 @@ function BOPCost(props) {
     }))
   }
   const closeBOPHandlingDrawer = (type, totalBOPHandlingCharges, tableData) => {
+    // Get handling charges for each BOP type from the new tableData
     const bopDomesticHandling = tableData?.find(item => item.BOPType === 'BOP Domestic')?.BOPHandlingCharges || 0;
     const bopCKDHandling = tableData?.find(item => item.BOPType === 'BOP CKD')?.BOPHandlingCharges || 0;
     const bopV2VHandling = tableData?.find(item => item.BOPType === 'BOP V2V')?.BOPHandlingCharges || 0;
     const bopOSPHandling = tableData?.find(item => item.BOPType === 'BOP OSP')?.BOPHandlingCharges || 0;
-    const bopDomecticCost = state?.bopDomesticCost + checkForNull(bopDomesticHandling);
-    const bopCKDCost = state?.bopCKDCost + checkForNull(bopCKDHandling);
-    const bopV2VCost = state?.bopV2VCost + checkForNull(bopV2VHandling);
-    const bopOSPCost = state?.bopOSPCost + checkForNull(bopOSPHandling);
+
+    // Calculate total costs by adding base cost and handling charges
+    // Base costs come from state but exclude previous handling charges
+    const bopDomesticCost = (state?.bopDomesticCost - state?.bopDomesticHandlingCost) + checkForNull(bopDomesticHandling);
+    const bopCKDCost = (state?.bopCKDCost - state?.bopCKDHandlingCost) + checkForNull(bopCKDHandling);
+    const bopV2VCost = (state?.bopV2VCost - state?.bopV2VHandlingCost) + checkForNull(bopV2VHandling);
+    const bopOSPCost = (state?.bopOSPCost - state?.bopOSPHandlingCost) + checkForNull(bopOSPHandling);
+
+    // Set form values
     setValue('bopCKDHandlingCharges', checkForDecimalAndNull(bopCKDHandling, initialConfiguration.NoOfDecimalForPrice));
     setValue('bopDomesticHandlingCharges', checkForDecimalAndNull(bopDomesticHandling, initialConfiguration.NoOfDecimalForPrice));
     setValue('bopV2VHandlingCharges', checkForDecimalAndNull(bopV2VHandling, initialConfiguration.NoOfDecimalForPrice));
@@ -477,7 +512,7 @@ function BOPCost(props) {
       bopCKDHandlingCost: bopCKDHandling,
       bopV2VHandlingCost: bopV2VHandling,
       bopOSPHandlingCost: bopOSPHandling,
-      bopDomesticCost: bopDomecticCost,
+      bopDomesticCost: bopDomesticCost,
       bopCKDCost: bopCKDCost,
       bopV2VCost: bopV2VCost,
       bopOSPCost: bopOSPCost
@@ -544,7 +579,7 @@ function BOPCost(props) {
               <Col className="col-md-15 cr-costlabel d-flex align-items-start justify-content-start"> <span className="d-inline-block align-middle">{`${showBopLabel()} CKD Cost: ${state.bopCKDCost !== null ? checkForDecimalAndNull(state.bopCKDCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span><div className='ml-2 mt-1'><TooltipCustom id='ckdhandling' width="350px" tooltipText={`${showBopLabel()} CKD Cost (Without Handling Charges): ${state.bopCKDCost !== null ? checkForDecimalAndNull(state.bopCKDCost - checkForNull(state.bopCKDHandlingCost), initialConfiguration?.NoOfDecimalForPrice) : 0}`} /></div></Col>
               <Col className="col-md-15 cr-costlabel d-flex align-items-start justify-content-start"> <span className="d-inline-block align-middle">{`${showBopLabel()} V2V Cost: ${state.bopV2VCost !== null ? checkForDecimalAndNull(state.bopV2VCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span><div className='ml-2 mt-1'><TooltipCustom id='v2vhandling' width="350px" tooltipText={`${showBopLabel()} V2V Cost (Without Handling Charges): ${state.bopV2VCost !== null ? checkForDecimalAndNull(state.bopV2VCost - checkForNull(state.bopV2VHandlingCost), initialConfiguration?.NoOfDecimalForPrice) : 0}`} /></div ></Col>
               <Col className="col-md-15 cr-costlabel d-flex align-items-start justify-content-start"> <span className="d-inline-block align-middle">{`${showBopLabel()} OSP Cost: ${state.bopOSPCost !== null ? checkForDecimalAndNull(state.bopOSPCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span><div className='ml-2 mt-1'><TooltipCustom id='osphandling' width="350px" tooltipText={`${showBopLabel()} OSP Cost (Without Handling Charges): ${state.bopOSPCost !== null ? checkForDecimalAndNull(state.bopOSPCost - checkForNull(state.bopOSPHandlingCost), initialConfiguration?.NoOfDecimalForPrice) : 0}`} /></div ></Col>
-              <Col className="col-md-15 cr-costlabel d-flex align-items-start justify-content-start"><span className="d-inline-block align-middle">{`${showBopLabel()} Cost: ${netBOPCost(gridData) !== null ? checkForDecimalAndNull(netBOPCost(gridData) + checkForNull(state.totalBOPHandlingCharges), initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span><div className='ml-2 mt-1'><TooltipCustom id='handling' width="350px" tooltipText={`${showBopLabel()} Cost (Without Handling Charges): ${netBOPCost(gridData) !== null ? checkForDecimalAndNull(netBOPCost(gridData) , initialConfiguration?.NoOfDecimalForPrice) : 0}`} /></div ></Col>
+              <Col className="col-md-15 cr-costlabel d-flex align-items-start justify-content-start"><span className="d-inline-block align-middle">{`${showBopLabel()} Cost: ${netBOPCost(gridData) !== null ? checkForDecimalAndNull(netBOPCost(gridData) + checkForNull(state.totalBOPHandlingCharges), initialConfiguration?.NoOfDecimalForPrice) : 0}`}</span><div className='ml-2 mt-1'><TooltipCustom id='handling' width="350px" tooltipText={`${showBopLabel()} Cost (Without Handling Charges): ${netBOPCost(gridData) !== null ? checkForDecimalAndNull(netBOPCost(gridData), initialConfiguration?.NoOfDecimalForPrice) : 0}`} /></div ></Col>
             </Row>}
             <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
               {showDifferentBOPType() ?
@@ -579,12 +614,10 @@ function BOPCost(props) {
                             <tbody className='rm-table-body'>
                               {
                                 gridData &&
-                                gridData.filter(item => item.BOPType === `BOP ${bopType}`).map((item, index) => {
-                                  // Get the actual index in the full gridData array
-                                  const fullDataIndex = gridData.findIndex(el => el.BoughtOutPartId === item.BoughtOutPartId);
+                                gridData.filter(item => item.BOPType === `BOP ${bopType}`).map((item) => {
                                   return (
-                                    editIndex === fullDataIndex ?
-                                      <tr key={fullDataIndex}>
+                                    editIndex === item.BoughtOutPartId ?
+                                      <tr key={item.BoughtOutPartId}>
                                         <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                                         <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                                         <td>{item.BoughtOutPartUOM}</td>
@@ -592,7 +625,7 @@ function BOPCost(props) {
                                         <td style={{ width: 200 }}>
                                           <TextFieldHookForm
                                             label={false}
-                                            name={`${bopGridFields}.${fullDataIndex}.Quantity`}
+                                            name={`${bopGridFields}.${item.BoughtOutPartId}.Quantity`}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -609,19 +642,19 @@ function BOPCost(props) {
                                             customClassName={'withBorder error-label'}
                                             handleChange={(e) => {
                                               e.preventDefault()
-                                              handleQuantityChange(e, fullDataIndex)
+                                              handleQuantityChange(e, item.BoughtOutPartId)
                                             }}
-                                            errors={errors && errors.bopGridFields && errors.bopGridFields[fullDataIndex] !== undefined ? errors.bopGridFields[fullDataIndex].Quantity : ''}
+                                            errors={errors && errors.bopGridFields && errors.bopGridFields[item.BoughtOutPartId] !== undefined ? errors.bopGridFields[item.BoughtOutPartId].Quantity : ''}
                                             disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ)}
                                           />
                                         </td>
-                                        <td><div className='w-fit' id={`bop-cost${fullDataIndex}`}><TooltipCustom disabledIcon={true} id={`bop-cost${fullDataIndex}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
+                                        <td><div className='w-fit' id={`bop-cost${item.BoughtOutPartId}`}><TooltipCustom disabledIcon={true} id={`bop-cost${item.BoughtOutPartId}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
                                         {initialConfiguration?.IsShowCRMHead && <td>
                                           <SearchableSelectHookForm
-                                            name={`crmHeadBop${fullDataIndex}`}
+                                            name={`crmHeadBop${item.BoughtOutPartId}`}
                                             type="text"
                                             label="CRM Head"
-                                            errors={`${errors.crmHeadBop}${fullDataIndex}`}
+                                            errors={`${errors.crmHeadBop}${item.BoughtOutPartId}`}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -629,37 +662,37 @@ function BOPCost(props) {
                                             rules={{
                                               required: false,
                                             }}
-                                            defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: fullDataIndex } : ''}
+                                            defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: item.BoughtOutPartId } : ''}
                                             placeholder={'Select'}
                                             customClassName="costing-selectable-dropdown"
                                             options={CRMHeads}
                                             required={false}
-                                            handleChange={(e) => { onCRMHeadChange(e, fullDataIndex) }}
+                                            handleChange={(e) => { onCRMHeadChange(e, item.BoughtOutPartId) }}
                                             disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                           />
                                         </td>}
                                         <td>
                                           <div className='action-btn-wrapper'>
-                                            {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(fullDataIndex)} disabled={bopAddEditDeleteDisable} />}
-                                            {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(fullDataIndex)} disabled={bopAddEditDeleteDisable} />}
-                                            <button id={`bop_remark_btn_${fullDataIndex}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(fullDataIndex)} />
+                                            {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(item.BoughtOutPartId)} disabled={bopAddEditDeleteDisable} />}
+                                            {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(item.BoughtOutPartId)} disabled={bopAddEditDeleteDisable} />}
+                                            <button id={`bop_remark_btn_${item.BoughtOutPartId}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(item.BoughtOutPartId)} />
                                           </div>
                                         </td>
                                       </tr>
                                       :
-                                      <tr key={fullDataIndex}>
+                                      <tr key={item.BoughtOutPartId}>
                                         <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
                                         <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                                         <td>{item.BoughtOutPartUOM}</td>
                                         <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice) : ''}</td>
                                         <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
-                                        <td><div className='w-fit' id={`bop-cost${fullDataIndex}`}><TooltipCustom disabledIcon={true} id={`bop-cost${fullDataIndex}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
+                                        <td><div className='w-fit' id={`bop-cost${item.BoughtOutPartId}`}><TooltipCustom disabledIcon={true} id={`bop-cost${item.BoughtOutPartId}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
                                         {initialConfiguration?.IsShowCRMHead && <td>
                                           <SearchableSelectHookForm
-                                            name={`crmHeadBop${fullDataIndex}`}
+                                            name={`crmHeadBop${item.BoughtOutPartId}`}
                                             type="text"
                                             label="CRM Head"
-                                            errors={`${errors.crmHeadBop}${fullDataIndex}`}
+                                            errors={`${errors.crmHeadBop}${item.BoughtOutPartId}`}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -667,20 +700,20 @@ function BOPCost(props) {
                                             rules={{
                                               required: false,
                                             }}
-                                            defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: fullDataIndex } : ''}
+                                            defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: item.BoughtOutPartId } : ''}
                                             placeholder={'Select'}
                                             customClassName="costing-selectable-dropdown"
                                             options={CRMHeads}
                                             required={false}
-                                            handleChange={(e) => { onCRMHeadChange(e, fullDataIndex) }}
+                                            handleChange={(e) => { onCRMHeadChange(e, item.BoughtOutPartId) }}
                                             disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                           />
                                         </td>}
                                         <td>
                                           <div className='action-btn-wrapper'>
-                                            {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Edit' id={`bopCost_edit${fullDataIndex}`} className="Edit" type={'button'} onClick={() => editItem(fullDataIndex)} disabled={bopAddEditDeleteDisable} />}
-                                            {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Delete' id={`bopCost_delete${fullDataIndex}`} className="Delete " type={'button'} onClick={() => deleteItem(fullDataIndex)} disabled={bopAddEditDeleteDisable} />}
-                                            <button id={`bop_remark_btn_${fullDataIndex}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(fullDataIndex)} />
+                                            {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Edit' id={`bopCost_edit${item.BoughtOutPartId}`} className="Edit" type={'button'} onClick={() => editItem(item?.BoughtOutPartId)} disabled={bopAddEditDeleteDisable} />}
+                                            {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Delete' id={`bopCost_delete${item.BoughtOutPartId}`} className="Delete " type={'button'} onClick={() => deleteItem(item?.BoughtOutPartId)} disabled={bopAddEditDeleteDisable} />}
+                                            <button id={`bop_remark_btn_${item.BoughtOutPartId}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(item?.BoughtOutPartId)} />
                                           </div>
                                         </td>
                                       </tr>
@@ -724,8 +757,8 @@ function BOPCost(props) {
                             gridData &&
                             gridData.map((item, index) => {
                               return (
-                                editIndex === index ?
-                                  <tr key={index}>
+                                editIndex === item.BoughtOutPartId ?
+                                  <tr key={item.BoughtOutPartId}>
                                     <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                                     <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                                     <td>{item.BoughtOutPartUOM}</td>
@@ -733,7 +766,7 @@ function BOPCost(props) {
                                     <td style={{ width: 200 }}>
                                       <TextFieldHookForm
                                         label={false}
-                                        name={`${bopGridFields}.${index}.Quantity`}
+                                        name={`${bopGridFields}.${item.BoughtOutPartId}.Quantity`}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -750,19 +783,19 @@ function BOPCost(props) {
                                         customClassName={'withBorder error-label'}
                                         handleChange={(e) => {
                                           e.preventDefault()
-                                          handleQuantityChange(e, index)
+                                          handleQuantityChange(e, item.BoughtOutPartId)
                                         }}
-                                        errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
+                                        errors={errors && errors.bopGridFields && errors.bopGridFields[item.BoughtOutPartId] !== undefined ? errors.bopGridFields[item.BoughtOutPartId].Quantity : ''}
                                         disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ)}
                                       />
                                     </td>
                                     <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
                                     {initialConfiguration?.IsShowCRMHead && <td>
                                       <SearchableSelectHookForm
-                                        name={`crmHeadBop${index}`}
+                                        name={`crmHeadBop${item.BoughtOutPartId}`}
                                         type="text"
                                         label="CRM Head"
-                                        errors={`${errors.crmHeadBop}${index}`}
+                                        errors={`${errors.crmHeadBop}${item.BoughtOutPartId}`}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -770,37 +803,37 @@ function BOPCost(props) {
                                         rules={{
                                           required: false,
                                         }}
-                                        defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: index } : ''}
+                                        defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: item.BoughtOutPartId } : ''}
                                         placeholder={'Select'}
                                         customClassName="costing-selectable-dropdown"
                                         options={CRMHeads}
                                         required={false}
-                                        handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                        handleChange={(e) => { onCRMHeadChange(e, item.BoughtOutPartId) }}
                                         disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                       />
                                     </td>}
                                     <td>
                                       <div className='action-btn-wrapper'>
-                                        {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} disabled={bopAddEditDeleteDisable} />}
-                                        {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} disabled={bopAddEditDeleteDisable} />}
-                                        <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
+                                          {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(item.BoughtOutPartId)} disabled={bopAddEditDeleteDisable} />}
+                                        {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(item.BoughtOutPartId)} disabled={bopAddEditDeleteDisable} />}
+                                        <button id={`bop_remark_btn_${item.BoughtOutPartId}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(item.BoughtOutPartId)} />
                                       </div>
                                     </td>
                                   </tr>
                                   :
-                                  <tr key={index}>
+                                  <tr key={item.BoughtOutPartId}>
                                     <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
                                     <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                                     <td>{item.BoughtOutPartUOM}</td>
                                     <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice) : ''}</td>
                                     <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
-                                    <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
+                                    <td><div className='w-fit' id={`bop-cost${item.BoughtOutPartId}`}><TooltipCustom disabledIcon={true} id={`bop-cost${item.BoughtOutPartId}`} tooltipText={`Net ${showBopLabel()} Cost = (${showBopLabel()} Cost * Quantity)`} />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : 0}</div></td>
                                     {initialConfiguration?.IsShowCRMHead && <td>
                                       <SearchableSelectHookForm
-                                        name={`crmHeadBop${index}`}
+                                        name={`crmHeadBop${item.BoughtOutPartId}`}
                                         type="text"
                                         label="CRM Head"
-                                        errors={`${errors.crmHeadBop}${index}`}
+                                        errors={`${errors.crmHeadBop}${item.BoughtOutPartId}`}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -808,20 +841,20 @@ function BOPCost(props) {
                                         rules={{
                                           required: false,
                                         }}
-                                        defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: index } : ''}
+                                        defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: item.BoughtOutPartId } : ''}
                                         placeholder={'Select'}
                                         customClassName="costing-selectable-dropdown"
                                         options={CRMHeads}
                                         required={false}
-                                        handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                        handleChange={(e) => { onCRMHeadChange(e, item.BoughtOutPartId) }}
                                         disabled={CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ}
                                       />
                                     </td>}
                                     <td>
                                       <div className='action-btn-wrapper'>
-                                        {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} disabled={bopAddEditDeleteDisable} />}
-                                        {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} disabled={bopAddEditDeleteDisable} />}
-                                        <button id={`bop_remark_btn_${index}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(index)} />
+                                          {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Edit' id={`bopCost_edit${item.BoughtOutPartId}`} className="Edit" type={'button'} onClick={() => editItem(item.BoughtOutPartId)} disabled={bopAddEditDeleteDisable} />}
+                                        {!CostingViewMode && !IsLocked && !IsLockTabInCBCCostingForCustomerRFQ && !isLockRMAndBOPForCostAppliacabilityProcess(processArr) && <button title='Delete' id={`bopCost_delete${item.BoughtOutPartId}`} className="Delete " type={'button'} onClick={() => deleteItem(item.BoughtOutPartId)} disabled={bopAddEditDeleteDisable} />}
+                                        <button id={`bop_remark_btn_${item.BoughtOutPartId}`} title="Remark" className="Comment-box" type='button' onClick={() => onRemarkButtonClick(item.BoughtOutPartId)} />
                                       </div>
                                     </td>
                                   </tr>

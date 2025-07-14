@@ -185,6 +185,7 @@ class AddBOPDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    this.setState({ isLoader: true })
     this.props.getExchangeRateSource((res) => { })
     this.getPartFamilySelectList();
     this.props.getBOPTypeSelectList((res) => { })
@@ -201,6 +202,7 @@ class AddBOPDomestic extends Component {
         this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
       }
       this.props.getClientSelectList(() => { })
+      this.setState({ isLoader: false })
     }, 300);
   }
 
@@ -1048,7 +1050,7 @@ class AddBOPDomestic extends Component {
               technologyId: this.state?.Technology?.value,
               ...(getConfigurationKey()?.IsFetchVBCSourceVendorDataForBOP && {
                 // IsBreakupBoughtOutPart: (this?.state?.selectedBOPType?.value === "BOP V2V" || this?.state?.selectedBOPType?.value === "BOP OSP") ? true : false,
-                IsBreakupBoughtOutPart: this?.state?.IsPartOutsourced,
+                IsBreakupBoughtOutPart: this?.state?.isTechnologyVisible,
                 plantId: this?.state?.selectedPlants?.value ?? ""
               })
             };

@@ -1362,17 +1362,40 @@ const CostingSummaryTable = (props) => {
     return checkForDecimalAndNull(arr, initialConfiguration?.NoOfDecimalForInputOutput)
   }
   const reactToPrintTriggerDetail = useCallback(() => {
-    return <button id="costingSummary_Detailed_pdf" className="user-btn mr-1 mb-2 px-2" title='Detailed pdf' disabled={viewCostingData?.length === 1 ? false : true}> <div className='pdf-detail'></div>  D </button>
+    return <button type="button" id="costingSummary_Detailed_pdf" className="user-btn mr-1 mb-2 px-2" title='Detailed pdf' disabled={viewCostingData?.length === 1 ? false : true}> <div className='pdf-detail'></div>  D </button>
   }, [viewCostingData])
 
   const handleAfterPrintDetail = () => {
     setDrawerDetailPDF(false)
     setPdfHead(false)
     setLoader(false)
+    // Clean up multiple technology data after PDF generation
+    setViewMultipleTechnologyDrawer(false)
+    setMultipleTechnologyData([])
   }
   const handleOnBeforeGetContentDetail = () => {
     setLoader(true)
     setDrawerDetailPDF(true)
+    
+    // Set up multiple technology data for PDF rendering
+    // Find the first costing that has multiTechnologyCostingDetails
+    const costingWithMultiTech = viewCostingData?.find(
+      (data, index) => data?.multiTechnologyCostingDetails && data?.multiTechnologyCostingDetails?.length > 0
+    );
+    
+    if (costingWithMultiTech) {
+      setMultipleTechnologyData(costingWithMultiTech?.multiTechnologyCostingDetails);
+      // setViewMultipleTechnologyDrawer(true);
+      
+      // // Find and set the index
+      // const foundIndex = viewCostingData?.findIndex(
+      //   (data) => data?.multiTechnologyCostingDetails && data?.multiTechnologyCostingDetails?.length > 0
+      // );
+      // if (foundIndex !== -1) {
+      //   setIndex(foundIndex);
+      // }
+    }
+    
     return new Promise((resolve) => {
       onBeforeContentResolveDetail.current = resolve;
       setTimeout(() => {
@@ -1395,7 +1418,7 @@ const CostingSummaryTable = (props) => {
     })
   }
   const reactToPrintTrigger = useCallback(() => {
-    return (simulationMode ? <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button> : <button className="user-btn mr-1 mb-2 px-2" title='pdf' id="costingSummary_pdf" disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button>)
+    return (simulationMode ? <button type="button" className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button> : <button type="button" className="user-btn mr-1 mb-2 px-2" title='pdf' id="costingSummary_pdf" disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button>)
   }, [viewCostingData])
 
   const reactToPrintContent = () => {
@@ -1838,7 +1861,7 @@ const CostingSummaryTable = (props) => {
       finalData = VIEW_COSTING_DATA_TEMPLATE
       temp = viewCostingData
     }
-    
+
     return (
       <ExcelSheet data={temp} name={"Costing Summary"}>
         {finalData && finalData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -1987,7 +2010,24 @@ const CostingSummaryTable = (props) => {
     }));
   };
 
-  const PDFPageStyle = "@page { size: A4 landscape; }";
+  // const PDFPageStyle = "@page { size: A4 landscape; }";
+
+  const PDFPageStyle = `
+    @page {
+      size: A4 landscape;
+    }
+    .auto-layout-pdf-table {
+      width: 100% !important;
+      table-layout: auto !important;
+    }
+
+    .auto-layout-pdf-table th,
+    .auto-layout-pdf-table td {
+      white-space: normal !important;
+      word-break: break-word !important;
+    }
+  `;
+
 
   const tableDataClass = (data) => {
 
@@ -2344,7 +2384,7 @@ const CostingSummaryTable = (props) => {
                   </ExcelFile>}
                   {(props?.isRfqCosting && !isApproval && !drawerViewMode) && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                 </div>
-                {!simulationMode && !props?.isRfqCosting && !props?.isRfqCosting && downloadAccessibility &&
+                {((!simulationMode && !props?.isRfqCosting && !props?.isRfqCosting && downloadAccessibility) || (downloadAccessibility && props?.isApprovalListing)) &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
                     documentTitle={`${pdfName}-detailed-costing`}
@@ -2355,7 +2395,7 @@ const CostingSummaryTable = (props) => {
                     trigger={reactToPrintTriggerDetail}
                   />
                 }
-                {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && downloadAccessibility && <ReactToPrint
+                {(!simulationDrawer && !drawerViewMode && !props.isRfqCosting && downloadAccessibility || (downloadAccessibility && props?.isApprovalListing)) && <ReactToPrint
                   bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                   documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                   content={reactToPrintContent}
@@ -2736,11 +2776,33 @@ const CostingSummaryTable = (props) => {
                       }
                       {
                         !isLogisticsTechnology ? <>
-                          {partType ? <>
+                          {partType ? 
+                          <>
                             <tr>
                               <td>
                                 <span className={highlighter("", "rm-reducer")}>Part Cost/Pc</span>
+                                {showDifferentBOPType() ?
+                                <>
+                                  <span className={highlighter("BopDomesticCost")}>{`${showBopLabel()} Domestic Cost`}
+                                    <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-Domestic" tooltipText={`Including Handling Cost`} />
+                                  </span>
+                                  <span className={highlighter("BopCKDCost")}>{`${showBopLabel()} CKD Cost`}
+                                    <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-CKD" tooltipText={`Including Handling Cost`} />
+                                  </span>
+                                  <span className={highlighter("BopV2VCost")}>{`${showBopLabel()} V2V Cost`}
+                                    <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-V2V" tooltipText={`Including Handling Cost`} />
+                                  </span>
+                                  <span className={highlighter("BopOSPCost")}>{`${showBopLabel()} OSP Cost`}
+                                    <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-OSP" tooltipText={`Including Handling Cost`} />
+                                  </span>
+                                  <span className={highlighter("TotalBopCost")}>{`${showBopLabel()} Total Cost`}
+                                    <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included-OSP" tooltipText={`Total cost of all BOP types, including handling charges`} />
+                                  </span>
+
+                                </>
+                                :
                                 <span className={highlighter("", "finish-reducer")}>{showBopLabel()} Cost/Assembly (Including Handling Charge)</span>
+                                }
                                 <span className={highlighter("BurningLossWeight")}>Process Cost/Assembly</span>
                                 <span className={highlighter("ScrapWeight")}>Operation Cost/Assembly</span>
                                 <span className={highlighter("LabourCost")}>Labour Cost/Assembly</span>
@@ -2755,9 +2817,25 @@ const CostingSummaryTable = (props) => {
                                     <td className={tableDataClass(data)}>
                                       {data?.bestCost !== true && <>
                                         <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netChildPartsCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</span>
-                                        <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                        {/* <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                           <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included" tooltipText={`${checkForDecimalAndNull(data?.bopPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}`} />
-                                        </span>
+                                        </span> */}
+                                        {showDifferentBOPType() ?
+                                        <>
+                                          <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPDomesticCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+                                          <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPImportCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+                                          <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPSourceCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+                                          <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPOutsourcedCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+                                          <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) ?? "-"}</span>
+
+                                        </>
+                                        :
+                                        <>
+                                          <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                            <TooltipCustom customClass="mt-1 ml-2 p-absolute" id="Handling-charge-included" tooltipText={`${checkForDecimalAndNull(data?.bopPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice)}`} />
+                                          </span>
+                                        </>
+                                        }
 
                                         {/* <span className={highlighter("rmRate")}>
                                           <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) : ''}</button>
@@ -2871,7 +2949,7 @@ const CostingSummaryTable = (props) => {
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss (Loss%)</span>}
-                                    {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && <span className={highlighter("BurningLossWeight")}>Burning Loss Weight </span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting && <span className={highlighter("BurningLossWeight")}>Burning Loss Weight </span>}
                                     <span className={highlighter("ScrapWeight")}>Scrap Weight</span>
                                     {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("YieldPercentage")}>Yield % </span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("EffectiveDate")}>RM Base (Effective Date) </span>}
@@ -2915,7 +2993,7 @@ const CostingSummaryTable = (props) => {
                                             {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration?.NoOfDecimalForInputOutput) : ''} */}
                                           </span>}
 
-                                          {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && <span className={highlighter("BurningLossWeight")}>
+                                          {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting && <span className={highlighter("BurningLossWeight")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput)}</span> : '')}
                                             {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration?.NoOfDecimalForInputOutput) : ''} */}
                                           </span>}
@@ -2990,6 +3068,7 @@ const CostingSummaryTable = (props) => {
                                   <span className="d-block small-grey-text">{`${showBopLabel()} CKD Cost`}</span>
                                   <span className="d-block small-grey-text">{`${showBopLabel()} V2V Cost`}</span>
                                   <span className="d-block small-grey-text">{`${showBopLabel()} OSP Cost`}</span>
+                                  <span className="d-block small-grey-text">{`${showBopLabel()} Total Cost`}</span>
                                 </td>
                                 {viewCostingData &&
                                   viewCostingData?.map((data) => {
@@ -2999,6 +3078,7 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPImportCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
                                         <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPSourceCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
                                         <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBOPOutsourcedCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
+                                        <span className="d-block small-grey-text">{checkForDecimalAndNull(data?.CostingPartDetails?.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice) || "-"}</span>
                                       </td>
                                     )
                                   })}
@@ -3013,7 +3093,7 @@ const CostingSummaryTable = (props) => {
                                       {showDifferentBOPType() && <TooltipCustom customClass="mt-1 ml-2 float-unset" id="net-bop-cost-summary" tooltipText={`Included Handling Charges`} />}
                                     </span>
                                   </th>
-                                  
+
                                   {viewCostingData &&
                                     viewCostingData?.map((data, index) => {
                                       return (
@@ -3586,57 +3666,7 @@ const CostingSummaryTable = (props) => {
                                   </td>
                                 )
                               })}
-                          </tr>}
-                          {getConfigurationKey()?.IsShowIncoTermFieldInCosting && <tr>
-                            <td>
-                              <span className="d-block small-grey-text"> Inco Term</span>
-                            </td>
-                            {viewCostingData &&
-                              viewCostingData?.map((data) => {
-                                return (
-                                  <td className={tableDataClass(data)}>
-                                    <span
-                                      title={`${data?.CostingIncoTermDescription} (${data?.CostingIncoTerm})`}
-                                      className={`w-fit ${highlighter("incoTerm")}`}
-                                    >
-                                      {data?.bestCost === true
-                                        ? ' '
-                                        : (data?.CostingHeading !== VARIANCE
-                                          ? `${data?.CostingIncoTermDescription} (${data?.CostingIncoTerm})`
-                                          : ''
-                                        )
-                                      }
-
-                                    </span>
-                                  </td>
-                                )
-                              })}
-                          </tr>}
-                          <tr>
-                            <td>
-                              <span className="d-block small-grey-text"> Budgeting Price</span>
-                            </td>
-                            {viewCostingData &&
-                              viewCostingData?.map((data) => {
-                                return (
-                                  <td className={tableDataClass(data)}>
-                                    <span
-                                      title={`${data?.BudgetedPrice}`}
-                                      className={`w-fit ${highlighter("BudetedPrice")}`}
-                                    >
-                                      {data?.bestCost === true
-                                        ? ' '
-                                        : (data?.CostingHeading !== VARIANCE
-                                          ? `${data?.BudgetedPrice}`
-                                          : ''
-                                        )
-                                      }
-
-                                    </span>
-                                  </td>
-                                )
-                              })}
-                          </tr>
+                          </tr>}                      
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("BasicRate", "main-row")}`}>
                               <th>Basic Price {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} </th>
@@ -3761,7 +3791,8 @@ const CostingSummaryTable = (props) => {
                                 )
                               })}
                           </tr>
-                        </>}
+                        </>
+                      }
                       {
                         <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
                           <th>Net Cost {showConvertedCurrencyCheckbox && '(Settlement Currency)'} {simulationDrawer}</th>
@@ -3797,6 +3828,60 @@ const CostingSummaryTable = (props) => {
                               </td>
                             })}
                         </tr>
+                      }
+                      {!isLogisticsTechnology &&
+                        <>
+                          {getConfigurationKey()?.IsShowIncoTermFieldInCosting && <tr>
+                            <td>
+                              <span className="d-block small-grey-text"> Inco Term</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span
+                                      title={`${data?.CostingIncoTermDescription} (${data?.CostingIncoTerm})`}
+                                      className={`w-fit ${highlighter("incoTerm")}`}
+                                    >
+                                      {data?.bestCost === true
+                                        ? ' '
+                                        : (data?.CostingHeading !== VARIANCE
+                                          ? `${data?.CostingIncoTermDescription} (${data?.CostingIncoTerm})`
+                                          : ''
+                                        )
+                                      }
+
+                                    </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>}
+                          <tr>
+                            <td>
+                              <span className="d-block small-grey-text"> Budgeting Price</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span
+                                      title={`${data?.BudgetedPrice}`}
+                                      className={`w-fit ${highlighter("BudgetedPrice")}`}
+                                    >
+                                      {data?.bestCost === true
+                                        ? ' '
+                                        : (data?.CostingHeading !== VARIANCE
+                                          ? `${data?.BudgetedPrice}`
+                                          : ''
+                                        )
+                                      }
+
+                                    </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>
+                        </>
                       }
                       {showConvertedCurrencyCheckbox &&
                         <tr className={`${highlighter("NetPOPriceLocalConversion", "main-row")} netPo-row`}>

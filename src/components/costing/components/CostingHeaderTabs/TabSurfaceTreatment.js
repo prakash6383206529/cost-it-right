@@ -628,7 +628,7 @@ function TabSurfaceTreatment(props) {
   */
   const setSurfaceCost = (surfaceGrid, params, IsGridChanged, hangerCostDetails, extraCostDetails, paintAndMaskingDetails) => {
     let arr = dispatchSurfaceCost(surfaceGrid, params, SurfaceTabData, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
-
+    
     // let arr1 = assemblyTotalSurfaceTransportCost(arr)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -661,6 +661,7 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
           i.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
           i.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
+          i.CostingPartDetails.HangerRemark = hangerCostDetails?.HangerRemark
           i.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
           i.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)
           i.CostingPartDetails.PaintConsumptionCost = checkForNull(paintAndMaskingDetails?.PaintConsumptionCost)
@@ -672,13 +673,14 @@ function TabSurfaceTreatment(props) {
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
-
+          
 
           i.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
           i.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
           i.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
           i.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
           i.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
+          i.CostingPartDetails.HangerRemark = hangerCostDetails?.HangerRemark
           i.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
           i.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)
           i.CostingPartDetails.PaintConsumptionCost = checkForNull(paintAndMaskingDetails?.PaintConsumptionCost)
@@ -686,7 +688,7 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.TransportationCost = checkForNull(extraCostDetails?.TransportationCost)
           i.CostingPartDetails.TransportationDetails = extraCostDetails?.TransportationDetails
           i.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i?.CostingPartDetails?.TransportationCost) + checkForNull(i?.CostingPartDetails?.HangerCostPerPart) + checkForNull(i?.CostingPartDetails?.TotalPaintCost);
-
+          
         } else {
 
           dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails, hangerCostDetails, extraCostDetails, paintAndMaskingDetails)
@@ -700,6 +702,7 @@ function TabSurfaceTreatment(props) {
         partObj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
         partObj.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
         partObj.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
+        partObj.CostingPartDetails.HangerRemark = hangerCostDetails?.HangerRemark
         partObj.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
         partObj.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
         partObj.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)
@@ -1217,7 +1220,7 @@ function TabSurfaceTreatment(props) {
       for (let i = useLevel; i >= 0; i--) {
 
         // THIS CONDITION IS FOR CALCULATING COSTING OF PART/COMPONENT ON THE LEVEL WE ARE WORKING
-        if (item.PartType === "Part" || item.PartType === "Component") {
+        if (item.PartType === "Part" || item.PartType === "Component" || item.PartType === "Bought Out Part") {
           // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
           if (i === useLevel) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
@@ -1423,7 +1426,7 @@ function TabSurfaceTreatment(props) {
       let quant = ''
       for (let i = useLevel; i >= 0; i--) {
         // THIS CONDITION IS FOR CALCULATING COSTING OF PART/COMPONENT ON THE LEVEL WE ARE WORKING
-        if (item.PartType === "Part" || item.PartType === "Component") {
+        if (item.PartType === "Part" || item.PartType === "Component" || item.PartType === "Bought Out Part") {
 
           // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
           if (i === useLevel) {

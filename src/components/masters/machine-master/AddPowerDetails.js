@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Table } from 'reactstrap';
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit8And7, getConfigurationKey, checkForNull, checkForDecimalAndNull } from "../../../helper";
+import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit8And7, getConfigurationKey, checkForNull, checkForDecimalAndNull, calculatePercentage } from "../../../helper";
 import { useDispatch, useSelector } from 'react-redux';
 import DayTime from '../../common/DayTimeWrapper';
 import { EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, POWER_TYPE } from '../../../config/constants';
@@ -17,9 +17,9 @@ import WarningMessage from '../../common/WarningMessage';
 const AddPowerDetails = ({
         parentState,
         setParentState,
-        fieldsObj
+        fieldsObj,
+        change
     }) => {
-
     const dispatch = useDispatch();
     const [state, setState] = useState({
         energyType: {},
@@ -33,20 +33,67 @@ const AddPowerDetails = ({
         finalRate: "",
         editItemId: "",
         editMachinePowerTypeId: "",
-        showUnitRateWarning: false
+        showUnitRateWarning: false,
+        PowerRatingPerKW: fieldsObj?.PowerRatingPerKW || "",
+        UtilizationFactorPercentage: fieldsObj?.UtilizationFactorPercentage || "",
+        TotalPowerCostPerYear: fieldsObj?.TotalPowerCostPerYear || "",
+        TotalPowerCostPerHour: fieldsObj?.TotalPowerCostPerHour || ""
     })
 
     const machinePowerTypeSelectList = useSelector((state) => state.comman.machinePowerTypeSelectList)
     const powerTypeSelectList = useSelector((state) => state.comman.powerTypeSelectList)
     const fuelDataByPlant = useSelector((state) => state.fuel.fuelDataByPlant)
     const { energyType, UsagePercent, UnitProduced, FuelCostPerUnit, editItemId, editMachinePowerTypeId, fuel, source, UOM, finalRate, showUnitRateWarning } = state
-    const { MachinePowerDetails, isViewMode, isEditFlag } = parentState
+    const { MachinePowerDetails, isViewMode, isEditFlag, machineFullValue, disableAllForm } = parentState
 
 
     const { register, handleSubmit, control, setValue, getValues, clearErrors, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+    const watchedValues = useWatch({
+        control,
+        name: [
+            "PowerRatingPerKW",
+            "UtilizationFactorPercentage",
+            "CostPerUnit"
+        ]
+    })
+
+    useEffect(() => {
+        const [
+            PowerRatingPerKW,
+            UtilizationFactorPercentage,
+            CostPerUnit
+        ] = watchedValues
+
+        if(PowerRatingPerKW && UtilizationFactorPercentage && CostPerUnit){
+            calculateTotalPowerCost(PowerRatingPerKW, UtilizationFactorPercentage, CostPerUnit)
+        }
+    }, [watchedValues, fieldsObj])
+
+    useEffect(() => {
+        if(MachinePowerDetails && MachinePowerDetails?.length > 0){
+            calculateCostPerUnit(MachinePowerDetails)
+        }
+    }, [MachinePowerDetails])
+
+    useEffect(() => {
+        if (fieldsObj) {
+            setValue("PowerRatingPerKW", fieldsObj?.PowerRatingPerKW || "");
+            setValue("UtilizationFactorPercentage", fieldsObj?.UtilizationFactorPercentage || "");
+            setValue("TotalPowerCostPerYear", fieldsObj?.TotalPowerCostPerYear || "");
+            setValue("TotalPowerCostPerHour", fieldsObj?.TotalPowerCostPerHour || "");
+        }
+    }, [fieldsObj, setValue]);
+
+    function calculateCostPerUnit(MachinePowerDetails){
+        let totalCostPerUnit = (MachinePowerDetails || []).reduce((acc, item) => {
+            return acc + (Number(item?.Cost) || 0);
+        }, 0);
+        setValue("CostPerUnit", checkForDecimalAndNull(totalCostPerUnit, getConfigurationKey()?.NoOfDecimalForPrice))
+        change('PowerCostPerUnit', checkForDecimalAndNull(totalCostPerUnit, getConfigurationKey()?.NoOfDecimalForPrice))
+    }
 
     const renderListing = (label) => {
         const temp = [];
@@ -94,6 +141,15 @@ const AddPowerDetails = ({
             }, []);
             return filtered;
         }
+    }
+
+    function calculateTotalPowerCost(PowerRatingPerKW, UtilizationFactorPercentage, FuelCostPerUnit){
+        const totalPowerCostPerHour = checkForNull(PowerRatingPerKW) * calculatePercentage(UtilizationFactorPercentage) * checkForNull(FuelCostPerUnit)
+        setValue("TotalPowerCostPerHour", checkForDecimalAndNull(totalPowerCostPerHour, getConfigurationKey()?.NoOfDecimalForPrice))
+        const totalPowerCostPrYer = totalPowerCostPerHour * checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear)
+        setValue("TotalPowerCostPerYear", checkForDecimalAndNull(totalPowerCostPrYer, getConfigurationKey()?.NoOfDecimalForPrice))
+        change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, getConfigurationKey()?.NoOfDecimalForPrice))
+        change('TotalPowerCostPerHour', checkForDecimalAndNull(totalPowerCostPerHour, getConfigurationKey()?.NoOfDecimalForPrice))
     }
 
     const handleTypeChange = (newValue) => {
@@ -297,6 +353,11 @@ const AddPowerDetails = ({
             resetEnableField(true);
             setState(prev => ({...prev, editItemId: "", editMachinePowerTypeId: "" }));
         }
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        change(name, value);
     }
 
   return (
@@ -573,6 +634,134 @@ const AddPowerDetails = ({
                     </tbody>
                 )}
             </Table>
+        </Col>
+
+        <Col md="12">
+            <Row>
+                <Col md="3">
+                    <TextFieldHookForm
+                        // name="UsagePercent"
+                        name="UtilizationFactorPercentage"
+                        label="Efficiency (%)"
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        placeholder="Enter"
+                        handleChange={(e) => handleInputChange(e)}
+                        value={state?.UtilizationFactorPercentage}
+                        rules={{
+                        required: false,
+                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                            max: {
+                                value: 100,
+                                message: 'Percentage cannot be greater than 100'
+                            }
+                        }}
+                        mandatory={false}
+                        className=""
+                        customClassName="withBorder"
+                        errors={errors.UtilizationFactorPercentage}
+                        disabled={isViewMode || disableAllForm}
+                    />
+                </Col>
+
+                <Col md="3">
+                    <TextFieldHookForm
+                        name="PowerRatingPerKW"
+                        label="Power Rating(Kw)"
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        type="number"
+                        placeholder="Enter"
+                        handleChange={(e) => handleInputChange(e)}
+                        value={state?.PowerRatingPerKW}
+                        rules={{
+                            required: false,
+                            validate: { number, checkWhiteSpaces, decimalNumberLimit8And7 }
+                        }}
+                        mandatory={false}
+                        className=""
+                        customClassName="withBorder"
+                        errors={errors.PowerRatingPerKW}
+                        disabled={isViewMode || disableAllForm}
+                    />
+                </Col>
+
+                <>
+                    <TooltipCustom
+                        id={`CostPerUnit`}
+                        disabledIcon
+                        tooltipText={`Cost/Unit = Sum of Final Rate of Fuel and Power`}
+                    />
+                    <Col md="3">
+                        <div className="input-group form-group col-md-12 input-withouticon">
+                            <TextFieldHookForm
+                                name="CostPerUnit"
+                                label="Cost/Unit"
+                                id="CostPerUnit"
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                placeholder="-"
+                                rules={{ required: false }}
+                                mandatory={false}
+                                disabled={true}
+                                className=""
+                                customClassName="mb-0 withBorder"
+                                errors={errors.CostPerUnit}
+                            />
+                        </div>
+                    </Col>
+                </>
+
+                <>
+                    <TooltipCustom
+                        id={`TotalPowerCostPerHour`}
+                        disabledIcon
+                        tooltipText={`Power Cost/Hour (${fieldsObj?.plantCurrency || 'Currency'}) = (Efficiency %) * Power Rating * Cost/Unit`}
+                    />
+                    <Col md="3">
+                        <TextFieldHookForm
+                            name="TotalPowerCostPerHour"
+                            label={`Power Cost/Hour (${fieldsObj?.plantCurrency || 'Currency'})`}
+                            id={"TotalPowerCostPerHour"}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            value={state?.TotalPowerCostPerHour}
+                            placeholder="-"
+                            disabled={true}
+                            className=""
+                            customClassName="withBorder"
+                            errors={errors.TotalPowerCostPerHour}
+                        />
+                    </Col>
+                </>
+                <>
+                    <TooltipCustom
+                        id={`TotalPowerCostPerYear`}
+                        disabledIcon
+                        tooltipText={`Power Cost/Annum (${fieldsObj?.plantCurrency || 'Currency'}) = Power Cost/Hour (${fieldsObj?.plantCurrency || 'Currency'}) * No. of Working Hrs/Annum)`}
+                    />
+                    <Col md="3">
+                        <TextFieldHookForm
+                            name="TotalPowerCostPerYear"
+                            label={`Power Cost/Annum (${fieldsObj?.plantCurrency || 'Currency'})`}
+                            id={"TotalPowerCostPerYear"}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            value={state?.TotalPowerCostPerYear}
+                            placeholder="-"
+                            disabled={true}
+                            className=""
+                            customClassName="withBorder"
+                            errors={errors.TotalPowerCostPerYear}
+                        />
+                    </Col>
+                </>
+            </Row>
         </Col>
     </>
   );

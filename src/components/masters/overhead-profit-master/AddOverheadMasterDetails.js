@@ -14,7 +14,7 @@ import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm, AsyncS
 import { fetchApplicabilityList, getVendorNameByVendorSelectList, fetchSpecificationDataAPI } from '../../../actions/Common';
 import { autoCompleteDropdown, filterBOPApplicability, getCostingConditionTypes, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
-import { LOGISTICS } from '../../../config/masterData';
+import { DIE_CASTING, Ferrous_Casting, LOGISTICS } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
 
 
@@ -35,6 +35,14 @@ const AddOverheadMasterDetails = (props) => {
     const { rawMaterialNameSelectList, gradeSelectList } = useSelector((state) => state.material);
     // const conditionTypeId = getCostingConditionTypes(OVERHEADMASTER);
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
+    // Common utility function to check if Casting Norm should be shown
+    const shouldShowCastingNorm = () => {
+        const selectedTechnologies = state?.selectedTechnologies || [];
+        return selectedTechnologies.some(tech => 
+            tech?.label === DIE_CASTING || tech?.label === Ferrous_Casting
+        );
+    };
 
     // DO NOT REMOVE THIS (useEffect) CODE
     // useEffect(() => {
@@ -64,7 +72,16 @@ const AddOverheadMasterDetails = (props) => {
         }
 
         if (label === 'OverheadApplicability') {
-            return filterBOPApplicability(costingHead, state?.ApplicabilityDetails,'Applicability')
+            const filteredApplicability = filterBOPApplicability(costingHead, state?.ApplicabilityDetails,'Applicability');
+            
+            const finalFiltered = filteredApplicability.filter(item => {
+                if (item?.label === 'Casting Norm') {
+                    return shouldShowCastingNorm();
+                }
+                return true; 
+            });
+            
+            return finalFiltered;
         }
 
         if (label === 'ModelType') {

@@ -50,6 +50,7 @@ export const useLabels = () => {
     revision : tMasterLabels('Revision', { defaultValue: 'Revision' }),
     weldingMaterialRate: tMasterLabels('WeldingMaterialRate', { defaultValue: 'Welding Material Rate' }),
     drawing : tMasterLabels('Drawing', { defaultValue: 'Drawing' }),
+    hpdcLabel: tMasterLabels('hpdcLabel', { defaultValue: 'HPDC' }),
   };
 };
 

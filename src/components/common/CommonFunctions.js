@@ -591,67 +591,73 @@ export const generateUnusedRMsMessage = (unusedRMs) => {
  * @param {Array} applicabilityDetails - Currently selected applicability details
  * @returns {Array} Filtered list of applicable options
  */
-export const filterBOPApplicability = (costingHead, applicabilityDetails,applicabilityKey) => {
-    
+export const filterBOPApplicability = (
+    costingHead,
+    applicabilityDetails,
+    applicabilityKey
+) => {
     if (!costingHead) return [];
 
-    // Check for fixed applicability
     let excludeFixed = false;
     let includeOnlyFixed = false;
-    if (applicabilityDetails && applicabilityDetails.length > 0) {
-        const fixedExists = applicabilityDetails.some(
-            ap => (applicabilityKey ? ap[applicabilityKey]?.toLowerCase() : ap.Applicability?.toLowerCase()) === "fixed"
+
+    if (applicabilityDetails?.length > 0) {
+        const fixedExists = applicabilityDetails.some(ap =>
+            (applicabilityKey ? ap[applicabilityKey] : ap.Applicability)
+                ?.toLowerCase() === "fixed"
         );
         includeOnlyFixed = fixedExists;
         excludeFixed = !fixedExists;
     }
 
-    // Define BOP variant exclusions
     const bopVariants = {
-        "BOP": ["BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP", "BOP Without Handling Charge", 
-               "BOP Domestic Without Handling Charge", "BOP CKD Without Handling Charge", 
-               "BOP V2V Without Handling Charge", "BOP OSP Without Handling Charge"],
-        "BOP Without Handling Charge": ["BOP", "BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP",
-                                      "BOP Domestic Without Handling Charge", "BOP CKD Without Handling Charge",
-                                      "BOP V2V Without Handling Charge", "BOP OSP Without Handling Charge"],
-        "BOP Domestic": ["BOP", "BOP Without Handling Charge", "BOP Domestic Without Handling Charge",
-                       "BOP CKD Without Handling Charge", "BOP V2V Without Handling Charge", 
-                       "BOP OSP Without Handling Charge"],
-        "BOP CKD": ["BOP", "BOP Without Handling Charge", "BOP CKD Without Handling Charge",
-                   "BOP Domestic Without Handling Charge", "BOP V2V Without Handling Charge",
-                   "BOP OSP Without Handling Charge"],
-        "BOP V2V": ["BOP", "BOP Without Handling Charge", "BOP V2V Without Handling Charge",
-                   "BOP Domestic Without Handling Charge", "BOP CKD Without Handling Charge",
-                   "BOP OSP Without Handling Charge"],
-        "BOP OSP": ["BOP", "BOP Without Handling Charge", "BOP OSP Without Handling Charge",
-                   "BOP Domestic Without Handling Charge", "BOP CKD Without Handling Charge",
-                   "BOP V2V Without Handling Charge"],
-        "BOP Domestic Without Handling Charge": ["BOP", "BOP Without Handling Charge", "BOP Domestic",
-                                               "BOP CKD", "BOP V2V", "BOP OSP"],
-        "BOP CKD Without Handling Charge": ["BOP", "BOP Without Handling Charge", "BOP Domestic",
-                                          "BOP CKD", "BOP V2V", "BOP OSP"],
-        "BOP V2V Without Handling Charge": ["BOP", "BOP Without Handling Charge", "BOP Domestic",
-                                          "BOP CKD", "BOP V2V", "BOP OSP"],
-        "BOP OSP Without Handling Charge": ["BOP", "BOP Without Handling Charge", "BOP Domestic",
-                                          "BOP CKD", "BOP V2V", "BOP OSP"]
+        "BOP": [
+            "BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP",
+            "BOP Without Handling Charge",
+            "BOP Domestic Without Handling Charge",
+            "BOP CKD Without Handling Charge",
+            "BOP V2V Without Handling Charge",
+            "BOP OSP Without Handling Charge"
+        ],
+        "BOP Without Handling Charge": [
+            "BOP", "BOP Domestic", "BOP CKD", "BOP V2V", "BOP OSP",
+            "BOP Domestic Without Handling Charge",
+            "BOP CKD Without Handling Charge",
+            "BOP V2V Without Handling Charge",
+            "BOP OSP Without Handling Charge"
+        ],
+        "BOP Domestic": ["BOP Domestic Without Handling Charge", "BOP", "BOP Without Handling Charge"],
+        "BOP Domestic Without Handling Charge": ["BOP Domestic", "BOP", "BOP Without Handling Charge"],
+
+        "BOP CKD": ["BOP CKD Without Handling Charge", "BOP", "BOP Without Handling Charge"],
+        "BOP CKD Without Handling Charge": ["BOP CKD", "BOP", "BOP Without Handling Charge"],
+
+        "BOP V2V": ["BOP V2V Without Handling Charge", "BOP", "BOP Without Handling Charge"],
+        "BOP V2V Without Handling Charge": ["BOP V2V", "BOP", "BOP Without Handling Charge"],
+
+        "BOP OSP": ["BOP OSP Without Handling Charge", "BOP", "BOP Without Handling Charge"],
+        "BOP OSP Without Handling Charge": ["BOP OSP", "BOP", "BOP Without Handling Charge"],
     };
 
-    const filtered = costingHead.filter(item => {
-        const isFixed = item.Text?.toLowerCase() === "fixed";
-        const isAlreadyUsed = applicabilityDetails?.some(
-            ap => (applicabilityKey ? ap[applicabilityKey] : ap.Applicability) === item.Text
-        );
+    // Gather all exclusions from selected variants
+    const allExclusions = new Set();
 
-        // Check if any BOP variant exists in ApplicabilityDetails
-        const selectedBOPVariant = applicabilityDetails?.find(ap => 
-            Object.keys(bopVariants).includes(applicabilityKey ? ap[applicabilityKey] : ap.Applicability)
-        );
-
-        // If a BOP variant is selected, filter out its corresponding variants
-        if (selectedBOPVariant && bopVariants[applicabilityKey ? selectedBOPVariant[applicabilityKey] : selectedBOPVariant.Applicability].includes(item.Text)) {
-            return false;
+    for (const ap of applicabilityDetails) {
+        const key = applicabilityKey ? ap[applicabilityKey] : ap.Applicability;
+        const exclusions = bopVariants[key];
+        if (exclusions?.length) {
+            exclusions.forEach(ex => allExclusions.add(ex));
         }
+    }
 
+    const filtered = costingHead.filter(item => {
+        const itemText = item.Text;
+        const isFixed = itemText?.toLowerCase() === "fixed";
+        const isAlreadyUsed = applicabilityDetails?.some(
+            ap => (applicabilityKey ? ap[applicabilityKey] : ap.Applicability) === itemText
+        );
+
+        if (allExclusions.has(itemText)) return false;
         if (Number(item.Value) === 0) return false;
         if (includeOnlyFixed && !isFixed) return false;
         if (excludeFixed && isFixed) return false;

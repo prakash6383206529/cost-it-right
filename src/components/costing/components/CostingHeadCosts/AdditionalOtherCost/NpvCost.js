@@ -43,6 +43,7 @@ function NpvCost(props) {
                     <Table className="table cr-brdr-main mb-4 forging-cal-table" size="sm">
                         <tbody>
                             <tr className='thead'>
+                                {islineInvestmentDrawer && <th>{`Description`}</th>}
                                 {islineInvestmentDrawer && <th>{`Investment Cost`}</th>}
                                 {!islineInvestmentDrawer && <th>{`Type of Investment`}</th>}
                                 {islineInvestmentDrawer && <th>{`Upfront (%)`}</th>}
@@ -62,14 +63,15 @@ function NpvCost(props) {
                                     return (
                                         <Fragment>
                                             <tr key={index}>
-                                                {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.InvestmentCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                                {!islineInvestmentDrawer && <td>{item.NpvType} </td>}
-                                                {islineInvestmentDrawer && <td>{item?.UpfrontPercentage}</td>}
-                                                {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.NpvQuantity, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                                {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.UpfrontCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                                {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.AmortizationCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {islineInvestmentDrawer && <td>{item?.Description || "-"}</td>}
+                                                {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.InvestmentCost, getConfigurationKey()?.NoOfDecimalForPrice)}</td>}
+                                                {!islineInvestmentDrawer && <td>{item?.NpvType || "-"} </td>}
+                                                {islineInvestmentDrawer && <td>{item?.UpfrontPercentage || "-"}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.NpvPercentage, getConfigurationKey()?.NoOfDecimalForPrice)}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.NpvQuantity, getConfigurationKey()?.NoOfDecimalForPrice)}</td>}
+                                                {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.UpfrontCost, getConfigurationKey()?.NoOfDecimalForPrice)}</td>}
+                                                {islineInvestmentDrawer && <td>{checkForDecimalAndNull(item?.AmortizationCost, getConfigurationKey()?.NoOfDecimalForPrice)}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey()?.NoOfDecimalForPrice)}</td>}
                                                 {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} disabled={CostingViewMode} />
                                                     <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} disabled={CostingViewMode} />
                                                 </div>
@@ -88,7 +90,7 @@ function NpvCost(props) {
                             )}
 
                             <tr className='table-footer'>
-                                <td colSpan={`${islineInvestmentDrawer ? "6" : "3"}`} className="text-right">{`${islineInvestmentDrawer ? "Investment Line cost" : "Total NPV Cost"} (${currencySource?.label}) :`}</td>
+                                <td colSpan={`${islineInvestmentDrawer ? "7" : "3"}`} className="text-right">{`${islineInvestmentDrawer ? "Investment Line cost" : "Total NPV Cost"} (${currencySource?.label}) :`}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>
                         </tbody>

@@ -297,7 +297,7 @@ function ViewRM(props) {
             ))}
           </Nav>
         )}
-        <div className="col-md-11">
+        <div className="col-md-12">
           <Row>
             <Col md="12" className='mt-1'>
               <div className="left-border">Raw Material</div>
@@ -326,6 +326,8 @@ function ViewRM(props) {
                     <th>{`RM Name -Grade`}</th>
                     {checkTechnologyIdAndRfq(viewCostingData) && <th>{`Updated RM Name`}</th>}
                     <th>{`RM Code`}</th>
+                    <th>{`UOM`}</th>
+                    {getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial && <th>{`Inco Terms`}</th>}
                     <th>{`RM Rate`}</th>
                     <th>{showRMScrapKeys(viewCostingData && Number(viewCostingData[props.index]?.technologyId))?.name}</th>
                     {isScrapRecoveryApplied && <th>{`Scrap Recovery (%)`}</th>}
@@ -341,7 +343,7 @@ function ViewRM(props) {
                     {!isPDFShow && viewCostingData[props.index]?.technologyId !== Ferrous_Casting && viewCostingData[props.index]?.technologyId !== RUBBER && (getTechnology.includes(viewCostingData[props.index]?.technologyId)) && <th>{`Calculator`}</th>}
                     {IsShowFreightAndShearingCostFields() && <th>{`Freight Cost`}</th>}
                     {IsShowFreightAndShearingCostFields() && <th>{`Shearing Cost`}</th>}
-                    {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && <th>{`Burning Loss Weight`}</th>}
+                    {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting && <th>{`Burning Loss Weight`}</th>}
                     {viewCostingData[0]?.technologyId === DIE_CASTING && <th>Casting Weight</th>}
                     {viewCostingData[0]?.technologyId === DIE_CASTING && <th>Melting Loss (Loss%)</th>}
                     <th>{`Net RM Cost ${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''}`}</th>
@@ -369,6 +371,8 @@ function ViewRM(props) {
                         </td>
                       )}
                       <td>{item?.RawMaterialCode || '-'}</td>
+                      <td>{item?.UOM || '-'}</td>
+                      {getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial && <td>{item?.IncoTermDescriptionAndIncoTerm ?? '-'}</td>}
                       <td>{checkForDecimalAndNull(item?.RMRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
                       <td>{checkForDecimalAndNull(item?.ScrapRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
                       {isScrapRecoveryApplied && (
@@ -399,7 +403,7 @@ function ViewRM(props) {
                       )}
                       {IsShowFreightAndShearingCostFields() && (<td>{item?.ShearingCost ? checkForDecimalAndNull(item?.ShearingCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                       )}
-                      {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && (<td>{item?.BurningLossWeight ? checkForDecimalAndNull(item?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>
+                      {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting && (<td>{item?.BurningLossWeight ? checkForDecimalAndNull(item?.BurningLossWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>
                       )}
                       {viewCostingData[0]?.technologyId === DIE_CASTING && (<td>{item?.CastingWeight ? checkForDecimalAndNull(item?.CastingWeight, initialConfiguration?.NoOfDecimalForInputOutput) : '-'}</td>
                       )}
