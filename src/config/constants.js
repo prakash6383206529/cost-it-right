@@ -17,8 +17,7 @@ export const config = () => {
   return { headers }
 }
 
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.1.102:9002/api/v1`;
+ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -2311,13 +2310,13 @@ export const FOUR_DECIMAL_PRICE = 4
 export const FIVE_DECIMAL_WEIGHT = 5
 //OVERHEAD AND PROCESS APPLICABILITY IDS
 export const APPLICABILITY_OVERHEAD = 'Overhead';
-export const APPLICABILITY_PROFIT = 'Profit';
-export const APPLICABILITY_OVERHEAD_PROFIT = 'Overhead + Profit';
 export const APPLICABILITY_OVERHEAD_EXCL = 'Overhead(Excluding Int. + Dep.)';
+export const APPLICABILITY_PROFIT = 'Profit';
 export const APPLICABILITY_PROFIT_EXCL = 'Profit(Excluding Int. + Dep.)';
-export const APPLICABILITY_OVERHEAD_PROFIT_EXCL = 'Overhead + Profit(Excluding Int. + Dep.)';
-export const APPLICABILITY_OVERHEAD_EXCL_PROFIT = 'Overhead(Excluding Int. + Dep.) + Profit';
-export const APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL = 'Overhead(Excluding Int. + Dep.) + Profit(Excluding Int. + Dep.)';
+export const APPLICABILITY_REJECTION = 'Rejection';
+export const APPLICABILITY_REJECTION_EXCL = 'Rejection(Excluding Int. + Dep.)';
+
+
 //LABOUR ENUMS
 export const SKILLED = 'Skilled'
 export const CONTRACT = 'Contract'

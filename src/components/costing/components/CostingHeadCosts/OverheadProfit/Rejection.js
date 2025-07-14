@@ -80,7 +80,7 @@ function Rejection(props) {
             if (applicabilityText === 'Casting Norm') {
                 return shouldShowCastingNorm();
             }
-            return true; 
+            return true;
         });
     };
 
@@ -225,10 +225,13 @@ function Rejection(props) {
         const BOPOSPWithoutHandling = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBOPOutsourcedCostWithOutHandlingCharge) + checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge)) : checkForNull(headerCosts?.NetBOPOutsourcedCostWithOutHandlingCharge);
         const CastingNorm = /* IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsCastingNormCost) + checkForNull(headerCosts?.NetCastingNormApplicabilityCost) : */ checkForNull(data?.CostingPartDetails?.NetCastingNormApplicabilityCost)
         const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts?.NetCCForOtherTechnologyCost) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
-        const CC = partType ? IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
-            : checkForNull(headerCosts?.NetProcessCost) + checkForNull(headerCosts?.NetOperationCost) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
-            : IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost)
-                : checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts?.NetCCForOtherTechnologyCost);
+        const CC = IsIncludeApplicabilityForChildParts ?
+            checkForNull(data?.CostingPartDetails?.NetChildPartsOperationCostForRejection)
+            + checkForNull(data?.CostingPartDetails?.NetChildPartsProcessCostForRejection)
+            +checkForNull(data?.CostingPartDetails?.NetChildPartsWeldingCostForRejection)
+            + checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection)
+            :
+            checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection)
         
         let prevData = _.cloneDeep(dataObj)
         let newData = [];
@@ -362,10 +365,16 @@ function Rejection(props) {
     const checkRejectionApplicability = (applicability) => {
         const RM = IsIncludeApplicabilityForChildParts ? checkForNull(data?.CostingPartDetails?.NetChildPartsRawMaterialsCost) : checkForNull(headerCosts.NetRawMaterialsCost);
         const BOP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts.NetBoughtOutPartCost)) : checkForNull(headerCosts.NetBoughtOutPartCost);
-        const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts.NetCCForOtherTechnologyCost) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts.NetCCForOtherTechnologyCost)
+        const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection)
         const CC = IsIncludeApplicabilityForChildParts ?
-            checkForNull(data?.CostingPartDetails?.NetChildPartsConversionCost) - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) + (partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) - checkForNull(headerCosts.NetCCForOtherTechnologyCost)) :
-            partType ? checkForNull(headerCosts.NetProcessCost) + checkForNull(headerCosts.NetOperationCost) : checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) - checkForNull(data?.NetCCForOtherTechnologyCost);
+            checkForNull(data?.CostingPartDetails?.NetChildPartsOperationCostForRejection)
+            + checkForNull(data?.CostingPartDetails?.NetChildPartsProcessCostForRejection)
+            +checkForNull(data?.CostingPartDetails?.NetChildPartsWeldingCostForRejection)
+
+            + checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection)
+            :
+            checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection)
+        
         const CastingNorm = checkForNull(data?.CostingPartDetails?.NetCastingNormApplicabilityCost)
 
         const SurfaceCost = IsIncludedSurfaceInRejection

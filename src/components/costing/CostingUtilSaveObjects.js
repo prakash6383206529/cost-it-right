@@ -37,6 +37,10 @@ export const createSaveComponentObject = (rmccData, CostingEffectiveDate, basicR
         "NetCCForOtherTechnologyCost": rmccData?.CostingPartDetails?.NetCCForOtherTechnologyCost || null,
         "NetCCForOtherTechnologyCostForOverhead": rmccData?.CostingPartDetails?.NetCCForOtherTechnologyCostForOverhead || null,
         "NetCCForOtherTechnologyCostForProfit": rmccData?.CostingPartDetails?.NetCCForOtherTechnologyCostForProfit || null,
+        "NetOperationCostForRejection": rmccData?.CostingPartDetails?.NetOperationCostForRejection || null,
+        "NetProcessCostForRejection": rmccData?.CostingPartDetails?.NetProcessCostForRejection || null,
+        "NetWeldingCostForRejection": rmccData?.CostingPartDetails?.NetWeldingCostForRejection || null,
+        "NetCCForOtherTechnologyCostForRejection": rmccData?.CostingPartDetails?.NetCCForOtherTechnologyCostForRejection || null,
         "NetBOPDomesticCost": rmccData?.CostingPartDetails?.NetBOPDomesticCost || null,
         "NetBOPImportCost": rmccData?.CostingPartDetails?.NetBOPImportCost || null,
         "NetBOPSourceCost": rmccData?.CostingPartDetails?.NetBOPSourceCost || null,
@@ -92,6 +96,10 @@ export const createSaveAssemblyRMCCObject = (item, costData, basicRate, totalCos
         "NetWeldingCostForProfit": item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForProfit,
         "NetCCForOtherTechnologyCostForOverhead": item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead,
         "NetCCForOtherTechnologyCostForProfit": item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForProfit,
+        "NetOperationCostForRejection": item?.CostingPartDetails?.TotalOperationCostPerAssemblyForRejection,
+        "NetProcessCostForRejection": item?.CostingPartDetails?.TotalProcessCostPerAssemblyForRejection,
+        "NetWeldingCostForRejection": item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForRejection,
+        "NetCCForOtherTechnologyCostForRejection": item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForRejection,
     }
     return requestObj;
 }

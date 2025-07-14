@@ -113,14 +113,14 @@ function BOPCost(props) {
           let bopCKDCost = 0;
           let bopV2VCost = 0;
           let bopOSPCost = 0;
-          let bopDomesticHandling = IsApplyBOPHandlingCharges ? checkForNull(state.bopDomesticHandlingCost) : 0
-          let bopCKDHandling = IsApplyBOPHandlingCharges ? checkForNull(state.bopCKDHandlingCost) : 0
-          let bopV2Vhandling = IsApplyBOPHandlingCharges ? checkForNull(state.bopV2VHandlingCost) : 0
-          let bopOSPHandling = IsApplyBOPHandlingCharges ? checkForNull(state.bopOSPHandlingCost) : 0
+          let bopDomesticHandling = IsApplyBOPHandlingCharges ? checkForNull(state?.bopDomesticHandlingCost) : 0
+          let bopCKDHandling = IsApplyBOPHandlingCharges ? checkForNull(state?.bopCKDHandlingCost) : 0
+          let bopV2Vhandling = IsApplyBOPHandlingCharges ? checkForNull(state?.bopV2VHandlingCost) : 0
+          let bopOSPHandling = IsApplyBOPHandlingCharges ? checkForNull(state?.bopOSPHandlingCost) : 0
 
-          gridData.forEach(el => {
-            const cost = el.NetBoughtOutPartCost || 0;
-            switch (el.BOPType) {
+          gridData?.forEach(el => {
+            const cost = el?.NetBoughtOutPartCost || 0;
+            switch (el?.BOPType) {
               case "BOP Domestic":
                 bopDomesticCost += cost;
                 break;
@@ -148,11 +148,11 @@ function BOPCost(props) {
         }
         const BOPHandlingFields = {
           IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
-          BOPHandlingCharges: state.totalBOPHandlingCharges,
-          NetBOPDomesticHandlingCost: state.bopDomesticHandlingCost,
-          NetBOPImportHandlingCost: state.bopCKDHandlingCost,
-          NetBOPSourceHandlingCost: state.bopV2VHandlingCost,
-          NetBOPOutsourcedHandlingCost: state.bopOSPHandlingCost
+          BOPHandlingCharges: state?.totalBOPHandlingCharges,
+          NetBOPDomesticHandlingCost: state?.bopDomesticHandlingCost,
+          NetBOPImportHandlingCost: state?.bopCKDHandlingCost,
+          NetBOPSourceHandlingCost: state?.bopV2VHandlingCost,
+          NetBOPOutsourcedHandlingCost: state?.bopOSPHandlingCost
         }
         props.setBOPCost(gridData, Params, item, BOPHandlingFields)
         if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
