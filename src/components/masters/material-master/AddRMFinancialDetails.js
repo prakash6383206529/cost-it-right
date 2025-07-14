@@ -182,9 +182,11 @@ function AddRMFinancialDetails(props) {
     }, [states.costingTypeId])
 
     useEffect(() => {
-        setTimeout(() => {
+        if (isEditFlag || isViewFlag) return
+        const timer = setTimeout(() => {
             setState(initialState)
         }, 300)
+        return () => clearTimeout(timer);
     }, [props.costingTypeId])
 
 
