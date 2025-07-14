@@ -3521,6 +3521,7 @@ export const PAINTTECHNOLOGY = 31
 export const HANGEROVERHEAD = "Hanger Overhead"
 
 export const IsSelectSinglePlant = true
+export const maxCharsToShow = 20
 //VERSION 
 export const VERSION = "V4.2.56";
 

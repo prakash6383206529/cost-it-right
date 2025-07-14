@@ -1105,6 +1105,7 @@ class AddAssemblyPart extends Component {
     const PartMasterConfigurable = initialConfiguration?.PartAdditionalMasterFields
     const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
     const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
+    const groupCodeLabel = LabelsClass(t, 'MasterLabels').groupCodeLabel;
     const filterList = async (inputValue) => {
       const { partName, selectedParts } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1328,7 +1329,7 @@ class AddAssemblyPart extends Component {
                           // initialConfiguration?.IsGroupCodeDisplay && (
                           <Col md="3">
                             <Field
-                              label="Group Code"
+                              label={`${groupCodeLabel}`}
                               name="ProductGroup"
                               placeholder={isViewMode ? '-' : "Select"}
                               title={showDataOnHover(this?.state?.ProductGroup)}
@@ -1346,7 +1347,7 @@ class AddAssemblyPart extends Component {
                         ) :
                           <Col md="3">
                             <Field
-                              label={`Group Code`}
+                              label={`${groupCodeLabel}`}
                               name={"GroupCode"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Select Date"}

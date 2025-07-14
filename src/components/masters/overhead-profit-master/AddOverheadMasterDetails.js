@@ -39,8 +39,8 @@ const AddOverheadMasterDetails = (props) => {
     // Common utility function to check if Casting Norm should be shown
     const shouldShowCastingNorm = () => {
         const selectedTechnologies = state?.selectedTechnologies || [];
-        return selectedTechnologies.some(tech => 
-            tech?.label === DIE_CASTING || tech?.label === Ferrous_Casting
+        return selectedTechnologies.some(tech =>
+            Number(tech?.value === DIE_CASTING) || Number(tech?.value === Ferrous_Casting)
         );
     };
 

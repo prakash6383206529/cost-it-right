@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { ASSEMBLYNAME, CRMHeads, EMPTY_DATA, MASS } from '../../../../../config/constants';
+import { ASSEMBLYNAME, CRMHeads, EMPTY_DATA, MASS, maxCharsToShow } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
@@ -120,6 +120,7 @@ function SurfaceTreatmentCost(props) {
         return {
           OperationId: el.OperationId,
           OperationName: el.OperationName,
+          Description: el?.Description,
           EntryType: el.EntryType,
           SurfaceArea: finalQuantity,
           UOM: el.UnitOfMeasurement,
@@ -312,6 +313,7 @@ function SurfaceTreatmentCost(props) {
                   <tr>
                     {initialConfiguration?.IsShowDetailedOperationBreakup && <th>{`Entry Type`}</th>}
                     <th>{`Operation Name`}</th>
+                    <th>{`Description`}</th>
                     <th>{`Quantity`}</th>
                     <th>{`UOM`}</th>
                     <th>{`Rate/UOM`}</th>
@@ -332,6 +334,10 @@ function SurfaceTreatmentCost(props) {
                           <tr key={index}>
                             {initialConfiguration?.IsShowDetailedOperationBreakup && <td>{item.EntryType}</td>}
                             <td className='text-overflow'><span title={item.OperationName + index} draggable={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.OperationName}</span> </td>
+                            <td>
+                              {item?.Description?.length > maxCharsToShow && <TooltipCustom id={`surrace_treatment_cost_description${index}`} tooltipText={item?.Description} disabledIcon={true}/>}
+                              <span id={`surrace_treatment_cost_description${index}`}>{item?.Description?.length > maxCharsToShow ? item?.Description.slice(0, maxCharsToShow) + '...' : item?.Description}</span>
+                            </td>
                             <td style={{ width: 200 }}>
                               {
                                 <TextFieldHookForm
@@ -423,6 +429,10 @@ function SurfaceTreatmentCost(props) {
                           <tr key={index}>
                             {initialConfiguration?.IsShowDetailedOperationBreakup && <td>{item.EntryType}</td>}
                             <td className='text-overflow'><span title={item.OperationName + index} draggable={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.OperationName}</span></td>
+                            <td>
+                              {item?.Description?.length > maxCharsToShow && <TooltipCustom id={`surrace_treatment_cost_description${index}`} tooltipText={item?.Description} disabledIcon={true}/>}
+                              <span id={`surrace_treatment_cost_description${index}`}>{item?.Description?.length > maxCharsToShow ? item?.Description.slice(0, maxCharsToShow) + '...' : item?.Description}</span>
+                            </td>
                             <td style={{ width: 200 }}>{item.SurfaceArea}</td>
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>

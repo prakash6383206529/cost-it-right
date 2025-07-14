@@ -668,6 +668,7 @@ class AddMoreDetails extends Component {
                 LabourCostPerShift: el.LabourCostPerShift,
                 LabourCost: el.LabourCost,
                 NumberOfShift: el.NumberOfShift,
+                NumberOfWorkingDaysPerYear: el?.NumberOfWorkingDaysPerYear,
                 LabourDetailId: el.LabourDetailId,
                 LabourCRMHead: el.LabourCRMHead,
                 MachineRate: el.MachineRate,
@@ -1085,6 +1086,10 @@ class AddMoreDetails extends Component {
     }, 100);
   }
 
+  handleWorkingDaysPerAnnum = (event) => {
+    this.props.change('LabourWorkingDaysPerYear', checkForNull((event?.target?.value)))
+  }
+
   /**
    * @method efficiencyCalculationToggler
    * @description OPEN CALCULATOR DRAWER
@@ -1469,7 +1474,7 @@ class AddMoreDetails extends Component {
 
         }
         this.props.getLabourCost(dataObj, effectiveDate, res => {
-          let Data = res.data.DynamicData;
+          let Data = _.get(res, 'data.DynamicData') ?? _.get(res, 'data.Data', [])
           this.setState({ labourDetailId: Data.LabourDetailId })
           this.props.change('LabourWorkingShift', checkForNull(shiftType?.value))
           if (res && res.data && res.data.Message !== '') {
@@ -1579,7 +1584,7 @@ class AddMoreDetails extends Component {
     const WorkingHoursPerShift = checkForNull(fieldsObj?.WorkingHoursPerShift)
     const NumberOfWorkingDaysPerYear = checkForNull(fieldsObj?.NumberOfWorkingDaysPerYear)
     const EfficiencyPercentage = checkForNull(fieldsObj?.EfficiencyPercentage)
-
+    
     // NEED TO LOOK INTO THIS FIELD
     let WorkingHrPrYrValue = NumberOfShift * WorkingHoursPerShift * NumberOfWorkingDaysPerYear
     this.setState({ WorkingHrPrYr: WorkingHrPrYrValue })
@@ -1767,10 +1772,17 @@ class AddMoreDetails extends Component {
   */
   handleLabourCalculation = () => {
     const { fieldsObj } = this.props
-    const LabourPerCost = checkForNull(fieldsObj?.LabourCostPerAnnum)
+    
+    const LabourCostPerShift = checkForNull(fieldsObj?.LabourCostPerShift)
     const NumberOfLabour = checkForNull(fieldsObj?.NumberOfLabour)
     const LabourWorkingShift = checkForNull(fieldsObj?.LabourWorkingShift)
-    const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour * LabourWorkingShift)
+    const LabourWorkingDaysPerYear = checkForNull(fieldsObj?.LabourWorkingDaysPerYear)
+    /* old formula
+      const LabourPerCost = checkForNull(fieldsObj?.LabourCostPerAnnum)
+      const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour * LabourWorkingShift)
+    */
+    // formula changed Labour Cost = (Cost per Shift) × (Number of People) × (Number of Shifts) × (Number of Working Days per annum..)
+    const TotalLabourCost = checkForNull(LabourCostPerShift * NumberOfLabour * LabourWorkingShift * LabourWorkingDaysPerYear)
     this.props.change('LabourCost', TotalLabourCost)
   }
 
@@ -1864,13 +1876,23 @@ class AddMoreDetails extends Component {
     }
 
     const LabourPerCost = checkForNull(fieldsObj?.LabourCostPerAnnum)
+    const LabourCostPerShift = checkForNull(fieldsObj?.LabourCostPerShift)
     const NumberOfLabour = checkForNull(fieldsObj?.NumberOfLabour)
     const LabourWorkingShift = checkForNull(fieldsObj?.LabourWorkingShift)
-    const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour * LabourWorkingShift)
+    const LabourWorkingDaysPerYear = checkForNull(fieldsObj?.LabourWorkingDaysPerYear)
+    /* old formula
+      const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour * LabourWorkingShift)
+    */
+    const TotalLabourCost = checkForNull(LabourCostPerShift * NumberOfLabour * LabourWorkingShift * LabourWorkingDaysPerYear)
     const tempArray = [];
 
     if (Number(LabourWorkingShift) <= 0) {
       Toaster.warning('Please fill the No. of Shifts in Working Hours details.');
+      return false;
+    }
+
+    if (Number(LabourWorkingDaysPerYear) <= 0) {
+      Toaster.warning('Please fill the No. of Working days/Annum in Working Hours details.');
       return false;
     }
 
@@ -1886,6 +1908,7 @@ class AddMoreDetails extends Component {
       LabourCostPerMonth: fieldsObj?.LabourCostPerMonth,
       LabourCostPerShift: fieldsObj?.LabourCostPerShift,
       NumberOfShift: LabourWorkingShift,
+      NumberOfWorkingDaysPerYear: LabourWorkingDaysPerYear,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
       LabourDetailId: this.state.labourDetailId,
@@ -1910,6 +1933,7 @@ class AddMoreDetails extends Component {
       this.props.change('NumberOfLabour', '')
       this.props.change('LabourCost', '')
       this.props.change('LabourWorkingShift', '')
+      this.props.change('LabourWorkingDaysPerYear', '')
     });
     this.setState({ errorObj: { labourType: false, peopleCount: false } })
   }
@@ -1940,10 +1964,16 @@ class AddMoreDetails extends Component {
     if (this.props.invalid === true) {
       return false;
     }
+
     const LabourPerCost = checkForNull(fieldsObj?.LabourCostPerAnnum)
+    const LabourCostPerShift = checkForNull(fieldsObj?.LabourCostPerShift)
     const NumberOfLabour = checkForNull(fieldsObj?.NumberOfLabour)
     const LabourWorkingShift = checkForNull(fieldsObj?.LabourWorkingShift)
-    const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour * LabourWorkingShift)
+    const LabourWorkingDaysPerYear = checkForNull(fieldsObj?.LabourWorkingDaysPerYear)
+    /* old formula
+      const TotalLabourCost = checkForNull(LabourPerCost * NumberOfLabour * LabourWorkingShift)
+    */
+    const TotalLabourCost = checkForNull(LabourCostPerShift * NumberOfLabour * LabourWorkingShift * LabourWorkingDaysPerYear)
 
     let tempArray = [];
 
@@ -1953,7 +1983,10 @@ class AddMoreDetails extends Component {
       labourTypeId: labourType.value,
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
+      LabourCostPerMonth: fieldsObj?.LabourCostPerMonth,
+      LabourCostPerShift: fieldsObj?.LabourCostPerShift,
       NumberOfShift: LabourWorkingShift,
+      NumberOfWorkingDaysPerYear: LabourWorkingDaysPerYear,
       LabourCost: TotalLabourCost,
       LabourDetailId: this.state.labourDetailId,
       LabourCRMHead: LabourCRMHead ? LabourCRMHead.label : '-'
@@ -1972,6 +2005,9 @@ class AddMoreDetails extends Component {
       this.props.change('NumberOfLabour', '')
       this.props.change('LabourCost', '')
       this.props.change('LabourWorkingShift', '')
+      this.props.change('LabourWorkingDaysPerYear', '')
+      this.props.change('LabourCostPerMonth', '')
+      this.props.change('LabourCostPerShift', '')
     },
       { errorObj: { peopleCount: false } });
   }
@@ -2011,6 +2047,9 @@ class AddMoreDetails extends Component {
       this.props.change('NumberOfLabour', tempData.NumberOfLabour)
       this.props.change('LabourCost', tempData.LabourCost)
       this.props.change('LabourWorkingShift', tempData.NumberOfShift)
+      this.props.change('LabourWorkingDaysPerYear', tempData.NumberOfWorkingDaysPerYear)
+      this.props.change('LabourCostPerMonth', tempData.LabourCostPerMonth)
+      this.props.change('LabourCostPerShift', tempData.LabourCostPerShift)
     });
   }
 
@@ -4138,6 +4177,7 @@ class AddMoreDetails extends Component {
                                 validate={[positiveAndDecimalNumber, maxLength3, decimalLength2, maxValue366]}
                                 component={renderText}
                                 required={false}
+                                onChange={this.handleWorkingDaysPerAnnum}
                                 disabled={disableAllForm}
                                 className=" "
                                 customClassName="withBorder"
@@ -5221,7 +5261,20 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="2">
-                              <TooltipCustom disabledIcon={true} width="350px" id="LabourCost" tooltipText={`Total Cost = Cost/Annum * No. of People * No. of Shifts`} />
+                              <Field
+                                label={`No. of Working days/Annum`}
+                                name={"LabourWorkingDaysPerYear"}
+                                type="text"
+                                placeholder={'Select'}
+                                component={renderTextInputField}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="2">
+                              <TooltipCustom disabledIcon={true} width="350px" id="LabourCost" tooltipText={`Total Cost = Cost/Shift * No. of People * No. of Shifts * No. of Working days/Annum`} />
                               <Field
                                 label={`Total Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
                                   (this?.state?.currency?.label || 'Currency')})`}
@@ -5280,6 +5333,7 @@ class AddMoreDetails extends Component {
                                     <th>{`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`No of People (All Shifts)`}</th>
                                     <th>{`No. of Shifts`}</th>
+                                    <th>{`No. of Working days/Annum`}</th>
                                     <th>{`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Action`}</th>
                                   </tr>
@@ -5297,6 +5351,7 @@ class AddMoreDetails extends Component {
                                           <td>{item?.LabourCostPerAnnum ?? "-"}</td>
                                           <td>{item?.NumberOfLabour ?? "-"}</td>
                                           <td>{item?.NumberOfShift ?? "-"}</td>
+                                          <td>{item?.NumberOfWorkingDaysPerYear ?? "-"}</td>
                                           <td>{item?.LabourCost ?? "-"}</td>
                                           <td>
                                             <button title='Edit' className="Edit mr-2" type={'button'} disabled={disableAllForm} onClick={() => this.editLabourItemDetails(index)} />
@@ -5307,7 +5362,7 @@ class AddMoreDetails extends Component {
                                     })
                                   }
                                   {this.state.labourGrid?.length === 0 && <tr>
-                                    <td colSpan={getConfigurationKey().IsShowCRMHead ? '6' : '5'}>
+                                    <td colSpan={'12'}>
                                       <NoContentFound title={EMPTY_DATA} />
                                     </td>
                                   </tr>}
@@ -5315,7 +5370,7 @@ class AddMoreDetails extends Component {
                                 {this.state.labourGrid?.length > 0 &&
                                   <tfoot>
                                     <tr className="bluefooter-butn">
-                                      <td colSpan={getConfigurationKey().IsShowCRMHead ? '7' : '6'} className="text-right">{`Total Labour Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}):`}</td>
+                                      <td colSpan={getConfigurationKey().IsShowCRMHead ? '8' : '7'} className="text-right">{`Total Labour Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}):`}</td>
                                       <td colSpan={"2"}>{this.calculateTotalLabourCost()}</td>
                                     </tr>
                                   </tfoot>}
@@ -5875,7 +5930,7 @@ function mapStateToProps(state) {
   const { comman, material, machine, labour, fuel, auth, } = state;
   const fieldsObj = selector(state, 'MachineCost', 'AccessoriesCost', 'InstallationCharges', 'LabourCostPerAnnum', 'LabourCostPerMonth', 'LabourCostPerShift', 'TotalCost', "LabourWorkingShift",
     'LoanPercentage', 'LoanValue', 'EquityPercentage', 'EquityValue', 'RateOfInterestPercentage', 'RateOfInterestValue',
-    'WorkingHoursPerShift', 'NumberOfWorkingDaysPerYear', 'EfficiencyPercentage', 'NumberOfWorkingHoursPerYear',
+    'WorkingHoursPerShift', 'NumberOfWorkingDaysPerYear', 'LabourWorkingDaysPerYear', 'EfficiencyPercentage', 'NumberOfWorkingHoursPerYear',
     'DepreciationRatePercentage', 'LifeOfAssetPerYear', 'CastOfScrap', 'DepreciationAmount',
     'AnnualMaintancePercentage', 'AnnualMaintanceAmount', 'AnnualConsumablePercentage', 'AnnualConsumableAmount',
     'AnnualInsurancePercentage', 'AnnualInsuranceAmount',

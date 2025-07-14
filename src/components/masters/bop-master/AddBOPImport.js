@@ -2825,6 +2825,8 @@ class AddBOPImport extends Component {
               isImport={true}
               plantCurrency={this.props.fieldsObj?.plantCurrency}
               settlementCurrency={this.state?.currency?.label}
+              CurrencyExchangeRate={{plantCurrencyRate: this.state?.plantCurrencyValue}}
+              masterName={BOP}
             />
           }
         </div >
