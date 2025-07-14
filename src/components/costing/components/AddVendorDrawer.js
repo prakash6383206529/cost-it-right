@@ -37,7 +37,9 @@ function AddVendorDrawer(props) {
   const plantSelectList = useSelector(state => state.comman.plantSelectList);
   const { vendorLabel } = useLabels()
   const partInfo = useSelector(state => state.costing.partInfo)
+  console.log("partInfo",partInfo)
   const technology = useSelector(state => state.costing.technology)
+  console.log("IdForMultiTechnology",IdForMultiTechnology)
  const [isMultiVendorSelected, setIsMultiVendorSelected] = useState(IdForMultiTechnology.includes(String(partInfo?.TechnologyId)) ? true : false)
   useEffect(() => {
     const { vbcVendorGrid } = props;
