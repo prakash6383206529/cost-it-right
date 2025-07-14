@@ -1330,9 +1330,11 @@ function TabDiscountOther(props) {
     if (errorCheckObject(ErrorObjDiscount)) return false;
 
     if (initialConfiguration?.IsBopOspWithoutHandlingDiscountRequired) {
-      const hasBopOsp = RMCCTabData[0]?.CostingPartDetails?.CostingBoughtOutPartCost?.some(
+      console.log("RMCCTabData",RMCCTabData);
+      
+      const hasBopOsp = !RMCCTabData?.[0]?.IsAssemblyPart ? RMCCTabData?.[0]?.CostingPartDetails?.CostingBoughtOutPartCost?.some(
         item => item.BOPType === "BOP OSP"
-      );
+      ) : RMCCTabData?.[0]?.CostingChildPartDetails?.some(item => item.BOPType === "BOP OSP");
 
       const hasBopOspWithoutHandlingCharge = discountCostArray?.some(
         item => item.ApplicabilityType === "BOP OSP Without Handling Charge"
