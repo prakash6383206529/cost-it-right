@@ -156,7 +156,7 @@ function Costing(props) {
               <CostingSummary activeTab={activeTab} showDetail={showDetail} setcostingOptionsSelectFromSummary={setcostingOptionsSelectFromSummary} />
             </TabPane>}
             {activeTab === "3" && <TabPane tabId="3">
-              <ApprovalListing activeTab={activeTab} />
+              <ApprovalListing activeTab={activeTab} BulkDeleteType={'Costing Approval'}/>
             </TabPane>}
           </TabContent>
         </div>

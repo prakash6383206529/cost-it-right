@@ -26,6 +26,7 @@ import Button from "../../layout/Button";
 import { useLabels, useWithLocalization } from "../../../helper/core";
 import Switch from 'react-switch'
 import CostingHeadDropdownFilter from "../material-master/CostingHeadDropdownFilter";
+import BulkDelete from "../../../helper/BulkDelete";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -351,6 +352,7 @@ const PowerListing = (props) => {
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 <>
+                  <BulkDelete type={'Power'} deletePermission={permissions?.Delete} dataCount={state?.dataCount} bulkDeleteData={state?.selectedRowData}/>
                   {permissions.Add && !state.isImport && (<Button id="powerListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
                   )}
                   {permissions.Download && (

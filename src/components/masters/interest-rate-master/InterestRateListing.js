@@ -38,6 +38,7 @@ import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import WarningMessage from '../../common/WarningMessage';
 import { setCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize, skipUpdate, resetStatePagination, updateCurrentRowIndex } from '../../common/Pagination/paginationAction';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
+import BulkDelete from '../../../helper/BulkDelete';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -589,6 +590,7 @@ const InterestRateListing = (props) => {
                       <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                   </div>
                   <div>
+                    <BulkDelete type={'Interest Rate'} deletePermission={DeleteAccessibility} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
                     {AddAccessibility && (<Button id="interestRateListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
                     {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&

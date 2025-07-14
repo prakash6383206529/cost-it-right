@@ -43,6 +43,7 @@ import { useTranslation } from 'react-i18next';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import RfqMasterApprovalDrawer from './RfqMasterApprovalDrawer';
 import CostingHeadDropdownFilter from './CostingHeadDropdownFilter';
+import BulkDelete from '../../../helper/BulkDelete';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -1060,6 +1061,7 @@ function RMImportListing(props) {
                         icon={"filter"}
                         disabled={disableFilter}
                       />
+                      <BulkDelete {...props} type={'RM'} deletePermission={DeleteAccessibility} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
                       {/* 
                       {AddAccessibility && (
 

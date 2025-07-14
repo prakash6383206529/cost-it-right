@@ -34,6 +34,7 @@ import { showTitleForActiveToggle } from '../../../../src/helper/util';
 import Switch from "react-switch";
 import { useLabels, useWithLocalization } from "../../../helper/core";
 import { divisionApplicableFilter } from "../masterUtil";
+import BulkDelete from "../../../helper/BulkDelete";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -374,7 +375,10 @@ const IndivisualPartListing = (props) => {
     ID.partId = rowData.PartId;
     ID.partApprovedId = rowData.PartApprovedId;
     ID.partBudgetedId = rowData.PartBudgetedId;
-
+    let isDeleteButton = false
+    if (permissions?.Delete && !rowData?.IsAssociate) {
+      isDeleteButton = true;
+    }
     return (
       <>
         {permissions.View && (
@@ -393,7 +397,7 @@ const IndivisualPartListing = (props) => {
             onClick={() => viewOrEditItemDetails(cellValue, false)}
           />
         )}
-        {permissions.Delete && (
+        {isDeleteButton && (
           <button
             title="Delete"
             className="Delete Tour_List_Delete"
@@ -766,6 +770,7 @@ const IndivisualPartListing = (props) => {
                 >
                   <div className="filter mr-0"></div>
                 </button>
+                <BulkDelete {...props} type={'Part'} deletePermission={permissions?.Delete} dataCount={state?.dataCount} bulkDeleteData={selectedRowForPagination}/>
                 {permissions.Add && (
                   <button
                     type="button"

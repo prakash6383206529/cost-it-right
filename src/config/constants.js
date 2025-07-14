@@ -817,7 +817,7 @@ export const API = {
   revokeDelegation: `${BASE_URL}/user-delegation/revoke-user-delegations`,
   getDelegationHistory: `${BASE_URL}/user-delegation/get-user-delegations-history`,
   getAllUserDelegationApi: `${BASE_URL}/user/get-all-users-delegation`,
-
+  bulkDelete: `${BASE_URL}/configuration/delete-masters-in-bulk`,
   //AUDIT API
 
   getAuditList: `${BASE_URL}/auditlogs/get-user-audit-log`,
