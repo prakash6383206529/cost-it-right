@@ -2910,6 +2910,8 @@ const CostingSummaryTable = (props) => {
                                     storeSummary={props?.storeSummary ? true : false}
                                     simulationMode={simulationMode}
                                     SimulationId={props?.simulationId}
+                                    viewCostingData={viewCostingData}
+                                    costingTypeId={viewCostingData[index]?.costingTypeId}
                                   /></th></tr>}
 
                               <tr className={highlighter("netRM", "main-row")}>
