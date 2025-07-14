@@ -7,7 +7,7 @@ import NoContentFound from '../../../../src/components/common/NoContentFound'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull, hashValidation, maxLength80 } from "../../../../src/helper/validation";
 import { useDispatch, useSelector } from 'react-redux'
-import { COMMODITYCOST, EMPTY_DATA, RAWMATERIALCOST } from '../../../../src/config/constants'
+import { COMMODITYCOST, EMPTY_DATA, RAW_MATERIAL, RAWMATERIALCOST, BOP } from '../../../../src/config/constants'
 import Toaster from '../../../../src/components/common/Toaster';
 import { getCostingCondition } from '../../../actions/Common'
 import { generateCombinations, getCostingConditionTypes } from '../../common/CommonFunctions'
@@ -19,10 +19,11 @@ function AddOtherCostDrawer(props) {
 
 
 
-    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP, RawMaterialNonIndexed = false, bopBasicRate } = props
+    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP, RawMaterialNonIndexed = false, bopBasicRate, CurrencyExchangeRate, masterName } = props
     const Currency = RawMaterialNonIndexed ? settlementCurrency : ((isBOP && isImport) ? settlementCurrency : isBOP && !isImport ? plantCurrency : props?.RowData?.IndexCurrency) || 'Currency'
     const CurrencyLabel = RawMaterialNonIndexed ? settlementCurrency : (!props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency) || 'Currency'
 
+    const isShowConvertedCost = (masterName === RAW_MATERIAL || masterName === BOP) && isImport
     const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
     const [tableData, setTableData] = useState([]);
 
@@ -45,6 +46,7 @@ function AddOtherCostDrawer(props) {
         premiumCost: '',
         disableCostCurrency: false,
         disableCostBaseCurrency: false,
+        disableCostPlantCurrency: false,
         costDropdown: []
     })
     const [exactCostValues, setExactCostValues] = useState({
@@ -145,9 +147,9 @@ function AddOtherCostDrawer(props) {
         // Store raw values in exactCostValues state
         setExactCostValues({
             ApplicabilityCostCurrency: selectedData.ApplicabilityCost,
-            ApplicabilityBaseCost: selectedData.ApplicabilityCostConversion,
+            ApplicabilityBaseCost: isShowConvertedCost ? selectedData?.ApplicabilityCost : selectedData?.ApplicabilityCostConversion,
             CostCurrency: selectedData.NetCost,
-            CostBaseCurrency: isBOP || RawMaterialNonIndexed ? selectedData?.NetCost : selectedData.NetCostConversion
+            CostBaseCurrency: isShowConvertedCost ? selectedData?.NetCost : (isBOP || RawMaterialNonIndexed ? selectedData?.NetCost : selectedData?.NetCostConversion)
         });
 
         setValue('Cost', {
@@ -167,10 +169,17 @@ function AddOtherCostDrawer(props) {
             label: selectedData.Applicability,
             value: selectedData.Applicability
         });
-        setValue('ApplicabilityCostCurrency', checkForDecimalAndNull(selectedData.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice));
-        setValue('ApplicabilityBaseCost', isBOP ? checkForDecimalAndNull(selectedData.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(selectedData.ApplicabilityCostConversion, initialConfiguration?.NoOfDecimalForPrice));
-        setValue('CostCurrency', checkForDecimalAndNull(selectedData.NetCost, initialConfiguration?.NoOfDecimalForPrice));
-        setValue('CostBaseCurrency', isBOP || RawMaterialNonIndexed ? checkForDecimalAndNull(selectedData?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(selectedData.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice));
+        if(isShowConvertedCost){
+            setValue('CostPlantCurrency', checkForDecimalAndNull(selectedData.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('ApplicabilityPlantCost', checkForDecimalAndNull(selectedData.ApplicabilityCostConversion, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('CostBaseCurrency', checkForDecimalAndNull(selectedData?.NetCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('ApplicabilityBaseCost', checkForDecimalAndNull(selectedData.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice));
+        }else{
+            setValue('ApplicabilityCostCurrency', checkForDecimalAndNull(selectedData.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('ApplicabilityBaseCost', isBOP ? checkForDecimalAndNull(selectedData.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(selectedData.ApplicabilityCostConversion, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('CostCurrency', checkForDecimalAndNull(selectedData.NetCost, initialConfiguration?.NoOfDecimalForPrice));
+            setValue('CostBaseCurrency', isBOP || RawMaterialNonIndexed ? checkForDecimalAndNull(selectedData?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(selectedData.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice));
+        }
         setValue('CostDescription', selectedData.Description);
         setValue('Remark', selectedData.Remark);
         setRawMaterialCommodityIndexRateAndOtherCostDetailsId(selectedData?.RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null)
@@ -199,7 +208,7 @@ function AddOtherCostDrawer(props) {
         editData(indexValue, operation)
     }
 
-    const { register, control, setValue, getValues, handleSubmit, reset, formState: { errors }, } = useForm({
+    const { register, control, setValue, getValues, handleSubmit, reset, clearErrors, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -242,6 +251,10 @@ function AddOtherCostDrawer(props) {
             });
             setValue('ApplicabilityCostCurrency', checkForDecimalAndNull(BasicRateIndexCurrency, initialConfiguration?.NoOfDecimalForPrice));
             setValue('ApplicabilityBaseCost', checkForDecimalAndNull(basicRate, initialConfiguration?.NoOfDecimalForPrice));
+            const convertedPlantCost = checkForNull(basicRate) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate ?? 1);
+            if(convertedPlantCost){
+                setValue('ApplicabilityPlantCost', checkForDecimalAndNull(convertedPlantCost, initialConfiguration?.NoOfDecimalForPrice));
+            }
             setState(prevState => ({ ...prevState, Applicability: e?.label }));
             return; // Exit early for Basic Rate
         }
@@ -313,6 +326,7 @@ function AddOtherCostDrawer(props) {
                 ? exactCostValues.ApplicabilityBaseCost
                 : exactCostValues.ApplicabilityCostCurrency;
             let NetCost = checkForNull((e.target.value) / 100) * checkForNull(applicabilityCostCurrency)
+            convertIntoPlantCurrency(NetCost)
             let NetCostConversion = props.rawMaterial ? NetCost : NetCost * ExchangeRate
             setExactCostValues(prev => ({
                 ...prev,
@@ -321,6 +335,11 @@ function AddOtherCostDrawer(props) {
             }));
             setValue('CostCurrency', checkForDecimalAndNull(NetCost, initialConfiguration?.NoOfDecimalForPrice))
             setValue('CostBaseCurrency', checkForDecimalAndNull(NetCostConversion, initialConfiguration?.NoOfDecimalForPrice))
+            clearErrors(["CostPlantCurrency", "CostBaseCurrency", "CostCurrency"])            
+        }else{
+            setValue('CostCurrency', '')
+            setValue('CostBaseCurrency', '')
+            setValue('CostPlantCurrency', '')
         }
     }
 
@@ -358,6 +377,7 @@ function AddOtherCostDrawer(props) {
         if (e?.target?.value) {
             const exactBaseValue = checkForNull(e.target.value);
             const exactValue = exactBaseValue / ExchangeRate;
+            convertIntoPlantCurrency(e?.target?.value)
 
             // Store exact values
             setExactCostValues(prev => ({
@@ -368,7 +388,7 @@ function AddOtherCostDrawer(props) {
 
             // Set formatted values
             setValue('CostCurrency', checkForDecimalAndNull(exactValue, initialConfiguration?.NoOfDecimalForPrice));
-            setState(prevState => ({ ...prevState, disableCostCurrency: true }));
+            setState(prevState => ({ ...prevState, disableCostCurrency: true, disableCostPlantCurrency: true }));
         } else {
             setValue('CostCurrency', '');
             setExactCostValues(prev => ({
@@ -376,7 +396,37 @@ function AddOtherCostDrawer(props) {
                 CostCurrency: '',
                 CostBaseCurrency: ''
             }));
-            setState(prevState => ({ ...prevState, disableCostCurrency: false }));
+            setState(prevState => ({ ...prevState, disableCostCurrency: false, disableCostPlantCurrency: false }));
+            setValue('CostPlantCurrency', "");
+        }
+    }
+
+    const convertIntoPlantCurrency = (baseValue) => {
+        const convertedPlantCost = baseValue * CurrencyExchangeRate?.plantCurrencyRate;
+        if(convertedPlantCost){
+            setValue('CostPlantCurrency', checkForDecimalAndNull(convertedPlantCost, initialConfiguration?.NoOfDecimalForPrice));
+        }
+        clearErrors("CostPlantCurrency")
+    }
+
+    const handleCostChangePlant = (e)=> {
+        if (e?.target?.value) {
+            const exactBaseValue = checkForNull(e.target.value);
+            const exactValue = exactBaseValue / checkForNull(CurrencyExchangeRate?.plantCurrencyRate ?? 1);
+            setExactCostValues(prev => ({
+                ...prev,
+                CostBaseCurrency: exactValue
+            }));
+            setValue('CostBaseCurrency', checkForDecimalAndNull(exactValue, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, disableCostBaseCurrency: true }));
+            clearErrors("CostBaseCurrency")
+        } else {
+            setValue('CostBaseCurrency', 0);
+            setExactCostValues(prev => ({
+                ...prev,
+                CostBaseCurrency: ''
+            }));
+            setState(prevState => ({ ...prevState, disableCostBaseCurrency: false }));
         }
     }
 
@@ -408,6 +458,8 @@ function AddOtherCostDrawer(props) {
         const applicabilityBaseCost = getValues('ApplicabilityBaseCost');
         const remark = getValues('Remark');
         const costDescription = getValues('CostDescription');
+        const conversionCost = getValues('CostPlantCurrency');
+        const applicabilityCostConversion = getValues('ApplicabilityPlantCost');
 
         // Check for form errors first
         if (Object.keys(errors).length > 0) {
@@ -428,6 +480,11 @@ function AddOtherCostDrawer(props) {
             // If 'Type' is 'fixed', check for 'CostCurrency' and 'CostBaseCurrency'
             if (!costBaseCurrency) { Toaster.warning('Please enter all details to add a row.'); return false };
         }
+        let obj = {
+            ApplicabilityCostConversion: isShowConvertedCost ? applicabilityCostConversion : (exactCostValues.ApplicabilityBaseCost ? exactCostValues.ApplicabilityBaseCost : '-'),
+            NetCostConversion: isShowConvertedCost ? conversionCost : exactCostValues?.CostBaseCurrency,
+            NetCost: isShowConvertedCost ? exactCostValues?.CostBaseCurrency : (props?.rawMaterial ? exactCostValues?.CostBaseCurrency : exactCostValues?.CostCurrency)
+        }
         // Create new data entry
         const newData = {
             MaterialCommodityStandardDetailsId: RowData?.MaterialCommodityStandardDetailsId, // Add MaterialCommodityStandardDetailsId
@@ -436,10 +493,10 @@ function AddOtherCostDrawer(props) {
             CostHeaderName: getValues('Cost') ? getValues('Cost').label : '-',
             Applicability: getValues('Applicability') ? getValues('Applicability').label : '-',
             ApplicabilityCost: props.rawMaterial ? exactCostValues.ApplicabilityBaseCost : exactCostValues.ApplicabilityCostCurrency ? exactCostValues.ApplicabilityCostCurrency : '-',
-            ApplicabilityCostConversion: exactCostValues.ApplicabilityBaseCost ? exactCostValues.ApplicabilityBaseCost : '-',
+            ApplicabilityCostConversion: obj?.ApplicabilityCostConversion,
             Value: getValues('Percentage') ? getValues('Percentage') : '-',
-            NetCost: props.rawMaterial ? exactCostValues.CostBaseCurrency : exactCostValues.CostCurrency,
-            NetCostConversion: exactCostValues.CostBaseCurrency,
+            NetCost: obj?.NetCost,
+            NetCostConversion: obj?.NetCostConversion,
             Description: getValues('CostDescription') ? getValues('CostDescription') : '-',
             CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '-',
             Remark: getValues('Remark')
@@ -497,6 +554,8 @@ function AddOtherCostDrawer(props) {
         setValue('CostCurrency', ''); // Reset to an empty string or null to show the placeholder
         setValue('CostBaseCurrency', '');
         setValue('CostDescription', '');
+        setValue('CostPlantCurrency', '');
+        setValue('ApplicabilityPlantCost', '');
         setState(prevState => ({ ...prevState, disableCostBaseCurrency: false, disableCostCurrency: false }));
     };
     const resetData = (type = '') => {
@@ -519,7 +578,9 @@ function AddOtherCostDrawer(props) {
                 CostCurrency: '',
                 CostBaseCurrency: '',
                 CostDescription: '',
-                Remark: ''
+                Remark: '',
+                ApplicabilityPlantCost: '',
+                CostPlantCurrency: ''
             });
         };
         commonReset();
@@ -534,6 +595,7 @@ function AddOtherCostDrawer(props) {
             setValue('Applicability', '')
             setValue('ApplicabilityCostCurrency', '')
             setValue('ApplicabilityBaseCost', '')
+            setValue('ApplicabilityPlantCost', '');
             if (type?.label === "Percentage") {
                 setState(prevState => ({ ...prevState, disableApplicability: false }));
             } else {
@@ -697,6 +759,32 @@ function AddOtherCostDrawer(props) {
                                                         disabled={props.ViewMode || disableTotalCost || disableCurrency}
                                                     />
                                                 </Col>
+                                                {isShowConvertedCost &&
+                                                    <>
+                                                        <Col md={3} className={'px-2'}>
+                                                            <TextFieldHookForm
+                                                                label={`Applicability Cost (${plantCurrency}${UOM ? `/${UOM}` : ''})`}
+                                                                name={'ApplicabilityPlantCost'}
+                                                                id={'cost-by-percent'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                                }}
+                                                                handleChange={() => { }}
+                                                                defaultValue={'-'}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.ApplicabilityPlantCost}
+                                                                disabled={true}
+                                                            />
+                                                        </Col>
+                                                        
+                                                    </>
+                                                }
                                                 <Col md={3} className='px-2'>
                                                     <TextFieldHookForm
                                                         label={`Percentage (%)`}
@@ -768,6 +856,31 @@ function AddOtherCostDrawer(props) {
                                                 disabled={type?.label === 'Percentage' ? true : false || state.disableCostBaseCurrency || props.ViewMode}
                                             />
                                         </Col>
+                                        {isShowConvertedCost &&
+                                        <>
+                                            <Col md={3} className={'px-2'}>
+                                                <TextFieldHookForm
+                                                    label={`Cost (${plantCurrency}${UOM ? `/${UOM}` : ''})`}
+                                                    name={'CostPlantCurrency'}
+                                                    id={'cost-by-percent'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    rules={{
+                                                        required: true,
+                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                    }}
+                                                    handleChange={handleCostChangePlant}
+                                                    defaultValue={'-'}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.CostPlantCurrency}
+                                                    disabled={type?.label === 'Percentage' ? true : false || state.disableCostPlantCurrency || props.ViewMode}
+                                                />
+                                            </Col>
+                                        </>
+                                        }
                                         <Col md="3" className='px-2'>
                                             <TextFieldHookForm
                                                 label="Remark"
@@ -816,27 +929,57 @@ function AddOtherCostDrawer(props) {
                                                     <th>{`Cost Description`}</th>
                                                     <th>{`Type`}</th>
                                                     <th>{`Applicability`}</th>
-                                                    {(!props.rawMaterial || isBOP) && <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    {!isBOP && <th>{`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    <th>{`Percentage (%)`}</th>
-                                                    {(!props.rawMaterial || isBOP) && <th>{`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    {!isBOP && <th>{`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                    {isShowConvertedCost ? 
+                                                    <>
+                                                        {isBOP ? <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>
+                                                    :
+                                                        <th>{`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>
+                                                    }
+                                                        {<th>{`Applicability Cost (${plantCurrency}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                        <th>{`Percentage (%)`}</th>
+                                                        {<th>{`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                        <th>{`Cost (${plantCurrency}${UOM ? `/${UOM}` : ''})`}</th>
+                                                    </>
+                                                    :
+                                                    <>
+                                                        {(!props.rawMaterial || isBOP) && <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                        {!isBOP && <th>{`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                        <th>{`Percentage (%)`}</th>
+                                                        {(!props.rawMaterial || isBOP) && <th>{`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                        {!isBOP && <th>{`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                    </>
+                                                    }
+                                                    
                                                     <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr >
 
-                                                {tableData && tableData.map((item, index) => (
+                                                {tableData && tableData.map((item, index) => {
+                                                    // let convertedCost = item?.Type === "Fixed" ? item?.NetCostConversion : item?.ApplicabilityCostConversion
+                                                    return(
                                                     <Fragment key={index}>
                                                         <tr>
                                                             <td>{item.CostHeaderName}</td>
                                                             <td>{item.Description}</td>
                                                             <td>{item.Type}</td>
                                                             <td>{item.Applicability}</td>
-                                                            {(!props.rawMaterial || isBOP) && <td>{checkForDecimalAndNull(item.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>}
-                                                            {!isBOP && <td>{checkForDecimalAndNull(item.ApplicabilityCostConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
-                                                            <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                                                            {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
-                                                            {!isBOP && <td>{checkForDecimalAndNull(item.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) !== '-' ? RawMaterialNonIndexed ? checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                                            {isShowConvertedCost ?
+                                                                <>
+                                                                    {<td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                                                    {<td>{checkForDecimalAndNull(item?.ApplicabilityCostConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                                                    <td>{item.Value !== '-' ? checkForDecimalAndNull(item?.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                                                    {<td>{checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                                                    <td>{checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                                                    </>
+                                                                :
+                                                                <>
+                                                                    {(!props.rawMaterial || isBOP) && <td>{checkForDecimalAndNull(item.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                                                    {!isBOP && <td>{checkForDecimalAndNull(item.ApplicabilityCostConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                                                    <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                                                    {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                                                    {!isBOP && <td>{checkForDecimalAndNull(item.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) !== '-' ? RawMaterialNonIndexed ? checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                                                </>
+                                                            }
                                                             <td>{item.Remark}</td>
                                                             {
                                                                 !props.hideAction && (
@@ -850,7 +993,7 @@ function AddOtherCostDrawer(props) {
                                                             }
                                                         </tr >
                                                     </Fragment >
-                                                ))}
+                                                )})}
 
                                                 {
                                                     tableData && tableData.length === 0 && (
@@ -863,17 +1006,31 @@ function AddOtherCostDrawer(props) {
                                                 }
 
                                                 <tr className='table-footer'>
-                                                    <td colSpan={props.rawMaterial ? 6 : 7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
-                                                    {!props.rawMaterial &&
-                                                        <td>
-                                                            <div className='d-flex justify-content-between'>
-                                                                {checkForDecimalAndNull(totalCostCurrency, initialConfiguration?.NoOfDecimalForPrice)}
-                                                            </div>
-                                                        </td>
+                                                    {isShowConvertedCost ? 
+                                                        <>
+                                                            <td colSpan={props.rawMaterial ? 7 : 8} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                                                            <td colSpan={0} className="text-left">
+                                                                {checkForDecimalAndNull((totalCostCurrency), initialConfiguration?.NoOfDecimalForPrice)} ({CurrencyLabel})
+                                                            </td>
+                                                            <td colSpan={3} className="text-left">
+                                                                {checkForDecimalAndNull((totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({plantCurrency})
+                                                            </td>
+                                                        </>
+                                                        :
+                                                        <>
+                                                            <td colSpan={props.rawMaterial ? 6 : 7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
+                                                            {!props.rawMaterial &&
+                                                                <td>
+                                                                    <div className='d-flex justify-content-between'>
+                                                                        {checkForDecimalAndNull(totalCostCurrency, initialConfiguration?.NoOfDecimalForPrice)}
+                                                                    </div>
+                                                                </td>
+                                                            }
+                                                            <td colSpan={3} className="text-left">
+                                                                {checkForDecimalAndNull((isBOP || RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({CurrencyLabel})
+                                                            </td>
+                                                        </>
                                                     }
-                                                    <td colSpan={3} className="text-left">
-                                                        {checkForDecimalAndNull((isBOP || RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({CurrencyLabel})
-                                                    </td>
                                                 </tr>
                                             </tbody >
                                         </Table >
@@ -891,7 +1048,10 @@ function AddOtherCostDrawer(props) {
                                         <button
                                             type={'button'}
                                             className="submit-button save-btn"
-                                            onClick={() => props.closeDrawer('Save', tableData, totalCostCurrency, totalCostBase, RowIndex)}
+                                            // onClick={() => props.closeDrawer('Save', tableData, totalCostCurrency, totalCostBase, RowIndex)}
+                                            onClick={() => (isShowConvertedCost && !isBOP) ? props.closeDrawer('Save', tableData, totalCostBase, totalCostCurrency, RowIndex)
+                                                : props.closeDrawer('Save', tableData, totalCostCurrency, totalCostBase, RowIndex)
+                                            }
                                             disabled={props.ViewMode || props?.disabled}
                                         >
                                             <div className={"save-icon"}></div>
