@@ -208,6 +208,7 @@ class AddComponentForm extends Component {
     const { handleSubmit, isEditFlag, partAssembly, t } = this.props;
     const RevisionNoLabel = LabelsClass(t, 'MasterLabels').revisionNoLabel;
     const DrawingNoLabel = LabelsClass(t, 'MasterLabels').drawingNoLabel;
+    const groupCodeLabel = LabelsClass(t, 'MasterLabels').groupCodeLabel;
     const filterList = async (inputValue) => {
       const { partName, selectedParts } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -356,7 +357,7 @@ class AddComponentForm extends Component {
 
             <Col md="6">
               <Field
-                label={`Group Code`}
+                label={`${groupCodeLabel}`}
                 name={"GroupCode"}
                 type="text"
                 placeholder={""}

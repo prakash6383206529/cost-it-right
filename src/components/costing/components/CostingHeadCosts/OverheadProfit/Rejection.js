@@ -354,6 +354,7 @@ function Rejection(props) {
                 }
                 return item
             })
+            
             setState(prev => ({
                 ...prev,
                 gridData: newData
@@ -376,7 +377,6 @@ function Rejection(props) {
             checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection)
         
         const CastingNorm = checkForNull(data?.CostingPartDetails?.NetCastingNormApplicabilityCost)
-
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
             : 0;
@@ -800,9 +800,11 @@ function Rejection(props) {
                 let data = res?.data?.Data?.CostingRejectionDetail
                 if (data) {
                     setRejectionObj(data)
-                    setTimeout(() => {
-                        checkRejectionModelType(data)
-                    }, 500);
+                    if(!CostingViewMode){
+                        setTimeout(() => {
+                            checkRejectionModelType(data)
+                        }, 500);
+                    }
                 } else {
                     setState(prev => ({
                         ...prev,

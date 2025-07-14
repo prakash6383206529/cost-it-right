@@ -5,7 +5,7 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, EMPTY_GUID, MASS } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, EMPTY_GUID, MASS, maxCharsToShow } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -98,6 +98,7 @@ function OperationCostExcludedOverhead(props) {
           OtherOperationId: el.OperationId,
           OtherOperationName: el.OperationName,
           OtherOperationCode: el.OperationCode,
+          Description: el?.Description,
           UOM: el.UnitOfMeasurement,
           Rate: el.Rate,
           Quantity: Number(QuantityMain),
@@ -368,6 +369,7 @@ function OperationCostExcludedOverhead(props) {
                   <tr>
                     <th>{`Operation Name`}</th>
                     <th>{`Operation Code`}</th>
+                    <th>{`Description`}</th>
                     <th>{`UOM`}</th>
                     <th>{`Rate`}</th>
                     <th><span>Quantity <TooltipCustom customClass="float-unset" tooltipClass="operation-quatity-tooltip" id={`operation-quantity-info`} tooltipText={quantityTooltipText} /></span></th>
@@ -391,6 +393,10 @@ function OperationCostExcludedOverhead(props) {
                           <tr key={index}>
                             <td className='text-overflow'><span title={item.OtherOperationName + index} draggable={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
+                            <td>
+                              {item?.Description?.length > maxCharsToShow && <TooltipCustom id={`item_other_cost_description${index}`} tooltipText={item?.Description} disabledIcon={true}/>}
+                              <span id={`item_other_cost_description${index}`}>{item?.Description?.length > maxCharsToShow ? item?.Description.slice(0, maxCharsToShow) + '...' : item?.Description}</span>
+                            </td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
                             <td>
@@ -484,6 +490,10 @@ function OperationCostExcludedOverhead(props) {
                           <tr key={index}>
                             <td className='text-overflow'><span title={item.OtherOperationName + index} draggable={(CostingViewMode || IsLockTabInCBCCostingForCustomerRFQ) ? false : true} onClick={() => setOpenOperationForm({ isOpen: true, id: item.OtherOperationId })} className='link'>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
+                            <td>
+                              {item?.Description?.length > maxCharsToShow && <TooltipCustom id={`item_other_cost_description${index}`} tooltipText={item?.Description} disabledIcon={true}/>}
+                              <span id={`item_other_cost_description${index}`}>{item?.Description?.length > maxCharsToShow ? item?.Description.slice(0, maxCharsToShow) + '...' : item?.Description}</span>
+                            </td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
                             <td>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>

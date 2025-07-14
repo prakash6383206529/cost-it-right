@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, INR, RAWMATERIAL, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants"
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, INR, RAWMATERIAL, RAW_MATERIAL, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import { IsFetchExchangeRateVendorWiseForParts, IsFetchExchangeRateVendorWiseForZBCRawMaterial, IsShowFreightAndShearingCostFields, getConfigurationKey, getExchangeRateParams, labelWithUOMAndCurrency, labelWithUOMAndUOM, loggedInUserId, showRMScrapKeys, calculatePercentage } from "../../../helper"
@@ -182,9 +182,11 @@ function AddRMFinancialDetails(props) {
     }, [states.costingTypeId])
 
     useEffect(() => {
-        setTimeout(() => {
+        if (isEditFlag || isViewFlag) return
+        const timer = setTimeout(() => {
             setState(initialState)
         }, 300)
+        return () => clearTimeout(timer);
     }, [props.costingTypeId])
 
 
@@ -2161,6 +2163,8 @@ function AddRMFinancialDetails(props) {
                     isImport={states.isImport}
                     plantCurrency={getValues('plantCurrency')}
                     settlementCurrency={state.currency.label}
+                    CurrencyExchangeRate={CurrencyExchangeRate}
+                    masterName={RAW_MATERIAL}
                 />
             }
         </Fragment >

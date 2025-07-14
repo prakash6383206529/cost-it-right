@@ -180,7 +180,7 @@ function ProcessCost(props) {
       BOMLevel: props?.item?.BOMLevel,
       PartNumber: props?.item?.PartNumber,
     }
-    if (!CostingViewMode && ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) {
+    if (!CostingViewMode && ((item?.PartType === 'Component' || item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) {
       selectedIds(gridData)
       if (JSON.stringify(gridData) !== JSON.stringify(data && data.CostingProcessCostResponse)) {
         dispatch(isDataChange(true))
@@ -199,7 +199,7 @@ function ProcessCost(props) {
           props?.setAssemblyProcessCost(tabData?.CostingProcessCostResponse ? tabData?.CostingProcessCostResponse : [], Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
         }
         else {
-          
+
           props.setConversionCost(tabData, Params, item)
         }
       }
@@ -315,7 +315,8 @@ function ProcessCost(props) {
         WeightCalculatorRequest: weightData,
         ProcessCostWithOutInterestAndDepreciation: weightData?.ProcessCostWithOutInterestAndDepreciation || null,
         MHRWithOutInterestAndDepreciation: weightData?.MHRWithOutInterestAndDepreciation || null,
-        Cavity: weightData?.Cavity
+        Cavity: weightData?.Cavity,
+        NoOfManPower: weightData?.NoOfManPower
         // ...netCosts
       }
       tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
@@ -1125,7 +1126,7 @@ function ProcessCost(props) {
     // Check if any applicability is being duplicated
     if (e && Array.isArray(e)) {
       const labels = e.map(item => item.label.toLowerCase());
-      
+
       // Check for duplicates using Set
       if (new Set(labels).size !== labels.length) {
         Toaster.warning(`Duplicate applicability is not allowed`);
@@ -1135,7 +1136,7 @@ function ProcessCost(props) {
       // Define conflicting pairs
       const conflictingPairs = [
         ['overhead', 'overhead(excluding int. + dep.)'],
-        ['profit', 'profit(excluding int. + dep.)'], 
+        ['profit', 'profit(excluding int. + dep.)'],
         ['rejection', 'rejection(excluding int. + dep.)']
       ];
 
@@ -1149,7 +1150,7 @@ function ProcessCost(props) {
       }
     }
     if (item?.Type === COSTAPPLICABILITYBASIS) {
-      if (e?.label === APPLICABILITY_OVERHEAD_EXCL || e?.label === APPLICABILITY_PROFIT_EXCL ) {
+      if (e?.label === APPLICABILITY_OVERHEAD_EXCL || e?.label === APPLICABILITY_PROFIT_EXCL) {
         Toaster.warning("For cost applicability basis, only Overhead and Profit applicability is allowed.")
 
         return false
@@ -1183,7 +1184,7 @@ function ProcessCost(props) {
       //const netCosts = calculateNetCosts(tempData.ProcessCost, e?.label, "Process", tempData?.ProcessCostWithOutInterestAndDepreciation);
       tempData = {
         ...tempData,
-        CostingConversionApplicabilityDetails:  e && e?.map(item => ({
+        CostingConversionApplicabilityDetails: e && e?.map(item => ({
           CostingConditionMasterAndTypeLinkingId: item.value,
           CostingConditionNumber: item.label
         }))
@@ -1360,11 +1361,11 @@ function ProcessCost(props) {
     }));
 
     // Calculate totals for all operations
-    const operationNetCosts = calculateNetCostTotals(operationsWithNetCosts, ['NetOperationCostForOverhead', 'NetOperationCostForProfit','NetOperationCostForRejection']
+    const operationNetCosts = calculateNetCostTotals(operationsWithNetCosts, ['NetOperationCostForOverhead', 'NetOperationCostForProfit', 'NetOperationCostForRejection']
     );
 
     // Calculate process net costs
-    const processNetCosts = calculateNetCostTotals(gridData, ['NetProcessCostForOverhead', 'NetProcessCostForProfit','NetProcessCostForRejection']
+    const processNetCosts = calculateNetCostTotals(gridData, ['NetProcessCostForOverhead', 'NetProcessCostForProfit', 'NetProcessCostForRejection']
     );
 
     const tempArr = {
@@ -1487,7 +1488,7 @@ ${isDetailedText}`
         return (
           <tr>
             <td>{'-'}</td>
-            <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={(CostingViewMode || ((props.item?.PartType === 'Component'|| item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.ProcessName}</span></td>
+            <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.ProcessName}</span></td>
             <td>{item?.Tonnage}</td>
             <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
             <td>{item.Type ?? '-'}</td>
@@ -1519,7 +1520,7 @@ ${isDetailedText}`
                       }}
 
                       // errors={ }
-                      disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part'|| props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS) ? true : false}
+                      disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS) ? true : false}
                     />
 
                   }
@@ -1565,7 +1566,7 @@ ${isDetailedText}`
             <td></td>
             <td>
               <div className='action-btn-wrapper'>
-                {(!CostingViewMode && ((props.item?.PartType === 'Component'|| item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
+                {(!CostingViewMode && ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
                 <Popup trigger={<button id={`popUpTriggers${index}.${parentIndex}`} title="Remark" className="Comment-box" type={'button'} />}
                   position="top right"
                   onOpen={() => handleRemarkPopup("open", `${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`)}
@@ -1588,13 +1589,13 @@ ${isDetailedText}`
                     customClassName={"withBorder"}
                     errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[`${index}${parentIndex}`] !== undefined ? errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                    disabled={(CostingViewMode || ((props.item?.PartType === 'Component'|| item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                    disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                     hidden={false}
                     validateWithRemarkValidation={true}
                   />
                   <Row>
                     <Col md="12" className='remark-btn-container'>
-                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props.item?.PartType === 'Component'|| item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClickGroup(index, parentIndex, process.ProcessList)} > <div className='save-icon'></div> </button>
+                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClickGroup(index, parentIndex, process.ProcessList)} > <div className='save-icon'></div> </button>
                       <button className='reset' onClick={() => onRemarkPopUpCloseGroup(index, parentIndex)} > <div className='cancel-icon'></div></button>
                     </Col>
                   </Row>
@@ -1801,7 +1802,7 @@ ${isDetailedText}`
                   }} />}</div>
             </Col>
             <Col md={'2'}>
-              {(!CostingViewMode && ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) &&
+              {(!CostingViewMode && ((item?.PartType === 'Component' || item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) &&
                 <Button
                   id="Costing_addProcess"
                   onClick={DrawerToggle}
@@ -1821,6 +1822,7 @@ ${isDetailedText}`
                   <tr>
                     <th style={{ width: "220px" }}>{`Process`}</th>
                     {processGroup && <th style={{ width: "150px" }}>{`Sub Process`}</th>}
+                    <th style={{ width: "100px" }}>{`Machine Name`}</th>
                     <th style={{ width: "150px" }}>{`Machine Tonnage`}</th>
                     <th style={{ width: "150px" }}><span>Machine Rate <TooltipCustom customClass="float-unset" tooltipClass="mhr-tooltip" id={`mhr-info`} tooltipText={mhrTooltipText} /></span></th>
                     <th style={{ width: "150px" }}>{`Type`}</th>
@@ -1829,7 +1831,8 @@ ${isDetailedText}`
                     <th style={{ width: "180px" }}><span>Quantity/Cycle time <TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`quantity-info`} tooltipText={tooltipText} /></span></th>
                     {showCostBaseAppliacabilityColumns && <th style={{ width: "150px" }}>{`Process Cost Applicability`}</th>}
                     {showCostBaseAppliacabilityColumns && <th style={{ width: "110px" }}>{`Percentage`}</th>}
-                    <th style={{ width: "100px" }}>{`Cavity`}</th>
+                    <th style={{ width: "50px" }}>{`Cavity`}</th>
+                    <th style={{ width: "100px" }}>{`Manpower/Run Count`}</th>
                     <th style={{ width: "140px" }} >{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
                     <th style={{ width: "160px" }} >{`Applicability`}</th>
@@ -1852,10 +1855,11 @@ ${isDetailedText}`
                                     className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div>
 
                               }
-                              <span className='link' onClick={() => setOpenMachineForm({ isOpen: true, id: item.MachineId })} title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={(CostingViewMode || ((props.item?.PartType === 'Component'|| item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>
+                              <span className='link' onClick={() => setOpenMachineForm({ isOpen: true, id: item.MachineId })} title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>
                                 {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
                             </td>
                             {processGroup && <td className='text-overflow'><span title={item.ProcessName}>{'-'}</span></td>}
+                            <td>{item.MachineName ? item.MachineName : '-'}</td>
                             <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                             <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
                             <td>{item.Type ?? '-'}</td>
@@ -1886,7 +1890,7 @@ ${isDetailedText}`
                                           handleQuantityChange(e, index)
                                         }}
 
-                                        disabled={(CostingViewMode || ((props.item?.PartType === 'Component'|| item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS || (item.GroupName !== '' && item.GroupName !== null)) ? true : false}
+                                        disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS || (item.GroupName !== '' && item.GroupName !== null)) ? true : false}
                                       />
                                     }
 
@@ -1909,6 +1913,7 @@ ${isDetailedText}`
                             {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>}
                             {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>}
                             <td>{item?.Cavity || '-'}</td>
+                            <td>{item?.NoOfManPower || '-'}</td>
                             <td>
                               {
                                 <>
@@ -2006,20 +2011,20 @@ ${isDetailedText}`
                                     customClassName={"withBorder"}
                                     errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                    disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part'|| props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                    disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     hidden={false}
                                     validateWithRemarkValidation={true}
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
-                                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props.item?.PartType === 'Component'|| item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                       <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
                                 </Popup>}
                                 {
 
-                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part'|| props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? '' : <button className="additional-add" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
+                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? '' : <button className="additional-add" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
                                 }
                               </div>
                             </td>
@@ -2096,7 +2101,7 @@ ${isDetailedText}`
             calculatorData={calculatorData}
             isOpen={isCalculator}
             item={item}
-            CostingViewMode={CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part'|| props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ}
+            CostingViewMode={CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ}
             rmFinishWeight={props.rmFinishWeight}
             closeDrawer={closeCalculatorDrawer}
             anchor={'right'}
