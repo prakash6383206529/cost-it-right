@@ -379,7 +379,11 @@ function ProcessCost(props) {
         ProcessCalculatorId: weightData.ProcessCalculationId,
         WeightCalculatorRequest: weightData,
         CostingConversionApplicabilityDetails: processTempData?.Applicability,
-        Cavity: weightData?.Cavity
+        CostingConditionMasterAndTypeLinkingId: processTempData?.Applicability?.value || null,
+        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === processTempData?.Applicability?.value)?.label || null,
+        Cavity: weightData?.Cavity,
+        NoOfManPower: weightData?.NoOfManPower
+
         //...netCosts
       }
 
