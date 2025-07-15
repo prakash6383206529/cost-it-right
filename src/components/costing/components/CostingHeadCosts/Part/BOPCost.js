@@ -24,12 +24,13 @@ import { isLockRMAndBOPForCostAppliacabilityProcess } from '../../../CostingUtil
 import BOPHandlingDrawer from './BOPHandlingDrawer';
 import { saveBOPHandlingChargesDetails, setBopAddEditDeleteDisable } from '../../../actions/CostWorking';
 import { feTurbulence } from 'react-dom-factories';
+import { useLabels } from '../../../../../helper/core';
 
 let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
-
+  const { vendorLabel } = useLabels()
   const { register, handleSubmit, control, formState: { errors }, setValue, clearErrors, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -226,6 +227,7 @@ function BOPCost(props) {
           BoughtOutPartId: el.BoughtOutPartId,
           BOPPartNumber: el.BoughtOutPartNumber,
           BOPPartName: el.BoughtOutPartName,
+          SourceVendor: el.SourceVendor,
           Currency: el.Currency !== '-' ? el.Currency : INR,
           LandedCostINR: el.NetLandedCost,
           Quantity: 1,
@@ -603,6 +605,7 @@ function BOPCost(props) {
                               <tr>
                                 <th>{`${showBopLabel()} Part No.`}</th>
                                 <th>{`${showBopLabel()} Part Name`}</th>
+                                <th>{`Source ${vendorLabel}`}</th>
                                 <th>{`UOM`}</th>
                                 <th>{`${showBopLabel()} Cost (${currencySource?.label ? currencySource?.label : initialConfiguration?.BaseCurrency})`}</th>
                                 <th>{`Quantity`}</th>
@@ -620,6 +623,7 @@ function BOPCost(props) {
                                       <tr key={item.BoughtOutPartId}>
                                         <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                                         <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
+                                        <td className='text-overflow'><span title={item?.SourceVendor}>{item?.SourceVendor}</span></td>
                                         <td>{item.BoughtOutPartUOM}</td>
                                         <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                         <td style={{ width: 200 }}>
@@ -683,6 +687,7 @@ function BOPCost(props) {
                                       <tr key={item.BoughtOutPartId}>
                                         <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
                                         <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
+                                        <td className='text-overflow'><span title={item?.SourceVendor}>{item?.SourceVendor}</span></td>
                                         <td>{item.BoughtOutPartUOM}</td>
                                         <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice) : ''}</td>
                                         <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
@@ -744,6 +749,7 @@ function BOPCost(props) {
                           <tr>
                             <th>{`${showBopLabel()} Part No.`}</th>
                             <th>{`${showBopLabel()} Part Name`}</th>
+                            <th>{`Source ${{vendorLabel}}`}</th>
                             <th>{`UOM`}</th>
                             <th>{`${showBopLabel()} Cost (${currencySource?.label ? currencySource?.label : initialConfiguration?.BaseCurrency})`}</th>
                             <th>{`Quantity`}</th>
@@ -761,6 +767,7 @@ function BOPCost(props) {
                                   <tr key={item.BoughtOutPartId}>
                                     <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                                     <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
+                                    <td className='text-overflow'><span title={item?.SourceVendor}>{item?.SourceVendor}</span></td>
                                     <td>{item.BoughtOutPartUOM}</td>
                                     <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                     <td style={{ width: 200 }}>
@@ -824,6 +831,7 @@ function BOPCost(props) {
                                   <tr key={item.BoughtOutPartId}>
                                     <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
                                     <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
+                                    <td className='text-overflow'><span title={item?.SourceVendor}>{item?.SourceVendor}</span></td>
                                     <td>{item.BoughtOutPartUOM}</td>
                                     <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice) : ''}</td>
                                     <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>

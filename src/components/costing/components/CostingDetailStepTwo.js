@@ -593,6 +593,8 @@ function CostingDetailStepTwo(props) {
                           costingData.CostingTypeId === PFS1TypeId || costingData.CostingTypeId === PFS2TypeId || costingData.CostingTypeId === PFS3TypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">{vendorLabel} (Code):</span><span className="dark-blue" title={costingData.VendorName}> {`${costingData.VendorName}`}</span></p></div></td>
                       }
 
+                      {_.size(costingData?.SourceVendors) > 0 && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Source {vendorLabel}:</span><span className="dark-blue" title={costingData?.SourceVendors.join('')}> {`${costingData?.SourceVendors.join(', ')}`}</span></p></div></td>}
+
                       {costingData.CostingTypeId === CBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Customer (Code):</span><span className="dark-blue" title={costingData.Customer}> {`${costingData.Customer}`}</span></p></div></td>}
 
                       {

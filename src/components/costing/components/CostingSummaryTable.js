@@ -2615,6 +2615,7 @@ const CostingSummaryTable = (props) => {
                               {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">Exchange Rate Source</span>}
                               <span className="d-block">Costing Currency</span>
                               <span className="d-block">{vendorLabel} (Code)</span>
+                              <span className="d-block">Source {vendorLabel}</span>
                               {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Category</span>
                               <span className="d-block">Part Type</span>
@@ -2680,6 +2681,7 @@ const CostingSummaryTable = (props) => {
                                     {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.ExchangeRateSourceName ? data?.ExchangeRateSourceName : '-')}</span>}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingCurrency ? data?.CostingCurrency : '-')}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? data?.vendor : ''}</span>
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : _.size(data?.sourceVendors) ? data?.sourceVendors.join(', ') : '-'}</span>
                                     {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.costingTypeId === CBCTypeId ? data?.customer : '-'}</span>}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.InfoCategory}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partType}</span>
@@ -2908,6 +2910,8 @@ const CostingSummaryTable = (props) => {
                                     storeSummary={props?.storeSummary ? true : false}
                                     simulationMode={simulationMode}
                                     SimulationId={props?.simulationId}
+                                    viewCostingData={viewCostingData}
+                                    costingTypeId={viewCostingData[index]?.costingTypeId}
                                   /></th></tr>}
 
                               <tr className={highlighter("netRM", "main-row")}>

@@ -7,11 +7,12 @@ import { EMPTY_DATA, TOOLING } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import DayTime from '../../../common/DayTimeWrapper'
+import { useLabels } from '../../../../helper/core'
 
 function ViewBOP(props) {
   const { viewBOPData, isPDFShow } = props
   const { BOPData, childPartBOPHandlingCharges, IsAssemblyCosting, partType ,assemblyBOPHandlingCharges} = viewBOPData || {}  
-  
+  const { vendorLabel } = useLabels()
   
   
   // Combine childPartBOPHandlingCharges and assemblyBOPHandlingCharges
@@ -67,6 +68,7 @@ function ViewBOP(props) {
                           {IsAssemblyCosting && <th>{`Part No.`}</th>}
                           <th>{`${showBopLabel()} Part No.`}</th>
                           <th>{`${showBopLabel()} Part Name`}</th>
+                          <th>{`Source ${vendorLabel}`}</th>
                           <th>{`Landed Cost `}</th>
                           <th>{`Quantity`}</th>
                           <th>{`Net ${showBopLabel()} Cost`}</th>
@@ -84,6 +86,7 @@ function ViewBOP(props) {
                                   {IsAssemblyCosting && <th>{item?.PartNumber ?? "-"}</th>}
                                   <td>{item?.BOPPartNumber ?? "-"}</td>
                                   <td>{item?.BOPPartName ?? "-"}</td>
+                                  <td>{item?.SourceVendor || "-"}</td>
                                   <td>{checkForDecimalAndNull(item?.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice)}</td>
                                   <td>{checkForDecimalAndNull(item?.Quantity, initialConfiguration?.NoOfDecimalForInputOutput)}</td>
                                   <td>{checkForDecimalAndNull(item?.NetBoughtOutPartCost, initialConfiguration?.NoOfDecimalForPrice)}</td>
@@ -128,6 +131,7 @@ function ViewBOP(props) {
                 {IsAssemblyCosting && <th>{`Part No.`}</th>}
                 <th>{`${showBopLabel()} Part No.`}</th>
                 <th>{`${showBopLabel()} Part Name`}</th>
+                <th>{`Source ${vendorLabel}`}</th>
                 {checkTechnologyIdAndRfq(viewCostingData) && <th>{`${showBopLabel()} Updated Part Name`}</th>}
                 <th>{`Landed Cost `}</th>
                 <th>{`Quantity`}</th>
@@ -145,6 +149,7 @@ function ViewBOP(props) {
                       {IsAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.PartNumber !== null || item?.PartNumber !== "" ? item.PartNumber : ""}>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</span></td>}
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartNumber}>{item?.BOPPartNumber}</span></td>
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartName}>{item?.BOPPartName}</span></td>
+                      <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.SourceVendor}>{item?.SourceVendor}</span></td>
                       {checkTechnologyIdAndRfq(viewCostingData) && <td><div className={getChangeHighlightClass(item?.BOPPartName, item?.UpdatedBoughtOutPartPartName)}><span title={item?.UpdatedBoughtOutPartPartName}>{item?.UpdatedBoughtOutPartPartName}</span></div></td>}
                       <td>
                         {checkForDecimalAndNull(item?.LandedCostINR, initialConfiguration?.NoOfDecimalForPrice)}
