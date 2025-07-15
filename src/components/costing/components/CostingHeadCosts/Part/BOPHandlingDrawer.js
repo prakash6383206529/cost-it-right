@@ -8,10 +8,11 @@ import { useDispatch, useSelector, } from 'react-redux'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull } from "../../../../../helper/validation";
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
-import { EMPTY_DATA } from '../../../../../config/constants'
+import { EMPTY_DATA, WACTypeId } from '../../../../../config/constants'
 import NoContentFound from '../../../../common/NoContentFound'
 import { calculatePercentageValue, loggedInUserId, showBopLabel } from '../../../../../helper'
 import { getBOPHandlingChargesDetails, getBopTypeList, saveBOPHandlingChargesDetails } from '../../../actions/CostWorking'
+import { IdForMultiTechnology } from '../../../../../config/masterData'
 
 function BOPHandlingDrawer(props) {
 
@@ -32,6 +33,9 @@ function BOPHandlingDrawer(props) {
         cost: '',
         allBOPType: []
     })
+    const { costingData } = useSelector(state => state.costing)
+        const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
+        const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId)||IsMultiVendorCosting)
     useEffect(() => {
         if (tableData?.length > 0) {
             const sumHandlingCharges = tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.BOPHandlingCharges), 0);
@@ -164,7 +168,12 @@ function BOPHandlingDrawer(props) {
             case "BOP CKD":
                 if (item?.PartType !== "Part" && item?.PartType !== "Component" && item?.PartType !== "BoughtOutPart") {
                     // Use the base cost without handling charges to avoid compounding
-                    applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargePerAssembly)
+                    if(partType){
+                        applicabilityCost = checkForNull(item?.CostingPartDetails?.NetBOPImportCostWithOutHandlingCharge)
+                    }else{
+                        applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargePerAssembly)
+                    }
+                    
                 } else {
 
                     applicabilityCost = props?.applicabilityCost?.bopCKDCost - props?.applicabilityCost?.bopCKDHandlingCost;
@@ -172,32 +181,44 @@ function BOPHandlingDrawer(props) {
                 break;
             case "BOP OSP":
                 if (item?.PartType !== "Part" && item?.PartType !== "Component" && item?.PartType !== "BoughtOutPart") {
-                    // Use the base cost without handling charges to avoid compounding
+                    if(partType){
+                        applicabilityCost = checkForNull(item?.CostingPartDetails?.NetBOPOutsourcedCostWithOutHandlingCharge)
+                    }else{
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargePerAssembly)
+                    }
                 } else {
                     applicabilityCost = props?.applicabilityCost?.bopOSPCost - props?.applicabilityCost?.bopOSPHandlingCost;
                 }
                 break;
             case "BOP Domestic":
                 if (item?.PartType !== "Part" && item?.PartType !== "Component" && item?.PartType !== "BoughtOutPart") {
-                    // Use the base cost without handling charges to avoid compounding
+                    if(partType){
+                        applicabilityCost = checkForNull(item?.CostingPartDetails?.NetBOPDomesticCostWithOutHandlingCharge)
+                    }else{
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPDomesticCostWithOutHandlingChargePerAssembly)
+                    }
                 } else {
                     applicabilityCost = props?.applicabilityCost?.bopDomesticCost - props?.applicabilityCost?.bopDomesticHandlingCost;
                 }
                 break;
             case "BOP V2V":
                 if (item?.PartType !== "Part" && item?.PartType !== "Component" && item?.PartType !== "BoughtOutPart") {
-                    // Use the base cost without handling charges to avoid compounding
+                    if(partType){
+                        applicabilityCost = checkForNull(item?.CostingPartDetails?.NetBOPSourceCostWithOutHandlingCharge)
+                    }else{
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargePerAssembly)
+                    }
                 } else {
                     applicabilityCost = props?.applicabilityCost?.bopV2VCost - props?.applicabilityCost?.bopV2VHandlingCost;
                 }
                 break;
             default:
                 if (item?.PartType !== "Part" && item?.PartType !== "Component" && item?.PartType !== "BoughtOutPart") {
-                    // Use the base cost without handling charges to avoid compounding
+                    if(partType){
+                        applicabilityCost = checkForNull(item?.CostingPartDetails?.NetBoughtOutPartCostWithOutHandlingCharge)
+                    }else{
                     applicabilityCost = checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithOutHandlingChargePerAssembly)
+                    }
                 } else {
                     applicabilityCost = props.netBOPCost;
                 }
