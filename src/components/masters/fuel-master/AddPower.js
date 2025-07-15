@@ -1737,7 +1737,14 @@ class AddPower extends Component {
     if (fieldName === "SelfGeneratedCostPerUnit") {
       return checkForNull(AssetCost) || checkForNull(AnnualCost) || checkForNull(UnitGeneratedPerAnnum) || checkForNull(UnitGeneratedPerUnitOfFuel) || checkForNull(CostPerUnitOfMeasurement);
     }
-    return checkForNull(SelfGeneratedCostPerUnit);
+
+    const allFieldsFilled =
+    !checkForNull(AssetCost) &&
+    !checkForNull(AnnualCost) &&
+    !checkForNull(UnitGeneratedPerAnnum) &&
+    !checkForNull(UnitGeneratedPerUnitOfFuel) &&
+    !checkForNull(CostPerUnitOfMeasurement);
+    return checkForNull(SelfGeneratedCostPerUnit) && allFieldsFilled;
   };
 
   getTooltipTextForCurrency = () => {
