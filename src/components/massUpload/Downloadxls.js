@@ -104,6 +104,12 @@ export const checkRM_Process_OperationConfigurable = (excelData, typeId = null) 
         const customHidden = ['UsesFuel', 'Fuel', 'ConsumptionPerAnnum', 'Efficiency (%)', 'PowerRatingKW', 'UsesSolarPower'];
         const standardHidden = ['MachinePowerType', 'PowerType', 'Rate', 'UnitProduced', 'PowerPercentage'];
         const calcType = getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster;
+
+        // keep CIR Standard base for power if key is not coming from webconfig
+        if (calcType === undefined)  {
+            calcType = FUELANDPOWER_CALCULATION_TYPE.Standard
+        }
+
         let hiddenFields = [];
         const showDetails = (typeId === ZBCADDMORE || getConfigurationKey().IsShowDetailMachineForAll);
         if (showDetails) {
