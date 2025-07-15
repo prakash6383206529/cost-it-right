@@ -113,7 +113,7 @@ function BOPHandlingDrawer(props) {
             label: selectedData.BOPType,
             value: selectedData.BOPType
         });
-        setValue('Type', {
+    setValue('Type', {
             label: selectedData.BOPHandlingChargeType,
             value: selectedData.BOPHandlingChargeType
         });
@@ -121,9 +121,12 @@ function BOPHandlingDrawer(props) {
             label: selectedData.BOPHandlingChargeType,
             value: selectedData.BOPHandlingChargeType
         });
-        setValue('Percentage', selectedData.BOPHandlingPercentage);
-        setValue('HandlingCharges', selectedData.BOPHandlingCharges);
-        setValue('ApplicabilityCost', selectedData.BOPHandlingChargeApplicability);
+        setValue('Percentage', selectedData.BOPHandlingPercentage); 
+        setValue('HandlingCharges', checkForDecimalAndNull(selectedData.BOPHandlingCharges, initialConfiguration?.NoOfDecimalForPrice));
+        setValue('ApplicabilityCost', checkForDecimalAndNull(selectedData.BOPHandlingChargeApplicability, initialConfiguration?.NoOfDecimalForPrice));
+        setState(prevState => ({ ...prevState, applicabilityCost: selectedData.BOPHandlingChargeApplicability,
+            cost:selectedData.BOPHandlingCharges
+         }))
     };
 
     const handleDelete = (indexValue) => {

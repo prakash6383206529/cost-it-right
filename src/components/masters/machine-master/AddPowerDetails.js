@@ -253,7 +253,7 @@ const AddPowerDetails = ({
     }
 
     const calculateFinalRate = (usagePercent, unitProduced, unitRate) => {
-        let calculatedValue = checkForNull(unitRate) / (checkForNull(unitProduced) * checkForNull(usagePercent))
+        let calculatedValue = (calculatePercentage(checkForNull(usagePercent)) * checkForNull(unitRate)) / checkForNull(unitProduced)
         setValue("FinalRate", checkForDecimalAndNull(calculatedValue, getConfigurationKey().NoOfDecimalForPrice))
         setState(prev => ({...prev, finalRate: calculatedValue }));
     }
@@ -513,7 +513,7 @@ const AddPowerDetails = ({
                     <TooltipCustom
                         id={`FinalRate`}
                         disabledIcon
-                        tooltipText={'Final Rate = Unit Rate / (Unit Produced * Usage (%))'}
+                        tooltipText={'Final Rate = (Usage (%) * Unit Rate) / Unit Produced'}
                     />
                     <Col md="3">
                         <TextFieldHookForm
@@ -719,7 +719,7 @@ const AddPowerDetails = ({
                     <TooltipCustom
                         id={`TotalPowerCostPerHour`}
                         disabledIcon
-                        tooltipText={`Power Cost/Hour (${fieldsObj?.plantCurrency || 'Currency'}) = (Efficiency %) * Power Rating * Cost/Unit`}
+                        tooltipText={`Power Cost/Hour (${fieldsObj?.plantCurrency || 'Currency'}) = (Efficiency %) * Power Rating(Kw) * Cost/Unit`}
                     />
                     <Col md="3">
                         <TextFieldHookForm
