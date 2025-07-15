@@ -2595,7 +2595,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Unit Generated/Annum (kW) test`}
+                                    label={`Unit Generated/Annum (kW)`}
                                     name={"UnitGeneratedPerAnnum"}
                                     type="text"
                                     placeholder={isViewMode ? '-' : 'Enter'}
