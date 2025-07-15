@@ -4795,18 +4795,16 @@ export const MHRMoreZBC = [
     { label: "FuelCRMHead", value: "FuelCRMHead", },
     { label: "Fuel", value: "Fuel", },
     { label: "ConsumptionPerAnnum", value: "ConsumptionPerAnnum", },
-    { label: "Efficiency (%)", value: "Efficiency (%)", },
     { label: "PowerCRMHead", value: "PowerCRMHead", },
-    { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
     { label: "MachinePowerType", value: "MachinePowerType" },
     { label: "PowerType", value: "PowerType" },
     { label: "Rate", value: "Rate" },
     { label: "UnitProduced", value: "UnitProduced" },
+    { label: "Efficiency (%)", value: "Efficiency (%)", },
+    { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "PowerPercentage", value: "PowerPercentage" },
-    { label: "UtilizationFactorPercentage", value: "UtilizationFactorPercentage" },
-    { label: "PowerRatingPerKW", value: "PowerRatingPerKW" },
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
@@ -4879,18 +4877,16 @@ export const MHRMoreVBC = [
     { label: "FuelCRMHead", value: "FuelCRMHead", },
     { label: "Fuel", value: "Fuel", },
     { label: "ConsumptionPerAnnum", value: "ConsumptionPerAnnum", },
-    { label: "Efficiency (%)", value: "Efficiency (%)", },
     { label: "PowerCRMHead", value: "PowerCRMHead", },
-    { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
     { label: "MachinePowerType", value: "MachinePowerType" },
     { label: "PowerType", value: "PowerType" },
     { label: "Rate", value: "Rate" },
     { label: "UnitProduced", value: "UnitProduced" },
+    { label: "Efficiency (%)", value: "Efficiency (%)", },
+    { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "PowerPercentage", value: "PowerPercentage" },
-    { label: "UtilizationFactorPercentage", value: "UtilizationFactorPercentage" },
-    { label: "PowerRatingPerKW", value: "PowerRatingPerKW" },
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
@@ -4963,18 +4959,16 @@ export const MHRMoreCBC = [
     { label: "FuelCRMHead", value: "FuelCRMHead", },
     { label: "Fuel", value: "Fuel", },
     { label: "ConsumptionPerAnnum", value: "ConsumptionPerAnnum", },
-    { label: "Efficiency (%)", value: "Efficiency (%)", },
     { label: "PowerCRMHead", value: "PowerCRMHead", },
-    { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
     { label: "MachinePowerType", value: "MachinePowerType" },
     { label: "PowerType", value: "PowerType" },
     { label: "Rate", value: "Rate" },
     { label: "UnitProduced", value: "UnitProduced" },
+    { label: "Efficiency (%)", value: "Efficiency (%)", },
+    { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "PowerPercentage", value: "PowerPercentage" },
-    { label: "UtilizationFactorPercentage", value: "UtilizationFactorPercentage" },
-    { label: "PowerRatingPerKW", value: "PowerRatingPerKW" },
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
@@ -5066,8 +5060,6 @@ export const MHRMoreZBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "10",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
@@ -5146,8 +5138,6 @@ export const MHRMoreZBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "90",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
@@ -5227,8 +5217,6 @@ export const MHRMoreZBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "20",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
@@ -5305,8 +5293,6 @@ export const MHRMoreZBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "20",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
@@ -5383,8 +5369,6 @@ export const MHRMoreZBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "20",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
@@ -5461,8 +5445,6 @@ export const MHRMoreZBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "30",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
@@ -5544,8 +5526,6 @@ export const MHRMoreVBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "10",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
@@ -5625,8 +5605,6 @@ export const MHRMoreVBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "90",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
@@ -5707,8 +5685,6 @@ export const MHRMoreVBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "20",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
@@ -5786,8 +5762,6 @@ export const MHRMoreVBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "20",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
@@ -5869,8 +5843,6 @@ export const MHRMoreCBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "10",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
@@ -5950,8 +5922,6 @@ export const MHRMoreCBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "90",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Skilled",
         "NoOfPeople": 5,
@@ -6032,8 +6002,6 @@ export const MHRMoreCBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "20",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,
@@ -6111,8 +6079,6 @@ export const MHRMoreCBCTempData = [
         "Rate": "20",
         "UnitProduced": "2",
         "PowerPercentage": "20",
-        "UtilizationFactorPercentage": "10",
-        "PowerRatingPerKW": "10",
         // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
         "LabourType": "Semi-Skilled",
         "NoOfPeople": 10,

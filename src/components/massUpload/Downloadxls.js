@@ -101,7 +101,7 @@ export const checkRM_Process_OperationConfigurable = (excelData, typeId = null) 
             if (el.value === 'IncoTerm') return false
         }
 
-        const customHidden = ['UsesFuel', 'Fuel', 'ConsumptionPerAnnum', 'Efficiency (%)', 'PowerRatingKW', 'UsesSolarPower'];
+        const customHidden = ['UsesFuel', 'Fuel', 'ConsumptionPerAnnum', 'UsesSolarPower'];
         const standardHidden = ['MachinePowerType', 'PowerType', 'Rate', 'UnitProduced', 'PowerPercentage'];
         const calcType = getConfigurationKey()?.FuelAndPowerCostCalculationTypeInMachineMaster;
 
