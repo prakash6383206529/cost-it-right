@@ -872,15 +872,16 @@ function ViewConversionCost(props) {
               <tbody>
                 <tr className='thead'>
                   {IsAssemblyCosting && <th>Part No</th>}
+                  <th>{remarkProcessNameLabel}</th>
                   <th>Hanger Factor (Rate)</th>
                   <th>No. of Parts per Hanger</th>
                   <th>Hanger Cost per Part</th>
-                  <th>{remarkProcessNameLabel}</th>
                 </tr>
 
                 {filteredData.map((item, index) => (
                   <tr key={index}>
                     {IsAssemblyCosting && <td>{item?.PartNumber ?? '-'}</td>}
+                    <td>{item?.HangerRemark ?? '-'}</td>
                     <td>{item?.HangerRate ?? '-'}</td>
                     <td>{item?.NumberOfPartsPerHanger ?? '-'}</td>
                     <td>
@@ -888,7 +889,6 @@ function ViewConversionCost(props) {
                         ? checkForDecimalAndNull(item?.HangerCostPerPart, initialConfiguration?.NoOfDecimalForPrice)
                         : '-'}
                     </td>
-                    <td>{item?.HangerRemark ?? '-'}</td>
                   </tr>
                 ))}
                 {<tr className='table-footer'>
