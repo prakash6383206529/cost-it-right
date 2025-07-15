@@ -1002,7 +1002,7 @@ class AddPower extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, source: true } })
         count++;
       }
-      if (fieldsObj.UnitGeneratedPerAnnum === undefined || Number(fieldsObj.UnitGeneratedPerAnnum) === 0) {
+      if ((fieldsObj.UnitGeneratedPerAnnum === undefined || Number(fieldsObj.UnitGeneratedPerAnnum) === 0) && !this.checkDisable(fieldsObj, "UnitGeneratedPerAnnum")) {
         this.setState({ errorObj: { ...this.state.errorObj, unitGenerated: true } })
         count++;
       }
@@ -1010,7 +1010,7 @@ class AddPower extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
         count++;
       }
-      if (source?.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
+      if ((source?.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0) && !this.checkDisable(fieldsObj, "UnitGeneratedPerUnitOfFuel"))) {
         this.setState({ errorObj: { ...this.state.errorObj, unitGeneratedDiesel: true } })
         count++;
       }
@@ -1018,7 +1018,8 @@ class AddPower extends Component {
         return false;
       }
 
-      if (this.props.invalid === true) {
+      if (getConfigurationKey()?.IsStateElectricityBoardPowerChargesFieldRequired && this.props.invalid === true) {
+        Toaster.warning('Please fill all mandatory fields first')
         return false;
       }
       const AssetCost = fieldsObj && fieldsObj.AssetCost !== undefined ? fieldsObj.AssetCost : 0;
@@ -1079,6 +1080,10 @@ class AddPower extends Component {
     this.resetpowerKeyValue()
   }
 
+  checkIsRequiredSEBPower = () => {
+    return getConfigurationKey()?.IsStateElectricityBoardPowerChargesFieldRequired
+  }
+
   /**
 * @method updatePowerGrid
 * @description Used to handle updateProcessGrid
@@ -1101,7 +1106,7 @@ class AddPower extends Component {
     let count = 0;
     setTimeout(() => {
 
-      if (fieldsObj.UnitGeneratedPerAnnum === undefined || Number(fieldsObj.UnitGeneratedPerAnnum) === 0) {
+      if ((fieldsObj.UnitGeneratedPerAnnum === undefined || Number(fieldsObj.UnitGeneratedPerAnnum) === 0) && !this.checkDisable(fieldsObj, "UnitGeneratedPerAnnum")) {
         this.setState({ errorObj: { ...this.state.errorObj, unitGenerated: true } })
         count++;
       }
@@ -1109,7 +1114,7 @@ class AddPower extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
         count++;
       }
-      if (source?.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
+      if (source?.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0) && !this.checkDisable(fieldsObj, "UnitGeneratedPerUnitOfFuel")) {
         this.setState({ errorObj: { ...this.state.errorObj, unitGeneratedDiesel: true } })
         count++;
       }
@@ -1727,6 +1732,14 @@ class AddPower extends Component {
     this.setState({ isImport: !this.state.isImport })
   }
 
+  checkDisable = (fieldsObj, fieldName) => {
+    const { AssetCost, AnnualCost, UnitGeneratedPerAnnum, SelfGeneratedCostPerUnit, UnitGeneratedPerUnitOfFuel, CostPerUnitOfMeasurement } = fieldsObj;
+    if (fieldName === "SelfGeneratedCostPerUnit") {
+      return checkForNull(AssetCost) || checkForNull(AnnualCost) || checkForNull(UnitGeneratedPerAnnum) || checkForNull(UnitGeneratedPerUnitOfFuel) || checkForNull(CostPerUnitOfMeasurement);
+    }
+    return checkForNull(SelfGeneratedCostPerUnit);
+  };
+
   getTooltipTextForCurrency = () => {
     const { fieldsObj } = this.props
     const { settlementCurrency, plantCurrency, currency } = this.state
@@ -1758,7 +1771,7 @@ class AddPower extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration, t } = this.props;
+    const { handleSubmit, initialConfiguration, t, fieldsObj } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
       checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry, hidePlantCurrency } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
@@ -2229,9 +2242,9 @@ class AddPower extends Component {
                                     name={"MinDemandKWPerMonth"}
                                     type="text"
                                     placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    validate={isCostPerUnitConfigurable ? [] : [...(this.checkIsRequiredSEBPower() ? [required] : []), positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
                                     component={renderTextInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
+                                    required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
@@ -2248,9 +2261,9 @@ class AddPower extends Component {
                                     name={"DemandChargesPerKW"}
                                     type="text"
                                     placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    validate={isCostPerUnitConfigurable ? [] : [...(this.checkIsRequiredSEBPower() ? [required] : []), positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
                                     component={renderTextInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
+                                    required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
@@ -2285,9 +2298,9 @@ class AddPower extends Component {
                                     name={"AvgUnitConsumptionPerMonth"}
                                     type="text"
                                     placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    validate={isCostPerUnitConfigurable ? [] : [...(this.checkIsRequiredSEBPower() ? [required] : []), positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
                                     component={renderTextInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
+                                    required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
@@ -2324,9 +2337,9 @@ class AddPower extends Component {
                                     name={"MaxDemandChargesKW"}
                                     type="text"
                                     placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    validate={isCostPerUnitConfigurable ? [] : [...(this.checkIsRequiredSEBPower() ? [required] : []), positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
                                     component={renderTextInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
+                                    required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
@@ -2416,9 +2429,9 @@ class AddPower extends Component {
                                   name={"SEBPowerContributaion"}
                                   type="text"
                                   placeholder={isViewMode ? '-' : 'Enter'}
-                                  validate={[required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
+                                  validate={[ ...(this.checkIsRequiredSEBPower() ? [required] : []), number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
                                   component={renderText}
-                                  required={true}
+                                  required={this.checkIsRequiredSEBPower()}
                                   className=""
                                   customClassName=" withBorder"
                                   disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity || isViewMode ? true : false}
@@ -2499,7 +2512,7 @@ class AddPower extends Component {
                                     component={renderTextInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isViewMode}
+                                    disabled={isViewMode || !!this.checkDisable(fieldsObj, "AssetCost")}
                                   />
                                 </div>
                               </div>
@@ -2516,7 +2529,7 @@ class AddPower extends Component {
                                     component={renderTextInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isViewMode}
+                                    disabled={isViewMode || !!this.checkDisable(fieldsObj, "AnnualCost")}
                                   />
                                 </div>
                               </div>
@@ -2552,7 +2565,7 @@ class AddPower extends Component {
                                         component={renderTextInputField}
                                         className=""
                                         customClassName=" withBorder"
-                                        disabled={isViewMode}
+                                        disabled={isViewMode || !!this.checkDisable(fieldsObj, "CostPerUnitOfMeasurement")}
                                       />
                                     </div>
                                   </div>
@@ -2565,12 +2578,12 @@ class AddPower extends Component {
                                         name={"UnitGeneratedPerUnitOfFuel"}
                                         type="text"
                                         placeholder={isViewMode ? '-' : 'Enter'}
-                                        validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthThree, number]}
+                                        validate={[...(!this.checkDisable(fieldsObj, "UnitGeneratedPerUnitOfFuel") ? [required] : []), positiveAndDecimalNumber, maxLength10, decimalLengthThree, number]}
                                         component={renderTextInputField}
-                                        required={true}
+                                        required={!this.checkDisable(fieldsObj, "UnitGeneratedPerUnitOfFuel")}
                                         className=""
                                         customClassName=" withBorder"
-                                        disabled={isViewMode}
+                                        disabled={isViewMode || !!this.checkDisable(fieldsObj, "UnitGeneratedPerUnitOfFuel")}
                                       />
                                       {this.state.errorObj.unitGeneratedDiesel && (this.props.fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(this.props.fieldsObj.UnitGeneratedPerUnitOfFuel) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                     </div>
@@ -2586,12 +2599,13 @@ class AddPower extends Component {
                                     name={"UnitGeneratedPerAnnum"}
                                     type="text"
                                     placeholder={isViewMode ? '-' : 'Enter'}
+                                    //  validate={[ ...(!this.checkDisable(fieldsObj, "UnitGeneratedPerAnnum") ? [required] : []), positiveAndDecimalNumber, maxLength10, decimalLengthThree, number]}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree, number]}
                                     component={renderTextInputField}
-                                    required={true}
+                                    required={!this.checkDisable(fieldsObj, "UnitGeneratedPerAnnum")}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isViewMode}
+                                    disabled={isViewMode || !!this.checkDisable(fieldsObj, "UnitGeneratedPerAnnum")}
                                   />
                                   {this.state.errorObj.unitGenerated && (this.props.fieldsObj.UnitGeneratedPerAnnum === undefined || Number(this.props.fieldsObj.UnitGeneratedPerAnnum) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -2603,14 +2617,15 @@ class AddPower extends Component {
                                   <TooltipCustom id={"SelfGeneratedCostPerUnit"} width="350px" disabledIcon={true} tooltipText={this.state.segCostUnittooltipText} />
                                   <Field
                                     label={`Cost/Unit`}
-                                    name={this.state.power.SelfGeneratedCostPerUnit === 0 ? '' : "SelfGeneratedCostPerUnit"}
+                                    // name={this.state.power.SelfGeneratedCostPerUnit === 0 ? '' : "SelfGeneratedCostPerUnit"}
+                                    name={"SelfGeneratedCostPerUnit"}
                                     type="text"
                                     id="SelfGeneratedCostPerUnit"
                                     placeholder={'-'}
                                     component={renderTextInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={true}
+                                    disabled={!!this.checkDisable(fieldsObj, "SelfGeneratedCostPerUnit")}
                                   />
                                 </div>
                               </div>

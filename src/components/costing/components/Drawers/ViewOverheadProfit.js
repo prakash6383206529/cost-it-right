@@ -141,8 +141,8 @@ function ViewOverheadProfit(props) {
                 <tr className="background-light-blue">
                   <td className="text-start" colSpan={3}>Total Overhead Cost</td>
                   <td className="text-start" colSpan={2}>
-                    <span title={checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}>
-                      {checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetOverheadCost, initialConfiguration?.NoOfDecimalForPrice)}
+                    <span title={checkForDecimalAndNull(overheadData?.CostingApplicabilityDetails?.reduce((sum, item) => sum + (item?.TotalCost || 0), 0), initialConfiguration?.NoOfDecimalForPrice)}>
+                      {checkForDecimalAndNull(overheadData?.CostingApplicabilityDetails?.reduce((sum, item) => sum + (item?.TotalCost || 0), 0), initialConfiguration?.NoOfDecimalForPrice)}
                     </span>
                   </td>
                 </tr>
@@ -206,8 +206,8 @@ function ViewOverheadProfit(props) {
                 <tr class="background-light-blue">
                   <td className={'text-start'} colSpan={3}>Total Profit Cost</td>
                   <td className={'text-start'} colSpan={2}>
-                    <span title={checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}>
-                      {checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetProfitCost, initialConfiguration?.NoOfDecimalForPrice)}
+                    <span title={checkForDecimalAndNull(profitData?.CostingApplicabilityDetails?.reduce((sum, item) => sum + (item?.TotalCost || 0), 0), initialConfiguration?.NoOfDecimalForPrice)}>
+                      {checkForDecimalAndNull(profitData?.CostingApplicabilityDetails?.reduce((sum, item) => sum + (item?.TotalCost || 0), 0), initialConfiguration?.NoOfDecimalForPrice)}
                     </span>
                   </td>
                 </tr>
@@ -289,8 +289,8 @@ function ViewOverheadProfit(props) {
                 <tr class="background-light-blue">
                   <td className={'text-start'} colSpan={5}>Total Rejection Cost</td>
                   <td className={'text-start'} colSpan={2}>
-                    <span title={checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}>
-                      {checkForDecimalAndNull(viewCostingData?.[0]?.CostingPartDetails?.NetRejectionCost, initialConfiguration?.NoOfDecimalForPrice)}
+                    <span title={checkForDecimalAndNull(rejectData?.CostingRejectionApplicabilityDetails?.reduce((sum, item) => sum + (item?.TotalCost || 0), 0), initialConfiguration?.NoOfDecimalForPrice)}>
+                      {checkForDecimalAndNull(rejectData?.CostingRejectionApplicabilityDetails?.reduce((sum, item) => sum + (item?.TotalCost || 0), 0), initialConfiguration?.NoOfDecimalForPrice)}
                     </span>
                   </td>
                 </tr>
