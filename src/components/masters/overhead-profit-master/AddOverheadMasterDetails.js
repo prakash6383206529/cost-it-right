@@ -40,7 +40,7 @@ const AddOverheadMasterDetails = (props) => {
     const shouldShowCastingNorm = () => {
         const selectedTechnologies = state?.selectedTechnologies || [];
         return selectedTechnologies.some(tech =>
-            Number(tech?.value === DIE_CASTING) || Number(tech?.value === Ferrous_Casting)
+            Number(tech?.value) === Number(DIE_CASTING) || Number(tech?.value) === Number(Ferrous_Casting)
         );
     };
 
