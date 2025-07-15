@@ -21,6 +21,7 @@ import AddRejectionRecovery from './AddRejectionRecovery';
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { getCostingConditionTypes } from '../../../../common/CommonFunctions';
 import NoContentFound from '../../../../common/NoContentFound';
+import TooltipCustom from '../../../../common/Tooltip';
 import _ from 'lodash';
 
 
@@ -64,8 +65,22 @@ function Rejection(props) {
     const isFixedRecord = CostingRejectionDetail?.CostingRejectionApplicabilityDetails?.some(item => item?.Applicability === 'Fixed')
     const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
-
+    const rmData = RMCCTabData[0]?.CostingPartDetails?.CostingRawMaterialsCost ?? [];
     const dispatch = useDispatch()
+
+    // Function to generate casting norm formula tooltip for both individual parts and assembly
+    const getCastingNormFormulaTooltip = () => {
+        const grossWeight = checkForDecimalAndNull(rmData?.[0]?.GrossWeight ?? 0, initialConfiguration?.NoOfDecimalForPrice);
+            const castingWeight = checkForDecimalAndNull(rmData?.[0]?.CastingWeight ?? 0, initialConfiguration?.NoOfDecimalForPrice);
+            const rmRate = checkForDecimalAndNull(rmData?.[0]?.RMRate ?? 0, initialConfiguration?.NoOfDecimalForPrice);
+            const result = checkForDecimalAndNull(RMCCTabData?.[0]?.CostingPartDetails?.NetCastingNormApplicabilityCost ?? 0, initialConfiguration?.NoOfDecimalForPrice);
+            
+            return {
+                tooltipText: `Gross Weight- Casting Weight × RM Rate (Per kg)`,
+                width: '350px'
+            };
+        
+    };
 
     const shouldShowCastingNorm = () => {
         // If partType is false, always show casting norm
@@ -1107,7 +1122,20 @@ function Rejection(props) {
                                                     disabled={CostingViewMode || !isFixedRecord}
                                                 />
                                             ) : (
-                                                checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)
+                                                item?.Applicability === 'Casting Norm' ? (
+                                                    <div className="d-flex align-items-center">
+                                                        <span>{checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</span>
+                                                        <TooltipCustom
+                                                            id={`casting-norm-cost-tooltip-${index}`}
+                                                            tooltipText={getCastingNormFormulaTooltip()?.tooltipText}
+                                                            disabledIcon={false}
+                                                            placement="top"
+                                                            width={getCastingNormFormulaTooltip()?.width}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)
+                                                )
                                             )}
                                         </td>
                                         <td>{item?.Applicability === 'Fixed' ? checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.TotalCost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</td>

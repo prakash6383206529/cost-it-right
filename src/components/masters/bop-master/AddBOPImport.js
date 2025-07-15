@@ -164,6 +164,7 @@ class AddBOPImport extends Component {
       sourceVendorTouched: false,
       SourceVendorAssociatedAsBoughtOutPartVendors: "",
       showErrorOnSourceVendorFocus: false,
+      SourceVendorRequiredForAllTypeOfBOPInMaster: false
     }
     this.state = { ...this.initialState };
   }
@@ -1430,13 +1431,17 @@ class AddBOPImport extends Component {
       Technology, NetConditionCost, conditionTableData, BasicPrice, NetLandedCost, otherCostTableData, totalOtherCost,
       currencyValue, DropdownChanged, IsSAPCodeUpdated, IsSAPCodeHandle, LocalExchangeRateId, LocalCurrencyId, plantCurrencyValue, ExchangeRateId, ExchangeSource,
     SourceVendorAssociatedAsBoughtOutPartVendors, IsPartOutsourced, sourceVendor, SourceVendorBoughtOutPartId, selectedBOPType } = this.state;
-    const { fieldsObj, isBOPAssociated } = this.props
+    const { fieldsObj, isBOPAssociated, initialConfiguration } = this.props
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
+    if (_.isEmpty(sourceVendor) && initialConfiguration?.IsSourceVendorRequiredForAllTypeOfBOPInMaster) {
+      this.setState({ SourceVendorRequiredForAllTypeOfBOPInMaster: true }) 
+      return false
+    }
 
 
     //let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
@@ -1725,8 +1730,9 @@ class AddBOPImport extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration, t, fieldsObj } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, BasicPrice, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle, disableAll } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, BasicPrice, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle, disableAll, SourceVendorRequiredForAllTypeOfBOPInMaster } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    const IsSourceVendorRequiredForAllTypeOfBOPInMaster = initialConfiguration?.IsSourceVendorRequiredForAllTypeOfBOPInMaster
     let isSourceVendorMandatory =  this?.state?.selectedBOPType && (this?.state?.selectedBOPType.value === "BOP V2V" || this?.state?.selectedBOPType.value === "BOP OSP")
 
     const filterList = async (inputValue) => {
@@ -2195,7 +2201,7 @@ class AddBOPImport extends Component {
                           {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowSourceVendorInBoughtOutPart && (
                             <>
                               <Col md="3" className='mb-4'>
-                                <label>Source {VendorLabel} Code{isSourceVendorMandatory && <span className="asterisk-required">*</span>}</label>
+                                <label>Source {VendorLabel} Code{IsSourceVendorRequiredForAllTypeOfBOPInMaster && <span className="asterisk-required">*</span>}</label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.sourceInputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -2217,7 +2223,8 @@ class AddBOPImport extends Component {
                                     />
                                   </div>
                                 </div>
-                                {(isSourceVendorMandatory && ((this.state.sourceVendorTouched && this.state.sourceVendor.length === 0) || this.state.isSourceVendorNameNotSelected)) && <div className='text-help mt-1'>This field is required.</div>}
+                                {SourceVendorRequiredForAllTypeOfBOPInMaster && <div className='text-help mt-1'>This field is required.</div>}
+                                {/* {(isSourceVendorMandatory && ((this.state.sourceVendorTouched && this.state.sourceVendor.length === 0) || this.state.isSourceVendorNameNotSelected)) && <div className='text-help mt-1'>This field is required.</div>} */}
                               </Col>
                             </>
                           )}

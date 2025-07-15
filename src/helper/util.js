@@ -815,6 +815,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.vendorId = dataFromAPI?.VendorId ? dataFromAPI?.VendorId : '-'
   obj.vendorName = dataFromAPI?.VendorName ? dataFromAPI?.VendorName : '-'
   obj.vendorCode = dataFromAPI?.VendorCode ? dataFromAPI?.VendorCode : '-'
+  obj.sourceVendors = dataFromAPI?.SourceVendors ? dataFromAPI?.SourceVendors : []
   obj.vendor = dataFromAPI?.VendorName && dataFromAPI?.VendorCode ? `${dataFromAPI?.VendorName} (${dataFromAPI?.VendorCode})` : '-'
   obj.vendorPlantId = dataFromAPI?.VendorPlantId ? dataFromAPI?.VendorPlantId : ''
   obj.vendorPlantName = dataFromAPI?.VendorPlantName ? dataFromAPI?.VendorPlantName : ''

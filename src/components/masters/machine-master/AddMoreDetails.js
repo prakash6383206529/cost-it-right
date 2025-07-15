@@ -84,6 +84,7 @@ class AddMoreDetails extends Component {
       isFinalUserEdit: false,
       MachineID: EMPTY_GUID,
       shiftType: [],
+      labourWorkingDaysPerYear: 0,
       approvalObj: {},
       depreciationType: [],
       DateOfPurchase: '',
@@ -1087,6 +1088,7 @@ class AddMoreDetails extends Component {
   }
 
   handleWorkingDaysPerAnnum = (event) => {
+    this.setState({ labourWorkingDaysPerYear: event?.target?.value })
     this.props.change('LabourWorkingDaysPerYear', checkForNull((event?.target?.value)))
   }
 
@@ -1457,7 +1459,7 @@ class AddMoreDetails extends Component {
   labourHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ labourType: newValue }, () => {
-        const { labourType, machineType, selectedPlants, effectiveDate, selectedCustomer, selectedVedor, shiftType } = this.state;
+        const { labourType, machineType, selectedPlants, effectiveDate, selectedCustomer, selectedVedor, shiftType, labourWorkingDaysPerYear } = this.state;
         const baseCurrency = reactLocalStorage.getObject("baseCurrency")
         const { data } = this.props ?? {}
         const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
@@ -1477,6 +1479,7 @@ class AddMoreDetails extends Component {
           let Data = _.get(res, 'data.DynamicData') ?? _.get(res, 'data.Data', [])
           this.setState({ labourDetailId: Data.LabourDetailId })
           this.props.change('LabourWorkingShift', checkForNull(shiftType?.value))
+          this.props.change('LabourWorkingDaysPerYear', checkForNull(labourWorkingDaysPerYear))
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
             this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration?.NoOfDecimalForPrice))
@@ -2026,6 +2029,8 @@ class AddMoreDetails extends Component {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
       this.props.change('LabourCost', '')
+      this.props.change('LabourCostPerShift', '')
+      this.props.change('LabourCostPerMonth', '')
     });
   }
 
