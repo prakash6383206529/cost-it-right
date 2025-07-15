@@ -4800,7 +4800,7 @@ export const MHRMoreZBC = [
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
     { label: "MachinePowerType", value: "MachinePowerType" },
     { label: "PowerType", value: "PowerType" },
-    { label: "Rate", value: "Rate" },
+    // { label: "Rate", value: "Rate" },
     { label: "UnitProduced", value: "UnitProduced" },
     { label: "Efficiency (%)", value: "Efficiency (%)", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
@@ -4882,7 +4882,7 @@ export const MHRMoreVBC = [
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
     { label: "MachinePowerType", value: "MachinePowerType" },
     { label: "PowerType", value: "PowerType" },
-    { label: "Rate", value: "Rate" },
+    // { label: "Rate", value: "Rate" },
     { label: "UnitProduced", value: "UnitProduced" },
     { label: "Efficiency (%)", value: "Efficiency (%)", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
@@ -4964,7 +4964,7 @@ export const MHRMoreCBC = [
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" Begins
     { label: "MachinePowerType", value: "MachinePowerType" },
     { label: "PowerType", value: "PowerType" },
-    { label: "Rate", value: "Rate" },
+    // { label: "Rate", value: "Rate" },
     { label: "UnitProduced", value: "UnitProduced" },
     { label: "Efficiency (%)", value: "Efficiency (%)", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
