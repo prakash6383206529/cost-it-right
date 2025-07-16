@@ -1127,35 +1127,62 @@ function ProcessCost(props) {
   };
 
   const onHandleChangeApplicability = (e, index, item) => {
-    // Check if any applicability is being duplicated
     if (e && Array.isArray(e)) {
-      const labels = e.map(item => item.label.toLowerCase());
-
-      // Check for duplicates using Set
-      if (new Set(labels).size !== labels.length) {
+      // Remove duplicates by converting to Set and back to array
+      const uniqueItems = [...new Set(e.map(item => item.label.toLowerCase()))].map(label => {
+        return e.find(item => item.label.toLowerCase() === label);
+      });
+      
+      if (uniqueItems.length < e.length) {
         Toaster.warning(`Duplicate applicability is not allowed`);
-        return false;
+        e = uniqueItems;
+        setTimeout(() => {
+          setValue(`${ProcessGridFields}.${index}.CostingConditionNumber`, e)
+        }, 50);
       }
 
-      // Define conflicting pairs
-      const conflictingPairs = [
-        ['overhead', 'overhead(excluding int. + dep.)'],
-        ['profit', 'profit(excluding int. + dep.)'],
-        ['rejection', 'rejection(excluding int. + dep.)']
-      ];
-
-      // Check for conflicts
-      for (const [type1, type2] of conflictingPairs) {
-        if (labels.includes(type1) && labels.includes(type2)) {
-          const capitalizedType = type1.charAt(0).toUpperCase() + type1.slice(1);
-          Toaster.warning(`Cannot select both ${capitalizedType} and ${capitalizedType}(Excluding Int. + Dep.)`);
-          return false;
+      if (e && Array.isArray(e)) {
+        // Remove exact duplicates (case-insensitive by label)
+        const uniqueItems = [...new Set(e.map(item => item.label.toLowerCase()))].map(label => {
+          return e.find(item => item.label.toLowerCase() === label);
+        });
+      
+        if (uniqueItems.length < e.length) {
+          Toaster.warning(`Duplicate applicability is not allowed`);
         }
+      
+        // Define conflicting pairs
+        const conflictingPairs = [
+          ['overhead', 'overhead(excluding int. + dep.)'],
+          ['profit', 'profit(excluding int. + dep.)'],
+          ['rejection', 'rejection(excluding int. + dep.)']
+        ];
+      
+        const labels = uniqueItems.map(item => item.label.toLowerCase());
+        let filteredItems = [...uniqueItems]; // Copy to modify
+      
+        for (const [type1, type2] of conflictingPairs) {
+          if (labels.includes(type1) && labels.includes(type2)) {
+            const capitalizedType = type1.charAt(0).toUpperCase() + type1.slice(1);
+            Toaster.warning(`Cannot select both ${capitalizedType} and ${capitalizedType}(Excluding Int. + Dep.)`);
+      
+            // Remove the second type in pair (or you can remove type1 instead based on your rule)
+            filteredItems = filteredItems.filter(
+              item => item.label.toLowerCase() !== type2
+            );
+          }
+        }
+      
+        // Final update
+        e = filteredItems;
+        setTimeout(() => {
+          setValue(`${ProcessGridFields}.${index}.CostingConditionNumber`, e);
+        }, 50);
       }
     }
-    if (item?.Type === COSTAPPLICABILITYBASIS) {
-      if (e?.label === APPLICABILITY_OVERHEAD_EXCL || e?.label === APPLICABILITY_PROFIT_EXCL) {
-        Toaster.warning("For cost applicability basis, only Overhead and Profit applicability is allowed.")
+  if (item?.Type === COSTAPPLICABILITYBASIS) {
+   if (e?.some(item => item.label === APPLICABILITY_OVERHEAD_EXCL || item.label === APPLICABILITY_PROFIT_EXCL || item.label === APPLICABILITY_REJECTION_EXCL)) {
+        Toaster.warning("For cost applicability basis, only Overhead, Profit and Rejection applicability is allowed.")
 
         return false
       }
@@ -1168,12 +1195,13 @@ function ProcessCost(props) {
     const isExcludingApplicability = [
       APPLICABILITY_OVERHEAD_EXCL,
       APPLICABILITY_PROFIT_EXCL,
-    ].includes(e?.label);
+      APPLICABILITY_REJECTION_EXCL,
+    ].some(applicability => e?.some(item => item.label === applicability));
 
     // Show warning if excluding applicability selected but not detailed form
     if (isExcludingApplicability) {
       if (!tempData?.IsDetailed || tempData?.UOMType !== TIME) {
-        Toaster.warning("Detailed cost is unavailable for the selected process, or UOM is not time-based. Overhead & profit will be calculated on the actual machine rate.");
+        Toaster.warning("Detailed cost is unavailable for the selected process, or UOM is not time-based. Overhead, profit and rejection will be calculated on the actual machine rate.");
       }
     }
     if (!e) {

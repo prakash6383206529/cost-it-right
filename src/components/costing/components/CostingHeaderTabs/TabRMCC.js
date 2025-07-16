@@ -2576,7 +2576,7 @@ function TabRMCC(props) {
   const saveCosting = debounce(handleSubmit(() => {
     if (ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse?.length > 0) {
       const operations = ComponentItemData?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse;
-      const hasMissingApplicability = operations?.some(item => !item?.CostingConversionApplicabilityDetails);
+      const hasMissingApplicability = operations?.some(item => !item?.CostingConversionApplicabilityDetails || item?.CostingConversionApplicabilityDetails?.length === 0);
       if (operations?.length > 0 && hasMissingApplicability) {
         Toaster.warning('Please select Applicability for all operations');
         return false;
