@@ -144,7 +144,8 @@ class AddBOPDomestic extends Component {
       SourceVendorBoughtOutPartId: "",
       sourceVendorTouched: false,
       disableAll: false,
-      SourceVendorAssociatedAsBoughtOutPartVendors: ""
+      SourceVendorAssociatedAsBoughtOutPartVendors: "",
+      SourceVendorRequiredForAllTypeOfBOPInMaster: false
     }
     this.state = { ...this.initialState };
   }
@@ -1122,10 +1123,14 @@ class AddBOPDomestic extends Component {
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
       isClientVendorBOP, isTechnologyVisible, Technology, NetConditionCost, NetCostWithoutConditionCost, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost,
     SourceVendorAssociatedAsBoughtOutPartVendors, IsPartOutsourced, sourceVendor, SourceVendorBoughtOutPartId, selectedBOPType } = this.state;
-    const { fieldsObj, isBOPAssociated } = this.props;
+    const { fieldsObj, isBOPAssociated, initialConfiguration } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    if (_.isEmpty(sourceVendor) && initialConfiguration?.IsSourceVendorRequiredForAllTypeOfBOPInMaster) {
+      this.setState({ SourceVendorRequiredForAllTypeOfBOPInMaster: true }) 
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
@@ -1402,8 +1407,9 @@ class AddBOPDomestic extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration, t, fieldsObj } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, NetCostWithoutConditionCost, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle, hidePlantCurrency, disableAll
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, NetCostWithoutConditionCost, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle, hidePlantCurrency, disableAll, SourceVendorRequiredForAllTypeOfBOPInMaster
     } = this.state;
+    const IsSourceVendorRequiredForAllTypeOfBOPInMaster = initialConfiguration?.IsSourceVendorRequiredForAllTypeOfBOPInMaster
     let isSourceVendorMandatory =  this?.state?.selectedBOPType && (this?.state?.selectedBOPType.value === "BOP V2V" || this?.state?.selectedBOPType.value === "BOP OSP")
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
     const BOPVendorLabel = LabelsClass(t, 'MasterLabels').BOPVendorLabel;
@@ -1875,7 +1881,7 @@ class AddBOPDomestic extends Component {
                           {costingTypeId === VBCTypeId && getConfigurationKey()?.IsShowSourceVendorInBoughtOutPart && (
                             <>
                               <Col md="3" className='mb-4'>
-                                <label>Source {VendorLabel} Code {isSourceVendorMandatory && <span className="asterisk-required">*</span>}</label>
+                                <label>Source {VendorLabel} Code {IsSourceVendorRequiredForAllTypeOfBOPInMaster && <span className="asterisk-required">*</span>}</label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.sourceInputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1896,7 +1902,8 @@ class AddBOPDomestic extends Component {
                                     />
                                   </div>
                                 </div>
-                                {(isSourceVendorMandatory && ((this.state.sourceVendorTouched && this.state.sourceVendor.length === 0) || this.state.isSourceVendorNameNotSelected)) && <div className='text-help mt-1'>This field is required.</div>}
+                                {SourceVendorRequiredForAllTypeOfBOPInMaster && <div className='text-help mt-1'>This field is required.</div>}
+                                {/* {(isSourceVendorMandatory && ((this.state.sourceVendorTouched && this.state.sourceVendor.length === 0) || this.state.isSourceVendorNameNotSelected)) && <div className='text-help mt-1'>This field is required.</div>} */}
                               </Col>
                             </>
                           )}
