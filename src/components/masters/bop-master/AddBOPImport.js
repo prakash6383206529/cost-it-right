@@ -1438,7 +1438,7 @@ class AddBOPImport extends Component {
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
-    if (_.isEmpty(sourceVendor) && initialConfiguration?.IsSourceVendorRequiredForAllTypeOfBOPInMaster) {
+    if (_.isEmpty(sourceVendor) && initialConfiguration?.IsSourceVendorRequiredForAllTypeOfBOPInMaster && costingTypeId === VBCTypeId) {
       this.setState({ SourceVendorRequiredForAllTypeOfBOPInMaster: true }) 
       return false
     }
