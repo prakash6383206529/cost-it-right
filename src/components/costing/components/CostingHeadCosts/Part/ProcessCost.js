@@ -1182,7 +1182,16 @@ function ProcessCost(props) {
     }
   if (item?.Type === COSTAPPLICABILITYBASIS) {
    if (e?.some(item => item.label === APPLICABILITY_OVERHEAD_EXCL || item.label === APPLICABILITY_PROFIT_EXCL || item.label === APPLICABILITY_REJECTION_EXCL)) {
+    
         Toaster.warning("For cost applicability basis, only Overhead, Profit and Rejection applicability is allowed.")
+        e = e.filter(item => 
+          item.label === APPLICABILITY_OVERHEAD || 
+          item.label === APPLICABILITY_PROFIT || 
+          item.label === APPLICABILITY_REJECTION
+        );
+        setTimeout(() => {
+          setValue(`${ProcessGridFields}.${index}.CostingConditionNumber`, e)
+        }, 50);
 
         return false
       }
@@ -1201,6 +1210,14 @@ function ProcessCost(props) {
     // Show warning if excluding applicability selected but not detailed form
     if (isExcludingApplicability) {
       if (!tempData?.IsDetailed || tempData?.UOMType !== TIME) {
+        e = e.filter(item => 
+          item.label === APPLICABILITY_OVERHEAD || 
+          item.label === APPLICABILITY_PROFIT || 
+          item.label === APPLICABILITY_REJECTION
+        );
+        setTimeout(() => {
+          setValue(`${ProcessGridFields}.${index}.CostingConditionNumber`, e)
+        }, 50);
         Toaster.warning("Detailed cost is unavailable for the selected process, or UOM is not time-based. Overhead, profit and rejection will be calculated on the actual machine rate.");
       }
     }
