@@ -32,7 +32,7 @@ let counter = 0;
 function ProcessCost(props) {
   const { data, item, isAssemblyTechnology } = props
   // const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
-  let IsLocked = ''
+  let IsLocked = false
   if (item?.PartType === 'Sub Assembly') {
     IsLocked = (item.IsLocked ? item.IsLocked : false)
   }
@@ -1460,7 +1460,7 @@ ${isDetailedText}`
         return (
           <tr>
             <td>{'-'}</td>
-            <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.ProcessName}</span></td>
+                                          <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.ProcessName}</span></td>
             <td>{item?.Tonnage}</td>
             <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
             <td>{item.Type ?? '-'}</td>
@@ -1492,7 +1492,7 @@ ${isDetailedText}`
                       }}
 
                       // errors={ }
-                      disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS) ? true : false}
+                      disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS) ? true : false}
                     />
 
                   }
@@ -1538,7 +1538,7 @@ ${isDetailedText}`
             <td></td>
             <td>
               <div className='action-btn-wrapper'>
-                {(!CostingViewMode && ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
+                {(!CostingViewMode && ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
                 <Popup trigger={<button id={`popUpTriggers${index}.${parentIndex}`} title="Remark" className="Comment-box" type={'button'} />}
                   position="top right"
                   onOpen={() => handleRemarkPopup("open", `${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`)}
@@ -1561,13 +1561,13 @@ ${isDetailedText}`
                     customClassName={"withBorder"}
                     errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[`${index}${parentIndex}`] !== undefined ? errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                    disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                    disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                     hidden={false}
                     validateWithRemarkValidation={true}
                   />
                   <Row>
                     <Col md="12" className='remark-btn-container'>
-                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClickGroup(index, parentIndex, process.ProcessList)} > <div className='save-icon'></div> </button>
+                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClickGroup(index, parentIndex, process.ProcessList)} > <div className='save-icon'></div> </button>
                       <button className='reset' onClick={() => onRemarkPopUpCloseGroup(index, parentIndex)} > <div className='cancel-icon'></div></button>
                     </Col>
                   </Row>
@@ -1827,7 +1827,7 @@ ${isDetailedText}`
                                     className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div>
 
                               }
-                              <span className='link' onClick={() => setOpenMachineForm({ isOpen: true, id: item.MachineId })} title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>
+                              <span className='link' onClick={() => setOpenMachineForm({ isOpen: true, id: item.MachineId })} title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>
                                 {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
                             </td>
                             {processGroup && <td className='text-overflow'><span title={item.ProcessName}>{'-'}</span></td>}
@@ -1862,7 +1862,7 @@ ${isDetailedText}`
                                           handleQuantityChange(e, index)
                                         }}
 
-                                        disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS || (item.GroupName !== '' && item.GroupName !== null)) ? true : false}
+                                        disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS || (item.GroupName !== '' && item.GroupName !== null)) ? true : false}
                                       />
                                     }
 
@@ -1961,7 +1961,7 @@ ${isDetailedText}`
 
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && ((item?.PartType === 'Component' || item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' id={`process_delete${0}`} className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                                {(!CostingViewMode && ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' id={`process_delete${0}`} className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                                 {(item?.GroupName === '' || item?.GroupName === null) && <Popup trigger={<button id={`process_popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
                                   position="top right"
                                   onOpen={() => handleRemarkPopup("open", `${ProcessGridFields}.${index}.remarkPopUp`)}
@@ -1983,20 +1983,20 @@ ${isDetailedText}`
                                     customClassName={"withBorder"}
                                     errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                    disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                    disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     hidden={false}
                                     validateWithRemarkValidation={true}
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
-                                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                       <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
                                 </Popup>}
                                 {
 
-                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? '' : <button className="additional-add" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
+                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? '' : <button className="additional-add" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
                                 }
                               </div>
                             </td>
@@ -2073,7 +2073,7 @@ ${isDetailedText}`
             calculatorData={calculatorData}
             isOpen={isCalculator}
             item={item}
-            CostingViewMode={CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ}
+            CostingViewMode={CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ}
             rmFinishWeight={props.rmFinishWeight}
             closeDrawer={closeCalculatorDrawer}
             anchor={'right'}
