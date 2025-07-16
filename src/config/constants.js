@@ -17,8 +17,7 @@ export const config = () => {
   return { headers }
 }
 
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.1.102:9002/api/v1`;
+ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -763,8 +762,8 @@ export const API = {
   uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
   uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
   uploadMonocartonCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-mono-carton-box`,
-  saveBOPHandlingChargesDetails:`${BASE_URL}/costing/save-costing-bought-out-part-handling-charge-details`,
-  getBOPHandlingChargesDetails:`${BASE_URL}/costing/get-costing-bought-out-part-handling-charge-details`,
+  saveBOPHandlingChargesDetails: `${BASE_URL}/costing/save-costing-bought-out-part-handling-charge-details`,
+  getBOPHandlingChargesDetails: `${BASE_URL}/costing/get-costing-bought-out-part-handling-charge-details`,
 
 
   //COST SUMMARY
@@ -818,7 +817,7 @@ export const API = {
   revokeDelegation: `${BASE_URL}/user-delegation/revoke-user-delegations`,
   getDelegationHistory: `${BASE_URL}/user-delegation/get-user-delegations-history`,
   getAllUserDelegationApi: `${BASE_URL}/user/get-all-users-delegation`,
-
+  bulkDelete: `${BASE_URL}/configuration/delete-masters-in-bulk`,
   //AUDIT API
 
   getAuditList: `${BASE_URL}/auditlogs/get-user-audit-log`,
@@ -2311,13 +2310,13 @@ export const FOUR_DECIMAL_PRICE = 4
 export const FIVE_DECIMAL_WEIGHT = 5
 //OVERHEAD AND PROCESS APPLICABILITY IDS
 export const APPLICABILITY_OVERHEAD = 'Overhead';
-export const APPLICABILITY_PROFIT = 'Profit';
-export const APPLICABILITY_OVERHEAD_PROFIT = 'Overhead + Profit';
 export const APPLICABILITY_OVERHEAD_EXCL = 'Overhead(Excluding Int. + Dep.)';
+export const APPLICABILITY_PROFIT = 'Profit';
 export const APPLICABILITY_PROFIT_EXCL = 'Profit(Excluding Int. + Dep.)';
-export const APPLICABILITY_OVERHEAD_PROFIT_EXCL = 'Overhead + Profit(Excluding Int. + Dep.)';
-export const APPLICABILITY_OVERHEAD_EXCL_PROFIT = 'Overhead(Excluding Int. + Dep.) + Profit';
-export const APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL = 'Overhead(Excluding Int. + Dep.) + Profit(Excluding Int. + Dep.)';
+export const APPLICABILITY_REJECTION = 'Rejection';
+export const APPLICABILITY_REJECTION_EXCL = 'Rejection(Excluding Int. + Dep.)';
+
+
 //LABOUR ENUMS
 export const SKILLED = 'Skilled'
 export const CONTRACT = 'Contract'
@@ -3523,7 +3522,7 @@ export const HANGEROVERHEAD = "Hanger Overhead"
 export const IsSelectSinglePlant = true
 export const maxCharsToShow = 20
 //VERSION 
-export const VERSION = "V4.2.56";
+export const VERSION = "V4.2.57";
 
 
 

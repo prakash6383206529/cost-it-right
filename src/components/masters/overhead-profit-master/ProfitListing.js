@@ -36,6 +36,7 @@ import { useTranslation } from 'react-i18next';
 import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
+import BulkDelete from '../../../helper/BulkDelete';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -696,7 +697,7 @@ function ProfitListing(props) {
                                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                         </div>
-
+                                        <BulkDelete type={'Profits'} deletePermission={DeleteAccessibility} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
                                         {AddAccessibility && (
                                             <button
                                                 type="button"

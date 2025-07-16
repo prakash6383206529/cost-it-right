@@ -26,6 +26,7 @@ import Switch from 'react-switch'
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 import { setResetCostingHead } from '../../../actions/Common';
 import { setListToggle } from '../../../actions/Common';
+import BulkDelete from '../../../helper/BulkDelete';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
@@ -358,6 +359,7 @@ const FreightListing = (props) => {
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 {/* Add button */}
+                <BulkDelete type={'Freight'} deletePermission={permissions?.Delete} dataCount={state?.dataCount} bulkDeleteData={state?.selectedRowData}/>
                 {permissions.Add && !state.isImport && (
                   <Button
                     id="freightListing_add"

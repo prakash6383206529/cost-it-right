@@ -171,16 +171,23 @@ function AddAssemblyProcess(props) {
       // Update overhead and profit costs
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetProcessCostForOverhead = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.overheadProcessCost;
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetProcessCostForProfit = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.profitProcessCost;
+      tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetProcessCostForRejection = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.rejectionProcessCost;
+
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCostPerAssemblyForOverhead = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.overheadProcessCost;
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCostPerAssemblyForProfit = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.profitProcessCost;
+      tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalProcessCostPerAssemblyForRejection = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.rejectionProcessCost;
+
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetCCForOtherTechnologyCost = checkForNull(getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCost)
       // Update overhead and profit costs
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetCCForOtherTechnologyCostForOverhead = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCostForOverhead;
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetCCForOtherTechnologyCostForProfit = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCostForProfit;
+      tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetCCForOtherTechnologyCostForRejection = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCostForRejection;
+
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCCForOtherTechnologyCostPerAssembly = checkForNull(getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCost)
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForOverhead = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCostForOverhead;
       tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForProfit = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCostForProfit;
-      
+      tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCCForOtherTechnologyCostPerAssemblyForRejection = getOverheadAndProfitCostTotal(processGrid?.CostingProcessCostResponse, tempsubAssemblyTechnologyArray[0]?.TechnologyId)?.ccForOtherTechnologyCostForRejection;
+
       dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
       totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetTotalRMBOPCC) +

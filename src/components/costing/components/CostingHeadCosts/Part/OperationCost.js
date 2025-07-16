@@ -95,7 +95,10 @@ function OperationCost(props) {
 
         } else {
           gridData && gridData.map((el, index) => {
-            setValue(`${OperationGridFields}.${index}.Applicability`, el?.CostingConditionMasterAndTypeLinkingId ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
+            setValue(`${OperationGridFields}.${index}.Applicability`, el?.CostingConversionApplicabilityDetails?.map(item => ({
+              label: item.CostingConditionNumber,
+              value: item.CostingConditionMasterAndTypeLinkingId
+            })))
             setValue(`${OperationGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
             return null
           })
@@ -165,7 +168,10 @@ function OperationCost(props) {
       tempArr && tempArr.map((el, index) => {
         netCostTotal = checkForNull(netCostTotal) + checkForNull(el.OperationCost)
         setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el?.Quantity, initialConfiguration?.NoOfDecimalForInputOutput))
-        setValue(`${OperationGridFields}.${index}.Applicability`, el?.CostingConditionMasterAndTypeLinkingId ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
+        setValue(`${OperationGridFields}.${index}.Applicability`, el?.CostingConversionApplicabilityDetails?.map(item => ({
+          label: item.CostingConditionNumber,
+          value: item.CostingConditionMasterAndTypeLinkingId
+        })))
         setValue(`${OperationGridFields}.${index}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
         return null
       })
@@ -235,12 +241,22 @@ function OperationCost(props) {
     let tempArr = [];
     let tempData = gridData[index];
 
+    if (e && Array.isArray(e)) {
+      // Remove duplicates by converting to Set and back to array
+      const uniqueItems = [...new Set(e.map(item => item.label.toLowerCase()))].map(label => {
+        return e.find(item => item.label.toLowerCase() === label);
+      });
+      
+      if (uniqueItems.length < e.length) {
+        Toaster.warning(`Duplicate applicability is not allowed`);
+        e = uniqueItems;
+      }
+    }
     // Handle clearing the selection
     if (!e) {
       tempData = {
         ...tempData,
-        CostingConditionMasterAndTypeLinkingId: null,
-        CostingConditionNumber: null,
+        CostingConversionApplicabilityDetails: [],
         NetOperationCostForOverhead: 0,
         NetOperationCostForProfit: 0,
       };
@@ -249,8 +265,10 @@ function OperationCost(props) {
       //const netCosts = calculateNetCosts(tempData?.OperationCost, e?.label, 'Operation');
       tempData = {
         ...tempData,
-        CostingConditionMasterAndTypeLinkingId: e?.value,
-        CostingConditionNumber: e?.label,
+        CostingConversionApplicabilityDetails: e && e?.map(item => ({
+          CostingConditionMasterAndTypeLinkingId: item.value,
+          CostingConditionNumber: item.label
+        }))
         //...netCosts
       };
     }
@@ -276,7 +294,10 @@ function OperationCost(props) {
     setValue(`${OperationGridFields}.${index}.remarkPopUp`, '')
     tempArr && tempArr.map((el, i) => {
       setValue(`${OperationGridFields}.${i}.remarkPopUp`, el.Remark)
-      setValue(`${OperationGridFields}.${i}.Applicability`, el?.CostingConditionMasterAndTypeLinkingId ? { label: el?.CostingConditionNumber, value: el?.CostingConditionMasterAndTypeLinkingId } : null)
+      setValue(`${OperationGridFields}.${index}.Applicability`, el?.CostingConversionApplicabilityDetails?.map(item => ({
+        label: item.CostingConditionNumber,
+        value: item.CostingConditionMasterAndTypeLinkingId
+      })))
       setValue(`${OperationGridFields}.${i}.ProcessCRMHead`, { label: el?.ProcessCRMHead, value: el?.index })
     })
     dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
@@ -309,7 +330,7 @@ function OperationCost(props) {
     }
     // Add applicability validation
     const rowData = gridData[index];
-    if (!rowData?.CostingConditionMasterAndTypeLinkingId) {
+    if (!rowData?.CostingConversionApplicabilityDetails) {
       Toaster.warning('Please select Applicability');
       return false;
     }
@@ -329,7 +350,10 @@ function OperationCost(props) {
     setGridData(tempArr)
     setRowObjData({})
     setValue(`${OperationGridFields}.${index}.Quantity`, tempArr?.Quantity)
-    setValue(`${OperationGridFields}.${index}.Applicability`, tempArr?.CostingConditionMasterAndTypeLinkingId ? { label: tempArr?.CostingConditionNumber, value: tempArr?.CostingConditionMasterAndTypeLinkingId } : null)
+    setValue(`${OperationGridFields}.${index}.Applicability`, tempArr?.CostingConversionApplicabilityDetails?.map(item => ({
+      label: item.CostingConditionNumber,
+      value: item.CostingConditionMasterAndTypeLinkingId
+    })))
     setValue(`${OperationGridFields}.${index}.ProcessCRMHead`, { label: tempArr?.ProcessCRMHead, value: tempArr?.index })
 
     errors.OperationGridFields = {}
@@ -364,8 +388,7 @@ function OperationCost(props) {
         ...tempData,
         Quantity: Number(event.target.value),
         OperationCost,
-        CostingConditionNumber: tempData?.CostingConditionNumber,
-        CostingConditionMasterAndTypeLinkingId: tempData?.CostingConditionMasterAndTypeLinkingId,
+        CostingConversionApplicabilityDetails: tempData?.CostingConversionApplicabilityDetails,
         //...netCosts
       };
       tempArr = Object.assign([...gridData], { [index]: tempData });
@@ -525,7 +548,7 @@ function OperationCost(props) {
                       <th>{`Labour Quantity`}</th>}
                     <th>{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th>{`CRM Head`}</th>}
-                    <th style={{ width: "110px" }} >{`Applicability`}<span className="asterisk-required">*</span></th>
+                    <th style={{ width: "160px" }} >{`Applicability`}<span className="asterisk-required">*</span></th>
                     <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -635,16 +658,17 @@ function OperationCost(props) {
                                 register={register}
                                 mandatory={true}
                                 placeholder={'Select'}
-                                customClassName="costing-selectable-dropdown"
-                                defaultValue={item?.CostingConditionMasterAndTypeLinkingId ? {
-                                  label: item?.CostingConditionNumber,
-                                  value: item?.CostingConditionMasterAndTypeLinkingId
-                                } : ''}
+                                customClassName="mt-2"
+                                defaultValue={item?.CostingConversionApplicabilityDetails?.map(item => ({
+                                  label: item.CostingConditionNumber,
+                                  value: item.CostingConditionMasterAndTypeLinkingId
+                                }))}
                                 options={operationApplicabilitySelect}
                                 required={true}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
                                 disabled={(CostingViewMode || ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? IsLocked : false)  || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
+                                isMulti={true}
                               />
                             </td>
                             <td>
@@ -705,16 +729,17 @@ function OperationCost(props) {
                                 register={register}
                                 mandatory={true}
                                 placeholder={'Select'}
-                                customClassName="costing-selectable-dropdown"
-                                defaultValue={item?.CostingConditionMasterAndTypeLinkingId ? {
-                                  label: item?.CostingConditionNumber,
-                                  value: item?.CostingConditionMasterAndTypeLinkingId
-                                } : ''}
+                                customClassName="mt-2"
+                                defaultValue={item?.CostingConversionApplicabilityDetails?.map(item => ({
+                                  label: item.CostingConditionNumber,
+                                  value: item.CostingConditionMasterAndTypeLinkingId
+                                }))}
                                 options={operationApplicabilitySelect}
                                 required={true}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
                                 disabled={(CostingViewMode || ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (IsLocked) : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
+                                isMulti={true}
                               />
                             </td>
                             <td>
@@ -780,6 +805,7 @@ function OperationCost(props) {
         ID={''}
         anchor={'right'}
         Ids={Ids}
+        isFromOtherOperation={false}
       />}
       {openOperationForm && <ViewDetailedForms data={openOperationForm} formName="Operation" cancel={() => setOpenOperationForm({ isOpen: false, id: '' })} />}
     </ >

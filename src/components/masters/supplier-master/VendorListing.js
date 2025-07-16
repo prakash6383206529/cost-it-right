@@ -35,6 +35,7 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { useLabels, useWithLocalization } from "../../../helper/core";
+import BulkDelete from "../../../helper/BulkDelete";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -381,13 +382,18 @@ const VendorListing = (props) => {
   const buttonFormatter = (props) => {
     const cellValue = props?.value;
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
+    let isDeleteButton = false
+    const rowData = props?.data
+    if (DeleteAccessibility && !rowData.IsAssociated) {
+        isDeleteButton = true
+    }    
     return (
       <>
         {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
         )}
         {EditAccessibility && (<Button id={`vebdorListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
-        {DeleteAccessibility && (<Button id={`vendorListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
+        {isDeleteButton && (<Button id={`vendorListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
         )}
       </>
     );
@@ -675,7 +681,7 @@ const VendorListing = (props) => {
   };
 
   const {
-    isOpenVendor, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, } = state;
+    isOpenVendor, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, DeleteAccessibility} = state;
   const ExcelFile = ReactExport.ExcelFile;
 
   const isFirstColumn = (params) => {
@@ -735,6 +741,7 @@ const VendorListing = (props) => {
             <div className="d-flex">
               <Button id="vendorListing_filter" className={"mr5 Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter}
               />
+              <BulkDelete {...props} type={vendorLabel} deletePermission={DeleteAccessibility} dataCount={state?.dataCount} bulkDeleteData={selectedRowForPagination}/>
               {AddAccessibility && (<Button id="vendorListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />
               )}
               {BulkUploadAccessibility && (<Button id="vendorListing_bulkUpload" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />

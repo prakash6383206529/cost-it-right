@@ -38,6 +38,7 @@ import { useTranslation } from 'react-i18next';
 import { useLabels } from '../../../../helper/core'
 import { fetchDivisionId } from '../../CostingUtil'
 import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter'
+import BulkDelete from '../../../../helper/BulkDelete'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -81,7 +82,8 @@ function ApprovalListing(props) {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
   const [technologyForCosting, setTechnologyForCosting] = useState('')
-
+  const [dataCount, setDataCount] = useState(0)
+  const BulkDeleteType = _.get(props, 'BulkDeleteType', '')
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
   const statusColumnData = useSelector((state) => state.comman.statusColumnData);
@@ -433,6 +435,7 @@ function ApprovalListing(props) {
     getTableData("", "", "", "", 0, 10, true, floatingFilterData)
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+    setDataCount(0)
   }
 
 
@@ -739,6 +742,7 @@ function ApprovalListing(props) {
     // }
 
     setSelectedRowData(uniqeArray)
+    setDataCount(uniqeArray.length)
   }
 
   const costingIdObj = (list) => {
@@ -1187,6 +1191,7 @@ function ApprovalListing(props) {
                         {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                         <button id='Costing_Approval_Filter' disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                       </div >
+                      {BulkDeleteType && <BulkDelete type={BulkDeleteType} deletePermission={true} dataCount={dataCount} bulkDeleteData={selectedRowData}/>}
                       <div>
                         <button type="button" id="Costing_Approval_Reset" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
                           <div className="refresh mr-0"></div>

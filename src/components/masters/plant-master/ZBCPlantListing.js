@@ -23,6 +23,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { divisionApplicableFilter } from '../masterUtil';
+import BulkDelete from '../../../helper/BulkDelete';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -360,6 +361,7 @@ const ZBCPlantListing = (props) => {
                     <Col md="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
+                               <BulkDelete {...props} type={'Plant'} deletePermission={DeleteAccessibility} dataCount={state?.dataCount} bulkDeleteData={state?.selectedRowData}/>
                                 {AddAccessibility && (
                                     <button
                                         type="button"
