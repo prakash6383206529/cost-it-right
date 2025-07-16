@@ -1142,7 +1142,7 @@ function CostingDetails(props) {
             InfoCategory: vbcVendorGrid[index]?.InfoCategory ?? 'Standard',
             IsMultiVendorCosting: partInfo?.PartType === 'Assembly' ? ( IdForMultiTechnology.includes(String(technology?.value)) ? true : tempData?.IsMultiVendorCosting):false
           }
-          if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)||tempData?.IsMultiVendorCosting) {
+          if (partInfo?.PartType === 'Assembly' ? (IdForMultiTechnology.includes(String(technology?.value)) ? true : tempData?.IsMultiVendorCosting) : false) {
             data.Technology = technology.label
             data.CostingHead = "string"
             data.IsVendor = true
