@@ -11,5 +11,6 @@
     "HeightLabel": "Height (mm)",
     "VendorCodeLabel": "Supplier(Code)",
     "FinishedWeightLabel": "Net",
-    "FinishWeightLabel": "Net"
+    "FinishWeightLabel": "Net",
+    "SheetMetalScrapRateLabel": "Jali Scrap Rate"
 }
