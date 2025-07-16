@@ -558,7 +558,7 @@ function OperationCost(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OperationName + index} draggable={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? false : true} >{item.OperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={(CostingViewMode || ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? IsLocked : false)  || IsLockTabInCBCCostingForCustomerRFQ) ? false : true} >{item.OperationName}</span> </td>
                             <td>{item.OperationCode}</td>
                             <td>
                               {item?.Description?.length > maxCharsToShow && <TooltipCustom id={`item_description${index}`} tooltipText={item?.Description} disabledIcon={true}/>}
@@ -617,7 +617,7 @@ function OperationCost(props) {
                                         handleLabourQuantityChange(e, index)
                                       }}
                                       errors={errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index] !== undefined ? errors?.OperationGridFields?.[index].LabourQuantity : ''}
-                                      disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                      disabled={(CostingViewMode || ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? IsLocked : false)  || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     />
                                     :
                                     '-'
@@ -662,7 +662,7 @@ function OperationCost(props) {
                                 options={operationApplicabilitySelect}
                                 required={true}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
-                                disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                disabled={(CostingViewMode || ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? IsLocked : false)  || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
                                 isMulti={true}
                               />
@@ -676,7 +676,7 @@ function OperationCost(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OperationName + index} draggable={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? false : true} onClick={() => setOpenOperationForm({ isOpen: true, id: item.OperationId })} className='link'>{item.OperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={(CostingViewMode || ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? IsLocked : false)  || IsLockTabInCBCCostingForCustomerRFQ) ? false : true} onClick={() => setOpenOperationForm({ isOpen: true, id: item.OperationId })} className='link'>{item.OperationName}</span> </td>
                             <td>{item.OperationCode}</td>
                             <td>
                               {item?.Description?.length > maxCharsToShow && <TooltipCustom id={`item_description${index}`} tooltipText={item?.Description} disabledIcon={true}/>}
@@ -733,7 +733,7 @@ function OperationCost(props) {
                                 options={operationApplicabilitySelect}
                                 required={true}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
-                                disabled={(CostingViewMode /* || IsLocked  */|| IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                disabled={(CostingViewMode || ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (IsLocked) : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                 isClearable={!!item?.CostingConditionMasterAndTypeLinkingId}
                                 isMulti={true}
                               />
@@ -763,13 +763,13 @@ function OperationCost(props) {
                                     customClassName={"withBorder text-area-focus"}
                                     errors={errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index] !== undefined ? errors?.OperationGridFields?.[index].remarkPopUp : ''}
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                    disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                    disabled={(CostingViewMode || ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? IsLocked : false)  || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     hidden={false}
                                     validateWithRemarkValidation={true}
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
-                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((item?.PartType === 'Component'|| item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? IsLocked : false)  || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                       <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
