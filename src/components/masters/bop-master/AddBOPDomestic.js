@@ -1129,7 +1129,7 @@ class AddBOPDomestic extends Component {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
-    if (_.isEmpty(sourceVendor) && initialConfiguration?.IsSourceVendorRequiredForAllTypeOfBOPInMaster) {
+    if (_.isEmpty(sourceVendor) && initialConfiguration?.IsSourceVendorRequiredForAllTypeOfBOPInMaster && costingTypeId === VBCTypeId) {
       this.setState({ SourceVendorRequiredForAllTypeOfBOPInMaster: true }) 
       return false
     }
