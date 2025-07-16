@@ -9,7 +9,7 @@ import { fetchApplicabilityList, fetchCostingHeadsAPI, fetchModelTypeAPI } from 
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import { getRejectionDataByModelType, isOverheadProfitDataChange, setOverheadProfitErrors, setPlasticArray, setRejectionRecoveryData } from '../../../actions/Costing';
-import { CASTING_NORM, IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
+import { CASTING_NORM, IdForMultiTechnology, REMARKMAXLENGTH, Ferrous_Casting, DIE_CASTING } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import { number, percentageLimitValidation, isNumber, checkWhiteSpaces, NoSignNoDecimalMessage, nonZero, decimalAndNumberValidation, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from "../../../../../helper/validation";
@@ -83,9 +83,13 @@ function Rejection(props) {
     };
 
     const shouldShowCastingNorm = () => {
-        // If partType is false, always show casting norm
-        // If partType is true, show only when IsIncludeApplicabilityForChildParts is true
-        return !partType || IsIncludeApplicabilityForChildParts;
+        // Show casting norm only for ferrous casting and die casting technologies
+        const isFerrousOrDieCasting = Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(DIE_CASTING);
+        console.log("isFerrousOrDieCasting", isFerrousOrDieCasting)
+        // If partType is false, show casting norm only for ferrous/die casting
+        // If partType is true, show only when IsIncludeApplicabilityForChildParts is true AND it's ferrous/die casting
+        console.log(isFerrousOrDieCasting && (!partType || IsIncludeApplicabilityForChildParts))
+        return isFerrousOrDieCasting && (!partType || IsIncludeApplicabilityForChildParts);
     };
 
     // Common utility function to filter Casting Norm applicability
