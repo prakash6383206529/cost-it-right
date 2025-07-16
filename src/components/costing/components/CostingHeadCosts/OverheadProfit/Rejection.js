@@ -1137,7 +1137,16 @@ function Rejection(props) {
                                                         />
                                                     </div>
                                                 ) : (
-                                                    checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)
+                                                    <div className="d-flex align-items-center">
+                                                    <span>{checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</span>
+                                                    {item?.Applicability === 'CC' && <TooltipCustom
+                                                        id={`rejection-cost-tooltip-${index}`}
+                                                        tooltipText={`If the selected applicability includes 'Excluding Int. + Dep.', only costs excluding Interest and Depreciation will be added.`}
+                                                        disabledIcon={false}
+                                                        placement="top"
+                                                        width={getCastingNormFormulaTooltip()?.width}
+                                                    />}
+                                                </div>
                                                 )
                                             )}
                                         </td>
