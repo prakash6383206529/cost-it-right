@@ -242,14 +242,15 @@ function OperationCost(props) {
     let tempData = gridData[index];
 
     if (e && Array.isArray(e)) {
-      const labels = e.map(item => item.label.toLowerCase());
+      // Remove duplicates by converting to Set and back to array
+      const uniqueItems = [...new Set(e.map(item => item.label.toLowerCase()))].map(label => {
+        return e.find(item => item.label.toLowerCase() === label);
+      });
       
-      // Check for duplicates using Set
-      if (new Set(labels).size !== labels.length) {
+      if (uniqueItems.length < e.length) {
         Toaster.warning(`Duplicate applicability is not allowed`);
-        return false;
+        e = uniqueItems;
       }
-
     }
     // Handle clearing the selection
     if (!e) {
@@ -658,7 +659,10 @@ function OperationCost(props) {
                                 mandatory={true}
                                 placeholder={'Select'}
                                 customClassName="mt-2"
-                                defaultValue={item?.CostingConversionApplicabilityDetails }
+                                defaultValue={item?.CostingConversionApplicabilityDetails?.map(item => ({
+                                  label: item.CostingConditionNumber,
+                                  value: item.CostingConditionMasterAndTypeLinkingId
+                                }))}
                                 options={operationApplicabilitySelect}
                                 required={true}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index) }}
@@ -801,6 +805,7 @@ function OperationCost(props) {
         ID={''}
         anchor={'right'}
         Ids={Ids}
+        isFromOtherOperation={false}
       />}
       {openOperationForm && <ViewDetailedForms data={openOperationForm} formName="Operation" cancel={() => setOpenOperationForm({ isOpen: false, id: '' })} />}
     </ >
