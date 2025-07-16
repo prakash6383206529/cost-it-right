@@ -850,6 +850,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   //MASTER BATCH OBJECT
   obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI?.CostingPartDetails?.CostingMasterBatchRawMaterialCostResponse : []
   obj.RevisionNumber = dataFromAPI?.RevisionNumber ? dataFromAPI?.RevisionNumber : '-'
+  obj.GroupCode = dataFromAPI?.GroupCode ? dataFromAPI?.GroupCode : '-'
   obj.AssemblyCostingId = dataFromAPI?.AssemblyCostingId && dataFromAPI?.AssemblyCostingId !== null ? dataFromAPI?.AssemblyCostingId : '';
   obj.SubAssemblyCostingId = dataFromAPI?.SubAssemblyCostingId && dataFromAPI?.SubAssemblyCostingId !== null ? dataFromAPI?.SubAssemblyCostingId : '';
 
@@ -2244,3 +2245,10 @@ export const graphDropDownOptions = [
   { label: "Line Chart", value: "2" },
   { label: "Pie Chart", value: "3" },
 ]
+
+export const formatGroupCode = (groupCode) => {
+  if (_.isString(groupCode) && groupCode.includes(',')) {
+    return groupCode.split(',').map(_.trim).join(', ')
+  }
+  return groupCode
+}
