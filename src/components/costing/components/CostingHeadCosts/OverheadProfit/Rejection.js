@@ -85,10 +85,10 @@ function Rejection(props) {
     const shouldShowCastingNorm = () => {
         // Show casting norm only for ferrous casting and die casting technologies
         const isFerrousOrDieCasting = Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(DIE_CASTING);
-        console.log("isFerrousOrDieCasting", isFerrousOrDieCasting)
+        
         // If partType is false, show casting norm only for ferrous/die casting
         // If partType is true, show only when IsIncludeApplicabilityForChildParts is true AND it's ferrous/die casting
-        console.log(isFerrousOrDieCasting && (!partType || IsIncludeApplicabilityForChildParts))
+        
         return isFerrousOrDieCasting && (!partType || IsIncludeApplicabilityForChildParts);
     };
 
