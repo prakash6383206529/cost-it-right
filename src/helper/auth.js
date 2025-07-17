@@ -10,15 +10,15 @@ export function isUserLoggedIn() {
 }
 
 export function userDetails() {
-  const userDetail = JSON.parse(localStorage.getItem('userDetail'))
+  const userDetail = JSON.parse(localStorage.getItem('userDetail') || '{}')
   return userDetail
 }
 
 export function loggedInUserId() {
   const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn')
   if (isLoggedIn === true) {
-    const userDetail = JSON.parse(localStorage.getItem('userDetail'))
-    return userDetail.LoggedInUserId
+    const userDetail = JSON.parse(localStorage.getItem('userDetail') || '{}')
+    return userDetail?.LoggedInUserId
   } else {
     return null
   }
@@ -26,7 +26,7 @@ export function loggedInUserId() {
 
 export function checkVendorPlantConfigurable() {
   //const userDetail = reactLocalStorage.getObject('userDetail')
-  return getConfigurationKey().IsVendorPlantConfigurable
+  return getConfigurationKey()?.IsVendorPlantConfigurable
 }
 
 /**
@@ -36,42 +36,42 @@ export function checkVendorPlantConfigurable() {
 export const getAuthToken = () => {
   let authToken = ''
   if (isUserLoggedIn()) {
-    authToken = JSON.parse(localStorage.getItem('userDetail')).Token
+    authToken = JSON.parse(localStorage.getItem('userDetail') || '{}')?.Token
   }
   return authToken
 }
 
 export function getConfigurationKey() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
-  return configurationKey
+  return configurationKey || {}
 }
 
 export function userDepartmetList() {
   const userDetail = reactLocalStorage.getObject('departmentList')
-  return userDetail
+  return userDetail || {}
 }
 //FUNCTION TO SHOW SA AND LINE NUMBER
 export function showSaLineNumber() {
-  return getConfigurationKey().IsShowSaAndLineNumberFields
+  return getConfigurationKey()?.IsShowSaAndLineNumberFields
 }
 //FUNCTION TO HANDLE DEPARTMENT LABEL
 export function handleDepartmentHeader() {
-  return getConfigurationKey().ManageCompanyOrDepartmentLabel
+  return getConfigurationKey()?.ManageCompanyOrDepartmentLabel
 }
 //FUNCTION TO HANDLE BOP LABEL 
 export function showBopLabel() {
-  return getConfigurationKey().BOPLabel
+  return getConfigurationKey()?.BOPLabel
 }
 
 //FUNCTION TO HANDLE BOP LABEL 
 export function showBopLabelReverse(label) {
-  return getConfigurationKey().BOPLabel === label ? 'BOP' : label
+  return getConfigurationKey()?.BOPLabel === label ? 'BOP' : label
 }
 
 /* function to handle freight and shearing cost fields*/
 export function IsShowFreightAndShearingCostFields() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
-  return configurationKey.IsShowFreightAndShearingCostFields
+  return configurationKey?.IsShowFreightAndShearingCostFields
 }
 /* function to handle point of contact dropdown in rfq*/
 export function IsSendQuotationToPointOfContact() {
@@ -92,7 +92,7 @@ export function IsFetchExchangeRateVendorWiseForZBCRawMaterial() {
   return configurationKey?.IsFetchExchangeRateVendorWiseForZBCRawMaterial
 }
 export function corrugatedBoxPermission() {
-  const boxTypeStr = getConfigurationKey().PackagingCalculatorList
+  const boxTypeStr = getConfigurationKey()?.PackagingCalculatorList
   let boxTypeObject = {};
   if (boxTypeStr) {
     let boxTypes = boxTypeStr.split(',').map(item => item.trim());
@@ -115,5 +115,5 @@ export function fetchRejectionDataFromMaster() {
 }
 //FUNCTION TO SHOW DIFFERENT BOP TYPE 
 export function showDifferentBOPType() {
-  return getConfigurationKey().IsShowDifferentBOPType
+  return getConfigurationKey()?.IsShowDifferentBOPType
 }

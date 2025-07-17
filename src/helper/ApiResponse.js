@@ -48,7 +48,7 @@ export function formatLoginResult(res) {
             expires_in: res.expires_in,
             token_type: res.token_type,
             DepartmentId: res.DepartmentId,
-            Department: JSON.parse(res.Department),
+            Department: res.Department ? JSON.parse(res.Department) : null,
             DepartmentCode: res.DepartmentCode,
             LoggedInSimulationLevel: res.LoggedInSimulationLevel,
             LoggedInSimulationLevelId: res.LoggedInSimulationLevelId,
@@ -70,11 +70,11 @@ export function formatCloneOpportunityListData(cloneOpportunityListApiData, clon
     };
     cloneListValue.push(defaultObj);
 
-    if (cloneOpportunityListApiData.length > 0) {
+    if (cloneOpportunityListApiData && cloneOpportunityListApiData.length > 0) {
         cloneOpportunityListApiData.map((val, i) => {
             let obj = {}
-            obj['label'] = val.name
-            obj['value'] = val._id
+            obj['label'] = val?.name || ''
+            obj['value'] = val?._id || ''
             cloneListValue.push(obj);
             return null
         })
@@ -86,7 +86,7 @@ export function formatCloneOpportunityListData(cloneOpportunityListApiData, clon
 
 
 export function formatGetPlanResult(result) {
-    const planList = result.data.data.reduce((acc, current) => {
+    const planList = (result?.data?.data || []).reduce((acc, current) => {
         const x = acc.find(item => item.code === current.code);
         if (!x) {
             return acc.concat([current]);
@@ -163,7 +163,7 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
             Currency: "",
             EffectiveDate: "",
             Remark: "",
-            LoggedInUserId: userDetails().LoggedInUserId,
+            LoggedInUserId: userDetails()?.LoggedInUserId || null,
             IsPartialSaved: selectedRowData.length === costingArr.length ? false : true,
             SelectedCostings: isRMIndexationSimulation ? apiArray : uniqueArr,
         };
