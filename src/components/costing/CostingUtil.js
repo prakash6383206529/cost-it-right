@@ -748,6 +748,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "HangerRate": surfaceTabData?.CostingPartDetails?.HangerRate,
       "HangerCostPerPart": surfaceTabData?.CostingPartDetails?.HangerCostPerPart,
       "NumberOfPartsPerHanger": surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger,
+      "HangerRemark": surfaceTabData?.CostingPartDetails?.HangerRemark,
       "NetBOPDomesticCost": tabData?.CostingPartDetails?.NetBOPDomesticCost,
       "NetBOPImportCost": tabData?.CostingPartDetails?.NetBOPImportCost,
       "NetBOPSourceCost": tabData?.CostingPartDetails?.NetBOPSourceCost,
