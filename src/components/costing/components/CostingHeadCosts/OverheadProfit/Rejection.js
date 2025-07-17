@@ -76,7 +76,7 @@ function Rejection(props) {
             const result = checkForDecimalAndNull(RMCCTabData?.[0]?.CostingPartDetails?.NetCastingNormApplicabilityCost ?? 0, initialConfiguration?.NoOfDecimalForPrice);
             
             return {
-                tooltipText: `Gross Weight- Casting Weight × RM Rate (Per kg)`,
+                tooltipText: `(Gross Weight- Casting Weight) × RM Rate (Per kg)`,
                 width: '350px'
             };
         
