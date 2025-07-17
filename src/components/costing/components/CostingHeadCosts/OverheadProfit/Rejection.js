@@ -76,7 +76,7 @@ function Rejection(props) {
         const result = checkForDecimalAndNull(RMCCTabData?.[0]?.CostingPartDetails?.NetCastingNormApplicabilityCost ?? 0, initialConfiguration?.NoOfDecimalForPrice);
 
         return {
-            tooltipText: `Gross Weight- Casting Weight × RM Rate (Per kg)`,
+            tooltipText: `(Gross Weight- Casting Weight) × RM Rate Per Kg`,
             width: '350px'
         };
 
@@ -85,10 +85,10 @@ function Rejection(props) {
     const shouldShowCastingNorm = () => {
         // Show casting norm only for ferrous casting and die casting technologies
         const isFerrousOrDieCasting = Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(DIE_CASTING);
-        
+
         // If partType is false, show casting norm only for ferrous/die casting
         // If partType is true, show only when IsIncludeApplicabilityForChildParts is true AND it's ferrous/die casting
-        
+
         return isFerrousOrDieCasting && (!partType || IsIncludeApplicabilityForChildParts);
     };
 
@@ -387,13 +387,13 @@ function Rejection(props) {
         const BOP = IsIncludeApplicabilityForChildParts ? (checkForNull(data?.CostingPartDetails?.NetChildPartsBoughtOutPartCost) + checkForNull(headerCosts.NetBoughtOutPartCost)) : checkForNull(headerCosts.NetBoughtOutPartCost);
         const CCForMachining = IsIncludeApplicabilityForChildParts ? checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection) + checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection)
         const CC = IsIncludeApplicabilityForChildParts ?
-        checkForNull(data?.CostingPartDetails?.NetChildPartsOperationCostForRejection)
-        + checkForNull(data?.CostingPartDetails?.NetChildPartsProcessCostForRejection)
-        + checkForNull(data?.CostingPartDetails?.NetChildPartsWeldingCostForRejection)
-        - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCostForRejection)
-        + checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection) - checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection)
-        :
-        checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection) - checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection)
+            checkForNull(data?.CostingPartDetails?.NetChildPartsOperationCostForRejection)
+            + checkForNull(data?.CostingPartDetails?.NetChildPartsProcessCostForRejection)
+            + checkForNull(data?.CostingPartDetails?.NetChildPartsWeldingCostForRejection)
+            - checkForNull(data?.CostingPartDetails?.NetChildPartsCCForOtherTechnologyCostForRejection)
+            + checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection) - checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection)
+            :
+            checkForNull(headerCosts.NetProcessCostForRejection) + checkForNull(headerCosts.NetOperationCostForRejection) + checkForNull(headerCosts.NetWeldingCostForRejection) - checkForNull(headerCosts.NetCCForOtherTechnologyCostForRejection)
         const CastingNorm = checkForNull(data?.CostingPartDetails?.NetCastingNormApplicabilityCost)
         const SurfaceCost = IsIncludedSurfaceInRejection
             ? checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost)
@@ -1138,15 +1138,15 @@ function Rejection(props) {
                                                     </div>
                                                 ) : (
                                                     <div className="d-flex align-items-center">
-                                                    <span>{checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</span>
-                                                    {item?.Applicability === 'CC' && <TooltipCustom
-                                                        id={`rejection-cost-tooltip-${index}`}
-                                                        tooltipText={`If the selected applicability includes 'Excluding Int. + Dep.', only costs excluding Interest and Depreciation will be added.`}
-                                                        disabledIcon={false}
-                                                        placement="top"
-                                                        width={getCastingNormFormulaTooltip()?.width}
-                                                    />}
-                                                </div>
+                                                        <span>{checkForDecimalAndNull(item?.Cost ?? '-', initialConfiguration.NoOfDecimalForPrice)}</span>
+                                                        {item?.Applicability === 'CC' && <TooltipCustom
+                                                            id={`rejection-cost-tooltip-${index}`}
+                                                            tooltipText={`If the selected applicability includes 'Excluding Int. + Dep.', only costs excluding Interest and Depreciation will be added.`}
+                                                            disabledIcon={false}
+                                                            placement="top"
+                                                            width={getCastingNormFormulaTooltip()?.width}
+                                                        />}
+                                                    </div>
                                                 )
                                             )}
                                         </td>
