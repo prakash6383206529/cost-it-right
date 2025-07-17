@@ -464,7 +464,9 @@ function AddTool(props) {
   */
   const handleToolApplicabilityChange = (newValue) => {        
     if(newValue?.label==='Tool Rate'){
-      setValue('MaintananceCostApplicability', checkForDecimalAndNull(getValues('ToolCost'), getConfigurationKey().NoOfDecimalForPrice))
+      setTimeout(() => {
+        setValue('MaintananceCostApplicability', checkForDecimalAndNull(getValues('ToolCost'), getConfigurationKey().NoOfDecimalForPrice))
+      }, 200);
     } else {
       setValue('MaintananceCostApplicability', 0)
     }
