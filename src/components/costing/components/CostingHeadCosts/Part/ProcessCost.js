@@ -680,6 +680,8 @@ function ProcessCost(props) {
               Type: el?.Type,
               Percentage: el?.Type === COSTAPPLICABILITYBASIS ? el?.Percentage : '-',
               Applicability: el?.Type === COSTAPPLICABILITYBASIS ? el?.Applicability : '-',
+              Cavity: el?.Cavity,
+              NoOfManPower: el?.NoOfManPower
             }
           })
 
@@ -734,6 +736,8 @@ function ProcessCost(props) {
             Type: item?.Type,
             Percentage: item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-',
             Applicability: item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-',
+            Cavity: item?.Cavity,
+            NoOfManPower: item?.NoOfManPower
           }
         })
 
@@ -794,6 +798,8 @@ function ProcessCost(props) {
             Type: el?.Type,
             Percentage: el?.Type === COSTAPPLICABILITYBASIS ? el?.Percentage : '-',
             Applicability: el?.Type === COSTAPPLICABILITYBASIS ? el?.Applicability : '-',
+            Cavity: el?.Cavity,
+            NoOfManPower: el?.NoOfManPower
           }
         })
 
@@ -1533,12 +1539,13 @@ ${isDetailedText}`
   }
   const renderSingleProcess = (process, parentIndex) => {
     return (
-      process.ProcessList && process.ProcessList.map((item, index) => {
+      process.ProcessList && process.ProcessList.map((item, index) => {        
         return (
           <tr>
             <td>{'-'}</td>
-                                          <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.ProcessName}</span></td>
-            <td>{item?.Tonnage}</td>
+            <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.ProcessName}</span></td>
+            <td>{item?.MachineName}</td>
+            <td>{item?.Tonnage || '-'}</td>
             <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
             <td>{item.Type ?? '-'}</td>
             <td>{item?.Type === MHRBASIS ? item?.UOM : '-'}</td>
@@ -1587,6 +1594,8 @@ ${isDetailedText}`
             </td>
             {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>}
             {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>}
+            <td>{item?.Cavity || '-'}</td>
+            <td>{item?.NoOfManPower || '-'}</td>
             <td style={{ width: 100 }}>
               {
                 <>
