@@ -50,6 +50,7 @@ import { Steps } from './TourMessages';
 import Button from '../../layout/Button';
 import { setOpenAllTabs } from '../../masters/nfr/actions/nfr';
 import { useLabels } from '../../../helper/core';
+import { formatGroupCode } from '../../../helper';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -70,7 +71,7 @@ function IsolateReRender(control) {
 }
 
 function CostingDetails(props) {
-  const { vendorLabel, revisionNoLabel, drawingNoLabel } = useLabels()
+  const { vendorLabel, revisionNoLabel, drawingNoLabel, groupCodeLabel } = useLabels()
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -318,6 +319,7 @@ function CostingDetails(props) {
             setValue('ECNNumber', Data.ECNNumber)
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
+            setValue('GroupCode', formatGroupCode(Data?.GroupCode))
             setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice))
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
             setValue('PartFamily', Data?.PartFamily ?? "")
@@ -415,6 +417,7 @@ function CostingDetails(props) {
         ECNNumber: '',
         DrawingNumber: '',
         RevisionNumber: '',
+        GroupCode: '',
         ShareOfBusiness: '',
         EffectiveDate: '',
         PartType: '',
@@ -456,11 +459,12 @@ function CostingDetails(props) {
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
+              setValue('GroupCode', Data?.GroupCode ? formatGroupCode(Data?.GroupCode) : '')
               setValue('ShareOfBusiness', Data?.Price !== null ? checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice) : '')
               setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
-              setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName }))
+              setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName, groupCodeTitle: Data?.GroupCode }))
             }),
             )
           } else {
@@ -470,6 +474,7 @@ function CostingDetails(props) {
             setValue('ECNNumber', '')
             setValue('DrawingNumber', '')
             setValue('RevisionNumber', '')
+            setValue('GroupCode', '')
             setValue('ShareOfBusiness', '')
             setValue('PartFamily', '')
             setEffectiveDate('')
@@ -1133,6 +1138,7 @@ function CostingDetails(props) {
             Description: partInfo.Description,
             ECNNumber: partInfo.ECNNumber,
             RevisionNumber: partInfo.RevisionNumber,
+            GroupCode: partInfo.GroupCode,
             DrawingNumber: partInfo.DrawingNumber,
             Price: partInfo.Price,
             EffectiveDate: effectiveDate,
@@ -1140,9 +1146,9 @@ function CostingDetails(props) {
             CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
             CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
             InfoCategory: vbcVendorGrid[index]?.InfoCategory ?? 'Standard',
-            IsMultiVendorCosting: IdForMultiTechnology.includes(String(technology?.value)) ? true : tempData?.IsMultiVendorCosting
+            IsMultiVendorCosting: partInfo?.PartType === 'Assembly' ? ( IdForMultiTechnology.includes(String(technology?.value)) ? true : tempData?.IsMultiVendorCosting):false
           }
-          if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)||tempData?.IsMultiVendorCosting) {
+          if (partInfo?.PartType === 'Assembly' ? (IdForMultiTechnology.includes(String(technology?.value)) ? true : tempData?.IsMultiVendorCosting) : false) {
             data.Technology = technology.label
             data.CostingHead = "string"
             data.IsVendor = true
@@ -1646,6 +1652,7 @@ function CostingDetails(props) {
       ECNNumber: '',
       DrawingNumber: '',
       RevisionNumber: '',
+      GroupCode:'',
       ShareOfBusiness: '',
       PartType: '',
       PartFamily: '',
@@ -1727,6 +1734,7 @@ function CostingDetails(props) {
         setValue("ECNNumber", Data.ECNNumber)
         setValue("DrawingNumber", Data.DrawingNumber)
         setValue("RevisionNumber", Data.RevisionNumber)
+        setValue("GroupCode", Data.GroupCode)
         setValue("ShareOfBusiness", Data.Price)
         setValue("PartFamily", Data?.PartFamily || '')
         setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
@@ -2403,6 +2411,24 @@ function CostingDetails(props) {
                           className=""
                           customClassName={"withBorder"}
                           errors={errors.RevisionNumber}
+                          disabled={true}
+                          placeholder="-"
+                        />
+                      </Col>
+                      <Col className="col-md-15">
+                        <TextFieldHookForm
+                          label={groupCodeLabel}
+                          name={"GroupCode"}
+                          title={formatGroupCode(titleObj?.groupCodeTitle)}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          errors={errors.GroupCode}
                           disabled={true}
                           placeholder="-"
                         />

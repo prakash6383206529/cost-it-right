@@ -361,6 +361,7 @@ function RowMaterialMaster(props) {
                                                 DownloadAccessibility={DownloadAccessibility}
                                                 MasterId={RM_MASTER_ID}
                                                 OnboardingApprovalId={'0'}
+                                                BulkDeleteType={'Raw Material Approval'}
                                             />
                                         </TabPane>}
 

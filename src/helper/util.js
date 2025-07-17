@@ -16,10 +16,8 @@ import {
   APPLICABILITY_OVERHEAD_EXCL,
   APPLICABILITY_PROFIT,
   APPLICABILITY_PROFIT_EXCL,
-  APPLICABILITY_OVERHEAD_PROFIT,
-  APPLICABILITY_OVERHEAD_PROFIT_EXCL,
-  APPLICABILITY_OVERHEAD_EXCL_PROFIT,
-  APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL,
+  APPLICABILITY_REJECTION,
+  APPLICABILITY_REJECTION_EXCL,
   TIME,
 
 } from '../config/constants'
@@ -852,6 +850,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   //MASTER BATCH OBJECT
   obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI?.CostingPartDetails?.CostingMasterBatchRawMaterialCostResponse : []
   obj.RevisionNumber = dataFromAPI?.RevisionNumber ? dataFromAPI?.RevisionNumber : '-'
+  obj.GroupCode = dataFromAPI?.GroupCode ? dataFromAPI?.GroupCode : '-'
   obj.AssemblyCostingId = dataFromAPI?.AssemblyCostingId && dataFromAPI?.AssemblyCostingId !== null ? dataFromAPI?.AssemblyCostingId : '';
   obj.SubAssemblyCostingId = dataFromAPI?.SubAssemblyCostingId && dataFromAPI?.SubAssemblyCostingId !== null ? dataFromAPI?.SubAssemblyCostingId : '';
 
@@ -2016,9 +2015,8 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
   const isExcludingApplicability = [
     APPLICABILITY_OVERHEAD_EXCL,
     APPLICABILITY_PROFIT_EXCL,
-    APPLICABILITY_OVERHEAD_PROFIT_EXCL,
-    APPLICABILITY_OVERHEAD_EXCL_PROFIT,
-    APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
+    APPLICABILITY_REJECTION,
+    APPLICABILITY_REJECTION_EXCL
   ].includes(applicability);
   if (isExcludingApplicability) {
     if (!isDetailed || uomType !== TIME) {
@@ -2041,12 +2039,10 @@ export const calculateNetCosts = (cost = 0, applicability, prefix = 'Operation',
     case APPLICABILITY_PROFIT_EXCL:
       result[`Net${prefix}CostForProfit`] = costWithoutInterestAndDepreciation ?? 0;
       break;
-    case APPLICABILITY_OVERHEAD_PROFIT:
+    case APPLICABILITY_REJECTION:
       result[`Net${prefix}CostForOverheadAndProfit`] = cost ?? 0;
       break;
-    case APPLICABILITY_OVERHEAD_PROFIT_EXCL:
-    case APPLICABILITY_OVERHEAD_EXCL_PROFIT:
-    case APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL:
+    case APPLICABILITY_REJECTION_EXCL:
       result[`Net${prefix}CostForOverheadAndProfit`] = costWithoutInterestAndDepreciation ?? 0;
       break;
     default:
@@ -2066,7 +2062,11 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
     ccForOtherTechnologyCostForOverhead: 0,
     ccForOtherTechnologyCostForProfit: 0,
     ccForOtherTechnologyCost: 0,
-    weldingCost: 0
+    weldingCost: 0,
+    rejectionOperationCost: 0,
+    rejectionProcessCost: 0,
+    rejectionWeldingCost: 0,
+    ccForOtherTechnologyCostForRejection: 0,
   };
 
   arr.forEach(item => {
@@ -2076,7 +2076,7 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
       ProcessCostWithOutInterestAndDepreciation,
       IsDetailed,
       UOMType,
-      CostingConditionNumber: type,
+      CostingConversionApplicabilityDetails: applicabilityDetails = [],
       ForType,
       ProcessTechnologyId
     } = item;
@@ -2087,36 +2087,36 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
       IsDetailed && UOMType === TIME
         ? checkForNull(ProcessCostWithOutInterestAndDepreciation)
         : process;
+    const isOverhead = applicabilityDetails.some(detail => {
+      return detail.CostingConditionNumber === 'Overhead' || [
+        APPLICABILITY_OVERHEAD,
+        APPLICABILITY_OVERHEAD_EXCL
+      ].includes(detail.CostingConditionNumber);
+    });
 
-    const isOverhead = [
-      APPLICABILITY_OVERHEAD,
-      APPLICABILITY_OVERHEAD_PROFIT,
-      APPLICABILITY_OVERHEAD_EXCL,
-      APPLICABILITY_OVERHEAD_PROFIT_EXCL,
-      APPLICABILITY_OVERHEAD_EXCL_PROFIT,
-      APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
-    ].includes(type);
+    const isProfit = applicabilityDetails.some(detail => {
+      return detail.CostingConditionNumber === 'Profit' || [
+        APPLICABILITY_PROFIT,
+        APPLICABILITY_PROFIT_EXCL
+      ].includes(detail.CostingConditionNumber);
+    });
+const isRejection = applicabilityDetails.some(detail => {
+  return detail.CostingConditionNumber === 'Rejection' || [
+    APPLICABILITY_REJECTION,
+    APPLICABILITY_REJECTION_EXCL
+  ].includes(detail.CostingConditionNumber);
+});
+    const useExclForOverhead = applicabilityDetails.some(detail => {
+      return [APPLICABILITY_OVERHEAD_EXCL].includes(detail.CostingConditionNumber);
+    });
 
-    const isProfit = [
-      APPLICABILITY_PROFIT,
-      APPLICABILITY_OVERHEAD_PROFIT,
-      APPLICABILITY_PROFIT_EXCL,
-      APPLICABILITY_OVERHEAD_PROFIT_EXCL,
-      APPLICABILITY_OVERHEAD_EXCL_PROFIT,
-      APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
-    ].includes(type);
+    const useExclForProfit = applicabilityDetails.some(detail => {
+      return [APPLICABILITY_PROFIT_EXCL].includes(detail.CostingConditionNumber); 
+    });
+    const useExclForRejection = applicabilityDetails.some(detail => {
+      return [APPLICABILITY_REJECTION_EXCL].includes(detail.CostingConditionNumber);
+    });
 
-    const useExclForOverhead = [
-      APPLICABILITY_OVERHEAD_EXCL,
-      APPLICABILITY_OVERHEAD_EXCL_PROFIT,
-      APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
-    ].includes(type);
-
-    const useExclForProfit = [
-      APPLICABILITY_PROFIT_EXCL,
-      APPLICABILITY_OVERHEAD_PROFIT_EXCL,
-      APPLICABILITY_OVERHEAD_EXCL_PROFIT_EXCL
-    ].includes(type);
 
     if (isOverhead) {
       if ("OperationCost" in item) {
@@ -2158,11 +2158,30 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
         }
       }
     }
-    if ("OperationCost" in item) {
-      if (ForType === "Welding") {
-        totals.weldingCost += operation;
+    if (isRejection) {
+      if ("OperationCost" in item) {
+        if (ForType === "Welding") {
+          totals.rejectionWeldingCost += operation;
+        } else {
+          totals.rejectionOperationCost += operation;
+        }
+      }
+      if ("ProcessCost" in item) {
+        totals.rejectionProcessCost += useExclForRejection ? processExcl : process;
+        if (ProcessTechnologyId !== technologyId) {
+          if (typeof totals.ccForOtherTechnologyCostForRejection === 'undefined') {
+            totals.ccForOtherTechnologyCostForRejection = 0;
+          }
+          const costToAdd = useExclForRejection ? processExcl : process;
+          totals.ccForOtherTechnologyCostForRejection += Number(costToAdd);
+        }
       }
     }
+    if ("OperationCost" in item) {
+        if (ForType === "Welding") {
+          totals.weldingCost += operation;
+    }
+  }
     if ("ProcessCost" in item) {
       if (ProcessTechnologyId !== technologyId) {
         totals.ccForOtherTechnologyCost += process;
@@ -2170,6 +2189,8 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
     }
   });
   // 
+  // console.log(totals, 'totals');
+
   return totals;
 };
 
@@ -2224,3 +2245,10 @@ export const graphDropDownOptions = [
   { label: "Line Chart", value: "2" },
   { label: "Pie Chart", value: "3" },
 ]
+
+export const formatGroupCode = (groupCode) => {
+  if (_.isString(groupCode) && groupCode.includes(',')) {
+    return groupCode.split(',').map(_.trim).join(', ')
+  }
+  return groupCode
+}

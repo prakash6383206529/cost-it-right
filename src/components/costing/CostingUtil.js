@@ -97,13 +97,23 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalOperationCostPerAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead),
           "TotalOperationCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead),
           "TotalOperationCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForOverhead),
-          "TotalOperationCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead),
+          "TotalOperationCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForOverhead),
+
+          "TotalOperationCostPerAssemblyForRejection": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForRejection),
+          "TotalOperationCostSubAssemblyForRejection": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForRejection),
+          "TotalOperationCostComponentForRejection": checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForRejection),
+          "TotalOperationCostWithQuantityForRejection": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForRejection) + checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForRejection) + checkForNull(item?.CostingPartDetails?.TotalOperationCostComponentForRejection),
 
 
           "TotalWeldingCostPerAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead),
           "TotalWeldingCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssemblyForOverhead),
           "TotalWeldingCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponentForOverhead),
           "TotalWeldingCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponentForOverhead),
+
+          "TotalWeldingCostPerAssemblyForRejection": checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForRejection),
+          "TotalWeldingCostSubAssemblyForRejection": checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssemblyForRejection),
+          "TotalWeldingCostComponentForRejection": checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponentForRejection),
+          "TotalWeldingCostWithQuantityForRejection": checkForNull(item?.CostingPartDetails?.TotalWeldingCostPerAssemblyForRejection) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostSubAssemblyForRejection) + checkForNull(item?.CostingPartDetails?.TotalWeldingCostComponentForRejection),
 
           "TotalOperationCostPerAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit),
           "TotalOperationCostSubAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit),
@@ -135,12 +145,22 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalProcessCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead),
           "TotalProcessCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
           "TotalProcessCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
+          //FOR REJCTION
+          "TotalProcessCostPerAssemblyForRejection": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForRejection),
+          "TotalProcessCostSubAssemblyForRejection": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForRejection),
+          "TotalProcessCostComponentForRejection": checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForRejection),
+          "TotalProcessCostWithQuantityForRejection": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForRejection) + checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForRejection) + checkForNull(item?.CostingPartDetails?.TotalProcessCostComponentForRejection),
 
           //Process Cost for Other Technology
           "TotalCCForOtherTechnologyCostPerAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead),
           "TotalCCForOtherTechnologyCostSubAssemblyForOverhead": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForOverhead),
           "TotalCCForOtherTechnologyCostComponentForOverhead": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForOverhead),
           "TotalCCForOtherTechnologyCostWithQuantityForOverhead": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForOverhead) + checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForOverhead),
+          //FOR REJECTION 
+          "TotalCCForOtherTechnologyCostPerAssemblyForRejection": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForRejection),
+          "TotalCCForOtherTechnologyCostSubAssemblyForRejection": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForRejection),
+          "TotalCCForOtherTechnologyCostComponentForRejection": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForRejection),
+          "TotalCCForOtherTechnologyCostWithQuantityForRejection": checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForRejection) + checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForRejection) + checkForNull(item?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForRejection),
 
           "TotalProcessCostPerAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit),
           "TotalProcessCostSubAssemblyForProfit": checkForNull(item?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit),
@@ -340,11 +360,21 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalOperationCostSubAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead),
       "TotalOperationCostComponentForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForOverhead),
       "TotalOperationCostWithQuantityForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForOverhead),
+      //FOR REJCTIION
+      "TotalOperationCostPerAssemblyForRejection": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForRejection),
+      "TotalOperationCostSubAssemblyForRejection": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForRejection),
+      "TotalOperationCostComponentForRejection": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForRejection),
+      "TotalOperationCostWithQuantityForRejection": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForRejection) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForRejection) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCostComponentForRejection),
 
       "TotalWeldingCostPerAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead),
       "TotalWeldingCostSubAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostSubAssemblyForOverhead),
       "TotalWeldingCostComponentForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostComponentForOverhead),
       "TotalWeldingCostWithQuantityForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostPerAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostSubAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostComponentForOverhead),
+      //FOR REJECTION
+      "TotalWeldingCostPerAssemblyForRejection": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostPerAssemblyForRejection),
+      "TotalWeldingCostSubAssemblyForRejection": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostSubAssemblyForRejection),
+      "TotalWeldingCostComponentForRejection": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostComponentForRejection),
+      "TotalWeldingCostWithQuantityForRejection": checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostPerAssemblyForRejection) + checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostSubAssemblyForRejection) + checkForNull(tabData?.CostingPartDetails?.TotalWeldingCostComponentForRejection),
 
       "TotalOperationCostPerAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostPerAssemblyForProfit),
       "TotalOperationCostSubAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalOperationCostSubAssemblyForProfit),
@@ -380,12 +410,22 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalProcessCostSubAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead),
       "TotalProcessCostComponentForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
       "TotalProcessCostWithQuantityForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForOverhead),
+      //FOR REJECTION
+      "TotalProcessCostPerAssemblyForRejection": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForRejection),
+      "TotalProcessCostSubAssemblyForRejection": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForRejection),
+      "TotalProcessCostComponentForRejection": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForRejection),
+      "TotalProcessCostWithQuantityForRejection": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForRejection) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForRejection) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCostComponentForRejection),
 
       //OTHER PROCESS TECHNOLOGY
       "TotalCCForOtherTechnologyCostPerAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead),
       "TotalCCForOtherTechnologyCostSubAssemblyForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForOverhead),
       "TotalCCForOtherTechnologyCostComponentForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForOverhead),
       "TotalCCForOtherTechnologyCostWithQuantityForOverhead": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForOverhead) + checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForOverhead),
+      //FOR REJECTION
+      "TotalCCForOtherTechnologyCostPerAssemblyForRejection": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForRejection),
+      "TotalCCForOtherTechnologyCostSubAssemblyForRejection": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForRejection),
+      "TotalCCForOtherTechnologyCostComponentForRejection": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForRejection),
+      "TotalCCForOtherTechnologyCostWithQuantityForRejection": checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostPerAssemblyForRejection) + checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostSubAssemblyForRejection) + checkForNull(tabData?.CostingPartDetails?.TotalCCForOtherTechnologyCostComponentForRejection),
 
       "TotalProcessCostPerAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostPerAssemblyForProfit),
       "TotalProcessCostSubAssemblyForProfit": checkForNull(tabData?.CostingPartDetails?.TotalProcessCostSubAssemblyForProfit),
@@ -473,6 +513,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
     "LoggedInUserId": loggedInUserId()
 
   }
+  console.log("assemblyRequestedData", assemblyRequestedData)
   return assemblyRequestedData
 
 }
@@ -741,6 +782,10 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetCCForOtherTechnologyCost": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCost,
       "NetCCForOtherTechnologyCostForOverhead": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCostForOverhead,
       "NetCCForOtherTechnologyCostForProfit": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCostForProfit,
+      "NetOperationCostForRejection": tabData?.CostingPartDetails?.NetOperationCostForRejection,
+      "NetProcessCostForRejection": tabData?.CostingPartDetails?.NetProcessCostForRejection,
+      "NetWeldingCostForRejection": tabData?.CostingPartDetails?.NetWeldingCostForRejection,
+      "NetCCForOtherTechnologyCostForRejection": tabData?.CostingPartDetails?.NetCCForOtherTechnologyCostForRejection,
       "PaintConsumptionCost": surfaceTabData?.CostingPartDetails?.PaintConsumptionCost,
       "PaintCost": surfaceTabData?.CostingPartDetails?.PaintCost,
       "TapeCost": surfaceTabData?.CostingPartDetails?.TapeCost,
@@ -995,11 +1040,11 @@ export const isLockRMAndBOPForCostAppliacabilityProcess = (processArr) => {
 export const calculateCastingNormApplicabilityCost = (grossWeight, castingWeight, rmRate, technologyId = null, netRmRate = null) => {
   const validGrossWeight = checkForNull(grossWeight);
   const validCastingWeight = checkForNull(castingWeight);
-  
-  
+
+
   let effectiveRate = 0;
   if (Number(technologyId) === Ferrous_Casting) { // Ferrous_Casting
-    
+
     effectiveRate = checkForNull(netRmRate);
   } else {
     effectiveRate = checkForNull(rmRate);

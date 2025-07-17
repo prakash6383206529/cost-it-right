@@ -28,6 +28,7 @@ import Button from '../../layout/Button';
 import { screenWidth, useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 import { setResetCostingHead } from '../../../actions/Common';
+import BulkDelete from '../../../helper/BulkDelete';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -400,7 +401,7 @@ const ExchangeRateListing = (props) => {
     * @description Renders the component
     */
 
-    const { toggleForm, data, AddAccessibility, DownloadAccessibility, noData } = state;
+    const { toggleForm, data, AddAccessibility, DownloadAccessibility, noData, DeleteAccessibility } = state;
 
     if (toggleForm) {
         return (<AddExchangeRate hideForm={hideForm} data={data} />)
@@ -433,6 +434,7 @@ const ExchangeRateListing = (props) => {
                             <Col md="6" className=" mb-3">
                                 <div className="d-flex justify-content-end bd-highlight w100">
                                     <div>
+                                        <BulkDelete type={'Exchange Rate'} deletePermission={DeleteAccessibility} dataCount={state?.dataCount} bulkDeleteData={state?.selectedRowData}/>
                                         {(AddAccessibility && !props.isSimulation) && <Button id="exchangeRateListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />}
                                         {
                                             DownloadAccessibility &&

@@ -38,6 +38,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import RfqMasterApprovalDrawer from './RfqMasterApprovalDrawer';
 import { localizeHeadersWithLabels, useLabels, useLocalizedHeaders, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from './CostingHeadDropdownFilter';
+import BulkDelete from '../../../helper/BulkDelete';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -1028,7 +1029,7 @@ function RMDomesticListing(props) {
                                                         disabled={disableFilter}
                                                     />
                                                 }
-
+                                                <BulkDelete {...props} type={'RM'} deletePermission={DeleteAccessibility} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
                                                 {AddAccessibility && (
                                                     <Button
                                                         id="rmDomesticListing_add"

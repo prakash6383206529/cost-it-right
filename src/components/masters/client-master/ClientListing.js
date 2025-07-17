@@ -23,6 +23,7 @@ import Button from '../../layout/Button';
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
+import BulkDelete from "../../../helper/BulkDelete";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -120,6 +121,11 @@ const ClientListing = React.memo(() => {
   const buttonFormatter = (props) => {
     const { ViewAccessibility, EditAccessibility, DeleteAccessibility } = state;
     const cellValue = props?.value;
+    let isDeleteButton = false
+    const rowData = props?.data
+    if (DeleteAccessibility && !rowData.IsAssociated) {
+        isDeleteButton = true
+    }  
 
     return (
       <>
@@ -127,7 +133,7 @@ const ClientListing = React.memo(() => {
         )}
         {EditAccessibility && (<Button id={`clientListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
-        {DeleteAccessibility && (<Button id={`clientListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
+        {isDeleteButton && (<Button id={`clientListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
         )}
       </>
     );
@@ -339,6 +345,7 @@ const ClientListing = React.memo(() => {
             <Col md="10" className="filter-block"></Col>
             <Col md="2" className="search-user-block">
               <div className="d-flex justify-content-end bd-highlight">
+              <BulkDelete type={'Customer'} deletePermission={state?.DeleteAccessibility} dataCount={state?.dataCount} bulkDeleteData={state?.selectedRowData}/>
                 {state.AddAccessibility && (
 
                   <Button id="clientListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />

@@ -37,6 +37,7 @@ import { useLabels, useWithLocalization } from '../../../helper/core'
 import { getConfigurationKey } from '../../../helper'
 import Switch from 'react-switch'
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter'
+import BulkDelete from '../../../helper/BulkDelete'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -221,6 +222,8 @@ function BudgetListing(props) {
      * @description confirm delete Raw Material details
      */
     const deleteItem = (Id) => {
+        console.log(Id);
+        
         setShowPopup(true)
         setDeletedId(Id)
     }
@@ -598,7 +601,7 @@ function BudgetListing(props) {
                                         ) : (
                                             ""
                                         )}
-
+                                        <BulkDelete type={'Budgeting'} deletePermission={deleteAccessibility} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
                                         {addAccessibility && !props?.isMasterSummaryDrawer && !isImport && (
                                             <Button id="budgetListing_add" className={"user-btn mr5 Tour_List_Add "} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 

@@ -40,6 +40,7 @@ import Switch from 'react-switch'
 import OperationSTSimulation from '../../simulation/components/SimulationPages/OperationSTSimulation';
 
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
+import BulkDelete from '../../../helper/BulkDelete';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -922,7 +923,7 @@ const OperationListing = (props) => {
                                                 :
                                                 ""
                                             }
-
+                                            <BulkDelete type={'Operation'} deletePermission={permissionData?.DeleteAccessibility} dataCount={state?.dataCount} bulkDeleteData={selectedRowForPagination}/>
                                             {permissionData?.Add && !props?.isMasterSummaryDrawer &&  !state.isImport && (
                                                 <Button id="operationListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 

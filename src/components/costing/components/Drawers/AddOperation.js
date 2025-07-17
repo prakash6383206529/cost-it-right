@@ -168,8 +168,20 @@ function AddOperation(props) {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
   };
-  const isRowSelectable = rowNode => IsAllowSingleOperationMultipleTime ? true : !selectedIds.includes(rowNode?.data?.OperationId)
-  // const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
+  const isRowSelectableForOtherOperation = rowNode => {
+    if (IsAllowSingleOperationMultipleTime) {
+      return !selectedIdsOfOperation.includes(rowNode?.data?.OperationId)
+    }else{
+      return true
+    }
+  }
+  const isRowSelectableForOperation = rowNode => {
+    if (IsAllowSingleOperationMultipleTime) {
+      return !selectedIdsOfOperationAndOtherOperation.includes(rowNode?.data?.OperationId)
+    }else{
+      return true
+    }
+  }
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
@@ -244,7 +256,7 @@ function AddOperation(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        isRowSelectable={isRowSelectable}
+                        isRowSelectable={props.isFromOtherOperation ? isRowSelectableForOtherOperation : isRowSelectableForOperation}
                         onFilterModified={onFloatingFilterChanged}
                         onRowSelected={onRowSelect}
                       >

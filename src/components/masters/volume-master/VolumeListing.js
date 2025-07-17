@@ -37,6 +37,7 @@ import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { useLabels, useWithLocalization } from "../../../helper/core";
 import CostingHeadDropdownFilter from "../material-master/CostingHeadDropdownFilter";
+import BulkDelete from "../../../helper/BulkDelete";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -690,6 +691,7 @@ function VolumeListing(props) {
 
                     <Button id="volumeListing_filter" className={"user-btn mr5  Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
                     <Button id="volumeListing_addLimit" type="button" className={"user-btn mr5 Tour_List_Limit"} onClick={limitHandler} buttonName={"Add Limit"} />
+                    <BulkDelete type={'Volume'} deletePermission={deleteAccessibility} dataCount={dataCount} bulkDeleteData={selectedRowForPagination}/>
                     {addAccessibility && (<Button id="volumeListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
                     {bulkUploadAccessibility && (<Button id="volumeListing_bulkUpload" className={"user-btn mr5  Tour_List_BulkUpload"} onClick={BulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />)}
 

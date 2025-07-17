@@ -34,6 +34,7 @@ import Button from "../../layout/Button";
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from "lodash";
 import { blankFormatter, divisionApplicableFilter } from "../masterUtil";
+import BulkDelete from "../../../helper/BulkDelete";
 const ExcelFile = ReactExport?.ExcelFile;
 const ExcelSheet = ReactExport?.ExcelFile?.ExcelSheet;
 const ExcelColumn = ReactExport?.ExcelFile?.ExcelColumn;
@@ -815,6 +816,7 @@ const AssemblyPartListing = React.memo((props) => {
               >
                 <div className={"filter mr-0"}></div>
               </button>
+              <BulkDelete {...props} type={'Assembly'} deletePermission={permissions?.Delete} dataCount={state?.dataCount} bulkDeleteData={selectedRowForPagination}/>
               {permissions?.Add && (
                 <button
                   type="button"
