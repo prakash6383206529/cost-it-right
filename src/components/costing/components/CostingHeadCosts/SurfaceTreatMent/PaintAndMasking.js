@@ -17,6 +17,9 @@ import { costingInfoContext, IsNFRContext } from '../../CostingDetailStepTwo'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
 import DayTime from '../../../../common/DayTimeWrapper'
+import { handleRemarkPopup } from '../../../CostingUtil'
+
+
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
 const ConsumptionWithUOM = <span>Consumption (ml/ dm<sup>2</sup>)</span>
 const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Remark', 'Effective Date', 'Action']
@@ -505,7 +508,9 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         return (
             <>
                 <Popup className='rm-popup' trigger={<button id={`${name}${item?.RawMaterialId}${parentIndex}${childIndex}`} title="Remark" className="Comment-box" type={'button'} />}
-                    position="top right">
+                    position="top right"
+                    onOpen={() => handleRemarkPopup("open", `${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`)}
+                    onClose={() => handleRemarkPopup()}>
                     <TextAreaHookForm
                         label={false}
                         id={`${name}${item?.RawMaterialId}${parentIndex}${childIndex}`}

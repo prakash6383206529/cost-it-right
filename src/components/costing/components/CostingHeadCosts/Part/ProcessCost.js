@@ -2022,7 +2022,7 @@ ${isDetailedText}`
                                 register={register}
                                 mandatory={false}
                                 placeholder={'Select'}
-                                customClassName="mt-2"
+                                customClassName="mt-2 process-cost-select-box"
                                 defaultValue={item?.CostingConversionApplicabilityDetails?.map(item => ({
                                   label: item.CostingConditionNumber,
                                   value: item.CostingConditionMasterAndTypeLinkingId
