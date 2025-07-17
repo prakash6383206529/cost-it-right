@@ -245,6 +245,7 @@ function TabSurfaceTreatment(props) {
             newItem.CostingPartDetails.HangerCostPerPart = checkForNull(obj?.CostingPartDetails?.HangerCostPerPart)
             newItem.CostingPartDetails.HangerRate = checkForNull(obj?.CostingPartDetails?.HangerRate)
             newItem.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(obj?.CostingPartDetails?.NumberOfPartsPerHanger)
+            newItem.CostingPartDetails.HangerRemark = obj?.CostingPartDetails?.HangerRemark
             newItem.CostingPartDetails.HangerCostPerPartComponent = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartComponent)
             newItem.CostingPartDetails.HangerCostPerPartPerAssembly = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartPerAssembly)
             newItem.CostingPartDetails.HangerCostPerPartPerSubAssembly = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartPerSubAssembly)
@@ -548,6 +549,7 @@ function TabSurfaceTreatment(props) {
             newItem.CostingPartDetails.HangerCostPerPart = checkForNull(obj?.CostingPartDetails?.HangerCostPerPart)
             newItem.CostingPartDetails.HangerRate = checkForNull(obj?.CostingPartDetails?.HangerRate)
             newItem.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(obj?.CostingPartDetails?.NumberOfPartsPerHanger)
+            newItem.CostingPartDetails.HangerRemark = obj?.CostingPartDetails?.HangerRemark
             newItem.CostingPartDetails.HangerCostPerPartComponent = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartComponent)
             newItem.CostingPartDetails.HangerCostPerPartPerAssembly = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartPerAssembly)
             newItem.CostingPartDetails.HangerCostPerPartPerSubAssembly = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartPerSubAssembly)
@@ -1030,6 +1032,7 @@ function TabSurfaceTreatment(props) {
     obj.CostingPartDetails.HangerCostPerPart = checkForNull(hangerCostDetails?.HangerCostPerPart)
     obj.CostingPartDetails.HangerRate = checkForNull(hangerCostDetails?.HangerRate)
     obj.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(hangerCostDetails?.NumberOfPartsPerHanger)
+    obj.CostingPartDetails.HangerRemark = hangerCostDetails?.HangerRemark
     obj.CostingPartDetails.TotalPaintCost = checkForNull(paintAndMaskingDetails?.TotalPaintCost)
     obj.CostingPartDetails.PaintCost = checkForNull(paintAndMaskingDetails?.PaintCost)
     obj.CostingPartDetails.PaintConsumptionCost = checkForNull(paintAndMaskingDetails?.PaintConsumptionCost)
@@ -1061,6 +1064,7 @@ function TabSurfaceTreatment(props) {
     subAssemblyObj.CostingPartDetails.HangerRate = (params.PartNumber === subAssemblyObj.PartNumber) ? checkForNull(hangerCostDetails?.HangerRate) : checkForNull(subAssemblyObj?.CostingPartDetails?.HangerRate)
     subAssemblyObj.CostingPartDetails.NumberOfPartsPerHanger = (params.PartNumber === subAssemblyObj.PartNumber) ? checkForNull(hangerCostDetails?.NumberOfPartsPerHanger) : checkForNull(subAssemblyObj?.CostingPartDetails?.NumberOfPartsPerHanger)
     subAssemblyObj.CostingPartDetails.HangerCostPerPart = (params.PartNumber === subAssemblyObj.PartNumber) ? checkForNull(hangerCostDetails?.HangerCostPerPart) : checkForNull(subAssemblyObj?.CostingPartDetails?.HangerCostPerPart)
+    subAssemblyObj.CostingPartDetails.HangerRemark = (params.PartNumber === subAssemblyObj.PartNumber) ? hangerCostDetails?.HangerRemark : subAssemblyObj?.CostingPartDetails?.HangerRemark
     subAssemblyObj.CostingPartDetails.HangerCostPerPartComponent = totalhangerCostPerPart(tempArr)
     subAssemblyObj.CostingPartDetails.HangerCostPerPartPerSubAssembly = checkForNull(hangerCostSubAssembly(tempArr))
 
@@ -1134,6 +1138,7 @@ function TabSurfaceTreatment(props) {
 
         newItem.CostingPartDetails.HangerCostPerPart = checkForNull(obj?.CostingPartDetails?.HangerCostPerPart)
         newItem.CostingPartDetails.HangerRate = checkForNull(obj?.CostingPartDetails?.HangerRate)
+        newItem.CostingPartDetails.HangerRemark = obj?.CostingPartDetails?.HangerRemark
         newItem.CostingPartDetails.NumberOfPartsPerHanger = checkForNull(obj?.CostingPartDetails?.NumberOfPartsPerHanger)
         newItem.CostingPartDetails.HangerCostPerPartComponent = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartComponent)
         newItem.CostingPartDetails.HangerCostPerPartPerAssembly = checkForNull(obj?.CostingPartDetails?.HangerCostPerPartPerAssembly)
@@ -1349,6 +1354,7 @@ function TabSurfaceTreatment(props) {
           assemblyObj.CostingPartDetails.HangerRate = params.PartNumber === assemblyObj.PartNumber ? hangerCostDetails?.HangerRate : checkForNull(assemblyObj?.CostingPartDetails?.HangerRate)
           assemblyObj.CostingPartDetails.NumberOfPartsPerHanger = params.PartNumber === assemblyObj.PartNumber ? hangerCostDetails?.NumberOfPartsPerHanger : checkForNull(assemblyObj?.CostingPartDetails?.NumberOfPartsPerHanger)
           assemblyObj.CostingPartDetails.HangerCostPerPart = params.PartNumber === assemblyObj.PartNumber ? hangerCostDetails?.HangerCostPerPart : checkForNull(assemblyObj?.CostingPartDetails?.HangerCostPerPart)
+          assemblyObj.CostingPartDetails.HangerRemark = params.PartNumber === assemblyObj.PartNumber ? hangerCostDetails?.HangerRemark : assemblyObj?.CostingPartDetails?.HangerRemark
           assemblyObj.CostingPartDetails.HangerCostPerPartComponent = checkForNull(totalhangerCostPerPart(subAssemblyArray))
 
           assemblyObj.CostingPartDetails.HangerCostPerPartPerAssembly = params.PartNumber === assemblyObj.PartNumber ? hangerCostDetails?.HangerCostPerPart : checkForNull(assemblyObj?.CostingPartDetails?.HangerCostPerPartPerAssembly)
@@ -1595,6 +1601,7 @@ function TabSurfaceTreatment(props) {
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.HangerCostPerPart = hangerCostDetails?.HangerCostPerPart
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NumberOfPartsPerHanger = hangerCostDetails?.NumberOfPartsPerHanger
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.HangerRate = hangerCostDetails?.HangerRate
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.HangerRemark = hangerCostDetails?.HangerRemark
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalPaintCost = paintAndMaskingDetails?.TotalPaintCost
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.PaintCost = paintAndMaskingDetails?.PaintCost
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.PaintConsumptionCost = paintAndMaskingDetails?.PaintConsumptionCost

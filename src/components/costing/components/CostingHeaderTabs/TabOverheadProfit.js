@@ -49,7 +49,7 @@ function TabOverheadProfit(props) {
   }, [costData]);
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
-  const { ToolTabData, isBreakupBoughtOutPartCostingFromAPI, overallApplicabilityToolData, IsIncludeApplicabilityForChildParts } = useSelector(state => state.costing)
+  const { ToolTabData, isBreakupBoughtOutPartCostingFromAPI, overallApplicabilityToolData, IsIncludeApplicabilityForChildParts, IsIncludedSurfaceInOverhead, IsIncludedSurfaceInProfit, IsIncludedToolCostInOverhead, IsIncludedToolCostInProfit } = useSelector(state => state.costing)
 
   useEffect(() => {
 
@@ -77,7 +77,7 @@ function TabOverheadProfit(props) {
   // Move netCost calculation to a separate function for clarity
   const calculateNetCost = (headerValues) => {
     if (!headerValues) return 0;
-    return (checkForNull(headerValues?.OverheadCost) + checkForNull(headerValues?.ProfitCost) + checkForNull(headerValues?.RejectionCost) );
+    return (checkForNull(headerValues?.OverheadCost) + checkForNull(headerValues?.ProfitCost) + checkForNull(headerValues?.RejectionCost));
   };
 
   // Memoize the TopHeaderValues
@@ -262,27 +262,36 @@ function TabOverheadProfit(props) {
       tempArr = arr && arr.map(i => {
 
         if (i.IsAssemblyPart === true) {
-
+          
           i.CostingPartDetails.CostingOverheadDetail = overheadObj;
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.OverheadCost = OverheadCost;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) 
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost)
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
+          i.IsIncludeSurfaceTreatmentWithOverhead = IsIncludedSurfaceInOverhead;
+          i.IsIncludeToolCostWithOverhead = IsIncludedToolCostInOverhead;
+          i.IsIncludeSurfaceTreatmentWithProfit = IsIncludedSurfaceInProfit;
+          i.IsIncludeToolCostWithProfit = IsIncludedToolCostInProfit;
 
           formatData(data, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+          
           i.CostingPartDetails.CostingOverheadDetail = overheadObj;
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.OverheadCost = OverheadCost;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) 
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost)
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
+          i.IsIncludeSurfaceTreatmentWithOverhead = IsIncludedSurfaceInOverhead;
+          i.IsIncludeToolCostWithOverhead = IsIncludedToolCostInOverhead;
+          i.IsIncludeSurfaceTreatmentWithProfit = IsIncludedSurfaceInProfit;
+          i.IsIncludeToolCostWithProfit = IsIncludedToolCostInProfit;
 
         } else {
           i.IsOpen = false;
@@ -329,18 +338,14 @@ function TabOverheadProfit(props) {
 
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) 
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
-
           formatData(data, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) 
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
-
         } else {
           i.IsOpen = false;
           formatData(data, params, i.CostingChildPartDetails)
@@ -380,9 +385,10 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.RejectionCost = RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0);
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +     // IF PROBLEM IN TOTAL COST OF OVERHEAD PROFIT TAB COMMENT THIS
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
-            checkForNull(RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0)) 
-            i.CostingPartDetails.RejectionModelTypeId = modelType?.value
-            i.CostingPartDetails.RejectionModelType = modelType?.label
+            checkForNull(RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0))
+          i.CostingPartDetails.RejectionModelTypeId = modelType?.value
+          i.CostingPartDetails.RejectionModelType = modelType?.label
+          i.IsIncludeSurfaceTreatmentWithRejection = IsIncludeSurfaceTreatmentRejection;
 
           formatData(RejectionObj, params, i.CostingChildPartDetails)
 
@@ -393,7 +399,9 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.RejectionCost = RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0);
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
-            checkForNull(RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0)) 
+            checkForNull(RejectionObj?.CostingRejectionApplicabilityDetails?.reduce((total, item) => total + checkForNull(item.NetCost), 0))
+          i.IsIncludeSurfaceTreatmentWithRejection = IsIncludeSurfaceTreatmentRejection;
+
         } else {
           i.IsOpen = false;
           formatData(RejectionObj, params, i.CostingChildPartDetails)
