@@ -793,6 +793,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "HangerRate": surfaceTabData?.CostingPartDetails?.HangerRate,
       "HangerCostPerPart": surfaceTabData?.CostingPartDetails?.HangerCostPerPart,
       "NumberOfPartsPerHanger": surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger,
+      "HangerRemark": surfaceTabData?.CostingPartDetails?.HangerRemark,
       "NetBOPDomesticCost": tabData?.CostingPartDetails?.NetBOPDomesticCost,
       "NetBOPImportCost": tabData?.CostingPartDetails?.NetBOPImportCost,
       "NetBOPSourceCost": tabData?.CostingPartDetails?.NetBOPSourceCost,
@@ -1050,4 +1051,14 @@ export const calculateCastingNormApplicabilityCost = (grossWeight, castingWeight
   }
 
   return (validGrossWeight - validCastingWeight) * effectiveRate;
+}
+
+export const paintTypeOptionOthersHaveRemarks = (obj) => {
+  // Step 1: Filter all "Others" coats
+  const othersCoats = _.filter(obj.Coats, { PaintCoat: 'Others' });
+  // Step 2: Utility function to check if remark is missing or invalid
+  const isRemarkInvalid = (rm) => _.isNil(_.get(rm, 'Remark')) || _.trim(_.get(rm, 'Remark')) === ''
+  // Step 3: Extract invalid RawMaterialIds
+  const rawMaterialListHaveNoRemarks = _.flatMap(othersCoats, (coat) => _.chain(coat?.RawMaterials).filter(isRemarkInvalid).map('RawMaterial').value())
+  return _.uniq(rawMaterialListHaveNoRemarks)
 }
