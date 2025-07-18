@@ -80,7 +80,7 @@ function AddPackaging(props) {
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId || (costData?.PartType === 'Assembly' && IsMultiVendorCosting))
 
   const { RMCCTabData, OverheadProfitTabData, SurfaceTabData } = useSelector(state => state.costing)
-
+  
   const freightType = [
     { label: 'Origin THC', value: 'Origin THC' },
     { label: 'Ocean/Air Freight', value: 'Ocean/Air Freight' },
@@ -143,7 +143,7 @@ function AddPackaging(props) {
   // }, [PackageType]);
 
   const toggleDrawer = (event, formData = {}) => {
-    if (IsAllowSinglePackagingMultipleTimeInCosting ) {
+    if (IsAllowSinglePackagingMultipleTimeInCosting) {
       const exists = _.some(gridData, item =>
         _.isEqualWith(item, formData, (val1, val2, key) => {
           if (key === 'PackagingDescription') {
@@ -182,7 +182,7 @@ function AddPackaging(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
-      tempList=filterBOPApplicability(costingHead,gridData,'Applicability')
+      tempList = filterBOPApplicability(costingHead, gridData, 'Applicability')
       // Apply additional filters if needed
       if (isBreakupBoughtOutPartCostingFromAPI) {
         tempList = removeBOPfromApplicability([...tempList])
@@ -278,7 +278,7 @@ function AddPackaging(props) {
 
     const { NetRawMaterialsCost, NetBoughtOutPartCost, NetBOPDomesticCost, NetBOPImportCost, NetBOPOutsourcedCost, NetBOPSourceCost, NetBOPDomesticCostWithOutHandlingCharge, NetBOPImportCostWithOutHandlingCharge, NetBOPOutsourcedCostWithOutHandlingCharge, NetBOPSourceCostWithOutHandlingCharge, NetBoughtOutPartCostWithOutHandlingCharge } = headCostData;
     let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData?.length > 0 && OverheadProfitTabData?.[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData?.[0]?.CostingPartDetails : null;
-    const { HangerCostPerPart, PaintCost, SurfaceTreatmentCost } = SurfaceTabData[0]?.CostingPartDetails
+    const { HangerCostPerPart, PaintCost, SurfaceTreatmentCost, NetSurfaceTreatmentCost, HangerCostPerPartWithQuantity, PaintCostWithQuantity } = SurfaceTabData[0]?.CostingPartDetails
     const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.NetProcessCost + headCostData.NetOperationCost
     const PackagingCostPercentage = getValues('PackagingCostPercentage');
 
@@ -420,7 +420,9 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = checkForNull(HangerCostPerPart) * calculatePercentage(PackagingCostPercentage)
+          const isPartType = partType || ["Part", "Component", "BoughtOutPart"].includes(SurfaceTabData[0]?.PartType);
+          const hangerCost = isPartType ? HangerCostPerPart : HangerCostPerPartWithQuantity;
+          totalPackagingCost = checkForNull(hangerCost) * calculatePercentage(PackagingCostPercentage);
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
@@ -429,7 +431,9 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = checkForNull(PaintCost) * calculatePercentage(PackagingCostPercentage)
+          const isPart = partType || ["Part", "Component", "BoughtOutPart"].includes(SurfaceTabData[0]?.PartType);
+          const paintCost = isPart ? PaintCost : PaintCostWithQuantity;
+          totalPackagingCost = checkForNull(paintCost) * calculatePercentage(PackagingCostPercentage);
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
@@ -438,7 +442,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          totalPackagingCost = checkForNull(SurfaceTreatmentCost) * calculatePercentage(PackagingCostPercentage)
+          totalPackagingCost = checkForNull(NetSurfaceTreatmentCost) * calculatePercentage(PackagingCostPercentage)
           setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
@@ -537,6 +541,27 @@ function AddPackaging(props) {
     setErrorMessage(message)
   }
   const onSubmit = data => {
+    // Check for conflicting selections before saving
+    if (applicability?.label) {
+      const existingApplicabilities = _.map(gridData, 'Applicability');
+
+      // If user is trying to save Surface Treatment Cost
+      if (applicability.label === 'Surface Treatment Cost') {
+        if (existingApplicabilities.includes('Hanger Cost') || existingApplicabilities.includes('Paint Cost')) {
+          Toaster.warning("Surface Treatment Cost cannot be added because Hanger Cost or Paint Cost is already added. Surface Treatment includes both.");
+          return;
+        }
+      }
+
+      // If user is trying to save Hanger Cost or Paint Cost
+      if (applicability.label === 'Hanger Cost' || applicability.label === 'Paint Cost') {
+        if (existingApplicabilities.includes('Surface Treatment Cost')) {
+          Toaster.warning(`${applicability.label} cannot be added because Surface Treatment Cost is already added. It includes both Hanger and Paint Cost.`);
+          return;
+        }
+      }
+    }
+
     let formData
     if (costingData.TechnologyId === LOGISTICS) {
       formData = {

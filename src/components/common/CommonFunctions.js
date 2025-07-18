@@ -653,15 +653,25 @@ export const filterBOPApplicability = (
     const filtered = costingHead.filter(item => {
         const itemText = item.Text;
         const isFixed = itemText?.toLowerCase() === "fixed";
-        const isAlreadyUsed = applicabilityDetails?.some(
+
+        // For OtherCostApplicability, allow multiple entries with same applicability
+        const isAlreadyUsed = applicabilityKey === 'OtherCostApplicability' ? false : applicabilityDetails?.some(
             ap => (applicabilityKey ? ap[applicabilityKey] : ap.Applicability) === itemText
         );
-
+        
+        
         if (allExclusions.has(itemText)) return false;
         if (Number(item.Value) === 0) return false;
-        if (includeOnlyFixed && !isFixed) return false;
-        if (excludeFixed && isFixed) return false;
-        return !isAlreadyUsed;
+
+        // For OtherCostApplicability, allow both Fixed and Percentage
+        if (applicabilityKey !== 'OtherCostApplicability') {
+            if (includeOnlyFixed && !isFixed) return false;
+            if (excludeFixed && isFixed) return false;
+        }
+
+        if (isAlreadyUsed) return false;
+
+        return true;
     });
 
     return filtered.map(item => ({
