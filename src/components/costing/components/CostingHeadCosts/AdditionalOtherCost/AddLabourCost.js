@@ -121,7 +121,7 @@ function AddLabourCost(props) {
             staffCost = (value / 100) * (sum)
         }
         
-        setStaffCostState(Math.round(staffCost))
+        setStaffCostState(staffCost)
         setValue('staffCost', checkForDecimalAndNull(staffCost, initialConfiguration?.NoOfDecimalForPrice))
 
         let temp = []
