@@ -9,6 +9,7 @@ import {
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getVendorNameByVendorSelectList, getCityByCountryAction, getExchangeRateSource, getCurrencySelectList, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
+import { getSupplierByIdAPI } from '../actions/Supplier';
 import { MESSAGES } from '../../../config/message';
 import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId } from "../../../helper/auth";
@@ -109,10 +110,10 @@ class AddFuel extends Component {
     if (!this.state.isViewMode) {
       this.props.getExchangeRateSource((res) => { })
       this.props.getCurrencySelectList(() => { })
-      this.props.fetchCountryDataAPI(() => { })
-      this.props.fetchStateDataAPI(0, () => { })
-      this.props.fetchCityDataAPI(0, () => { })
       this.props.getAllFuelAPI(() => { })
+      // this.props.fetchCountryDataAPI(() => { })
+      // this.props.fetchStateDataAPI(0, () => { })
+      // this.props.fetchCityDataAPI(0, () => { })
     }
     this.getDetails(data);
     if (!(data.isEditFlag || data.isViewMode)) {
@@ -823,6 +824,13 @@ class AddFuel extends Component {
         let Data = res?.data?.Data
         this.props.change('plantCurrency', Data?.Currency)
         this.setState({ plantCurrencyID: Data?.CurrencyId })
+        if (this.state.costingTypeId === ZBCTypeId || this.state.costingTypeId === CBCTypeId) {
+          this.setState({
+            country: { label: Data?.CountryName, value: Data?.CountryId},
+            StateName: { label: Data?.StateName, value: Data?.StateId},
+            city: { label: Data?.CityName, value: Data?.CityIdRef}
+          })
+        }
         if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
           this.setState({ hidePlantCurrency: false })
           this.callExchangeRateAPI()
@@ -843,6 +851,18 @@ class AddFuel extends Component {
   };
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      this.props.getSupplierByIdAPI(newValue?.value, true, (res) => {
+        if (res && res.data && res.data.Data) {
+            let Data = res.data.Data
+            if (this.state.costingTypeId === VBCTypeId) {
+            this.setState({
+              country: { label: Data?.Country, value: Data?.CountryId},
+              StateName: { label: Data?.State, value: Data?.StateId},
+              city: { label: Data?.City, value: Data?.CityId}
+            })
+          }    
+        }
+      })
       this.setState(
         { vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] },
         () => {
@@ -1319,7 +1339,7 @@ class AddFuel extends Component {
                                 required={true}
                                 handleChangeDescription={this.countryHandler}
                                 valueDescription={this.state.country}
-                                disabled={isViewMode}
+                                disabled={true}
                               />
                               {this.state.errorObj.CountryId && this.state.country.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
@@ -1338,7 +1358,7 @@ class AddFuel extends Component {
                                   required={true}
                                   handleChangeDescription={this.stateHandler}
                                   valueDescription={this.state.StateName}
-                                  disabled={isViewMode}
+                                  disabled={true}
                                 />
                                 {this.state.errorObj.StateId && this.state.StateName.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
@@ -1356,7 +1376,7 @@ class AddFuel extends Component {
                                 required={true}
                                 handleChangeDescription={this.cityHandler}
                                 valueDescription={this.state.city}
-                                disabled={isViewMode}
+                                disabled={true}
                               />
                               {this.state.errorObj.CityId && this.state.city.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
@@ -1642,7 +1662,8 @@ export default connect(mapStateToProps, {
   getExchangeRateByCurrency,
   getPlantUnitAPI,
   getExchangeRateSource,
-  getCurrencySelectList
+  getCurrencySelectList,
+  getSupplierByIdAPI
 })(reduxForm({
   form: 'AddFuel',
   validate: validateForm,
