@@ -930,7 +930,7 @@ function BOPCost(props) {
                           className={" mt-3 mb-2 "}
                           variant={CostingViewMode ? "view-icon-primary" : "plus-icon-square"}
                           title={CostingViewMode ? "View" : "Add"}
-                          disabled={false}
+                          disabled={(CostingViewMode || IsLocked || IsLockTabInCBCCostingForCustomerRFQ)?true:false}
                         />
                       </div>
                     </Col>

@@ -378,7 +378,7 @@ function AddFreight(props) {
   const calculateCost = (Text) => {
     const { NetRawMaterialsCost, NetBoughtOutPartCost, NetBOPDomesticCost, NetBOPImportCost, NetBOPOutsourcedCost, NetBOPSourceCost, NetBOPDomesticCostWithOutHandlingCharge, NetBOPImportCostWithOutHandlingCharge, NetBOPOutsourcedCostWithOutHandlingCharge, NetBOPSourceCostWithOutHandlingCharge, NetBoughtOutPartCostWithOutHandlingCharge } = headCostData;
     let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData?.length > 0 && OverheadProfitTabData?.[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData?.[0]?.CostingPartDetails : null;
-    const { HangerCostPerPart, PaintCost, SurfaceTreatmentCost } = SurfaceTabData[0]?.CostingPartDetails
+    const { HangerCostPerPart, PaintCost, SurfaceTreatmentCost,NetSurfaceTreatmentCost,HangerCostPerPartWithQuantity,PaintCostWithQuantity } = SurfaceTabData[0]?.CostingPartDetails
 
     const RateAsPercentage = getValues('Rate');
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
@@ -446,17 +446,19 @@ function AddFreight(props) {
         break;
 
       case "Hanger Cost":
-        totalFreightCost = checkForNull(HangerCostPerPart) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
-        setFreightCost(totalFreightCost)
+        const isPartType = partType || ["Part", "Component", "BoughtOutPart"].includes(SurfaceTabData[0]?.PartType);
+        totalFreightCost = checkForNull(isPartType ? HangerCostPerPart : HangerCostPerPartWithQuantity) * calculatePercentage(RateAsPercentage);
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '');
+        setFreightCost(totalFreightCost);
         break;
       case "Paint Cost":
-        totalFreightCost = checkForNull(PaintCost) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
-        setFreightCost(totalFreightCost)
+        const isPart = partType || ["Part", "Component", "BoughtOutPart"].includes(SurfaceTabData[0]?.PartType);
+        totalFreightCost = checkForNull(isPart ? PaintCost : PaintCostWithQuantity) * calculatePercentage(RateAsPercentage);
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '');
+        setFreightCost(totalFreightCost);
         break;
       case "Surface Treatment Cost":
-        totalFreightCost = checkForNull(SurfaceTreatmentCost) * calculatePercentage(RateAsPercentage)
+        totalFreightCost = checkForNull(NetSurfaceTreatmentCost) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
@@ -609,6 +611,27 @@ function AddFreight(props) {
   }
 
   const onSubmit = data => {
+    // Check for conflicting selections before saving
+    if (applicability?.label) {
+      const existingApplicabilities = _.map(gridData, 'Criteria');
+      
+      // If user is trying to save Surface Treatment Cost
+      if (applicability.label === 'Surface Treatment Cost') {
+        if (existingApplicabilities.includes('Hanger Cost') || existingApplicabilities.includes('Paint Cost')) {
+          Toaster.warning("Surface Treatment Cost cannot be added because Hanger Cost or Paint Cost is already added. Surface Treatment includes both.");
+          return;
+        }
+      }
+      
+      // If user is trying to save Hanger Cost or Paint Cost
+      if (applicability.label === 'Hanger Cost' || applicability.label === 'Paint Cost') {
+        if (existingApplicabilities.includes('Surface Treatment Cost')) {
+          Toaster.warning(`${applicability.label} cannot be added because Surface Treatment Cost is already added. It includes both Hanger and Paint Cost.`);
+          return;
+        }
+      }
+    }
+
     let freightTypeText = '';
 
     if (freightType === Fixed) freightTypeText = 'Fixed';
