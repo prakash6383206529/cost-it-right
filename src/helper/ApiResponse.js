@@ -48,7 +48,7 @@ export function formatLoginResult(res) {
             expires_in: res.expires_in,
             token_type: res.token_type,
             DepartmentId: res.DepartmentId,
-            Department: res.Department ? JSON.parse(res.Department) : null,
+            Department: JSON.parse(res?.Department ?? null),
             DepartmentCode: res.DepartmentCode,
             LoggedInSimulationLevel: res.LoggedInSimulationLevel,
             LoggedInSimulationLevelId: res.LoggedInSimulationLevelId,
@@ -73,8 +73,8 @@ export function formatCloneOpportunityListData(cloneOpportunityListApiData, clon
     if (cloneOpportunityListApiData && cloneOpportunityListApiData.length > 0) {
         cloneOpportunityListApiData.map((val, i) => {
             let obj = {}
-            obj['label'] = val?.name || ''
-            obj['value'] = val?._id || ''
+            obj['label'] = val?.name ?? ''
+            obj['value'] = val?._id ?? ''
             cloneListValue.push(obj);
             return null
         })
@@ -163,7 +163,7 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
             Currency: "",
             EffectiveDate: "",
             Remark: "",
-            LoggedInUserId: userDetails()?.LoggedInUserId || null,
+            LoggedInUserId: userDetails()?.LoggedInUserId ?? null,
             IsPartialSaved: selectedRowData.length === costingArr.length ? false : true,
             SelectedCostings: isRMIndexationSimulation ? apiArray : uniqueArr,
         };

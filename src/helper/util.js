@@ -156,7 +156,7 @@ const handleHTTPStatus = (response) => {
  * @param res
  */
 export function capitalizeFirstLetter(string) {
-  return string ? string.charAt(0).toUpperCase() + string.slice(1) : ''
+  return (string ?? '').charAt(0).toUpperCase() + (string ?? '').slice(1)
 }
 
 /**
@@ -304,7 +304,7 @@ export const displayValue = (value) => {
  **/
 export const convertObjectToArray = (valueArray) => {
   let tempArray = []
-  ;(valueArray || []).map((val) => {
+  valueArray && valueArray.map((val) => {
     tempArray.push(val.text)
     return tempArray
   })
@@ -327,7 +327,7 @@ export const stringToArray = (str) => {
   if (typeof str != undefined && typeof str == 'string') {
     const convertedStr = str.split(',')
     try {
-      convertedArray = JSON.parse(convertedStr)
+      convertedArray = JSON.parse(convertedStr || '[]')
     } catch (e) {
       convertedArray = []
     }
@@ -382,7 +382,7 @@ export function checkNumberOfDayDiff(date1, date2) {
  */
 export function renderOptionList(categoriesMaster) {
   let categoryArray = []
-  ;(categoriesMaster || []).map((val) => {
+  categoriesMaster && categoriesMaster.map((val) => {
     let obj = {}
     obj.label = val
     obj.value = val

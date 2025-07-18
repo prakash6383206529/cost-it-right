@@ -269,25 +269,30 @@ export const getNameBetweenBraces = (name) => {
 }
 
 export const getSupplierCode = (name) => {
-    if (name !== '') {
-        const firstIndex = (name || '').indexOf('-(');
-        const lastIndex = (name || '').lastIndexOf(')');
-        const supplierCode = (name || '').substring(firstIndex + 2, lastIndex);
-        return supplierCode;
-    } else {
-        return '';
+    if (typeof name === 'string' && name.includes('-(') && name.includes(')')) {
+        const firstIndex = name.indexOf('-(');
+        const lastIndex = name.lastIndexOf(')');
+        
+        // Make sure indexes are in valid order
+        if (firstIndex !== -1 && lastIndex !== -1 && lastIndex > firstIndex + 2) {
+            const supplierCode = name.substring(firstIndex + 2, lastIndex);
+            return supplierCode;
+        }
     }
+    return ''; // or null, based on what you expect when format is invalid
 }
 
 export const getCodeBySplitting = (name) => {
-    if (name && name !== '') {
-        const lastIndex = name.lastIndexOf('(');
-        const lastClosingIndex = name.lastIndexOf(')');
+    if (!name) {
+        return '';
+    }
+    
+    const lastIndex = name.lastIndexOf('(');
+    const lastClosingIndex = name.lastIndexOf(')');
 
-        if (lastIndex !== -1 && lastClosingIndex !== -1 && lastClosingIndex > lastIndex) {
-            const supplierCode = name.substring(lastIndex + 1, lastClosingIndex).trim();
-            return supplierCode;
-        }
+    if (lastIndex !== -1 && lastClosingIndex !== -1 && lastClosingIndex > lastIndex) {
+        const supplierCode = name.substring(lastIndex + 1, lastClosingIndex).trim();
+        return supplierCode;
     }
     return '';
 }
@@ -327,6 +332,7 @@ export const trimTwoDecimalPlace = (floatValue) => {
 
 export const trimFourDecimalPlace = (floatValue) => {
     var decimalTextLength = 0;
+    if (floatValue == null || isNaN(floatValue)) return floatValue;
     if (undefined !== floatValue) {
         if (undefined !== (floatValue || '').toString().split('.')[1]) {
             decimalTextLength = ((floatValue || '').toString().split('.')[1]).length;
