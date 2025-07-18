@@ -145,14 +145,14 @@ function OtherCostDrawer(props) {
             let isDuplicate = false
             gridData && gridData.map((item, index) => {
                 if (index !== editIndex) {
-                    if (String(item.OtherCostDescription) === String(OtherCostDescription) && String(item.OtherCostApplicability) === String(OtherCostApplicability)) {
+                    if (String(item?.OtherCostDescription) === String(OtherCostDescription) && String(item?.OtherCostApplicability) === String(OtherCostApplicability)) {
                         isDuplicate = true
                     }
                 }
             })
 
             if (isDuplicate) {
-                Toaster.warning("Duplicate entries are not allowed")
+                Toaster.warning("Duplicate data with same description and applicability are not allowed")
                 return false
             }
             updateRow()
@@ -188,13 +188,13 @@ function OtherCostDrawer(props) {
             let isDuplicate = false
 
             gridData && gridData.map((item) => {
-                if (String(item.OtherCostDescription) === String(OtherCostDescription) && String(item.OtherCostApplicability) === String(OtherCostApplicability)) {
+                if (String(item?.OtherCostDescription) === String(OtherCostDescription) && String(item?.OtherCostApplicability) === String(OtherCostApplicability)) {
                     isDuplicate = true
                 }
             })
 
             if (isDuplicate && !isEdit) {
-                Toaster.warning("Duplicate entries are not allowed")
+                Toaster.warning("Duplicate data with same description and applicability are not allowed")
                 return true
 
             } else {
