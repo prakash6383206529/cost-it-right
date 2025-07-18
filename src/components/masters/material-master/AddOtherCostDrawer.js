@@ -300,6 +300,7 @@ function AddOtherCostDrawer(props) {
             // You may choose to reset values or handle differently
             setValue('ApplicabilityCostCurrency', 0);
             setValue('ApplicabilityBaseCost', 0);
+            setValue('ApplicabilityPlantCost', 0);
             setExactCostValues({
                 ApplicabilityCostCurrency: 0,
                 ApplicabilityBaseCost: 0
@@ -315,6 +316,10 @@ function AddOtherCostDrawer(props) {
             // console.log("here1",totalBaseCost)
             // console.log(checkForDecimalAndNull(totalBaseCost, 3),"here2")
             setValue('ApplicabilityBaseCost', checkForDecimalAndNull(totalBaseCost, initialConfiguration?.NoOfDecimalForPrice));
+            const convertedPlantCost = checkForNull(total) * checkForNull(CurrencyExchangeRate?.plantCurrencyRate ?? 1);
+            if(convertedPlantCost){
+                setValue('ApplicabilityPlantCost', checkForDecimalAndNull(convertedPlantCost, initialConfiguration?.NoOfDecimalForPrice));
+            }
         }
 
         setState(prevState => ({ ...prevState, Applicability: e?.label }));
