@@ -126,7 +126,12 @@ function Plastic(props) {
         setValue('grossWeight', localizedInputWeightValue)
         setValue('scrapRecoveryPercent', WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? WeightCalculatorRequest?.RecoveryPercentage : '')
     }, [])
-
+    useEffect(() => {
+        if(excludeRunnerWeight){
+            setValue('scrapRecoveryPercent', 0)
+            setValue('scrapWeight', 0)
+        }
+    }, [excludeRunnerWeight])
     useEffect(() => {
         if(!IsShowFinishedWeightInPlasticTechCostingCalculator){
             if (Number(getValues('grossWeight')) < Number(localizedInputWeightValue)) {
@@ -150,10 +155,15 @@ function Plastic(props) {
 
         const netWeight = Number(getValues('netWeight'))
         const runnerWeight = Number(getValues('runnerWeight'))
+        let grossWeight = 0
 
-        const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest?.LossOfTypeDetails ? WeightCalculatorRequest?.LossOfTypeDetails : [], true))
-        setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-
+        if(!excludeRunnerWeight){
+            grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest?.LossOfTypeDetails ? WeightCalculatorRequest?.LossOfTypeDetails : [], true))
+            setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        }else{
+            grossWeight = checkForNull(netWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest?.LossOfTypeDetails ? WeightCalculatorRequest?.LossOfTypeDetails : [], true))
+            setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        }
         let updatedValue = dataToSend
         updatedValue.grossWeight = grossWeight
         setDataToSend(updatedValue)
@@ -171,14 +181,19 @@ function Plastic(props) {
         const scrapReusePercent = Number((getValues('scrapReusePercent')))
         let reUseInputWeight = 0
         let inputWeightWithReuse = 0
+        let grossWeight = 0 
 
         const finishedWeight = !IsShowFinishedWeightInPlasticTechCostingCalculator ? checkForNull(getValues('netWeight')) : checkForNull(getValues('finishedWeight'))
-        const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest?.LossOfTypeDetails ? WeightCalculatorRequest?.LossOfTypeDetails : [], true)) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
+        if(!excludeRunnerWeight){
+            grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest?.LossOfTypeDetails ? WeightCalculatorRequest?.LossOfTypeDetails : [], true)) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
+        }else{
+            grossWeight = checkForNull(netWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest?.LossOfTypeDetails ? WeightCalculatorRequest?.LossOfTypeDetails : [], true)) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
+        }
         if (finishedWeight !== 0) {
             if (isScrapReuse) {
-                scrapWeight = (runnerWeight - ((checkForNull(netWeight) + checkForNull(runnerWeight) + checkForNull(dataToSend.burningValue)) * scrapReusePercent / 100)) * scrapRecoveryPercent / 100
+                scrapWeight = (runnerWeight - ((checkForNull(netWeight) + checkForNull(runnerWeight)) * scrapReusePercent / 100)) * scrapRecoveryPercent / 100
             } else {
-                scrapWeight = calculateScrapWeight(grossWeight, finishedWeight, scrapRecoveryPercent)
+                scrapWeight = checkForNull(grossWeight - finishedWeight - dataToSend.burningValue) * checkForNull(scrapRecoveryPercent / 100)
             }
             setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }
@@ -188,15 +203,12 @@ function Plastic(props) {
             setValue('reUseInputWeight', checkForDecimalAndNull(reUseInputWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             setValue('inputWeightWithReuse', checkForDecimalAndNull(inputWeightWithReuse, getConfigurationKey().NoOfDecimalForInputOutput))
         }
-        if (excludeRunnerWeight) {
-            rmCost = ((checkForNull(grossWeight) - checkForNull(runnerWeight)) * checkForNull(totalRM)) + (isShowBurningAllowance ? getValues('burningAllownace') : 0) // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
-        } else {
             if (isScrapReuse) {
                 rmCost = (checkForNull(inputWeightWithReuse) * checkForNull(totalRM)) + (isShowBurningAllowance ? getValues('burningAllownace') : 0)
             } else {
                 rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + (isShowBurningAllowance ? getValues('burningAllownace') : 0)
             }
-        }
+        
         const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
         const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
@@ -210,7 +222,6 @@ function Plastic(props) {
         updatedValue.reUseInputWeight = reUseInputWeight
         updatedValue.inputWeightWithReuse = inputWeightWithReuse
         setDataToSend(updatedValue)
-
         setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput)) // SETING FINAL GROSS WEIGHT VALUE
         setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue('rmCost', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -317,6 +328,7 @@ function Plastic(props) {
                             </Row>
 
                             <Row className={''}>
+                           
                                 <Col md="3" >
                                     <NumberFieldHookForm
                                         label={`${LocalizedGrossWeight} (Kg)`}
@@ -378,8 +390,30 @@ function Plastic(props) {
                             />
 
                             <Row className={'mt25'}>
+                            {String(activeTab) === '1' && <Col md="3">
+                                    <div className="mt-3">
+                                        <span className="d-inline-block mt15">
+                                            <label
+                                                className={`custom-checkbox mb-0`}
+                                                onChange={onPressExcludeRunnerWeight}
+                                            >
+                                                Exclude Runner Weight from Gross Weight
+                                                <input
+                                                    type="checkbox"
+                                                    checked={excludeRunnerWeight}
+                                                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                                />
+                                                <span
+                                                    className=" before-box"
+                                                    checked={excludeRunnerWeight}
+                                                    onChange={onPressExcludeRunnerWeight}
+                                                />
+                                            </label>
+                                        </span>
+                                    </div>
+                                </Col>}
                                 <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={`${LocalizedInputWeight} = (${LocalizedGrossWeight} + Runner Weight +${isShowBurningAllowance ? " Other" : " Net"} Loss Weight)`} />
+                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={`${LocalizedInputWeight} = (${LocalizedGrossWeight} ${!excludeRunnerWeight ? ' + Runner Weight' : ''} +${isShowBurningAllowance ? " Other" : " Net"} Loss Weight)`} />
                                     <TextFieldHookForm
                                         label={`${LocalizedInputWeight} (Kg)`}
                                         name={'grossWeight'}
@@ -525,11 +559,11 @@ function Plastic(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.scrapRecoveryPercent}
-                                        disabled={props.CostingViewMode ? true : false}
+                                        disabled={props.CostingViewMode || excludeRunnerWeight ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={`${isScrapReuse ? `Scrap Weight = (Runner Weight - ((${LocalizedInputWeight} + Runner Weight + Burning Allowance) * Scrap Re-use (%)/100))* Scrap Recovery (%)/100` : `Scrap Weight = (${LocalizedInputWeight} - ${!IsShowFinishedWeightInPlasticTechCostingCalculator?  LocalizedGrossWeight : `${finishWeightLabel} Weight`}) * Scrap Recovery (%)/100`}`} />
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={`${isScrapReuse ? `Scrap Weight = (Runner Weight - ((${LocalizedInputWeight} + Runner Weight ) * Scrap Re-use (%)/100))* Scrap Recovery (%)/100` : `Scrap Weight = (${LocalizedInputWeight} - ${LocalizedGrossWeight} - ${isShowBurningAllowance ? 'Burning Allowance' : 'Burning Loss'}) * Scrap Recovery (%)/100`}`} />
                                     <TextFieldHookForm
                                         label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}
@@ -573,30 +607,9 @@ function Plastic(props) {
                                         />
                                     </Col>
                                 }
-                                {String(activeTab) === '1' && <Col md="3">
-                                    <div className="mt-3">
-                                        <span className="d-inline-block mt15">
-                                            <label
-                                                className={`custom-checkbox mb-0`}
-                                                onChange={onPressExcludeRunnerWeight}
-                                            >
-                                                Exclude Runner Weight
-                                                <input
-                                                    type="checkbox"
-                                                    checked={excludeRunnerWeight}
-                                                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                                                />
-                                                <span
-                                                    className=" before-box"
-                                                    checked={excludeRunnerWeight}
-                                                    onChange={onPressExcludeRunnerWeight}
-                                                />
-                                            </label>
-                                        </span>
-                                    </div>
-                                </Col>}
+                               
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={`RM Cost = (${isScrapReuse ? `I${LocalizedInputWeight} (with Re-use)` : LocalizedInputWeight} ${excludeRunnerWeight ? '- Runner Weight' : ''} * RM Rate) ${isShowBurningAllowance ? " + Burning Allowance" : ""}`} />
+                                    <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={`RM Cost = (${isScrapReuse ? `I${LocalizedInputWeight} (with Re-use)` : LocalizedInputWeight} * RM Rate) ${isShowBurningAllowance ? " + Burning Allowance" : " + Burning Loss"}`} />
                                     <TextFieldHookForm
                                         label={`RM Cost`}
                                         name={'rmCost'}
