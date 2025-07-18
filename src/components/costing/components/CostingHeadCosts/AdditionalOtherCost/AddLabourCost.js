@@ -112,24 +112,25 @@ function AddLabourCost(props) {
     }
 
     const handleStaffCostPercent = (e) => {
-
+        
         let sum = tableData.reduce((acc, obj) => Number(acc) + Number(obj.LabourCost), 0);
         sum = sum + indirectLabourCostState
-
-        if (sum && e?.target?.value) {
-            let value = Number(e?.target?.value)
-            let staffCost = (value / 100) * (sum)
-            setStaffCostState(Math.round(staffCost))
-            setValue('staffCost', checkForDecimalAndNull(staffCost, initialConfiguration?.NoOfDecimalForPrice))
-
-            let temp = []
-            tableData && tableData.map((item, index) => {
-                item.staffCostPercent = value
-                item.staffCost = (staffCost)
-                temp.push(item)
-            })
-            setTableData(temp)
+        let value = Number(e?.target?.value) || 0
+        let staffCost = 0
+        if (sum && value > 0) {
+            staffCost = (value / 100) * (sum)
         }
+        
+        setStaffCostState(Math.round(staffCost))
+        setValue('staffCost', checkForDecimalAndNull(staffCost, initialConfiguration?.NoOfDecimalForPrice))
+
+        let temp = []
+        tableData && tableData.map((item, index) => {
+            item.staffCostPercent = value
+            item.staffCost = staffCost
+            temp.push(item)
+        })
+        setTableData(temp)
     }
 
     const fieldValues = useWatch({
@@ -145,10 +146,10 @@ function AddLabourCost(props) {
     const getRemainingTotalBasedOnValue = (efficiency, cycleTime, workingHours) => {
         const hasValidEfficiency = isValidNumber(efficiency)
         const hasValidCycleTime = isValidNumber(cycleTime)
-        if (hasValidEfficiency && hasValidCycleTime) {           
+        if (hasValidEfficiency && hasValidCycleTime) {
             return workingHours * (efficiency / 100 / cycleTime)
         } else {
-            return  workingHours / cycleTime;
+            return workingHours / cycleTime;
         }
     }
 
@@ -159,7 +160,7 @@ function AddLabourCost(props) {
         let workingHours = Number(getValues('workingHours')) * 3600;
         let efficiency = Number(getValues('efficiency'))
         let cycleTime = Number(checkForNull(getValues('cycleTime')))
-        const remainingTotal = getRemainingTotalBasedOnValue(efficiency, cycleTime, workingHours)  
+        const remainingTotal = getRemainingTotalBasedOnValue(efficiency, cycleTime, workingHours)
         const labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (remainingTotal)))
         setTotalCost(labourCost)
         setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
@@ -175,7 +176,7 @@ function AddLabourCost(props) {
             let workingHours = Number(getValues('workingHours')) * 3600;
             let efficiency = Number(getValues('efficiency'))
             let cycleTime = Number(e?.target?.value)
-            const remainingTotal = getRemainingTotalBasedOnValue(efficiency, cycleTime, workingHours)  
+            const remainingTotal = getRemainingTotalBasedOnValue(efficiency, cycleTime, workingHours)
             labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (remainingTotal)))
             setTotalCost(labourCost)
             setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration?.NoOfDecimalForPrice))
@@ -235,11 +236,11 @@ function AddLabourCost(props) {
 
 
     // This function is called when the user clicks a button to add data to a table.
-    const addData = () => {       
+    const addData = () => {
         if (Object.keys(errors).length > 0) {
             return false
         }
-        
+
         let table = [...tableData]
         let indirectLabourCost = indirectLabourCostState
 
@@ -333,20 +334,23 @@ function AddLabourCost(props) {
                 indirectLabourCost = total
             }
 
-            if (getValues('staffCostPercent')) {
+            if (getValues('staffCostPercent') !== undefined && getValues('staffCostPercent') !== null && getValues('staffCostPercent') !== '') {
                 sum = sum + indirectLabourCost
-                let staffCostPercent = Number(getValues('staffCostPercent'))
+                let staffCostPercent = Number(getValues('staffCostPercent')) || 0
                 let totalStaff = (staffCostPercent / 100) * sum
                 setValue('staffCost', checkForDecimalAndNull(totalStaff, initialConfiguration?.NoOfDecimalForPrice))
                 setStaffCostState(totalStaff)
+            } else {
+                setValue('staffCost', checkForDecimalAndNull(0, initialConfiguration?.NoOfDecimalForPrice))
+                setStaffCostState(0)
             }
 
 
             table && table.map((item, ind) => {
-                item.indirectLabourCostPercent = getValues('indirectLabourCostPercent') ? Number(getValues('indirectLabourCostPercent')) : ''
-                item.indirectLabourCost = getValues('indirectLabourCost') ? Number(getValues('indirectLabourCost')) : ''
-                item.staffCostPercent = getValues('staffCostPercent') ? Number(getValues('staffCostPercent')) : ''
-                item.staffCost = getValues('staffCost') ? Number(getValues('staffCost')) : ''
+                item.indirectLabourCostPercent = getValues('indirectLabourCostPercent') ? Number(getValues('indirectLabourCostPercent')) : 0
+                item.indirectLabourCost = getValues('indirectLabourCost') ? Number(getValues('indirectLabourCost')) : 0
+                item.staffCostPercent = getValues('staffCostPercent') !== undefined && getValues('staffCostPercent') !== null && getValues('staffCostPercent') !== '' ? Number(getValues('staffCostPercent')) : 0
+                item.staffCost = getValues('staffCost') ? Number(getValues('staffCost')) : 0
             })
 
 
