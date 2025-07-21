@@ -378,6 +378,9 @@ class AddPower extends Component {
       const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? checkForNull(fieldsObj.CostPerUnitOfMeasurement) : 0;
       const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerUnitOfFuel) : 0;
       if (!CostPerUnitOfMeasurement || !UnitGeneratedPerUnitOfFuel) {
+        if (!!this.checkDisable(fieldsObj, "SelfGeneratedCostPerUnit")) {
+          this.props.change('SelfGeneratedCostPerUnit', '')
+        }
         return 0
       }
       const SelfGeneratedCostPerUnit = checkForNull(CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel);
@@ -390,6 +393,9 @@ class AddPower extends Component {
       const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
       const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
       if (!AnnualCost || !UnitGeneratedPerAnnum) {
+        if (!!this.checkDisable(fieldsObj, "SelfGeneratedCostPerUnit")) {
+          this.props.change('SelfGeneratedCostPerUnit', '')
+        }
         return 0
       }
       const SelfGeneratedCostPerUnit = checkForNull(AnnualCost / UnitGeneratedPerAnnum);
@@ -2710,7 +2716,7 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"SelfGeneratedCostPerUnit"} width="350px" disabledIcon={true} tooltipText={this.state.segCostUnittooltipText} />
+                                  {!!this.checkDisable(fieldsObj, "SelfGeneratedCostPerUnit") && <TooltipCustom id={"SelfGeneratedCostPerUnit"} width="350px" disabledIcon={true} tooltipText={this.state.segCostUnittooltipText} />}
                                   <Field
                                     label={`Cost/Unit`}
                                     // name={this.state.power.SelfGeneratedCostPerUnit === 0 ? '' : "SelfGeneratedCostPerUnit"}
