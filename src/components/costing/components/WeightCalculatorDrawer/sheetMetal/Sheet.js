@@ -102,6 +102,31 @@ function Sheet(props) {
     const [isSelectedLengthForBlanks, setIsSelectedLengthForBlanks] = useState(false);
     const dispatch = useDispatch()
 
+    // These Below 3 states are base value states for weights (always in grams)
+    const [baseGrossWeight, setBaseGrossWeight] = useState(null);
+    const [baseFinishWeight, setBaseFinishWeight] = useState(null);
+    const [baseScrapWeight, setBaseScrapWeight] = useState(null);
+
+    // Base values are set on initial load
+    useEffect(() => {
+        const initialGross = getValues('GrossWeight');
+        const initialFinish = getValues('FinishWeightOfSheet');
+        const initialScrap = getValues('ScrapWeight');
+        const uom = UOMDimension?.label || DISPLAY_G;
+        setBaseGrossWeight(convertValueBetweenUOM(initialGross, uom, DISPLAY_G));
+        setBaseFinishWeight(convertValueBetweenUOM(initialFinish, uom, DISPLAY_G));
+        setBaseScrapWeight(convertValueBetweenUOM(initialScrap, uom, DISPLAY_G));
+    }, []);
+
+    useEffect(() => {
+        if (WeightCalculatorRequest) {
+            const uom = WeightCalculatorRequest.UOMForDimension || DISPLAY_G;
+            setBaseFinishWeight(convertValueBetweenUOM(WeightCalculatorRequest.FinishWeight, uom, DISPLAY_G));
+            setBaseGrossWeight(convertValueBetweenUOM(WeightCalculatorRequest.GrossWeight, uom, DISPLAY_G));
+            setBaseScrapWeight(convertValueBetweenUOM(WeightCalculatorRequest.ScrapWeight, uom, DISPLAY_G));
+        }
+    }, [WeightCalculatorRequest]);
+
     const fieldValues = useWatch({
         control,
         name: ['SheetThickness', 'SheetWidth', 'SheetLength', 'BlankWidth', 'BlankLength', 'ScrapRecoveryPercent'],
@@ -121,17 +146,26 @@ function Sheet(props) {
         control,
         name: ['ScrapWeight', 'GrossWeight'],
     })
-    
+
+    useEffect(() => {
+        if (!CostingViewMode) {
+            setWeightOfSheet()
+        }
+    }, [fieldValues, finalComponentSelected, UOMDimension])
 
     useEffect(() => {
         setGrossWeight()
-    }, [grossWeightValue, UOMDimension])
+    }, [grossWeightValue, UOMDimension?.label])
+    
 
     useEffect(() => {
         setFinishWeight()
+    }, [UOMDimension?.label])
+
+    useEffect(() => {
         calculateyieldPercentage();
     }, [yieldValue])
-    
+
     useEffect(() => {
         calculateRMCost();
     }, [RMCostValue])
@@ -171,12 +205,6 @@ function Sheet(props) {
     }, [fieldValues, FinishWeightOfSheet, GrossWeight])
 
     useEffect(() => {
-        if (!CostingViewMode) {
-            setWeightOfSheet()
-        }
-    }, [fieldValues, finalComponentSelected])
-
-    useEffect(() => {
         if (Number(getValues('FinishWeightOfSheet')) < getValues('GrossWeight')) {
             delete errors.FinishWeightOfSheet
             setRerender(!reRender)
@@ -184,37 +212,13 @@ function Sheet(props) {
     }, [getValues('GrossWeight'), fieldValues])
 
     const setFinishWeight = () => {
-        const FinishWeightOfSheet = checkForNull(getValues('FinishWeightOfSheet'))
-        const grossWeight = checkForNull(getValues('GrossWeight'))
-        if (FinishWeightOfSheet > grossWeight) {
-            setTimeout(() => {
-                setValue('FinishWeightOfSheet', '')
-            }, 200);
-
-            Toaster.warning(`${finishWeightLabel} weight should not be greater than gross weight`)
-            return false
-        }
-        switch (UOMDimension.label) {
-            case DISPLAY_G:
-                setTimeout(() => {
-                    setFinishWeights(FinishWeightOfSheet)
-                }, 200);
-                break;
-            case DISPLAY_KG:
-                setTimeout(() => {
-                    setFinishWeights(FinishWeightOfSheet * 1000)
-                }, 200);
-                break;
-            case DISPLAY_MG:
-                setTimeout(() => {
-                    setFinishWeights(FinishWeightOfSheet / 1000)
-                }, 200);
-                break;
-            default:
-                setFinishWeights(FinishWeightOfSheet)
-                break;
-        }
-    }
+        // Use the base value (in grams) and convert to the current UOM for display
+        const displayValue = convertValueBetweenUOM(baseFinishWeight, DISPLAY_G, UOMDimension.label);
+        setValue("FinishWeightOfSheet", checkForDecimalAndNull(displayValue, localStorage.NoOfDecimalForInputOutput));
+        setFinishWeights(displayValue);
+        // Do NOT update baseFinishWeight here!
+    };
+    
 
     const setWeightOfSheet = () => {
         let data = {
@@ -224,12 +228,13 @@ function Sheet(props) {
             width: checkForNull(getValues('SheetWidth'))
         }
         const getWeightSheet = ((calculateWeight(data.density, data.length, data.width, data.thickness)) / 1000).toFixed(6)
+        let convertedWeightSheet = setValueAccToUOM(getWeightSheet, UOMDimension?.label)
         const updatedValue = dataToSend
-        updatedValue.WeightOfSheet = getWeightSheet
+        updatedValue.WeightOfSheet = convertedWeightSheet
         setTimeout(() => {
             setDataToSend(updatedValue)
         }, 200);
-        setValue('SheetWeight', checkForDecimalAndNull(getWeightSheet, localStorage.NoOfDecimalForInputOutput))
+        setValue('SheetWeight', checkForDecimalAndNull(convertedWeightSheet, localStorage.NoOfDecimalForInputOutput))
     }
 
     /** 
@@ -243,10 +248,11 @@ function Sheet(props) {
         grossWeight = (sheetWeight / noOfComponents);
         setGrossWeights(grossWeight) // for coverting into gram
         const updatedValue = dataToSend
-        updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+        updatedValue.GrossWeight = checkForNull(grossWeight)
         setTimeout(() => {
             setDataToSend(updatedValue)
-            setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
+            setValue('GrossWeight', checkForDecimalAndNull(checkForNull(grossWeight), localStorage.NoOfDecimalForInputOutput))
+            setBaseGrossWeight(convertValueBetweenUOM(grossWeight, UOMDimension?.label, DISPLAY_G));
         }, 200);
     }
 
@@ -358,28 +364,51 @@ function Sheet(props) {
         }))
     }), 500);
 
+    // Defensive conversion function
+    const convertValueBetweenUOM = (value, fromUOM, toUOM) => {
+        if (value === '' || value === null || value === undefined || isNaN(Number(value))) return 0;
+        let val = Number(value);
+        // Convert from source UOM to grams
+        switch (fromUOM) {
+            case DISPLAY_KG: val = val * 1000; break; // kg to g
+            case DISPLAY_MG: val = val / 1000; break; // mg to g
+            // DISPLAY_G or default: do nothing
+        }
+
+        // Convert from grams to target UOM
+        switch (toUOM) {
+            case DISPLAY_KG: return val / 1000;  // g to kg
+            case DISPLAY_MG: return val * 1000;  // g to mg
+            default: return val;  // g to g
+        }
+    };
+
     const handleUnit = (value) => {
-        setValue('UOMDimension', { label: value.label, value: value.value })
-        setUOMDimension(value)
-        let grossWeight = GrossWeight
-        let ScrapWeight = scrapWeight
-        setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
-        setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
-        setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(FinishWeightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput))
-        setValue('ScrapWeight', checkForDecimalAndNull(setValueAccToUOM(ScrapWeight, value.label), localStorage.NoOfDecimalForInputOutput))
-    }
+        const newUOM = value.label;
+        // Always convert from base (grams)
+        const grossWeight = convertValueBetweenUOM(baseGrossWeight, DISPLAY_G, newUOM);
+        const finishWeight = convertValueBetweenUOM(baseFinishWeight, DISPLAY_G, newUOM);
+        const scrapWeightVal = convertValueBetweenUOM(baseScrapWeight, DISPLAY_G, newUOM);
+        setValue('UOMDimension', { label: value.label, value: value.value });
+        setUOMDimension(value);
+        setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput));
+        setValue('FinishWeightOfSheet', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput));
+        setValue('ScrapWeight', checkForDecimalAndNull(scrapWeightVal, localStorage.NoOfDecimalForInputOutput));
+    };
 
     const scrapWeightCalculation = () => {
         const scrapRecoveryPercent = Number((getValues('ScrapRecoveryPercent')))
-        const grossWeight = Number(GrossWeight)
-        const finishWeightOfSheet = Number(FinishWeightOfSheet)
+        const grossWeight = getValues('GrossWeight');
+        const finishWeightOfSheet = getValues('FinishWeightOfSheet');
         if(scrapRecoveryPercent <= 100){
             const scrapWeight = calculateScrapWeight(grossWeight, finishWeightOfSheet, scrapRecoveryPercent)
             setScrapWeight(checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
-            setValue('ScrapWeight', checkForDecimalAndNull((setValueAccToUOM(scrapWeight, UOMDimension.label)), localStorage.NoOfDecimalForInputOutput))
+            setValue('ScrapWeight', checkForDecimalAndNull((checkForNull(scrapWeight)), localStorage.NoOfDecimalForInputOutput))
+            setBaseScrapWeight(convertValueBetweenUOM(scrapWeight, UOMDimension?.label, DISPLAY_G));
         }else{
             setScrapWeight(0)
             setValue('ScrapWeight', 0)
+            setBaseScrapWeight(0);
         }
     }
 
@@ -388,6 +417,20 @@ function Sheet(props) {
             e.preventDefault();
         }
     };
+
+    const unitFormulaMap = {
+        g: 'Weight of Sheet (g) = (Density * Thickness * Width * Length) / 1000',
+        kg: 'Weight of Sheet (kg) = (Density * Thickness * Width * Length) / (1000 * 1000)',
+        mg: 'Weight of Sheet (mg) = (Density * Thickness * Width * Length * 1000) / 1000',
+    };
+
+    const toolTipText = (uom) => {
+        const formula = unitFormulaMap[uom?.label];
+        if (!formula) {
+            return unitFormulaMap.g;
+        }
+        return formula;
+    }
     /**
      * @method render
      * @description Renders the component
@@ -400,7 +443,28 @@ function Sheet(props) {
                         onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <div className="costing-border border-top-0 px-4">
                             <Row>
-                                <Col md="12" className={'mt25'}>
+                                <Col md="3" className={'mt25'}>
+                                    <SearchableSelectHookForm
+                                        label={'Weight Unit'}
+                                        name={'UOMDimension'}
+                                        placeholder={'Select'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
+                                        options={renderListing('UOM')}
+                                        customClassName={''}
+                                        mandatory={true}
+                                        handleChange={handleUnit}
+                                        errors={errors.UOMDimension}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md="12" >
                                     <HeaderTitle className="border-bottom"
                                         title={'Sheet Specificaton'}
                                         customClass={'underLine-title'}
@@ -472,9 +536,11 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-weight'} tooltipText={'Weight of Sheet = (Density * (Thickness * Width * Length)) / 1000'} />
+                                    {/* <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-weight'} tooltipText={'Weight of Sheet = (Density * (Thickness * Width * Length)) / 1000'} /> */}
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-weight'} tooltipText={toolTipText(UOMDimension)} />
                                     <TextFieldHookForm
-                                        label={`Weight of Sheet(g)`}
+                                        // label={`Weight of Sheet(g)`}
+                                        label={`Weight of Sheet (${UOMDimension.label || 'g'})`}
                                         name={'SheetWeight'}
                                         id={'sheet-weight'}
                                         Controller={Controller}
@@ -588,28 +654,7 @@ function Sheet(props) {
                      
                             <Row>
                                 <Col md="3">
-                                    <SearchableSelectHookForm
-                                        label={'Weight Unit'}
-                                        name={'UOMDimension'}
-                                        placeholder={'Select'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
-                                        options={renderListing('UOM')}
-                                        customClassName={'mb-0'}
-                                        mandatory={true}
-                                        handleChange={handleUnit}
-                                        errors={errors.UOMDimension}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Gross Weight = Weight of Sheet(g) / NO. of Components"} />
+                                    <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={`Gross Weight = Weight of Sheet(${UOMDimension.label}) / NO. of Components`} />
                                     <TextFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}
@@ -646,7 +691,10 @@ function Sheet(props) {
                                             },
                                         }}
                                         // handleChange={setFinishWeight}
-                                        handleChange={() => { }}
+                                        handleChange={e => {
+                                            setValue('FinishWeightOfSheet', e.target.value);
+                                            setBaseFinishWeight(convertValueBetweenUOM(e.target.value, UOMDimension?.label, DISPLAY_G));
+                                        }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
