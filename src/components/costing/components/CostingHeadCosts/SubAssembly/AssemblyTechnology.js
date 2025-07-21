@@ -569,7 +569,7 @@ function AssemblyTechnology(props) {
                 "NetPOPrice": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.NetTotalRMBOPCC) + checkForNull(stCostingData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.NetTotalRMBOPCC,
                 "LoggedInUserId": loggedInUserId(),
                 "NetLabourCost": item.NetLabourCost,
-                "TotalLabourCost": item.TotalLabourCost,
+                "TotalLabourCost": item?.TotalLabourCost,
                 "IndirectLaborCost": item.IndirectLaborCost,
                 "StaffCost": item.StaffCost,
                 "StaffCostPercentage": item.StaffCostPercentage,

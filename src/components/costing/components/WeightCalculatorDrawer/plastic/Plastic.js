@@ -190,7 +190,7 @@ function Plastic(props) {
             grossWeight = checkForNull(netWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest?.LossOfTypeDetails ? WeightCalculatorRequest?.LossOfTypeDetails : [], true)) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
         }
         if (finishedWeight !== 0) {
-            scrapWeight = checkForNull(grossWeight - finishedWeight - dataToSend.burningValue) * checkForNull(scrapRecoveryPercent / 100)
+            scrapWeight = checkForNull(grossWeight - finishedWeight - dataToSend?.burningValue) * checkForNull(scrapRecoveryPercent / 100)
 
             setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         }

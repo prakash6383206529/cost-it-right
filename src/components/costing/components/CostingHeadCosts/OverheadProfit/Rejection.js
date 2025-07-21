@@ -231,34 +231,34 @@ function Rejection(props) {
         const surface = SurfaceTabData?.[0]?.CostingPartDetails;
     
         const baseCosts = {
-            'RM': includeChildParts ? checkForNull(child.NetChildPartsRawMaterialsCost) : checkForNull(header.NetRawMaterialsCost),
-            'BOP': includeChildParts ? checkForNull(child.NetChildPartsBoughtOutPartCost) + checkForNull(header.NetBoughtOutPartCost) : checkForNull(header.NetBoughtOutPartCost),
-            'BOP Domestic': includeChildParts ? checkForNull(child.NetChildPartsBOPDomesticCost) + checkForNull(header.NetBOPDomesticCost) : checkForNull(header.NetBOPDomesticCost),
-            'BOP CKD': includeChildParts ? checkForNull(child.NetChildPartsBOPImportCost) + checkForNull(header.NetBOPImportCost) : checkForNull(header.NetBOPImportCost),
-            'BOP V2V': includeChildParts ? checkForNull(child.NetChildPartsBOPSourceCost) + checkForNull(header.NetBOPSourceCost) : checkForNull(header.NetBOPSourceCost),
-            'BOP OSP': includeChildParts ? checkForNull(child.NetChildPartsBOPOutsourcedCost) + checkForNull(header.NetBOPOutsourcedCost) : checkForNull(header.NetBOPOutsourcedCost),
-            'BOP Without Handling Charge': includeChildParts ? checkForNull(child.NetChildPartsBoughtOutPartCostWithOutHandlingCharge) + checkForNull(header.NetBoughtOutPartCostWithOutHandlingCharge) : checkForNull(header.NetBoughtOutPartCostWithOutHandlingCharge),
-            'BOP Domestic Without Handling Charge': includeChildParts ? checkForNull(child.NetChildPartsBOPDomesticCostWithOutHandlingCharge) + checkForNull(header.NetBOPDomesticCostWithOutHandlingCharge) : checkForNull(header.NetBOPDomesticCostWithOutHandlingCharge),
-            'BOP CKD Without Handling Charge': includeChildParts ? checkForNull(child.NetChildPartsBOPImportCostWithOutHandlingCharge) + checkForNull(header.NetBOPImportCostWithOutHandlingCharge) : checkForNull(header.NetBOPImportCostWithOutHandlingCharge),
-            'BOP V2V Without Handling Charge': includeChildParts ? checkForNull(child.NetChildPartsBOPSourceCostWithOutHandlingCharge) + checkForNull(header.NetBOPSourceCostWithOutHandlingCharge) : checkForNull(header.NetBOPSourceCostWithOutHandlingCharge),
-            'BOP OSP Without Handling Charge': includeChildParts ? checkForNull(child.NetChildPartsBOPOutsourcedCostWithOutHandlingCharge) + checkForNull(header.NetBOPOutsourcedCostWithOutHandlingCharge) : checkForNull(header.NetBOPOutsourcedCostWithOutHandlingCharge),
-            'CCForMachining': includeChildParts ? checkForNull(header.NetCCForOtherTechnologyCost) + checkForNull(child.NetChildPartsCCForOtherTechnologyCost) : checkForNull(header.NetCCForOtherTechnologyCost),
-            'Casting Norm': checkForNull(child.NetCastingNormApplicabilityCost),
+            'RM': includeChildParts ? checkForNull(child?.NetChildPartsRawMaterialsCost) : checkForNull(header?.NetRawMaterialsCost),
+            'BOP': includeChildParts ? checkForNull(child?.NetChildPartsBoughtOutPartCost) + checkForNull(header?.NetBoughtOutPartCost) : checkForNull(header?.NetBoughtOutPartCost),
+            'BOP Domestic': includeChildParts ? checkForNull(child?.NetChildPartsBOPDomesticCost) + checkForNull(header?.NetBOPDomesticCost) : checkForNull(header?.NetBOPDomesticCost),
+            'BOP CKD': includeChildParts ? checkForNull(child?.NetChildPartsBOPImportCost) + checkForNull(header?.NetBOPImportCost) : checkForNull(header?.NetBOPImportCost),
+            'BOP V2V': includeChildParts ? checkForNull(child?.NetChildPartsBOPSourceCost) + checkForNull(header?.NetBOPSourceCost) : checkForNull(header?.NetBOPSourceCost),
+            'BOP OSP': includeChildParts ? checkForNull(child?.NetChildPartsBOPOutsourcedCost) + checkForNull(header?.NetBOPOutsourcedCost) : checkForNull(header?.NetBOPOutsourcedCost),
+            'BOP Without Handling Charge': includeChildParts ? checkForNull(child?.NetChildPartsBoughtOutPartCostWithOutHandlingCharge) + checkForNull(header?.NetBoughtOutPartCostWithOutHandlingCharge) : checkForNull(header?.NetBoughtOutPartCostWithOutHandlingCharge),
+            'BOP Domestic Without Handling Charge': includeChildParts ? checkForNull(child?.NetChildPartsBOPDomesticCostWithOutHandlingCharge) + checkForNull(header?.NetBOPDomesticCostWithOutHandlingCharge) : checkForNull(header?.NetBOPDomesticCostWithOutHandlingCharge),
+            'BOP CKD Without Handling Charge': includeChildParts ? checkForNull(child?.NetChildPartsBOPImportCostWithOutHandlingCharge) + checkForNull(header?.NetBOPImportCostWithOutHandlingCharge) : checkForNull(header?.NetBOPImportCostWithOutHandlingCharge),
+            'BOP V2V Without Handling Charge': includeChildParts ? checkForNull(child?.NetChildPartsBOPSourceCostWithOutHandlingCharge) + checkForNull(header?.NetBOPSourceCostWithOutHandlingCharge) : checkForNull(header?.NetBOPSourceCostWithOutHandlingCharge),
+            'BOP OSP Without Handling Charge': includeChildParts ? checkForNull(child?.NetChildPartsBOPOutsourcedCostWithOutHandlingCharge) + checkForNull(header?.NetBOPOutsourcedCostWithOutHandlingCharge) : checkForNull(header?.NetBOPOutsourcedCostWithOutHandlingCharge),
+            'CCForMachining': includeChildParts ? checkForNull(header?.NetCCForOtherTechnologyCost) + checkForNull(child?.NetChildPartsCCForOtherTechnologyCost) : checkForNull(header?.NetCCForOtherTechnologyCost),
+            'Casting Norm': checkForNull(child?.NetCastingNormApplicabilityCost),
             'Surface Treatment': checkForNull(surface?.NetSurfaceTreatmentCost),
-            'Labour Cost': checkForNull(header.TotalLabourCost),
+            'Labour Cost': checkForNull(header?.TotalLabourCost),
             'CC': includeChildParts
-                ? checkForNull(child.NetChildPartsOperationCostForRejection)
-                  + checkForNull(child.NetChildPartsProcessCostForRejection)
-                  + checkForNull(child.NetChildPartsWeldingCostForRejection)
-                  - checkForNull(child.NetChildPartsCCForOtherTechnologyCostForRejection)
-                  + checkForNull(header.NetProcessCostForRejection)
-                  + checkForNull(header.NetOperationCostForRejection)
-                  + checkForNull(header.NetWeldingCostForRejection)
-                  - checkForNull(header.NetCCForOtherTechnologyCostForRejection)
-                : checkForNull(header.NetProcessCostForRejection)
-                  + checkForNull(header.NetOperationCostForRejection)
-                  + checkForNull(header.NetWeldingCostForRejection)
-                  - checkForNull(header.NetCCForOtherTechnologyCostForRejection),
+                ? checkForNull(child?.NetChildPartsOperationCostForRejection)
+                  + checkForNull(child?.NetChildPartsProcessCostForRejection)
+                  + checkForNull(child?.NetChildPartsWeldingCostForRejection)
+                  - checkForNull(child?.NetChildPartsCCForOtherTechnologyCostForRejection)
+                  + checkForNull(header?.NetProcessCostForRejection)
+                  + checkForNull(header?.NetOperationCostForRejection)
+                  + checkForNull(header?.NetWeldingCostForRejection)
+                  - checkForNull(header?.NetCCForOtherTechnologyCostForRejection)
+                : checkForNull(header?.NetProcessCostForRejection)
+                  + checkForNull(header?.NetOperationCostForRejection)
+                  + checkForNull(header?.NetWeldingCostForRejection)
+                  - checkForNull(header?.NetCCForOtherTechnologyCostForRejection),
         };
         return baseCosts[applicability] ?? 0;
     };
@@ -272,17 +272,17 @@ function Rejection(props) {
         let prevData = _.cloneDeep(dataObj)
         let newData = [];
         if (!IsIncludedSurfaceInRejection && prevData?.CostingRejectionApplicabilityDetails) {
-            prevData.CostingRejectionApplicabilityDetails = prevData.CostingRejectionApplicabilityDetails.filter(item => item.Applicability !== "Surface Treatment");
+            prevData.CostingRejectionApplicabilityDetails = prevData?.CostingRejectionApplicabilityDetails?.filter(item => item?.Applicability !== "Surface Treatment");
         }
 
         if (prevData?.CostingRejectionApplicabilityDetails) {
             prevData.CostingRejectionApplicabilityDetails = filterCastingNormApplicability(prevData?.CostingRejectionApplicabilityDetails, null, 'Applicability');
         }
 
-        if (prevData && prevData?.CostingRejectionApplicabilityDetails && prevData?.CostingRejectionApplicabilityDetails.length > 0) {
-            newData = prevData.CostingRejectionApplicabilityDetails.map((item) => {
-                const cost = getRejectionBaseCost(item.Applicability, data, headerCosts, IsIncludeApplicabilityForChildParts, SurfaceTabData);
-                const totalCost = cost * calculatePercentage(item.Percentage);
+        if (prevData && prevData?.CostingRejectionApplicabilityDetails && prevData?.CostingRejectionApplicabilityDetails?.length > 0) {
+            newData = prevData?.CostingRejectionApplicabilityDetails?.map((item) => {
+                const cost = getRejectionBaseCost(item?.Applicability, data, headerCosts, IsIncludeApplicabilityForChildParts, SurfaceTabData);
+                const totalCost = cost * calculatePercentage(item?.Percentage);
             
                 return {
                     ...item,
