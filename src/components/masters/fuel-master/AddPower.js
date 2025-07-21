@@ -328,6 +328,8 @@ class AddPower extends Component {
         power: { ...power, AvgUnitConsumptionPerMonth: power.AvgUnitConsumptionPerMonth }
       })
       this.props.change('UnitConsumptionPerAnnum', checkForDecimalAndNull(AvgUnitConsumptionPerMonth, initialConfiguration?.NoOfDecimalForInputOutput))
+    } else {
+      this.props.change('UnitConsumptionPerAnnum', '')
     }
 
     //Formula for SEB COST PER UNIT calculation
@@ -357,7 +359,7 @@ class AddPower extends Component {
     const UnitConsumptionPerAnnum = power.AvgUnitConsumptionPerMonth !== undefined ? checkForNull(power.AvgUnitConsumptionPerMonth) : 0;
     const SEBCostPerUnit = power.SEBCostPerUnit !== undefined ? checkForNull(power.SEBCostPerUnit) : 0;
 
-    const TotalUnitCharges = checkForNull(((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum)
+    const TotalUnitCharges = this.checkTotalElectricityPowerChargesDisable("TotalUnitCharges") ? checkForNull(((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum) : checkForNull(fieldsObj?.TotalUnitCharges)
     power.TotalUnitCharges = TotalUnitCharges
     this.setState({
       power: { ...power, TotalUnitCharges: power.TotalUnitCharges }
@@ -885,22 +887,24 @@ class AddPower extends Component {
 
     setTimeout(() => {
 
-      if (fieldsObj.MinDemandKWPerMonth === undefined || Number(fieldsObj.MinDemandKWPerMonth) === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, minDemand: true } })
-        count++
-      }
+      if (TotalUnitCharges === 0) {
+        if (fieldsObj.MinDemandKWPerMonth === undefined || Number(fieldsObj.MinDemandKWPerMonth) === 0) {
+          this.setState({ errorObj: { ...this.state.errorObj, minDemand: true } })
+          count++
+        }
 
-      if (fieldsObj.DemandChargesPerKW === undefined || Number(fieldsObj.DemandChargesPerKW) === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, demandCharge: true } })
-        count++
-      }
-      if (fieldsObj.AvgUnitConsumptionPerMonth === undefined || Number(fieldsObj.AvgUnitConsumptionPerMonth) === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, avgUnit: true } })
-        count++
-      }
-      if (fieldsObj.MaxDemandChargesKW === undefined || Number(fieldsObj.MaxDemandChargesKW) === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, maxDemand: true } })
-        count++
+        if (fieldsObj.DemandChargesPerKW === undefined || Number(fieldsObj.DemandChargesPerKW) === 0) {
+          this.setState({ errorObj: { ...this.state.errorObj, demandCharge: true } })
+          count++
+        }
+        if (fieldsObj.AvgUnitConsumptionPerMonth === undefined || Number(fieldsObj.AvgUnitConsumptionPerMonth) === 0) {
+          this.setState({ errorObj: { ...this.state.errorObj, avgUnit: true } })
+          count++
+        }
+        if (fieldsObj.MaxDemandChargesKW === undefined || Number(fieldsObj.MaxDemandChargesKW) === 0) {
+          this.setState({ errorObj: { ...this.state.errorObj, maxDemand: true } })
+          count++
+        }
       }
       if (SEBPowerContributaion === undefined || Number(SEBPowerContributaion) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, statePowerCont: true } })
@@ -1813,6 +1817,20 @@ class AddPower extends Component {
     return checkForNull(SelfGeneratedCostPerUnit) && allFieldsFilled;
   };
 
+  checkTotalElectricityPowerChargesDisable = (fieldName) => {
+    const { MinDemandKWPerMonth, DemandChargesPerKW, AvgUnitConsumptionPerMonth, MaxDemandChargesKW, MeterRentAndOtherChargesPerAnnum, DutyChargesAndFCA, TotalUnitCharges } = this.props.fieldsObj
+    if (fieldName === 'TotalUnitCharges') {
+      return checkForNull(MinDemandKWPerMonth) || checkForNull(DemandChargesPerKW) || checkForNull(AvgUnitConsumptionPerMonth) || checkForNull(MaxDemandChargesKW) || checkForNull(MeterRentAndOtherChargesPerAnnum) || checkForNull(DutyChargesAndFCA)
+    }
+    const allFieldsFilled =
+      !checkForNull(MinDemandKWPerMonth) &&
+      !checkForNull(DemandChargesPerKW) &&
+      !checkForNull(AvgUnitConsumptionPerMonth) &&
+      !checkForNull(MaxDemandChargesKW) &&
+      !checkForNull(MeterRentAndOtherChargesPerAnnum);
+      return checkForNull(TotalUnitCharges) && allFieldsFilled
+  }
+
   getTooltipTextForCurrency = () => {
     const { fieldsObj } = this.props
     const { settlementCurrency, plantCurrency, currency } = this.state
@@ -2349,7 +2367,7 @@ class AddPower extends Component {
                                     required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("MinDemandKWPerMonth") ? true : false}
                                   />
                                   {this.state.errorObj.minDemand && (this.props.fieldsObj.MinDemandKWPerMonth === undefined || Number(this.props.fieldsObj.MinDemandKWPerMonth) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -2368,7 +2386,7 @@ class AddPower extends Component {
                                     required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("DemandChargesPerKW") ? true : false}
                                   />
                                   {this.state.errorObj.demandCharge && (this.props.fieldsObj.DemandChargesPerKW === undefined || Number(this.props.fieldsObj.DemandChargesPerKW) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -2405,7 +2423,7 @@ class AddPower extends Component {
                                     required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("AvgUnitConsumptionPerMonth") ? true : false}
                                   />
                                   {this.state.errorObj.avgUnit && (this.props.fieldsObj.AvgUnitConsumptionPerMonth === undefined || Number(this.props.fieldsObj.AvgUnitConsumptionPerMonth) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -2444,7 +2462,7 @@ class AddPower extends Component {
                                     required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("MaxDemandChargesKW") ? true : false}
                                   />
                                   {this.state.errorObj.maxDemand && (this.props.fieldsObj.MaxDemandChargesKW === undefined || Number(this.props.fieldsObj.MaxDemandChargesKW) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -2480,7 +2498,7 @@ class AddPower extends Component {
                                     component={renderTextInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("MeterRentAndOtherChargesPerAnnum") ? true : false}
                                   />
                                 </div>
                               </div>
@@ -2497,7 +2515,7 @@ class AddPower extends Component {
                                     component={renderTextInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("DutyChargesAndFCA") ? true : false}
                                   />
                                 </div>
                               </div>
@@ -2508,7 +2526,8 @@ class AddPower extends Component {
                                   <TooltipCustom id={"TotalUnitCharges"} width="360px" disabledIcon={true} tooltipText={"Total Charge per Unit = ((Unit Consumption per Annum * Cost per Unit) + Meter Rent and Other Charges per Annum + Duty Charges and FCA) / Unit Consumption per Annum"} />
                                   <Field
                                     label={`Total Charge/Unit`}
-                                    name={this.state.power.TotalUnitCharges === 0 ? '' : "TotalUnitCharges"}
+                                    // name={this.state.power.TotalUnitCharges === 0 ? '' : "TotalUnitCharges"}
+                                    name={"TotalUnitCharges"}
                                     type="text"
                                     id={"TotalUnitCharges"}
                                     placeholder={'-'}
@@ -2517,7 +2536,7 @@ class AddPower extends Component {
                                     required={false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={true}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("TotalUnitCharges") ? true : false}
                                   />
                                 </div>
                               </div>
