@@ -236,6 +236,7 @@ function FreightCost(props) {
         rowObjData={calculatorRowObjData}
         anchor={'right'}
         truckDimensions={calculatorRowObjData?.truckDimensions}
+        CostingViewMode={CostingViewMode}
       />}
     </ >
   );

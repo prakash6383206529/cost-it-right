@@ -2087,33 +2087,33 @@ export const getOverheadAndProfitCostTotal = (arr = [], technologyId = '') => {
       IsDetailed && UOMType === TIME
         ? checkForNull(ProcessCostWithOutInterestAndDepreciation)
         : process;
-    const isOverhead = applicabilityDetails.some(detail => {
+    const isOverhead = applicabilityDetails?.some(detail => {
       return detail.CostingConditionNumber === 'Overhead' || [
         APPLICABILITY_OVERHEAD,
         APPLICABILITY_OVERHEAD_EXCL
       ].includes(detail.CostingConditionNumber);
     });
 
-    const isProfit = applicabilityDetails.some(detail => {
+    const isProfit = applicabilityDetails?.some(detail => {
       return detail.CostingConditionNumber === 'Profit' || [
         APPLICABILITY_PROFIT,
         APPLICABILITY_PROFIT_EXCL
       ].includes(detail.CostingConditionNumber);
     });
-const isRejection = applicabilityDetails.some(detail => {
+const isRejection = applicabilityDetails?.some(detail => {
   return detail.CostingConditionNumber === 'Rejection' || [
     APPLICABILITY_REJECTION,
     APPLICABILITY_REJECTION_EXCL
   ].includes(detail.CostingConditionNumber);
 });
-    const useExclForOverhead = applicabilityDetails.some(detail => {
+    const useExclForOverhead = applicabilityDetails?.some(detail => {
       return [APPLICABILITY_OVERHEAD_EXCL].includes(detail.CostingConditionNumber);
     });
 
-    const useExclForProfit = applicabilityDetails.some(detail => {
+    const useExclForProfit = applicabilityDetails?.some(detail => {
       return [APPLICABILITY_PROFIT_EXCL].includes(detail.CostingConditionNumber); 
     });
-    const useExclForRejection = applicabilityDetails.some(detail => {
+    const useExclForRejection = applicabilityDetails?.some(detail => {
       return [APPLICABILITY_REJECTION_EXCL].includes(detail.CostingConditionNumber);
     });
 

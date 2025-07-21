@@ -480,6 +480,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "RawMaterialCostWithCutOff": tabData && tabData?.CostingPartDetails?.RawMaterialCostWithCutOff,
       "IsRMCutOffApplicable": tabData && tabData?.CostingPartDetails?.IsRMCutOffApplicable,
       "NetLabourCost": tabData && tabData?.CostingPartDetails?.NetLabourCost,
+      "TotalLabourCost": tabData && tabData?.CostingPartDetails?.TotalLabourCost,
       "IndirectLaborCost": tabData && tabData?.CostingPartDetails?.IndirectLaborCost,
       "StaffCost": tabData && tabData?.CostingPartDetails?.StaffCost,
       "StaffCostPercentage": tabData && tabData?.CostingPartDetails?.StaffCostPercentage,
@@ -763,6 +764,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "ICCCost": overHeadAndProfitTabData?.CostingPartDetails?.ICCCost,
       "PaymentTermCost": DiscountCostData?.paymentTermCost || 0,
       "NetLabourCost": tabData?.CostingPartDetails?.NetLabourCost,
+      "TotalLabourCost": tabData?.CostingPartDetails?.NetLabourCost,
       "IndirectLaborCost": tabData?.CostingPartDetails?.IndirectLaborCost,
       "StaffCost": tabData?.CostingPartDetails?.StaffCost,
       "StaffCRMHead": tabData?.CostingPartDetails?.StaffCRMHead,
@@ -808,6 +810,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "TotalBOPImportCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity,
       "TotalBOPSourceCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity,
       "TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity,
+
       // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
     },
     "WorkingRows": assemblyWorkingRow,

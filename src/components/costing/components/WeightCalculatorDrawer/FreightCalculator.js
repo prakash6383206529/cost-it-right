@@ -37,8 +37,7 @@ function FreightCalculator(props) {
     })
     const { costingData } = useSelector(state => state.costing)
     const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
-    const costingViewMode = useContext(ViewCostingContext);
-    const CostingViewMode = costingViewMode ?? props?.CostingViewMode
+    const CostingViewMode = props?.CostingViewMode
     const carrierTypeList = useSelector(state => state.costWorking.carrierTypeList)
     const FreightCalculationId = props?.costingFreightCalculationDetailsId ? props?.costingFreightCalculationDetailsId:rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingFreightCalculationDetailsId:null
     const dispatch = useDispatch()
@@ -139,7 +138,7 @@ function FreightCalculator(props) {
     useEffect(() => {
         dispatch(getCarrierTypeList(res => { }))
         setValue('TruckDimensions', truckDimensions?.label)
-        if (!costingViewMode) {
+        if (!CostingViewMode) {
             setValue('NoOfComponentsPerBinOrTrolley', noOfComponentsPerCrate)
             setValue('TripRate', rate)
         }
