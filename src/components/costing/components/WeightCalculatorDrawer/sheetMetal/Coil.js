@@ -291,6 +291,20 @@ function Coil(props) {
         setValue('scrapWeight', checkForDecimalAndNull((setValueAccToUOM(scrapWeight, UOMDimension.label)), localStorage.NoOfDecimalForInputOutput))
     }
 
+    const unitFormulaMap = {
+        g: 'Gross Weight (g) = (Density * Thickness * Strip Width * Pitch) / Cavity / 1000',
+        kg: 'Gross Weight (kg) = (Density * Thickness * Strip Width * Pitch) / Cavity / (1000 * 1000)',
+        mg: 'Gross Weight (mg) = (Density * Thickness * Strip Width * Pitch * 1000) / 1000',
+    };
+
+    const GrossWeightTooltip = (uom) => {
+        const formula = unitFormulaMap[uom?.label];
+        if (!formula) {
+            return unitFormulaMap.g;
+        }
+        return formula;
+    }
+
     /**
      * @method render
      * @description Renders the component
@@ -303,7 +317,26 @@ function Coil(props) {
                         onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <div className="costing-border border-top-0 px-4">
                             <Row>
-                                <Col md="12" className={'mt25'}>
+                                <Col md="3" className={'mt25'}>
+                                    <SearchableSelectHookForm
+                                        label={'Weight Unit'}
+                                        name={'UOMDimension'}
+                                        placeholder={'Select'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
+                                        options={renderListing('UOM')}
+                                        mandatory={true}
+                                        handleChange={handleUnit}
+                                        errors={errors.UOMDimension}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md="12">
                                     <HeaderTitle className="border-bottom"
                                         title={'Sheet Specification'}
                                         customClass={'underLine-title'}
@@ -416,25 +449,8 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <SearchableSelectHookForm
-                                        label={'Weight Unit'}
-                                        name={'UOMDimension'}
-                                        placeholder={'Select'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
-                                        options={renderListing('UOM')}
-                                        mandatory={true}
-                                        handleChange={handleUnit}
-                                        errors={errors.UOMDimension}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * Thickness * Strip Width * Pitch) / Cavity / 1000'} />
+                                    {/* <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * Thickness * Strip Width * Pitch) / Cavity / 1000'} /> */}
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={GrossWeightTooltip(UOMDimension)} />
                                     <TextFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}

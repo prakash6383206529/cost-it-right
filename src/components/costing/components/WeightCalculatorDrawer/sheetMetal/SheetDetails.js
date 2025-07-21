@@ -16,6 +16,24 @@ import { nonZero } from '../../../../../helper/validation'
 import TooltipCustom from '../../../../common/Tooltip'
 import { useLabels } from '../../../../../helper/core'
 
+// Utility to convert between G, KG, MG
+const convertWeightValue = (value, fromUnit, toUnit) => {
+    if (value === '' || value === null || isNaN(Number(value))) return value;
+    let val = Number(value);
+    // Convert from current unit to grams
+    switch (fromUnit) {
+        case DISPLAY_KG: val = val * 1000; break;
+        case DISPLAY_MG: val = val / 1000; break;
+        case DISPLAY_G: default: break;
+    }
+    // Convert from grams to target unit
+    switch (toUnit) {
+        case DISPLAY_KG: return val / 1000;
+        case DISPLAY_MG: return val * 1000;
+        case DISPLAY_G: default: return val;
+    }
+};
+
 function SheetDetails(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
     const { rmRowData, item, CostingViewMode } = props
@@ -497,15 +515,30 @@ function SheetDetails(props) {
     }), 500);
 
     const handleUnit = (value) => {
-        setValue('UOMDimension', { label: value.label, value: value.value })
-        setUOMDimension(value)
-        let grossWeight = GrossWeight
-        let ScrapWeight = scrapWeight
-        setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
-        setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
-        setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(FinishWeightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput))
-        setValue('ScrapWeight', checkForDecimalAndNull(setValueAccToUOM(ScrapWeight, value.label), localStorage.NoOfDecimalForInputOutput))
-    }
+        const prevUnit = UOMDimension.label;
+        setValue('UOMDimension', { label: value.label, value: value.value });
+        setUOMDimension(value);
+
+        // List of fields to convert
+        const fieldsToConvert = [
+            'SheetWeight',
+            'GrossWeight',
+            'FinishWeightOfSheet',
+            'ScrapWeight'
+        ];
+
+        fieldsToConvert.forEach(field => {
+            const currentValue = getValues(field);
+            const convertedValue = convertWeightValue(currentValue, prevUnit, value.label);
+            setValue(field, checkForDecimalAndNull(convertedValue, localStorage.NoOfDecimalForInputOutput));
+        });
+
+        setDataToSend(prevState => ({
+            ...prevState,
+            newGrossWeight: convertWeightValue(GrossWeight, prevUnit, value.label),
+            newFinishWeight: convertWeightValue(FinishWeightOfSheet, prevUnit, value.label)
+        }));
+    };
     const scrapWeightCalculation = () => {
         const scrapRecoveryPercent = Number((getValues('ScrapRecoveryPercent')))
         const grossWeight = Number(GrossWeight)
@@ -533,6 +566,20 @@ function SheetDetails(props) {
             setIsSelectedLengthForBlanks(true);
         }
     }
+
+    const unitFormulaMap = {
+        g: 'Weight of Sheet (g) = (Density * (Thickness * Width * Length)) / 1000',
+        kg: 'Weight of Sheet (kg) = (Density * (Thickness * Width * Length)) / (1000 * 1000)',
+        mg: 'Weight of Sheet (mg) = (Density * Thickness * Width * Length * 1000) / 1000',
+    };
+
+    const sheetWeightTooltipText = (uom) => {
+        const formula = unitFormulaMap[uom?.label];
+        if (!formula) {
+            return unitFormulaMap.g;
+        }
+        return formula;
+    }
     /**
      * @method render
      * @description Renders the component
@@ -545,7 +592,28 @@ function SheetDetails(props) {
                         onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <div className="costing-border border-top-0 px-4">
                             <Row>
-                                <Col md="12" className={'mt25'}>
+                                <Col md="3" className={'mt25'}>
+                                    <SearchableSelectHookForm
+                                        label={'Weight Unit'}
+                                        name={'UOMDimension'}
+                                        placeholder={'Select'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
+                                        options={renderListing('UOM')}
+                                        // customClassName={'mb-0'}
+                                        customClassName={''}
+                                        mandatory={true}
+                                        handleChange={handleUnit}
+                                        errors={errors.UOMDimension}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md="12">
                                     <HeaderTitle className="border-bottom"
                                         title={'Sheet Specificaton'}
                                         customClass={'underLine-title'}
@@ -615,9 +683,10 @@ function SheetDetails(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-weight'} tooltipText={'Weight of Sheet = (Density * (Thickness * Width * Length)) / 1000'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-weight'} tooltipText={sheetWeightTooltipText(UOMDimension)} />
                                     <TextFieldHookForm
-                                        label={`Weight of Sheet(g)`}
+                                        // label={`Weight of Sheet(g)`}
+                                        label={`Weight of Sheet(${UOMDimension?.label})`}
                                         name={'SheetWeight'}
                                         id={'sheet-weight'}
                                         Controller={Controller}
@@ -1315,32 +1384,13 @@ function SheetDetails(props) {
                                         disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
-                                <Col md="3">
-                                    <SearchableSelectHookForm
-                                        label={'Weight Unit'}
-                                        name={'UOMDimension'}
-                                        placeholder={'Select'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
-                                        options={renderListing('UOM')}
-                                        customClassName={'mb-0'}
-                                        mandatory={true}
-                                        handleChange={handleUnit}
-                                        errors={errors.UOMDimension}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-
-                                </Col>
                             </Row>
                             <Row>
                                 <Col md="3">
                                     <TooltipCustom width={'340px'} id={'gross-weight-info'} tooltipText={"Gross Weight is calculated by the maximum value of 'Total Component/Sheet' . Radio button is pre-selected accordingly"} />
                                     <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Gross Weight = Weight of sheet / Total Component/Sheet"} />
                                     <TextFieldHookForm
-                                        label={`Gross Weight(${UOMDimension.label})`}
+                                        label={`Gross Weight(${UOMDimension?.label})`}
                                         name={'GrossWeight'}
                                         Controller={Controller}
                                         control={control}
