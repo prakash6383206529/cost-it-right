@@ -235,42 +235,42 @@ export default function materialReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-                filterRMSelectList: { ...state.filterRMSelectList, Grades: action.payload }
+                filterRMSelectList: { ...state.filterRMSelectList || {}, Grades: action.payload }
             };
         case GET_VENDOR_FILTER_BY_RAW_MATERIAL_SELECTLIST:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                filterRMSelectList: { ...state.filterRMSelectList, Vendors: action.payload }
+                filterRMSelectList: { ...state.filterRMSelectList || {}, Vendors: action.payload }
             };
         case GET_RAW_MATERIAL_FILTER_BY_GRADE_SELECTLIST:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                filterRMSelectList: { ...state.filterRMSelectList, RawMaterials: action.payload }
+                filterRMSelectList: { ...state.filterRMSelectList || {}, RawMaterials: action.payload }
             };
         case GET_VENDOR_FILTER_BY_GRADE_SELECTLIST:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                filterRMSelectList: { ...state.filterRMSelectList, Vendors: action.payload }
+                filterRMSelectList: { ...state.filterRMSelectList || {}, Vendors: action.payload }
             };
         case GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                filterRMSelectList: { ...state.filterRMSelectList, RawMaterials: action.payload }
+                filterRMSelectList: { ...state.filterRMSelectList || {}, RawMaterials: action.payload }
             };
         case GET_GRADE_FILTER_BY_VENDOR_SELECTLIST:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                filterRMSelectList: { ...state.filterRMSelectList, Grades: action.payload }
+                filterRMSelectList: { ...state.filterRMSelectList || {}, Grades: action.payload }
             };
         default:
             return state;

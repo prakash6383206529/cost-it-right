@@ -38,7 +38,8 @@ export default function supplierReducer(state = initialState, action) {
             };
         case GET_SUPPLIER_DATALIST_SUCCESS:
             let arr = []
-            arr = action.payload && action.payload.filter((el, i) => {
+            arr = action.payload?.filter((el, i) => {
+                if (!el) return false;
                 el.status = el.IsActive
                 if (el.status === true) {
                     el.status = 'Active'
@@ -46,7 +47,7 @@ export default function supplierReducer(state = initialState, action) {
                     el.status = 'In Active'
                 }
                 return true
-            })
+            }) || []
             return {
                 ...state,
                 loading: false,

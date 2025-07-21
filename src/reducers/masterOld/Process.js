@@ -63,68 +63,68 @@ export default function processReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, plants: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, plants: action.payload },
             };
         case GET_PLANT_LIST_BY_MACHINE:
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, plants: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, plants: action.payload },
             };
 
         case GET_INITIAL_MACHINE_TYPE_SELECTLIST:
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, machineTypes: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, machineTypes: action.payload },
             };
         case GET_INITIAL_MACHINE_LIST_SUCCESS:
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, machine: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, machine: action.payload },
             };
         case GET_MACHINE_LIST_BY_PLANT:
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, machine: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, machine: action.payload },
             };
         case GET_INITIAL_PROCESSES_LIST_SUCCESS:
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, processList: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, processList: action.payload },
             };
         case GET_MACHINE_TYPE_LIST_BY_PLANT:
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, machineTypes: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, machineTypes: action.payload },
             };
         case GET_VENDOR_LIST_BY_TECHNOLOGY:
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, vendor: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, vendor: action.payload },
             };
         case GET_MACHINE_TYPE_LIST_BY_TECHNOLOGY:
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, machineTypes: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, machineTypes: action.payload },
             };
         case GET_MACHINE_TYPE_LIST_BY_VENDOR:
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, machineTypes: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, machineTypes: action.payload },
             };
         case GET_PROCESS_LIST_BY_MACHINE_TYPE:
             return {
                 ...state,
                 loading: false,
-                filterSelectList: { ...state.filterSelectList, processList: action.payload },
+                filterSelectList: { ...state.filterSelectList || {}, processList: action.payload },
             };
         case GET_PROCESS_LIST_FAILURE: {
             return {

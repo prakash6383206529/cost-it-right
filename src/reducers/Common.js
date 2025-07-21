@@ -598,7 +598,7 @@ export default function commanReducer(state = initialState, action) {
     case SET_LIST_TOGGLE:
       return {
         ...state,
-        listToggle: { ...state.listToggle, ...action.payload }
+        listToggle: { ...state.listToggle || {}, ...action.payload }
       }
     default:
       return state;

@@ -76,11 +76,11 @@ export default function costingReducer(state = initialState, action) {
             };
         case SET_CED_ROW_DATA_TO_COST_SUMMARY:
             let CEDRowData = action.payload;
-            let data = state.costingData[action.supplierColumn];
+            let data = state.costingData?.[action.supplierColumn] || {};
             data = {
                 ...data,
                 CostingDetail: {
-                    ...data.CostingDetail,
+                    ...data?.CostingDetail,
                     CEDOperationId: CEDRowData.CEDOtherOperationId,
                     CEDOperationName: CEDRowData.OperationName,
                     CEDOperationRate: CEDRowData.OperationRate,
@@ -98,11 +98,11 @@ export default function costingReducer(state = initialState, action) {
             };
         case SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY:
             let FreightRowData = action.payload;
-            let Olddata = state.costingData[action.supplierColumn];
+            let Olddata = state.costingData?.[action.supplierColumn] || {};
             Olddata = {
                 ...Olddata,
                 CostingDetail: {
-                    ...Olddata.CostingDetail,
+                    ...Olddata?.CostingDetail,
                     AdditionalFreightId: FreightRowData.FreightId,
                     NetAdditionalFreightCost: FreightRowData.NetAdditionalFreightCost,
                 }
@@ -116,11 +116,11 @@ export default function costingReducer(state = initialState, action) {
 
         case SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY:
             let InterestRowData = action.payload;
-            let InventoryOlddata = state.costingData[action.supplierColumn];
+            let InventoryOlddata = state.costingData?.[action.supplierColumn] || {};
             InventoryOlddata = {
                 ...InventoryOlddata,
                 CostingDetail: {
-                    ...InventoryOlddata.CostingDetail,
+                    ...InventoryOlddata?.CostingDetail,
                     RMICCPercentage: InterestRowData.RMInventoryPercent,
                     WIPICCPercentage: InterestRowData.WIPInventoryPercent,
                     PaymentTermsICCPercentage: InterestRowData.PaymentTermPercent,

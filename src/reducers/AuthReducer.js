@@ -56,8 +56,11 @@ import { showBopLabel, updateBOPValues } from '../helper'
 // /** Always define initialState in reducer so that we don't get undefined values */
 
 const commonUserFunction = (data) => {
-    let arr = []
-    arr = data && data.filter((el, i) => {
+    if (!Array.isArray(data)) {
+        return [];
+    }
+    return data.filter((el, i) => {
+        if (!el) return false;
         el.status = el.IsActive
         if (el.status === true) {
             el.status = 'Active'
@@ -66,7 +69,6 @@ const commonUserFunction = (data) => {
         }
         return true
     })
-    return arr;
 }
 
 const initialState = {
@@ -204,12 +206,11 @@ export default function authReducer(state = initialState, action) {
             };
         case GET_USER_DATA_SUCCESS:
             let arr = [];
-            arr = action.payload && action.payload.filter((item) => {
-                item.CreatedDateExcel = item.CreatedDate ? DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss') : ""
-                item.ModifiedDateExcel = item.ModifiedDate ? DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss') : ""
+            arr = action.payload?.filter((item) => {
+                item.CreatedDateExcel = item?.CreatedDate ? DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss') : ""
+                item.ModifiedDateExcel = item?.ModifiedDate ? DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss') : ""
                 return item
-            }
-            )
+            }) || []
             return {
                 ...state,
                 loading: false,
@@ -218,11 +219,11 @@ export default function authReducer(state = initialState, action) {
             };
         case GET_RFQ_USER_DATA_SUCCESS:
             let arrRFQ = [];
-            arrRFQ = action.payload && action.payload.filter((item) => {
-                item.CreatedDateExcel = item.CreatedDate ? DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss') : ""
-                item.ModifiedDateExcel = item.ModifiedDate ? DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss') : ""
+            arrRFQ = action.payload?.filter((item) => {
+                item.CreatedDateExcel = item?.CreatedDate ? DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss') : ""
+                item.ModifiedDateExcel = item?.ModifiedDate ? DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss') : ""
                 return item
-            })
+            }) || []
             return {
                 ...state,
                 loading: false,
@@ -350,12 +351,12 @@ export default function authReducer(state = initialState, action) {
                 masterLevelSelectList: action.payload
             }
         case GET_TOP_AND_LEFT_MENU_DATA:
-            const arrayTemp = action.payload && action.payload?.map(item => {
-                let tempArr = _.cloneDeep(item)
+            const arrayTemp = action.payload?.map(item => {
+                let tempArr = _.cloneDeep(item || {})
                 const arr = updateBOPValues(tempArr?.Pages, [], showBopLabel(), 'PageName')?.updatedLabels
                 tempArr.Pages = arr
                 return tempArr
-            })
+            }) || []
             return {
                 ...state,
                 loading: false,
