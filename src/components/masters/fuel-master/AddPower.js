@@ -2523,7 +2523,7 @@ class AddPower extends Component {
                             <Col md="2">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"TotalUnitCharges"} width="360px" disabledIcon={true} tooltipText={"Total Charge per Unit = ((Unit Consumption per Annum * Cost per Unit) + Meter Rent and Other Charges per Annum + Duty Charges and FCA) / Unit Consumption per Annum"} />
+                                  {!!this.checkTotalElectricityPowerChargesDisable("TotalUnitCharges") && <TooltipCustom id={"TotalUnitCharges"} width="360px" disabledIcon={true} tooltipText={"Total Charge per Unit = ((Unit Consumption per Annum * Cost per Unit) + Meter Rent and Other Charges per Annum + Duty Charges and FCA) / Unit Consumption per Annum"} />}
                                   <Field
                                     label={`Total Charge/Unit`}
                                     // name={this.state.power.TotalUnitCharges === 0 ? '' : "TotalUnitCharges"}
