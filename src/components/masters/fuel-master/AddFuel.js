@@ -278,7 +278,10 @@ class AddFuel extends Component {
               isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
               // effectiveDate: effectiveDate
-              effectiveDate: Data.EffectiveDate ? Data?.EffectiveDate : ""
+              effectiveDate: Data.EffectiveDate ? Data?.EffectiveDate : "",
+              country: { label: Data?.FuelDetails?.[0]?.CountryName, value: Data?.FuelDetails?.[0]?.CountryId},
+              StateName: { label: Data?.FuelDetails?.[0]?.StateName, value: Data?.FuelDetails?.[0]?.StateId},
+              city: { label: Data?.FuelDetails?.[0]?.CityName, value: Data?.FuelDetails?.[0]?.CityId}
 
             }, () => this.setState({ isLoader: false }))
           }, 200)
@@ -419,17 +422,17 @@ class AddFuel extends Component {
       })
       this.setState({
         rateGrid: tempArray,
-        StateName: [],
+        // StateName: [],
         effectiveDate: '',
-        country: [],
-        city: [],
+        // country: [],
+        // city: [],
       }, () => {
         this.props.change("RateConversion", '')
         this.props.change("RateLocalConversion", '')
         this.props.change("Rate", '')
-        this.props.change('CountryId', null)
-        this.props.change('StateId', null)
-        this.props.change('CityId', null)
+        // this.props.change('CountryId', null)
+        // this.props.change('StateId', null)
+        // this.props.change('CityId', null)
       }
       );
       this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false, country: false, city: false } })
@@ -440,9 +443,9 @@ class AddFuel extends Component {
   rateTableReset = () => {
 
     this.setState({
-      StateName: [],
-      country: [],
-      city: [],
+      // StateName: [],
+      // country: [],
+      // city: [],
       effectiveDate: "",
       errorObj: { city: false, state: false, rate: false, country: false, effectiveDate: false }
 
@@ -501,12 +504,12 @@ class AddFuel extends Component {
     tempArray = Object.assign([...rateGrid], { [rateGridEditIndex]: tempData })
     this.setState({
       rateGrid: tempArray,
-      StateName: [],
+      // StateName: [],
       effectiveDate: '',
       rateGridEditIndex: '',
       isEditIndex: false,
-      country: {},
-      city: {},
+      // country: {},
+      // city: {},
     }, () => this.props.change("RateConversion", ''),
       this.props.change("RateLocalConversion", ''),
       this.props.change("Rate", ''));
@@ -556,7 +559,7 @@ class AddFuel extends Component {
       isEditIndex: false,
       effectiveDate: '',
 
-      StateName: '',
+      // StateName: '',
     }, () => this.props.change('Rate', 0))
     let tempData = rateGrid.filter((item, i) => {
       if (i === index) {
@@ -671,7 +674,7 @@ class AddFuel extends Component {
       FuelDetailId: '',
       fuel: [],
       UOM: [],
-      StateName: [],
+      // StateName: [],
       effectiveDate: '',
       rateGrid: [],
       isEditFlag: false,
