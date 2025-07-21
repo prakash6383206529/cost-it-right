@@ -289,7 +289,7 @@ function Pipe(props) {
     const updatedValue = dataToSend
     updatedValue.WeightofSheet = SheetWeight
     setDataToSend(updatedValue)
-    setValue('WeightofSheet', checkForDecimalAndNull(SheetWeight, localStorage.NoOfDecimalForInputOutput))
+    setValue('WeightofSheet', checkForDecimalAndNull(setValueAccToUOM(SheetWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
   }
 
   /**
@@ -309,7 +309,7 @@ function Pipe(props) {
     const updatedValue = dataToSend
     updatedValue.WeightofPart = PartWeight
     setDataToSend(updatedValue)
-    setValue('WeightofPart', checkForDecimalAndNull(PartWeight, localStorage.NoOfDecimalForInputOutput))
+    setValue('WeightofPart', checkForDecimalAndNull(setValueAccToUOM(PartWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
   }
 
   /**
@@ -328,7 +328,7 @@ function Pipe(props) {
     const updatedValue = dataToSend
     updatedValue.WeightofScrap = ScrapWeight
     setDataToSend(updatedValue)
-    setValue('WeightofScrap', checkForDecimalAndNull(ScrapWeight, localStorage.NoOfDecimalForInputOutput))
+    setValue('WeightofScrap', checkForDecimalAndNull(setValueAccToUOM(ScrapWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
   }
 
   /**
@@ -508,12 +508,20 @@ function Pipe(props) {
   const handleUnit = (value) => {
     setValue('UOMDimension', { label: value.label, value: value.value })
     setUOMDimension(value)
-    let grossWeight = GrossWeight
-    let ScrapWeight = scrapWeight
-    setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
-    setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
-    setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(FinishWeightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput))
-    setValue('scrapWeight', checkForDecimalAndNull(setValueAccToUOM(ScrapWeight, value.label), localStorage.NoOfDecimalForInputOutput))
+    // Get current values (declare only once)
+    let grossWeight = GrossWeight;
+    let ScrapWeight = scrapWeight;
+    let weightOfSheet = getValues('WeightofSheet');
+    let weightOfPart = getValues('WeightofPart');
+    let finishWeight = FinishWeightOfSheet;
+
+    // Convert and update all relevant fields
+    setValue('WeightofSheet', checkForDecimalAndNull(setValueAccToUOM(weightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput));
+    setValue('WeightofPart', checkForDecimalAndNull(setValueAccToUOM(weightOfPart, value.label), localStorage.NoOfDecimalForInputOutput));
+    setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput));
+    setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(finishWeight, value.label), localStorage.NoOfDecimalForInputOutput));
+    setValue('scrapWeight', checkForDecimalAndNull(setValueAccToUOM(ScrapWeight, value.label), localStorage.NoOfDecimalForInputOutput));
+    setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(finishWeight, value.label) }))
   }
 
   const UnitFormat = () => {
@@ -539,12 +547,21 @@ function Pipe(props) {
     const PartLengthWithAllowance = checkForNull(LengthOfPart + CuttingAllowance)
     setValue('partLengthWithAllowance', checkForDecimalAndNull(PartLengthWithAllowance, localStorage.NoOfDecimalForInputOutput))
   }
+
+  const unitFormulaMap = {
+    g: '/ 1000',
+    kg: '/ (1000 * 1000)',
+    mg: '',
+  };
+
   /**
    * @method render
    * @description Renders the component
    */
-  const tooltipMessageForSheetWeight = (value) => {
-    return <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * Length of {value} {value === 'Part' ? 'including allowance' : ''})/1000</div>
+  const tooltipMessageForSheetWeight = (value, uom) => {
+    const devideValue = unitFormulaMap[uom?.label];
+    // return <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * Length of {value} {value === 'Part' ? 'including allowance' : ''})/1000</div>
+    return <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * Length of {value} {value === 'Part' ? 'including allowance' : ''}) {devideValue}</div>
   }
   const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part including allowance) + {isOneSide ? '(π * Inner Diameter * Length of Part including allowance) +' : ''} (π / 2 * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>))</div>
   const lengthOfScrapTooltipMessage = <div>Length of Scrap = Remainder of no. of parts/Sheet <br /> (No. of Parts/Sheet = {checkForDecimalAndNull(dataToSend.NumberOfPartsPerSheetWithDecimal, localStorage.NoOfDecimalForInputOutput)})</div>
@@ -555,15 +572,35 @@ function Pipe(props) {
           <form noValidate className="form"
             onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
             <div className="costing-border border-top-0 px-4">
-              <Row>
-                <Col md="12" className={'mt25'}>
-                  <HeaderTitle className="border-bottom"
-                    title={'Sheet Specification'}
-                    customClass={'underLine-title'}
-                  />
-                </Col>
-              </Row>
-              <Row className={''}>
+            <Row>
+              <Col md="3" className={'mt25'}>
+                <SearchableSelectHookForm
+                  label={'Weight Unit'}
+                  name={'UOMDimension'}
+                  placeholder={'Select'}
+                  Controller={Controller}
+                  control={control}
+                  rules={{ required: true }}
+                  register={register}
+                  defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
+                  options={renderListing('UOM')}
+                  mandatory={true}
+                  handleChange={handleUnit}
+                  errors={errors.UOMDimension}
+                  disabled={CostingViewMode ? true : false}
+                />
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md="12">
+                <HeaderTitle className="border-bottom"
+                  title={'Sheet Specification'}
+                  customClass={'underLine-title'}
+                />
+              </Col>
+            </Row>
+            <Row className={''}>
                 <Col md="3">
                   <TextFieldHookForm
                     label={`Outer Diameter(mm)`}
@@ -760,9 +797,9 @@ function Pipe(props) {
                   />
                 </Col >
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-sheet'} tooltipText={tooltipMessageForSheetWeight('Sheet')} />
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-sheet'} tooltipText={tooltipMessageForSheetWeight('Sheet', UOMDimension)} />
                   <TextFieldHookForm
-                    label={`Weight of Sheet(g)`}
+                    label={`Weight of Sheet(${UOMDimension?.label})`}
                     name={'WeightofSheet'}
                     Controller={Controller}
                     control={control}
@@ -780,7 +817,7 @@ function Pipe(props) {
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-part'} tooltipText={tooltipMessageForSheetWeight('Part')} />
                   <TextFieldHookForm
-                    label={`Weight of Part(g)`}
+                    label={`Weight of Part(${UOMDimension?.label})`}
                     name={'WeightofPart'}
                     Controller={Controller}
                     control={control}
@@ -798,7 +835,7 @@ function Pipe(props) {
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-scrap'} tooltipText={tooltipMessageForSheetWeight('Scrap')} />
                   <TextFieldHookForm
-                    label={`Weight of Scrap(g)`}
+                    label={`Weight of Scrap(${UOMDimension?.label})`}
                     name={'WeightofScrap'}
                     Controller={Controller}
                     control={control}
@@ -871,24 +908,7 @@ function Pipe(props) {
                     disabled={true}
                   />
                 </Col >
-                <Col md="3">
-                  <SearchableSelectHookForm
-                    label={'Weight Unit'}
-                    name={'UOMDimension'}
-                    placeholder={'Select'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
-                    options={renderListing('UOM')}
-                    mandatory={true}
-                    handleChange={handleUnit}
-                    errors={errors.UOMDimension}
-                    disabled={CostingViewMode ? true : false}
-                  />
 
-                </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={`${rmRowData?.RawMaterialCategory !== STD ? "Gross Weight = Weight of sheet / No. of Parts" : "Gross Weight = Weight of part + (Weight of scrap / No. of Parts)" }`} />
                   <TextFieldHookForm

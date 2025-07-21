@@ -254,7 +254,7 @@ function AddFreight(props) {
         return null;
       });
 
-      tempList=filterBOPApplicability(costingHead,gridData,'Criteria')
+      tempList = filterBOPApplicability(costingHead, gridData, 'Criteria')
       // Apply additional filters if needed
       if (isBreakupBoughtOutPartCostingFromAPI) {
         tempList = removeBOPfromApplicability([...tempList])
@@ -378,11 +378,12 @@ function AddFreight(props) {
   const calculateCost = (Text) => {
     const { NetRawMaterialsCost, NetBoughtOutPartCost, NetBOPDomesticCost, NetBOPImportCost, NetBOPOutsourcedCost, NetBOPSourceCost, NetBOPDomesticCostWithOutHandlingCharge, NetBOPImportCostWithOutHandlingCharge, NetBOPOutsourcedCostWithOutHandlingCharge, NetBOPSourceCostWithOutHandlingCharge, NetBoughtOutPartCostWithOutHandlingCharge } = headCostData;
     let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData?.length > 0 && OverheadProfitTabData?.[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData?.[0]?.CostingPartDetails : null;
-    const { HangerCostPerPart, PaintCost, SurfaceTreatmentCost,NetSurfaceTreatmentCost,HangerCostPerPartWithQuantity,PaintCostWithQuantity } = SurfaceTabData[0]?.CostingPartDetails
+    const { HangerCostPerPart, PaintCost, SurfaceTreatmentCost, NetSurfaceTreatmentCost, HangerCostPerPartWithQuantity, PaintCostWithQuantity } = SurfaceTabData[0]?.CostingPartDetails
 
     const RateAsPercentage = getValues('Rate');
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
     const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost)
+    const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.NetProcessCost + headCostData.NetOperationCost
 
 
     let totalFreightCost = ''
@@ -419,11 +420,11 @@ function AddFreight(props) {
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
-        case "BOP Without Handling Charge":
-          totalFreightCost = checkForNull(NetBoughtOutPartCostWithOutHandlingCharge) * calculatePercentage(RateAsPercentage)
-          setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
-          setFreightCost(totalFreightCost)
-          break;
+      case "BOP Without Handling Charge":
+        totalFreightCost = checkForNull(NetBoughtOutPartCostWithOutHandlingCharge) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
       case "BOP Domestic Without Handling Charge":
         totalFreightCost = checkForNull(NetBOPDomesticCostWithOutHandlingCharge) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
@@ -444,7 +445,11 @@ function AddFreight(props) {
         setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
-
+      case 'CC':
+        totalFreightCost = checkForNull(ConversionCostForCalculation) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+        setFreightCost(totalFreightCost)
+        break;
       case "Hanger Cost":
         const isPartType = partType || ["Part", "Component", "BoughtOutPart"].includes(SurfaceTabData[0]?.PartType);
         totalFreightCost = checkForNull(isPartType ? HangerCostPerPart : HangerCostPerPartWithQuantity) * calculatePercentage(RateAsPercentage);
@@ -614,7 +619,7 @@ function AddFreight(props) {
     // Check for conflicting selections before saving
     if (applicability?.label) {
       const existingApplicabilities = _.map(gridData, 'Criteria');
-      
+
       // If user is trying to save Surface Treatment Cost
       if (applicability.label === 'Surface Treatment Cost') {
         if (existingApplicabilities.includes('Hanger Cost') || existingApplicabilities.includes('Paint Cost')) {
@@ -622,7 +627,7 @@ function AddFreight(props) {
           return;
         }
       }
-      
+
       // If user is trying to save Hanger Cost or Paint Cost
       if (applicability.label === 'Hanger Cost' || applicability.label === 'Paint Cost') {
         if (existingApplicabilities.includes('Surface Treatment Cost')) {
@@ -664,13 +669,13 @@ function AddFreight(props) {
       return false;
     }
 
-    if (IsAllowSingleFreightMultipleTimeInCosting ) {
+    if (IsAllowSingleFreightMultipleTimeInCosting) {
       const keysToIgnore = ['CostingFreightCalculationDetailsId']
       const exists = _.some(gridData, item => _.isEqualWith(item, formData, (_, __, key) => {
-          if (keysToIgnore.includes(key)) return true
-          // default key and value for everything else that's why return undefined
-          return undefined
-        })
+        if (keysToIgnore.includes(key)) return true
+        // default key and value for everything else that's why return undefined
+        return undefined
+      })
       )
       if (exists) {
         isEditFlag ? Toaster.warning("Please change the data to update Freight.") : Toaster.warning("Data already exists in the grid.")
