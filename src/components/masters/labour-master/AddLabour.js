@@ -10,9 +10,9 @@ import { createLabour, getLabourData, updateLabour, getLabourTypeByMachineTypeSe
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster'
-import { fetchCityDataAPI, fetchCountryDataAPI, fetchStateDataAPI, getAllCity, getCityByCountryAction, getExchangeRateSource, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { fetchCityDataAPI, fetchCountryDataAPI, fetchStateDataAPI, getAllCity, getCityByCountryAction, getExchangeRateSource, getVendorNameByVendorSelectList, getPlantSelectListByType } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, LABOUR_VENDOR_TYPE, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, LABOUR_VENDOR_TYPE, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId, ZBC } from '../../../config/constants'
 import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
@@ -35,6 +35,7 @@ import { getPlantUnitAPI } from '../actions/Plant'
 import WarningMessage from '../../common/WarningMessage'
 import TooltipCustom from '../../common/Tooltip'
 import { checkEffectiveDate } from '../masterUtil'
+import { getSupplierByIdAPI } from '../actions/Supplier'
 
 const selector = formValueSelector('AddLabour')
 const isAssociated = true;
@@ -114,10 +115,10 @@ class AddLabour extends Component {
       this.props.getMachineTypeSelectList(() => { })
       this.props.getProductGroupSelectList(() => { })
       this.props.getClientSelectList(() => { })
-      this.props.fetchCountryDataAPI(() => { })
-      this.props.fetchCityDataAPI(0, () => { })
-      this.props.fetchStateDataAPI(0, () => { })
-
+      this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
+      // this.props.fetchCountryDataAPI(() => { })
+      // this.props.fetchCityDataAPI(0, () => { })
+      // this.props.fetchStateDataAPI(0, () => { })
     }
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       // this.props.getAllCity(countryId => {
@@ -284,8 +285,10 @@ class AddLabour extends Component {
     if (label === 'plant') {
       plantSelectList &&
         plantSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
+          // if (item.Value === '0') return false
+          // temp.push({ label: item.Text, value: item.Value })
+          if (item?.PlantId === '0') return false
+          temp.push({ label: item?.PlantNameCode, value: item?.PlantId })
           return null
         })
       return temp
@@ -389,6 +392,18 @@ class AddLabour extends Component {
    */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      this.props.getSupplierByIdAPI(newValue?.value, true, (res) => {
+        if (res && res.data && res.data.Data) {
+            let Data = res.data.Data
+            if (this.state.costingTypeId === VBCTypeId) {
+            this.setState({
+              country: { label: Data?.Country, value: Data?.CountryId},
+              StateName: { label: Data?.State, value: Data?.StateId},
+              city: { label: Data?.City, value: Data?.CityId}
+            })
+          }    
+        }
+      })
       this.setState(
         {
           vendorName: newValue,
@@ -456,6 +471,13 @@ class AddLabour extends Component {
         let Data = res?.data?.Data
         this.setState({ plantCurrencyID: Data?.CurrencyId })
         this.props.change('plantCurrency', Data?.Currency)
+        if (this.state.costingTypeId === ZBCTypeId || this.state.costingTypeId === CBCTypeId) {
+          this.setState({
+            country: { label: Data?.CountryName, value: Data?.CountryId },
+            StateName: { label: Data?.StateName, value: Data?.StateId },
+            city: { label: Data?.CityName, value: Data?.CityIdRef }
+          })
+        }
         if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
           this.setState({ hidePlantCurrency: false })
         } else {
@@ -1338,6 +1360,38 @@ class AddLabour extends Component {
                           <h5>{costingTypeId === CBCTypeId ? "Customer:" : `${VendorLabel}:`}</h5>
                         </div>
                       </Col>
+                      <Col md="3">
+                        <div className="form-group">
+                          <Field
+                            name="Plant"
+                            type="text"
+                            label="Plant (Code)"
+                            component={searchableSelect}
+                            placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
+                            options={this.renderListing("plant")}
+                            validate={
+                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                            required={true}
+                            handleChangeDescription={this.handlePlants}
+                            valueDescription={this.state.selectedPlants}
+                            disabled={(isEditFlag || gridTable.length !== 0) ? true : false}
+                          /></div>
+                      </Col>
+                      <Col Col md="3" className='p-relative'>
+                        {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                        <Field
+                          label="Plant Currency"
+                          name="plantCurrency"
+                          type="text"
+                          placeholder="-"
+                          component={renderTextInputField}
+                          disabled={true}
+                          className=" "
+                          customClassName="withBorder mb-1 plant-currency"
+                        />
+                        {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+
+                      </Col>
                       {this.state.IsEmployeContractual && costingTypeId !== CBCTypeId && (
                         <Col md="3" className='mb-4'>
                           <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
@@ -1422,7 +1476,8 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.countryHandler}
                             valueDescription={this.state.country}
-                            disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
+                            disabled={true}
+                            // disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
                           />
                         </div>
                       </Col>
@@ -1441,7 +1496,8 @@ class AddLabour extends Component {
                               required={true}
                               handleChangeDescription={this.stateHandler}
                               valueDescription={this.state?.StateName}
-                              disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
+                              disabled={true}
+                              // disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
                             />
                           </div>
                         </Col>}
@@ -1459,26 +1515,10 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.cityHandler}
                             valueDescription={this.state.city}
-                            disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
+                            disabled={true}
+                            // disabled={isViewMode || isEditFlag || this.props.fieldsObj?.LabourRate !== undefined || gridTable?.length !== 0}
                           />
                         </div>
-                      </Col>
-                      <Col md="3">
-                        <div className="form-group">
-                          <Field
-                            name="Plant"
-                            type="text"
-                            label="Plant (Code)"
-                            component={searchableSelect}
-                            placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
-                            options={this.renderListing("plant")}
-                            validate={
-                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                            required={true}
-                            handleChangeDescription={this.handlePlants}
-                            valueDescription={this.state.selectedPlants}
-                            disabled={(isEditFlag || gridTable.length !== 0) ? true : false}
-                          /></div>
                       </Col>
                       {getConfigurationKey().IsSourceExchangeRateNameVisible && (
                         <Col md="3">
@@ -1496,21 +1536,6 @@ class AddLabour extends Component {
                           />
                         </Col>
                       )}
-                      <Col Col md="3" className='p-relative'>
-                        {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
-                        <Field
-                          label="Plant Currency"
-                          name="plantCurrency"
-                          type="text"
-                          placeholder="-"
-                          component={renderTextInputField}
-                          disabled={true}
-                          className=" "
-                          customClassName="withBorder mb-1 plant-currency"
-                        />
-                        {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
-
-                      </Col>
                       <Row className='sub-form-container'>
                         <Col md="12" className="filter-block">
                           <div className=" flex-fills mb-2 w-100 pl-0">
@@ -1961,11 +1986,12 @@ function mapStateToProps(state) {
     VendorLabourTypeSelectList,
   } = labour
   const { productGroupSelectList } = part;
-  const { stateList, exchangeRateSourceList, countryList, cityList } = comman;
+  const { stateList, exchangeRateSourceList, countryList, cityList, plantSelectList } = comman;
 
   const { vendorWithVendorCodeSelectList } = supplier
   const { machineTypeSelectList } = machine
-  const { fuelDataByPlant, plantSelectList } = fuel
+  const { fuelDataByPlant } = fuel
+  // const { fuelDataByPlant, plantSelectList } = fuel
   const { initialConfiguration } = auth;
   const { clientSelectList } = client;
   let initialValues = {}
@@ -2004,7 +2030,9 @@ export default connect(mapStateToProps, {
   fetchCountryDataAPI,
   fetchCityDataAPI,
   getCityByCountryAction,
-  getPlantUnitAPI
+  getPlantUnitAPI,
+  getSupplierByIdAPI,
+  getPlantSelectListByType
 
 })(
   reduxForm({

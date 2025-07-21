@@ -51,34 +51,34 @@ function AddAssemblyOperation(props) {
 
   useEffect(() => {
 
-  
-      let arr = JSON.parse(sessionStorage.getItem('costingArray'))?.filter(element =>
-        element?.PartNumber === itemInState?.PartNumber &&
-        element?.AssemblyPartNumber === itemInState?.AssemblyPartNumber &&
-        element?.BOMLevel === itemInState?.BOMLevel
-      )
-      if (arr && arr[0]?.CostingPartDetails?.CostingOperationCostResponse) {
-        let operationCost = 0;
-        let weldingCost = 0;
 
-        const operationResponse = Array.isArray(arr[0]?.CostingPartDetails?.CostingOperationCostResponse)
-          ? arr[0]?.CostingPartDetails?.CostingOperationCostResponse
-          : [];
+    let arr = JSON.parse(sessionStorage.getItem('costingArray'))?.filter(element =>
+      element?.PartNumber === itemInState?.PartNumber &&
+      element?.AssemblyPartNumber === itemInState?.AssemblyPartNumber &&
+      element?.BOMLevel === itemInState?.BOMLevel
+    )
+    if (arr && arr[0]?.CostingPartDetails?.CostingOperationCostResponse) {
+      let operationCost = 0;
+      let weldingCost = 0;
 
-        operationResponse.forEach(item => {
-          if (!item?.IsChild) {
-            if (item?.ForType === "Welding") {
-              weldingCost += checkForNull(item?.OperationCost);
-            }
-            operationCost += checkForNull(item?.OperationCost);
+      const operationResponse = Array.isArray(arr[0]?.CostingPartDetails?.CostingOperationCostResponse)
+        ? arr[0]?.CostingPartDetails?.CostingOperationCostResponse
+        : [];
+
+      operationResponse.forEach(item => {
+        if (!item?.IsChild) {
+          if (item?.ForType === "Welding") {
+            weldingCost += checkForNull(item?.OperationCost);
           }
-        });
-        
-        setOperationGridData(operationResponse)
-        setOperationCostAssemblyTechnology(operationCost)
-        setWeldingCostAssemblyTechnology(weldingCost)
-      }
-   
+          operationCost += checkForNull(item?.OperationCost);
+        }
+      });
+
+      setOperationGridData(operationResponse)
+      setOperationCostAssemblyTechnology(operationCost)
+      setWeldingCostAssemblyTechnology(weldingCost)
+    }
+
   }, [itemInState])
 
   // Restore subAssemblyTechnologyArray effect
@@ -86,13 +86,13 @@ function AddAssemblyOperation(props) {
 
     if (isAssemblyTechnology && subAssemblyTechnologyArray?.length > 0) {
       const operationResponse = Array.isArray(subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingOperationCostResponse) ? subAssemblyTechnologyArray[0].CostingPartDetails.CostingOperationCostResponse : [];
-      
+
       setOperationGridData(operationResponse)
       setOperationCostAssemblyTechnology(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetOperationCost || 0)
       setWeldingCostAssemblyTechnology(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetWeldingCost || 0)
     }
     return () => {
-      
+
       setOperationGridData([])
     }
   }, [])
@@ -117,7 +117,7 @@ function AddAssemblyOperation(props) {
   }
 
   const getOperationGrid = (grid, operationCostAssemblyTechnology, isAssemblyTechnologyCall) => {
-    
+
     setOperationGridData(grid)
     if (isAssemblyTechnologyCall) {
       setOperationCostAssemblyTechnology(operationCostAssemblyTechnology)
@@ -176,7 +176,7 @@ function AddAssemblyOperation(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
-    const hasMissingApplicability = operationGridData?.some(item => !item?.CostingConversionApplicabilityDetails);
+    const hasMissingApplicability = operationGridData?.some(item => !item?.CostingConversionApplicabilityDetails || item?.CostingConversionApplicabilityDetails?.length === 0);
     if (operationGridData?.length > 0 && hasMissingApplicability) {
       Toaster.warning('Please select Applicability for all operations');
       return false;

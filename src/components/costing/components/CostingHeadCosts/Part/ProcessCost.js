@@ -1138,7 +1138,7 @@ function ProcessCost(props) {
       const uniqueItems = [...new Set(e.map(item => item.label.toLowerCase()))].map(label => {
         return e.find(item => item.label.toLowerCase() === label);
       });
-      
+
       if (uniqueItems.length < e.length) {
         Toaster.warning(`Duplicate applicability is not allowed`);
         e = uniqueItems;
@@ -1152,33 +1152,33 @@ function ProcessCost(props) {
         const uniqueItems = [...new Set(e.map(item => item.label.toLowerCase()))].map(label => {
           return e.find(item => item.label.toLowerCase() === label);
         });
-      
+
         if (uniqueItems.length < e.length) {
           Toaster.warning(`Duplicate applicability is not allowed`);
         }
-      
+
         // Define conflicting pairs
         const conflictingPairs = [
           ['overhead', 'overhead(excluding int. + dep.)'],
           ['profit', 'profit(excluding int. + dep.)'],
           ['rejection', 'rejection(excluding int. + dep.)']
         ];
-      
+
         const labels = uniqueItems.map(item => item.label.toLowerCase());
         let filteredItems = [...uniqueItems]; // Copy to modify
-      
+
         for (const [type1, type2] of conflictingPairs) {
           if (labels.includes(type1) && labels.includes(type2)) {
             const capitalizedType = type1.charAt(0).toUpperCase() + type1.slice(1);
             Toaster.warning(`Cannot select both ${capitalizedType} and ${capitalizedType}(Excluding Int. + Dep.)`);
-      
+
             // Remove the second type in pair (or you can remove type1 instead based on your rule)
             filteredItems = filteredItems.filter(
               item => item.label.toLowerCase() !== type2
             );
           }
         }
-      
+
         // Final update
         e = filteredItems;
         setTimeout(() => {
@@ -1186,13 +1186,13 @@ function ProcessCost(props) {
         }, 50);
       }
     }
-  if (item?.Type === COSTAPPLICABILITYBASIS) {
-   if (e?.some(item => item.label === APPLICABILITY_OVERHEAD_EXCL || item.label === APPLICABILITY_PROFIT_EXCL || item.label === APPLICABILITY_REJECTION_EXCL)) {
-    
+    if (item?.Type === COSTAPPLICABILITYBASIS) {
+      if (e?.some(item => item.label === APPLICABILITY_OVERHEAD_EXCL || item.label === APPLICABILITY_PROFIT_EXCL || item.label === APPLICABILITY_REJECTION_EXCL)) {
+
         Toaster.warning("For cost applicability basis, only Overhead, Profit and Rejection applicability is allowed.")
-        e = e.filter(item => 
-          item.label === APPLICABILITY_OVERHEAD || 
-          item.label === APPLICABILITY_PROFIT || 
+        e = e.filter(item =>
+          item.label === APPLICABILITY_OVERHEAD ||
+          item.label === APPLICABILITY_PROFIT ||
           item.label === APPLICABILITY_REJECTION
         );
         setTimeout(() => {
@@ -1216,9 +1216,9 @@ function ProcessCost(props) {
     // Show warning if excluding applicability selected but not detailed form
     if (isExcludingApplicability) {
       if (!tempData?.IsDetailed || tempData?.UOMType !== TIME) {
-        e = e.filter(item => 
-          item.label === APPLICABILITY_OVERHEAD || 
-          item.label === APPLICABILITY_PROFIT || 
+        e = e.filter(item =>
+          item.label === APPLICABILITY_OVERHEAD ||
+          item.label === APPLICABILITY_PROFIT ||
           item.label === APPLICABILITY_REJECTION
         );
         setTimeout(() => {
@@ -1254,10 +1254,10 @@ function ProcessCost(props) {
         //const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e?.label, "Process", childProcess?.ProcessCostWithOutInterestAndDepreciation);
         return {
           ...childProcess,
-          CostingConversionApplicabilityDetails: e && e?.map(item => ({
-            CostingConditionMasterAndTypeLinkingId: item.value,
-            CostingConditionNumber: item.label
-          }))
+          // CostingConversionApplicabilityDetails: e && e?.map(item => ({
+          //   CostingConditionMasterAndTypeLinkingId: item.value,
+          //   CostingConditionNumber: item.label
+          // }))
           // ...childNetCosts
         };
       });
@@ -1891,7 +1891,7 @@ ${isDetailedText}`
                     {showCostBaseAppliacabilityColumns && <th style={{ width: "110px" }}>{`Percentage`}</th>}
                     <th style={{ width: "50px" }}>{`Cavity`}</th>
                     <th style={{ width: "100px" }}>{`Manpower/Run Count`}</th>
-                    <th style={{ width: "140px" }} >{`Net Cost`}</th>
+                    <th style={{ width: "160px" }} >{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
                     <th style={{ width: "160px" }} >{`Applicability`}</th>
                     <th style={{ width: "145px" }}><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
