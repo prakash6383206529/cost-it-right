@@ -3118,9 +3118,9 @@ export const Labour = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'EmploymentTerms', value: 'EmploymentTerms', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
-    { label: 'Country', value: 'Country', }, //*
-    { label: 'State', value: 'State', }, //*
-    { label: 'City', value: 'City', }, //*
+    // { label: 'Country', value: 'Country', }, //*
+    // { label: 'State', value: 'State', }, //*
+    // { label: 'City', value: 'City', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineType', value: 'MachineType', }, //*
     { label: 'LabourType', value: 'LabourType', }, //*
@@ -3206,11 +3206,11 @@ export const VolumeTempData = [
 export const Fuel = [
     { label: 'FuelName', value: 'FuelName', },
     { label: 'UOM', value: 'UOM', },
-    { label: 'State', value: 'State', },
+    // { label: 'State', value: 'State', },
     { label: 'FuelRate', value: 'FuelRate', },
     { label: 'PlantCode', value: 'PlantCode', },
-    { label: 'Country', value: 'Country', },
-    { label: 'City', value: 'City', },
+    // { label: 'Country', value: 'Country', },
+    // { label: 'City', value: 'City', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
 ]
 

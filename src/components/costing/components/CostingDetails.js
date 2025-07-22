@@ -2783,8 +2783,6 @@ function CostingDetails(props) {
                                         let displayEditBtn = (item.Status === DRAFT) ? true : false;
                                         let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
                                         let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
-                                        let list = item?.CostingOptions?.filter(element => element.Status !== DRAFT && element.Status !== REJECTED && element.Status !== REJECTED_BY_SYSTEM)
-                                        let showAddButtonInBOPBreakup = breakupBOP && list?.length > 0 ? false : true
 
                                         return (
                                           <tr key={index}>
@@ -2843,10 +2841,10 @@ function CostingDetails(props) {
                                             <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey()?.NoOfDecimalForPrice) : 0}</td>
                                             <td>
                                               <div className='action-btn-wrapper pr-2'>
-                                                {AddAccessibility && actionPermission.addVBC && showAddButtonInBOPBreakup && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBCTypeId)} disabled={disableButton} />}
+                                                {AddAccessibility && actionPermission.addVBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBCTypeId)} disabled={disableButton} />}
                                                 {ViewAccessibility && actionPermission.viewVBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBCTypeId)} disabled={disableButton} />)}
                                                 {EditAccessibility && actionPermission.editVBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBCTypeId)} disabled={disableButton} />)}
-                                                {String(partType.label) !== BOUGHTOUTPARTSPACING && CopyAccessibility && actionPermission.copyVBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBCTypeId)} disabled={disableButton} />)}
+                                                {CopyAccessibility && actionPermission.copyVBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBCTypeId)} disabled={disableButton} />)}
                                                 {DeleteAccessibility && actionPermission.deleteVBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBCTypeId)} disabled={disableButton} />)}
                                                 {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBCTypeId)} disabled={disableButton} />}
                                               </div>

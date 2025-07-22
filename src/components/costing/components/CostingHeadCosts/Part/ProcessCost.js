@@ -2032,10 +2032,11 @@ ${isDetailedText}`
                                 mandatory={false}
                                 placeholder={'Select'}
                                 customClassName="mt-2 process-cost-select-box"
-                                defaultValue={item?.CostingConversionApplicabilityDetails?.map(item => ({
-                                  label: item.CostingConditionNumber,
-                                  value: item.CostingConditionMasterAndTypeLinkingId
-                                }))}
+                                defaultValue={Array.isArray(item?.CostingConversionApplicabilityDetails) ? 
+                                  item?.CostingConversionApplicabilityDetails?.map(item => ({
+                                    label: item.CostingConditionNumber,
+                                    value: item.CostingConditionMasterAndTypeLinkingId
+                                  })) : []}
                                 options={processApplicabilitySelect}
                                 required={false}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index, item) }}

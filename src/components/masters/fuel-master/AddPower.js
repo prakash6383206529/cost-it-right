@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
 import { required, checkForNull, getCodeBySplitting, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthFour, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
 import { searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText, renderTextInputField, validateForm } from "../../layout/FormInputs";
-import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountryAction } from '../../../actions/Common';
+import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountryAction, getPlantSelectListByType } from '../../../actions/Common';
 import {
   getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByAddress, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
@@ -12,7 +12,7 @@ import {
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, ZBC } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
 import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
@@ -40,6 +40,7 @@ import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
 import WarningMessage from '../../common/WarningMessage';
 import { checkEffectiveDate } from '../masterUtil';
+import { getSupplierByIdAPI } from '../actions/Supplier';
 
 const selector = formValueSelector('AddPower');
 
@@ -139,14 +140,15 @@ class AddPower extends Component {
       this.props.getExchangeRateSource((res) => { })
       this.props.getPowerTypeSelectList(() => { })
       this.props.getUOMSelectList(() => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     }
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.fetchCountryDataAPI(() => { })
-      this.props.fetchCityDataAPI(0, () => { })
+      // this.props.fetchCountryDataAPI(() => { })
+      // this.props.fetchStateDataAPI(0, () => { })
+      // this.props.fetchCityDataAPI(0, () => { })
       this.props.getPlantBySupplier('', () => { })
       this.props.getPowerDetailData('', () => { })
       this.props.getClientSelectList(() => { })
-      this.props.fetchStateDataAPI(0, () => { })
     }
     this.getDetails();
     this.props.getCurrencySelectList(() => { })
@@ -326,6 +328,8 @@ class AddPower extends Component {
         power: { ...power, AvgUnitConsumptionPerMonth: power.AvgUnitConsumptionPerMonth }
       })
       this.props.change('UnitConsumptionPerAnnum', checkForDecimalAndNull(AvgUnitConsumptionPerMonth, initialConfiguration?.NoOfDecimalForInputOutput))
+    } else {
+      this.props.change('UnitConsumptionPerAnnum', '')
     }
 
     //Formula for SEB COST PER UNIT calculation
@@ -355,7 +359,7 @@ class AddPower extends Component {
     const UnitConsumptionPerAnnum = power.AvgUnitConsumptionPerMonth !== undefined ? checkForNull(power.AvgUnitConsumptionPerMonth) : 0;
     const SEBCostPerUnit = power.SEBCostPerUnit !== undefined ? checkForNull(power.SEBCostPerUnit) : 0;
 
-    const TotalUnitCharges = checkForNull(((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum)
+    const TotalUnitCharges = this.checkTotalElectricityPowerChargesDisable("TotalUnitCharges") ? checkForNull(((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum) : checkForNull(fieldsObj?.TotalUnitCharges)
     power.TotalUnitCharges = TotalUnitCharges
     this.setState({
       power: { ...power, TotalUnitCharges: power.TotalUnitCharges }
@@ -376,6 +380,9 @@ class AddPower extends Component {
       const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? checkForNull(fieldsObj.CostPerUnitOfMeasurement) : 0;
       const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerUnitOfFuel) : 0;
       if (!CostPerUnitOfMeasurement || !UnitGeneratedPerUnitOfFuel) {
+        if (!!this.checkDisable(fieldsObj, "SelfGeneratedCostPerUnit")) {
+          this.props.change('SelfGeneratedCostPerUnit', '')
+        }
         return 0
       }
       const SelfGeneratedCostPerUnit = checkForNull(CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel);
@@ -388,6 +395,9 @@ class AddPower extends Component {
       const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
       const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
       if (!AnnualCost || !UnitGeneratedPerAnnum) {
+        if (!!this.checkDisable(fieldsObj, "SelfGeneratedCostPerUnit")) {
+          this.props.change('SelfGeneratedCostPerUnit', '')
+        }
         return 0
       }
       const SelfGeneratedCostPerUnit = checkForNull(AnnualCost / UnitGeneratedPerAnnum);
@@ -613,6 +623,18 @@ class AddPower extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      this.props.getSupplierByIdAPI(newValue?.value, true, (res) => {
+        if (res && res.data && res.data.Data) {
+            let Data = res.data.Data
+            if (this.state.costingTypeId === VBCTypeId) {
+            this.setState({
+              country: { label: Data?.Country, value: Data?.CountryId},
+              StateName: { label: Data?.State, value: Data?.StateId},
+              city: { label: Data?.City, value: Data?.CityId}
+            })
+          }    
+        }
+      })
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName?.label ? getCodeBySplitting(vendorName?.label) : '';
@@ -721,6 +743,39 @@ class AddPower extends Component {
     //   }
     // })
   }
+
+  handleSinglePlant = (newValue) => {
+    if (newValue && newValue !== '') {
+      const updatedValue = [{
+        ...newValue,
+        Text: newValue.label,
+        Value: newValue.value
+      }]
+      this.setState({ selectedPlants: updatedValue })
+      this.props.getPlantUnitAPI(newValue?.value, (res) => {
+        let Data = res?.data?.Data
+        this.props.change('plantCurrency', Data?.Currency)
+        this.setState({ plantCurrencyID: Data?.CurrencyId })
+        if (this.state.costingTypeId === ZBCTypeId || this.state.costingTypeId === CBCTypeId) {
+          this.setState({
+            country: { label: Data?.CountryName, value: Data?.CountryId},
+            StateName: { label: Data?.StateName, value: Data?.StateId},
+            city: { label: Data?.CityName, value: Data?.CityIdRef}
+          })
+        }
+        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.setState({ hidePlantCurrency: false })
+          this.callExchangeRateAPI()
+        } else {
+          this.setState({ hidePlantCurrency: true })
+        }
+      })
+    } else {
+      this.props.change('plantCurrency', "")
+      this.setState({ isDisabled: false })
+    }
+  }
+
   handleExchangeRateSource = (newValue) => {
     this.setState({ ExchangeSource: newValue }
       , () => {
@@ -832,22 +887,24 @@ class AddPower extends Component {
 
     setTimeout(() => {
 
-      if (fieldsObj.MinDemandKWPerMonth === undefined || Number(fieldsObj.MinDemandKWPerMonth) === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, minDemand: true } })
-        count++
-      }
+      if (TotalUnitCharges === 0) {
+        if (fieldsObj.MinDemandKWPerMonth === undefined || Number(fieldsObj.MinDemandKWPerMonth) === 0) {
+          this.setState({ errorObj: { ...this.state.errorObj, minDemand: true } })
+          count++
+        }
 
-      if (fieldsObj.DemandChargesPerKW === undefined || Number(fieldsObj.DemandChargesPerKW) === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, demandCharge: true } })
-        count++
-      }
-      if (fieldsObj.AvgUnitConsumptionPerMonth === undefined || Number(fieldsObj.AvgUnitConsumptionPerMonth) === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, avgUnit: true } })
-        count++
-      }
-      if (fieldsObj.MaxDemandChargesKW === undefined || Number(fieldsObj.MaxDemandChargesKW) === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, maxDemand: true } })
-        count++
+        if (fieldsObj.DemandChargesPerKW === undefined || Number(fieldsObj.DemandChargesPerKW) === 0) {
+          this.setState({ errorObj: { ...this.state.errorObj, demandCharge: true } })
+          count++
+        }
+        if (fieldsObj.AvgUnitConsumptionPerMonth === undefined || Number(fieldsObj.AvgUnitConsumptionPerMonth) === 0) {
+          this.setState({ errorObj: { ...this.state.errorObj, avgUnit: true } })
+          count++
+        }
+        if (fieldsObj.MaxDemandChargesKW === undefined || Number(fieldsObj.MaxDemandChargesKW) === 0) {
+          this.setState({ errorObj: { ...this.state.errorObj, maxDemand: true } })
+          count++
+        }
       }
       if (SEBPowerContributaion === undefined || Number(SEBPowerContributaion) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, statePowerCont: true } })
@@ -1377,8 +1434,21 @@ class AddPower extends Component {
 
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        // if (item.Value === '0') return false;
+        // temp.push({ Text: item.Text, Value: item.Value })
+        if (item?.PlantId === '0') return false
+          temp.push({ Text: item?.PlantNameCode, Value: item?.PlantId })
+        return null
+      });
+      return temp;
+    }
+
+    if (label === 'singleplant') {
+      plantSelectList && plantSelectList.map(item => {
+        // if (item.Value === '0') return false;
+        // temp.push({ Text: item.Text, Value: item.Value })
+        if (item?.PlantId === '0') return false
+          temp.push({ label: item?.PlantNameCode, value: item?.PlantId })
         return null
       });
       return temp;
@@ -1747,6 +1817,20 @@ class AddPower extends Component {
     return checkForNull(SelfGeneratedCostPerUnit) && allFieldsFilled;
   };
 
+  checkTotalElectricityPowerChargesDisable = (fieldName) => {
+    const { MinDemandKWPerMonth, DemandChargesPerKW, AvgUnitConsumptionPerMonth, MaxDemandChargesKW, MeterRentAndOtherChargesPerAnnum, DutyChargesAndFCA, TotalUnitCharges } = this.props.fieldsObj
+    if (fieldName === 'TotalUnitCharges') {
+      return checkForNull(MinDemandKWPerMonth) || checkForNull(DemandChargesPerKW) || checkForNull(AvgUnitConsumptionPerMonth) || checkForNull(MaxDemandChargesKW) || checkForNull(MeterRentAndOtherChargesPerAnnum) || checkForNull(DutyChargesAndFCA)
+    }
+    const allFieldsFilled =
+      !checkForNull(MinDemandKWPerMonth) &&
+      !checkForNull(DemandChargesPerKW) &&
+      !checkForNull(AvgUnitConsumptionPerMonth) &&
+      !checkForNull(MaxDemandChargesKW) &&
+      !checkForNull(MeterRentAndOtherChargesPerAnnum);
+      return checkForNull(TotalUnitCharges) && allFieldsFilled
+  }
+
   getTooltipTextForCurrency = () => {
     const { fieldsObj } = this.props
     const { settlementCurrency, plantCurrency, currency } = this.state
@@ -1921,62 +2005,77 @@ class AddPower extends Component {
                             <h5>{'Power For:'}</h5>
                           </div>
                         </Col>
-                        <Col md="3">
-                          <div className="form-group inputbox withBorder ">
-                            <Field
-                              name="CountryId"
-                              type="text"
-                              label="Country"
-                              component={searchableSelect}
-                              placeholder={'Select'}
-                              options={this.renderListing('country')}
-                              validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.countryHandler}
-                              valueDescription={this.state.country}
-                              disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
-                            />
-                          </div>
-                        </Col>
-
-                        {isStateOfCountryAvailable &&
+                        {(costingTypeId === ZBCTypeId || costingTypeId === CBCTypeId) && ( 
                           <Col md="3">
-                            <div className="form-group inputbox withBorder ">
+                            <div className="form-group">
                               <Field
-                                name="StateId"
+                                label="Plant (Code)"
+                                name="Plant"
                                 type="text"
-                                label="State"
                                 component={searchableSelect}
-                                placeholder={'Select'}
-                                options={this.renderListing('state')}
-                                validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
+                                placeholder={isEditFlag ? '-' : "Select"}
+                                options={this.renderListing("singleplant")}
+                                validate={
+                                    this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                                 required={true}
-                                handleChangeDescription={this.stateHandler}
-                                valueDescription={this.state.StateName}
-                                disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
+                                mendatory={true}
+                                handleChangeDescription={this.handleSinglePlant}
+                                valueDescription={
+                                this.state.selectedPlants?.[0]?.Value && this.state.selectedPlants?.[0]?.Text
+                                  ? {
+                                      label: this.state.selectedPlants[0].Text,
+                                      value: this.state.selectedPlants[0].Value
+                                    }
+                                  : null
+                                }
+                              disabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
                               />
                             </div>
-                          </Col>}
+                          </Col>
+                        )}
+                        {costingTypeId === VBCTypeId && (
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label="Plant (Code)"
+                                  name="Plant"
+                                  title={showDataOnHover(this.state.selectedPlants)}
+                                  placeholder="Select"
+                                  selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
+                                  options={this.renderListing('plant')}
+                                  selectionChanged={this.handlePlants}
+                                  optionValue={option => option.Value}
+                                  optionLabel={option => option.Text}
+                                  component={renderMultiSelectField}
+                                  validate={
+                                    this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                                  mendatory={true}
+                                  required={true}
+                                  className="multiselect-with-border"
+                                  disabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                        )}
 
                         <Col md="3">
-                          <div className="form-group inputbox withBorder ">
-                            <Field
-                              name="CityId"
-                              type="text"
-                              label="City"
-                              component={searchableSelect}
-                              placeholder={'Select'}
-                              options={this.renderListing('city')}
-                              validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.cityHandler}
-                              valueDescription={this.state.city}
-                              disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
-                            />
-                          </div>
+                          {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && !this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          <Field
+                            name="plantCurrency"
+                            type="text"
+                            label="Plant Currency"
+                            placeholder={"-"}
+                            validate={[]}
+                            component={renderTextInputField}
+                            required={false}
+                            disabled={true}
+                            className=" "
+                            customClassName=" withBorder mb-1"
+                          />
+                          {this.state?.showPlantWarning && <WarningMessage dClass="mt-0" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
                         </Col>
-
-
                         {costingTypeId === VBCTypeId && <Col md="3">
                           <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                           <div className="d-flex justify-space-between align-items-center async-select">
@@ -2006,8 +2105,63 @@ class AddPower extends Component {
                           </div>
                           {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                         </Col>}
+                        <Col md="3">
+                          <div className="form-group inputbox withBorder ">
+                            <Field
+                              name="CountryId"
+                              type="text"
+                              label="Country"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('country')}
+                              validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.countryHandler}
+                              valueDescription={this.state.country}
+                              disabled={true}
+                              // disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
+                            />
+                          </div>
+                        </Col>
 
+                        {isStateOfCountryAvailable &&
+                          <Col md="3">
+                            <div className="form-group inputbox withBorder ">
+                              <Field
+                                name="StateId"
+                                type="text"
+                                label="State"
+                                component={searchableSelect}
+                                placeholder={'Select'}
+                                options={this.renderListing('state')}
+                                validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.stateHandler}
+                                valueDescription={this.state.StateName}
+                                disabled={true}
+                                // disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
+                              />
+                            </div>
+                          </Col>}
 
+                        <Col md="3">
+                          <div className="form-group inputbox withBorder ">
+                            <Field
+                              name="CityId"
+                              type="text"
+                              label="City"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('city')}
+                              validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.cityHandler}
+                              valueDescription={this.state.city}
+                              disabled={true}
+                              // disabled={isViewMode || isEditFlag || (this.state.powerGrid?.length > 0)}
+                            />
+                          </div>
+                        </Col>
                         {costingTypeId === CBCTypeId && (
                           <Col md="3">
                             <Field
@@ -2031,33 +2185,7 @@ class AddPower extends Component {
                             />
                           </Col>
                         )}
-
-
-
-                        <Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
-                              <Field
-                                label="Plant (Code)"
-                                name="Plant"
-                                title={showDataOnHover(this.state.selectedPlants)}
-                                placeholder="Select"
-                                selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
-                                options={this.renderListing('plant')}
-                                selectionChanged={this.handlePlants}
-                                optionValue={option => option.Value}
-                                optionLabel={option => option.Text}
-                                component={renderMultiSelectField}
-                                validate={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                                mendatory={true}
-                                required={true}
-                                className="multiselect-with-border"
-                                disabled={(isEditFlag || (this.state.powerGrid?.length > 0)) ? true : false}
-                              />
-                            </div>
-                          </div>
-                        </Col>
+                        
                         {getConfigurationKey().IsSourceExchangeRateNameVisible && (
                           <Col md="3">
                             <Field
@@ -2073,23 +2201,6 @@ class AddPower extends Component {
                             />
                           </Col>
                         )}
-                        <Col md="3">
-                          {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && !this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
-                          <Field
-                            name="plantCurrency"
-                            type="text"
-                            label="Plant Currency"
-                            placeholder={"-"}
-                            validate={[]}
-                            component={renderTextInputField}
-                            required={false}
-                            disabled={true}
-                            className=" "
-                            customClassName=" withBorder mb-1"
-                          />
-                          {this.state?.showPlantWarning && <WarningMessage dClass="mt-0" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
-
-                        </Col>
                         {this.state?.isImport && <Col md="3">
                           <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
                           <Field
@@ -2188,7 +2299,9 @@ class AddPower extends Component {
                             </Col>
 
                             {!this.state.hidePlantCurrency && < Col md="3">
+                              <TooltipCustom disabledIcon={this.state.isDetailEntry ? true : false} id="total_power" tooltipText={'Total Power'} />
                               <TooltipCustom disabledIcon={true} id="fuel-rate" tooltipText={this.state.isImport ? this.powerRateTitle()?.toolTipTextNetCostBaseCurrency : this.powerRateTitle()?.tooltipTextPlantCurrency} />
+                              <div id="total_power"></div>
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
@@ -2202,7 +2315,7 @@ class AddPower extends Component {
                                     // onChange={this.onNetCostChange}
                                     required={true}
                                     className=""
-                                    customClassName=" withBorder"
+                                    customClassName="hereee withBorder"
                                     disabled={true}
                                   />
                                 </div>
@@ -2254,7 +2367,7 @@ class AddPower extends Component {
                                     required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("MinDemandKWPerMonth") ? true : false}
                                   />
                                   {this.state.errorObj.minDemand && (this.props.fieldsObj.MinDemandKWPerMonth === undefined || Number(this.props.fieldsObj.MinDemandKWPerMonth) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -2273,7 +2386,7 @@ class AddPower extends Component {
                                     required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("DemandChargesPerKW") ? true : false}
                                   />
                                   {this.state.errorObj.demandCharge && (this.props.fieldsObj.DemandChargesPerKW === undefined || Number(this.props.fieldsObj.DemandChargesPerKW) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -2310,7 +2423,7 @@ class AddPower extends Component {
                                     required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("AvgUnitConsumptionPerMonth") ? true : false}
                                   />
                                   {this.state.errorObj.avgUnit && (this.props.fieldsObj.AvgUnitConsumptionPerMonth === undefined || Number(this.props.fieldsObj.AvgUnitConsumptionPerMonth) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -2349,7 +2462,7 @@ class AddPower extends Component {
                                     required={(!isCostPerUnitConfigurable && this.checkIsRequiredSEBPower()) ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("MaxDemandChargesKW") ? true : false}
                                   />
                                   {this.state.errorObj.maxDemand && (this.props.fieldsObj.MaxDemandChargesKW === undefined || Number(this.props.fieldsObj.MaxDemandChargesKW) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
@@ -2385,7 +2498,7 @@ class AddPower extends Component {
                                     component={renderTextInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("MeterRentAndOtherChargesPerAnnum") ? true : false}
                                   />
                                 </div>
                               </div>
@@ -2402,7 +2515,7 @@ class AddPower extends Component {
                                     component={renderTextInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("DutyChargesAndFCA") ? true : false}
                                   />
                                 </div>
                               </div>
@@ -2410,10 +2523,11 @@ class AddPower extends Component {
                             <Col md="2">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"TotalUnitCharges"} width="360px" disabledIcon={true} tooltipText={"Total Charge per Unit = ((Unit Consumption per Annum * Cost per Unit) + Meter Rent and Other Charges per Annum + Duty Charges and FCA) / Unit Consumption per Annum"} />
+                                  {!!this.checkTotalElectricityPowerChargesDisable("TotalUnitCharges") && <TooltipCustom id={"TotalUnitCharges"} width="360px" disabledIcon={true} tooltipText={"Total Charge per Unit = ((Unit Consumption per Annum * Cost per Unit) + Meter Rent and Other Charges per Annum + Duty Charges and FCA) / Unit Consumption per Annum"} />}
                                   <Field
                                     label={`Total Charge/Unit`}
-                                    name={this.state.power.TotalUnitCharges === 0 ? '' : "TotalUnitCharges"}
+                                    // name={this.state.power.TotalUnitCharges === 0 ? '' : "TotalUnitCharges"}
+                                    name={"TotalUnitCharges"}
                                     type="text"
                                     id={"TotalUnitCharges"}
                                     placeholder={'-'}
@@ -2422,7 +2536,7 @@ class AddPower extends Component {
                                     required={false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={true}
+                                    disabled={isEditFlagForStateElectricity || isViewMode || this.checkTotalElectricityPowerChargesDisable("TotalUnitCharges") ? true : false}
                                   />
                                 </div>
                               </div>
@@ -2621,7 +2735,7 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"SelfGeneratedCostPerUnit"} width="350px" disabledIcon={true} tooltipText={this.state.segCostUnittooltipText} />
+                                  {!!this.checkDisable(fieldsObj, "SelfGeneratedCostPerUnit") && <TooltipCustom id={"SelfGeneratedCostPerUnit"} width="350px" disabledIcon={true} tooltipText={this.state.segCostUnittooltipText} />}
                                   <Field
                                     label={`Cost/Unit`}
                                     // name={this.state.power.SelfGeneratedCostPerUnit === 0 ? '' : "SelfGeneratedCostPerUnit"}
@@ -2818,9 +2932,10 @@ function mapStateToProps(state) {
     'CostPerUnitOfMeasurement', 'UnitGeneratedPerUnitOfFuel', 'UnitGeneratedPerAnnum', 'SelfGeneratedCostPerUnit',
     'SelfPowerContribution', 'NetPowerCostPerUnit', 'city', 'state', 'country', 'plantCurrency', 'NetPowerCostPerUnitLocalConversion', 'NetPowerCostPerUnitConversion', "NetPowerCostPerUnit", "Currency", "ExchangeSource", "NetPowerCostPerUnitLocalConversion", "NetPowerCostPerUnit", "SEBBaseCostPerUnitConversion", "SEBCostPerUnitLocalConversion");
 
-  const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList, countryList, cityList, currencySelectList, exchangeRateSourceList } = comman;
+  const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList, countryList, cityList, currencySelectList, exchangeRateSourceList, plantSelectList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
-  const { plantSelectList, powerData } = fuel;
+  // const { plantSelectList, powerData } = fuel;
+  const { powerData } = fuel;
   const { initialConfiguration } = auth;
   const { clientSelectList } = client;
   // 
@@ -2876,6 +2991,8 @@ export default connect(mapStateToProps, {
   getCityByCountryAction,
   fetchStateDataAPI,
   getPlantCurrencyByPlantIds,
+  getPlantSelectListByType,
+  getSupplierByIdAPI
 })(reduxForm({
   form: 'AddPower',
   validate: validateForm,
