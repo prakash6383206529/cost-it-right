@@ -3766,6 +3766,24 @@ const CostingSummaryTable = (props) => {
                               />
                             </th></tr>
                           }
+                          {drawerDetailPDF && (
+                            <tr><th colSpan={2}>
+                              <ViewOtherCostDrawer
+                                isOpen={true}
+                                costingSummary={true}
+                                viewCostingData={viewCostingData}
+                                tableData={[]}
+                                npvIndex={0}
+                                closeDrawer={() => {}}
+                                anchor={'right'}
+                                isPDFShow={true}
+                                CostingPaymentTermDetails={paymentTermsData}
+                                npvCostData={npvData}
+                                iccPaymentData={iccPaymentData}
+                                rejectAndModelType={viewRejectAndModelType}
+                              />
+                            </th></tr>
+                          )}
                         </> : <>
                           {drawerDetailPDF && <tr><th colSpan={2}><ViewPackagingAndFreight
                             isOpen={isViewPackagingFreight}
