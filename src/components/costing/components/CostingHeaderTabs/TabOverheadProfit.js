@@ -571,17 +571,6 @@ function TabOverheadProfit(props) {
     dispatch(isOverheadProfitDataChange(true))
   }
 
-  const onPressIncludeToolCost = () => {
-    if ((ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Fixed' && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Tool Rate') || (overallApplicabilityToolData?.label && overallApplicabilityToolData?.label !== 'Fixed' && overallApplicabilityToolData?.label !== 'Tool Rate')) {
-      Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in overhead & profit.')
-      return false
-    } else {
-      dispatch(setToolCostInOverheadProfit(!IsIncludeToolCost, () => { }))
-      setIsIncludeToolCost(!IsIncludeToolCost)
-      setIsPressToolCost(true)
-      dispatch(isOverheadProfitDataChange(true))
-    }
-  }
   const onPressApplicableForChildParts = () => {
     dispatch(isOverheadProfitDataChange(true))
     setIsIncludeApplicablForChildParts(!IsIncludeApplicablForChildParts)

@@ -69,7 +69,7 @@ function OverheadProfit(props) {
   const SurfaceTreatmentCost = useContext(SurfaceCostContext);
   const costingHead = useSelector(state => state.comman.costingHead)
 
-  const { CostingEffectiveDate, CostingDataList, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI, currencySource, exchangeRateData, IsIncludeApplicabilityForChildParts, IsIncludedSurfaceInOverhead, IsIncludedSurfaceInProfit, IsIncludedToolCostInOverhead, IsIncludedToolCostInProfit } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, CostingDataList, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI, currencySource, exchangeRateData, IsIncludeApplicabilityForChildParts, IsIncludedSurfaceInOverhead, IsIncludedSurfaceInProfit, IsIncludedToolCostInOverhead, IsIncludedToolCostInProfit,overallApplicabilityToolData } = useSelector(state => state.costing)
 
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
 
@@ -980,7 +980,11 @@ function OverheadProfit(props) {
     dispatch(setSurfaceCostInProfit(!IsIncludedSurfaceInProfit))
     dispatch(isOverheadProfitDataChange(true))
   }
-  const onPressIncludeToolCostOverhead = () => {
+  const onPressIncludeToolCostOverhead = () => { 
+    if ((ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Fixed' && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Tool Rate') || (overallApplicabilityToolData?.label && overallApplicabilityToolData?.label !== 'Fixed' && overallApplicabilityToolData?.label !== 'Tool Rate')) {
+    Toaster.warning('Tool Maintenance Applicability should be Fixed or Tool Rate to add tool cost in overhead & profit.')
+    return false
+  } else {
     setState(prev => ({
       ...prev,
       isIncludeToolCostInOverhead: !prev.isIncludeToolCostInOverhead,
@@ -989,15 +993,22 @@ function OverheadProfit(props) {
     dispatch(setToolCostInOverhead(!IsIncludedToolCostInOverhead))
     dispatch(isOverheadProfitDataChange(true))
   }
+}
 
   const onPressIncludeToolCostProfit = () => {
-    setState(prev => ({
-      ...prev,
-      isIncludeToolCostInProfit: !prev.isIncludeToolCostInProfit,
-      isPressToolProfit: true
-    }))
-    dispatch(setToolCostInProfit(!IsIncludedToolCostInProfit))
-    dispatch(isOverheadProfitDataChange(true))
+    if ((ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Fixed' && ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse?.[0]?.ToolCostType !== 'Tool Rate') || (overallApplicabilityToolData?.label && overallApplicabilityToolData?.label !== 'Fixed' && overallApplicabilityToolData?.label !== 'Tool Rate')) {
+      Toaster.warning('Tool Maintenance Applicability should be Fixed or Tool Rate to add tool cost in overhead & profit.')
+      return false
+    } else {
+      setState(prev => ({
+        ...prev,
+        isIncludeToolCostInProfit: !prev.isIncludeToolCostInProfit,
+        isPressToolProfit: true
+      }))
+      dispatch(setToolCostInProfit(!IsIncludedToolCostInProfit))
+      dispatch(isOverheadProfitDataChange(true))
+    }
+   
   }
   return (
     <>
