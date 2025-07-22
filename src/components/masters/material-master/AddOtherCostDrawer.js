@@ -63,6 +63,36 @@ function AddOtherCostDrawer(props) {
             return;
         }
 
+        if(isShowConvertedCost){
+            // Filter out "Discount Cost" entries
+            const filteredTableData = tableData.filter(obj => obj.CostHeaderName !== "Discount Cost");
+
+            // Calculate the sum for NetCostConversion excluding "Discount Cost"
+            const sumNetCostConversion = filteredTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCostConversion), 0);
+
+            // Calculate the sum for NetCost excluding "Discount Cost"
+            const sumNetCost = filteredTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCost), 0);
+
+            // Find the first "Discount Cost" entry, if any
+            const discountCostEntry = tableData.find(obj => obj.CostHeaderName === "Discount Cost");
+            const discountNetCostConversion = discountCostEntry ? checkForNull(discountCostEntry.NetCostConversion) : 0;
+            const discountNetCost = discountCostEntry ? checkForNull(discountCostEntry.NetCost) : 0;
+
+            // Calculate the final totalCostBase by applying the discount
+            const totalCostCurrency = sumNetCost - Math.abs(discountNetCost);
+            const totalCostBase = sumNetCostConversion - Math.abs(discountNetCostConversion);
+
+            // Check if the tableData contains only "Discount Cost" entries
+            const isOnlyDiscountCost = tableData.every(obj => obj.CostHeaderName === "Discount Cost");
+
+            // Update state
+            // setTotalCostBase(isOnlyDiscountCost ? discountNetCostConversion : totalCostBase);
+            // setTotalCostCurrency(sumNetCost);
+            setTotalCostBase(totalCostBase);
+            setTotalCostCurrency(totalCostCurrency);
+
+        }else{
+
         // Filter out "Discount Cost" entries
         const filteredTableData = tableData.filter(obj => obj.CostHeaderName !== "Discount Cost");
 
@@ -85,6 +115,7 @@ function AddOtherCostDrawer(props) {
         // Update state
         setTotalCostBase(isOnlyDiscountCost ? discountNetCostConversion : totalCostBase);
         setTotalCostCurrency(sumNetCost);
+        }
 
     }, [tableData]);
     useEffect(() => {
@@ -276,21 +307,39 @@ function AddOtherCostDrawer(props) {
                 return;
             }
             const item = tableData.find(item => item?.CostHeaderName === Applicability);
-            if (item) {
-                totalCostCurrency += props.isBOP ? Number(item?.NetCost) : Number(item?.NetCostConversion);
-                if (selectedApplicabilities.includes('Basic Rate')) {
-                    // totalCostCurrency += BasicRateIndexCurrency;
-                    totalBasicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency
-                    total = checkForNull(totalCostCurrency) + checkForNull(totalBasicRate)
+            if(isShowConvertedCost){
+                if (item) {
+                    totalCostCurrency += Number(item?.NetCost);
+                    if (selectedApplicabilities.includes('Basic Rate')) {
+                        totalBasicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency
+                        total = checkForNull(totalCostCurrency) + checkForNull(totalBasicRate)
+                    } else {
+                        total = checkForNull(totalCostCurrency)
+                    }
                 } else {
-                    total = checkForNull(totalCostCurrency)
+                    // Add missing Applicability to the array
+                    missingCosts.push(Applicability);
+                    // Set flag to indicate not all applicabilities exist
+                    allExist = false;
                 }
-            } else {
-                // Add missing Applicability to the array
-                missingCosts.push(Applicability);
-                // Set flag to indicate not all applicabilities exist
-                allExist = false;
+            }else{
+                if (item) {
+                    totalCostCurrency += props.isBOP ? Number(item?.NetCost) : Number(item?.NetCostConversion);
+                    if (selectedApplicabilities.includes('Basic Rate')) {
+                        // totalCostCurrency += BasicRateIndexCurrency;
+                        totalBasicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency
+                        total = checkForNull(totalCostCurrency) + checkForNull(totalBasicRate)
+                    } else {
+                        total = checkForNull(totalCostCurrency)
+                    }
+                } else {
+                    // Add missing Applicability to the array
+                    missingCosts.push(Applicability);
+                    // Set flag to indicate not all applicabilities exist
+                    allExist = false;
+                }
             }
+            
         });
 
         // If not all applicabilities exist, handle the condition
@@ -512,8 +561,8 @@ function AddOtherCostDrawer(props) {
                 Toaster.warning('Discount should not be equal to Basic rate')
                 return false
             }
-            newData.NetCost = `${newData.NetCost}`;
-            newData.NetCostConversion = `${newData.NetCostConversion}`;
+            newData.NetCost = `-${newData.NetCost}`;
+            newData.NetCostConversion = `-${newData.NetCostConversion}`;
         }
         // Assuming 'tableData' is an array of objects and you want to add MaterialCommodityStandardDetailsId separately,
         // you can structure your updated data as follows:
