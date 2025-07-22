@@ -275,13 +275,16 @@ function ViewRM(props) {
    * @description CLOSING WEIGHT DRAWER
    */
   const closeWeightDrawer = (e = "") => {
+
     setWeightCalculatorDrawer(false)
   }
   const tableData = () => {
-    const dataToShow = isAssemblyCosting ? selectedPartData : viewRM;
+    const dataToShow = isAssemblyCosting && !isPDFShow ? selectedPartData : viewRM;
+
+
     return <>
       <div className="row">
-        {isAssemblyCosting && partNumberList?.length > 0 && (
+        {!isPDFShow && isAssemblyCosting && partNumberList?.length > 0 && (
           <Nav tabs className="subtabs cr-subtabs-head view-conversion-header col-md-1">
             {partNumberList?.map((item, index) => (
               <NavItem key={index}>
@@ -297,7 +300,7 @@ function ViewRM(props) {
             ))}
           </Nav>
         )}
-        <div className="col-md-12">
+        <div className="col-md-10">
           <Row>
             <Col md="12" className='mt-1'>
               <div className="left-border">Raw Material</div>
@@ -322,7 +325,7 @@ function ViewRM(props) {
               <Table className="table cr-brdr-main conversion-cost" size="sm">
                 <thead>
                   <tr>
-                    {isAssemblyCosting && <th>{`Part No`}</th>}
+                    {isAssemblyCosting && isPDFShow && <th>{`Part No`}</th>}
                     <th>{`RM Name -Grade`}</th>
                     {checkTechnologyIdAndRfq(viewCostingData) && <th>{`Updated RM Name`}</th>}
                     <th>{`RM Code`}</th>
@@ -355,7 +358,7 @@ function ViewRM(props) {
                 <tbody>
                   {dataToShow && dataToShow?.length > 0 && dataToShow?.map((item, index) => (
                     <tr key={index}>
-                      {isAssemblyCosting && (
+                      {isAssemblyCosting && isPDFShow && (
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}>
                           <span title={item?.PartNumber || ""}>{item?.PartNumber || ""}</span>
                         </td>
@@ -567,7 +570,7 @@ function ViewRM(props) {
                   CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
                   fromCostingSummary={props.fromCostingSummary}
                   rmData={viewCostingData[props.index]?.technologyId === RUBBER ? (viewCostingData[props.index]?.CalculatorType === "Standard" ? calciData.WeightCalculatorRequest.RawMaterialRubberStandardWeightCalculator : calciData.WeightCalculatorRequest.CostingRubberCalculationRawMaterials) : calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
-                  calculatorType={viewCostingData[props.index]?.CalculatorType ? viewCostingData[props.index]?.CalculatorType : '' }
+                  calculatorType={viewCostingData[props.index]?.CalculatorType ? viewCostingData[props.index]?.CalculatorType : ''}
 
                 />
               )}

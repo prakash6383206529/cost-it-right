@@ -33,7 +33,7 @@ function Tool(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const costingHead = useSelector(state => state.comman.costingHead)
 
-  const { CostingDataList, ErrorObjTools, IsIncludedToolCost, includeToolCostIcc } = useSelector(state => state.costing)
+  const { CostingDataList, ErrorObjTools, includeToolCostIcc, IsIncludedToolCostInOverhead, IsIncludedToolCostInProfit } = useSelector(state => state.costing)
 
   // BELOW CODE NEED TO BE USED WHEN OVERALL APPLICABILITY TREATED INSIDE GRID.
   const defaultValues = {
@@ -274,8 +274,8 @@ function Tool(props) {
     if (label === 'Applicability') {
       applicabilityList && applicabilityList.map(item => {
         if (item.Value === '0') return false;
-        if (IsIncludedToolCost || includeToolCostIcc) {
-          if (item.Text === 'Fixed') {
+        if (IsIncludedToolCostInOverhead ||IsIncludedToolCostInProfit || includeToolCostIcc) {
+          if (item.Text === 'Fixed' || item.Text === 'Tool Rate') {
             temp.push({ label: item.Text, value: item.Value })
           }
         } else {
