@@ -623,15 +623,26 @@ function CostingDetails(props) {
    * @description HIDE ZBC PLANT DRAWER
    */
   const closePlantDrawer = (e = '', plantData = {}) => {
-    if (Object.keys(plantData).length > 0) {
+    if (Object.keys(plantData).length > 0) {      
+      // By default set 100% for 1st index
+      if (!_.size(zbcPlantGrid)) {
+        plantData.ShareOfBusinessPercent = 100
+      }
+      
       let tempArr = [...zbcPlantGrid, plantData]
       let tempArrWac = [...wacPlantGrid, plantData]
-
+      
       setTimeout(() => {
         if (isWAC) {
           setWACPlantGrid(tempArrWac)
         } else {
           setZBCPlantGrid(tempArr)
+          setTimeout(() => {
+            tempArr && tempArr.map((item, index) => {
+              setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, item?.ShareOfBusinessPercent)
+              return null
+            })
+          }, 200)
         }
         setIsWAC(false)
       }, 200)
@@ -807,6 +818,10 @@ function CostingDetails(props) {
   const closeVendorDrawer = (e = '', vendorData = {}) => {
 
     if (Object.keys(vendorData).length > 0) {
+      // By default set 100% for 1st index
+      if (!_.size(vbcVendorGrid)) {
+        vendorData.ShareOfBusinessPercent = 100
+      }
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = vbcVendorGrid.findIndex(el => (el.VendorId === vendorData.VendorId && el.DestinationPlantId === vendorData.DestinationPlantId && el.InfoCategory === vendorData.InfoCategory))
       if (isExist !== -1) {
@@ -863,6 +878,10 @@ function CostingDetails(props) {
    */
   const closeNCCDrawer = (e = '', nccData = {}) => {
     if (Object.keys(nccData).length > 0) {
+      // By default set 100% for 1st index
+      if (!_.size(nccGrid)) {
+        nccData.ShareOfBusinessPercent = 100
+      }
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = nccGrid.findIndex(el => (el.VendorId === nccData.VendorId && el.PlantId === nccData.PlantId))
       if (isExist !== -1) {
@@ -1016,7 +1035,7 @@ function CostingDetails(props) {
    */
   const checkSOBTotal = () => {
     // if IsZBCCostingForBenchmarking coming false from webconfig that means company use zbc few parts for costing inhouse production(SOB will count) &&
-    // if IsSOBManageCompanyWise coming false from webconfig that means sum of 2 same plants should not be greather than 100%.
+    // if IsSOBManageCompanyWise coming false from webconfig that means sum of 2 same plants should not be greater than 100%.
     if (!IsSOBManageCompanyWise) {
       // Step 1: get Unique plants & vendor which not exist in VBC
       const uniqNccData = _.filter(nccGrid, ncc => {
@@ -1045,7 +1064,7 @@ function CostingDetails(props) {
       }))
       // Step 6: check if any plant have SOB greater than 100%
       const SOBGreaterThan100 = _.some(groupedPlantsResult, item => checkForNull(item?.ShareOfBusinessPercent) > 100)
-      // return false so that existing functionality will not disturb and it will not let user to save SOB
+      // return it will not let user to save SOB (sum of 2 same plants should not be greater than 100%)
       return !SOBGreaterThan100
     }
 
@@ -1063,7 +1082,7 @@ function CostingDetails(props) {
       NetZBCSOB = !IsZBCCostingForBenchmarking ? _.sumBy(zbcPlantGrid, el => checkForNull(el?.ShareOfBusinessPercent)) : 0
       NetVBCSOB = _.sumBy(vbcVendorGrid, el => checkForNull(el?.ShareOfBusinessPercent))
       NetNCCSOB = _.sumBy(uniqNccData, el => checkForNull(el?.ShareOfBusinessPercent))
-      // return false so that existing functionality will not disturb and it will not let user to save SOB (sum of all plants should not > 100)
+      // return it will not let user to save SOB (sum of all plants should not > 100)
       return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) + checkForNull(NetNCCSOB) > 100 ? false : true
     }
   }
