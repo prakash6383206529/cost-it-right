@@ -3756,6 +3756,7 @@ const CostingSummaryTable = (props) => {
                                 viewCostingData={viewCostingData}
                                 tableData={[]}
                                 npvIndex={npvIndex}
+                                costingIndex={npvIndex}
                                 closeDrawer={closeNpvDrawer}
                                 anchor={'right'}
                                 isPDFShow={true}

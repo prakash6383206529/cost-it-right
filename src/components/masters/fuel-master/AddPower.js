@@ -511,7 +511,7 @@ class AddPower extends Component {
           this.setState({ DataToChangeZ: Data })
 
           let tempArray = [];
-          if (Data.SEBChargesDetails.length > 0) {
+          if (Data?.SEBChargesDetails?.length > 0) {
             tempArray.push(...powerGrid, {
               PowerSEBPCId: Data.SEBChargesDetails[0].PowerSEBPCId,
               PowerSGPCId: '',
@@ -529,7 +529,7 @@ class AddPower extends Component {
               isSelfPowerGenerator: false,
             })
           }
-          this.props.change('SEBPowerContributaion', Data.SEBChargesDetails[0].PowerContributaionPersentage)
+          this.props.change('SEBPowerContributaion', Data?.SEBChargesDetails?.[0]?.PowerContributaionPersentage)
           if (Data.SGChargesDetails.length > 0) {
             let selfPowerArray = Data && Data.SGChargesDetails.map((item) => item)
             tempArray.push(...powerGrid, ...selfPowerArray)
@@ -555,7 +555,7 @@ class AddPower extends Component {
               netContributionValue: Data.NetPowerCostPerUnit,
               netContributionConvertedInBaseCurrency: Data?.NetPowerCostPerUnitConversion,
               netContributionConvertedInLocalCurrency: Data?.NetPowerCostPerUnitLocalConversion,
-              isAddedSEB: Data.SEBChargesDetails && Data.SEBChargesDetails.length > 0 ? true : false,
+              isAddedSEB: Data?.SEBChargesDetails && Data?.SEBChargesDetails.length > 0 ? true : false,
               selectedPlants: plantArray,
               StateName: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
               effectiveDate: DayTime(Data.EffectiveDate),
@@ -1621,7 +1621,7 @@ class AddPower extends Component {
             }
           }
         }
-        let sebGrid = DataToChangeZ.SEBChargesDetails[0]
+        let sebGrid = DataToChangeZ?.SEBChargesDetails[0]
         if (((AddChanged && DropdownChanged) || (sebGrid.MinDemandKWPerMonth === values.MinDemandKWPerMonth && sebGrid.DemandChargesPerKW === values.DemandChargesPerKW &&
           sebGrid.AvgUnitConsumptionPerMonth === values.AvgUnitConsumptionPerMonth && sebGrid.MaxDemandChargesKW === values.MaxDemandChargesKW &&
           sebGrid.MeterRentAndOtherChargesPerAnnum === values.MeterRentAndOtherChargesPerAnnum && sebGrid.DutyChargesAndFCA === values.DutyChargesAndFCA
@@ -1653,23 +1653,7 @@ class AddPower extends Component {
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           CountryId: country?.value,
           CityId: city?.value,
-          SEBChargesDetails: [
-            {
-              PowerSEBPCId: '',
-              MinDemandKWPerMonth: values.MinDemandKWPerMonth,
-              DemandChargesPerKW: values.DemandChargesPerKW,
-              AvgUnitConsumptionPerMonth: values.AvgUnitConsumptionPerMonth,
-              UnitConsumptionPerAnnum: this.state.power.AvgUnitConsumptionPerMonth, // look into this
-              MaxDemandChargesKW: values.MaxDemandChargesKW,
-              CostPerUnit: this.state.power.SEBCostPerUnit,
-              MeterRentAndOtherChargesPerAnnum: values.MeterRentAndOtherChargesPerAnnum,
-              DutyChargesAndFCA: values.DutyChargesAndFCA,
-              TotalUnitCharges: this.state.power.TotalUnitCharges,
-              PowerContributaionPersentage: values.SEBPowerContributaion,
-              OtherCharges: 0,
-              // EffectiveDate: effectiveDate,
-            }
-          ],
+          SEBChargesDetails: [],
           SGChargesDetails: selfGridDataArray,
           LoggedInUserId: loggedInUserId(),
           NetPowerCostPerUnitConversion: isDetailEntry ? NetContributionConvertedInBaseCurrency : NetPowerCostPerUnitConversion,
@@ -1686,6 +1670,25 @@ class AddPower extends Component {
           Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
           IsAssociated: (costingTypeId === VBCTypeId) ? DataToChangeVendor?.IsAssociated : DataToChangeZ?.IsAssociated,
           ...(financialDataChanged && { IsFinancialDataChanged: true })
+        }
+        if (this.state.power.TotalUnitCharges > 0) {
+          requestData.SEBChargesDetails = [
+            {
+              PowerSEBPCId: '',
+              MinDemandKWPerMonth: values.MinDemandKWPerMonth,
+              DemandChargesPerKW: values.DemandChargesPerKW,
+              AvgUnitConsumptionPerMonth: values.AvgUnitConsumptionPerMonth,
+              UnitConsumptionPerAnnum: this.state.power.AvgUnitConsumptionPerMonth, // look into this
+              MaxDemandChargesKW: values.MaxDemandChargesKW,
+              CostPerUnit: this.state.power.SEBCostPerUnit,
+              MeterRentAndOtherChargesPerAnnum: values.MeterRentAndOtherChargesPerAnnum,
+              DutyChargesAndFCA: values.DutyChargesAndFCA,
+              TotalUnitCharges: this.state.power.TotalUnitCharges,
+              PowerContributaionPersentage: values.SEBPowerContributaion,
+              OtherCharges: 0,
+              // EffectiveDate: effectiveDate,
+            }
+          ]
         }
 
         this.props.updatePowerDetail(requestData, (res) => {
@@ -1732,23 +1735,7 @@ class AddPower extends Component {
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           CountryId: country?.value,
           CityId: city?.value,
-          SEBChargesDetails: [
-            {
-              PowerSEBPCId: '',
-              MinDemandKWPerMonth: values.MinDemandKWPerMonth,
-              DemandChargesPerKW: values.DemandChargesPerKW,
-              AvgUnitConsumptionPerMonth: values.AvgUnitConsumptionPerMonth,
-              UnitConsumptionPerAnnum: this.state.power.AvgUnitConsumptionPerMonth,
-              MaxDemandChargesKW: values.MaxDemandChargesKW,
-              CostPerUnit: this.state.power.SEBCostPerUnit,
-              MeterRentAndOtherChargesPerAnnum: values.MeterRentAndOtherChargesPerAnnum,
-              DutyChargesAndFCA: values.DutyChargesAndFCA,
-              TotalUnitCharges: this.state.power.TotalUnitCharges,
-              PowerContributaionPersentage: values.SEBPowerContributaion,
-              OtherCharges: 0,
-              // EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-            }
-          ],
+          SEBChargesDetails: [],
           SGChargesDetails: selfGridDataArray,
           LoggedInUserId: loggedInUserId(),
           NetPowerCostPerUnitConversion: isDetailEntry ? NetContributionConvertedInBaseCurrency : NetPowerCostPerUnitConversion,
@@ -1763,6 +1750,26 @@ class AddPower extends Component {
           ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
           CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
           Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+        }
+
+        if (this.state.power.TotalUnitCharges > 0) {
+          formData.SEBChargesDetails = [
+            {
+              PowerSEBPCId: '',
+              MinDemandKWPerMonth: values.MinDemandKWPerMonth,
+              DemandChargesPerKW: values.DemandChargesPerKW,
+              AvgUnitConsumptionPerMonth: values.AvgUnitConsumptionPerMonth,
+              UnitConsumptionPerAnnum: this.state.power.AvgUnitConsumptionPerMonth, // look into this
+              MaxDemandChargesKW: values.MaxDemandChargesKW,
+              CostPerUnit: this.state.power.SEBCostPerUnit,
+              MeterRentAndOtherChargesPerAnnum: values.MeterRentAndOtherChargesPerAnnum,
+              DutyChargesAndFCA: values.DutyChargesAndFCA,
+              TotalUnitCharges: this.state.power.TotalUnitCharges,
+              PowerContributaionPersentage: values.SEBPowerContributaion,
+              OtherCharges: 0,
+              // EffectiveDate: effectiveDate,
+            }
+          ]
         }
 
         this.props.createPowerDetail(formData, (res) => {
@@ -2940,7 +2947,7 @@ function mapStateToProps(state) {
   const { clientSelectList } = client;
   // 
   let initialValues = {};
-  if (powerData && powerData.SEBChargesDetails && powerData.SEBChargesDetails.length > 0) {
+  if (powerData && powerData?.SEBChargesDetails && powerData?.SEBChargesDetails.length > 0) {
     initialValues = {
       MinDemandKWPerMonth: powerData && powerData.SEBChargesDetails[0].MinDemandKWPerMonth,
       DemandChargesPerKW: powerData && powerData.SEBChargesDetails[0].DemandChargesPerKW,

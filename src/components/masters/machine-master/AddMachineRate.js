@@ -707,6 +707,7 @@ class AddMachineRate extends Component {
             if (Data && Data?.Plant?.length > 0) {
               plantObj = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
             }
+            
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -738,6 +739,7 @@ class AddMachineRate extends Component {
               plantCurrencyID: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
               currency: Data?.Currency && { label: Data?.Currency, value: Data?.CurrencyId },
               isImport: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              yearOfManufacturing: Data?.YearOfManufacturing
 
 
             }, () => {
@@ -1138,7 +1140,8 @@ class AddMachineRate extends Component {
       currency: currency,
       callExchangeRateAPI: this.callExchangeRateAPI,
       handleCalculation: this?.handleCalculation,
-      machineType: machineType
+      machineType: machineType,
+      yearOfManufacturing: this.state.yearOfManufacturing
     }
     this.props.displayMoreDetailsForm(data)
   }
