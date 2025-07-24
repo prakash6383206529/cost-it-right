@@ -523,8 +523,8 @@ function ReportListing(props) {
                         <AgGridColumn field="RawMaterialCode" headerName="RM Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMGrade" headerName="RM Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMSpecification" headerName="RM Specs" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="FinishWeight" headerName={`${finishWeightLabel} Weight`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="GrossWeight" headerName="Gross Weight / Value" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="FinishWeight" headerName={`${finishWeightLabel} Weight / Value`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetRawMaterialsCost" headerName="Net RM Cost"></AgGridColumn>
                         <AgGridColumn field="NetBoughtOutPartCost" headerName={`Net ${showBopLabel()} Cost`}></AgGridColumn>
                         <AgGridColumn field="NetProcessCost" headerName="Process Cost"></AgGridColumn>

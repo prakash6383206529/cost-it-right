@@ -1600,8 +1600,8 @@ function RawMaterialCost(props) {
                     <tr>
                       <th >{`RM Name`}</th>
                       <th>{`RM Code`}</th>
-                      <th>{`Gross Weight`}</th>
-                      <th>{`Net Weight`}</th>
+                      <th>{`Gross Weight / Value`}</th>
+                      <th>{`Net Weight / Value`}</th>
                     </tr>
                   </thead>
                   <tbody className='rm-table-body'>
@@ -1644,12 +1644,12 @@ function RawMaterialCost(props) {
                       <th>{`UOM`}</th>
                       {getConfigurationKey()?.IsShowIncoTermFieldInRawMaterial && <th>{`Inco Terms`}</th>}
                       {showCalculatorFunctionHeader() && <th className={`text-center weight-calculator`}>{`Weight Calculator`}</th>}
-                      {<th>{`Gross Weight`}</th>}
-                      {<th>{`${finishWeightLabel} Weight`}</th>}
+                      {<th>{`Gross Weight / Value`}</th>}
+                      {<th>{`${finishWeightLabel} Weight / Value`}</th>}
                       {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
                       {(costData?.TechnologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting) && <th>{'Burning Loss Weight'}</th>}
                       {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery (%)`}</th>}
-                      {<th className='scrap-weight'>Scrap Weight </th>}
+                      {<th className='scrap-weight'>Scrap Weight / value </th>}
                       {/* //Add i here for MB+ */}
                       <th className='net-rm-cost' >{`Net RM Cost ${(isRMDivisorApplicable(costData.TechnologyName) && checkRMDevisor()) ? '/(' + RMDivisor + ')' : ''}`}  </th>
                       {initialConfiguration?.IsShowCRMHead && <th>{'CRM Head'}</th>}
@@ -1697,7 +1697,7 @@ function RawMaterialCost(props) {
                                         validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                         min: {
                                           value: item?.FinishWeight,
-                                          message: `Gross should not be lesser than ${finishWeightLabel} weight.`
+                                          message: `Gross should not be lesser than ${finishWeightLabel} weight / Value.`
                                         },
                                       }}
                                       defaultValue={checkForDecimalAndNull(item?.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput)}
@@ -1727,7 +1727,7 @@ function RawMaterialCost(props) {
                                         validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                         max: {
                                           value: item.GrossWeight,
-                                          message: `${finishWeightLabel} weight should not be greater than gross weight.`
+                                          message: `${finishWeightLabel} weight / Value should not be greater than gross weight.`
                                         },
                                       }}
                                       defaultValue={checkForDecimalAndNull(item?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput)}
@@ -1780,8 +1780,8 @@ function RawMaterialCost(props) {
                                 </div>
                               </td>
                             }
-                            {/* <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration?.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied && item?.ScrapRecoveryPercentage ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div> </td> */}
-                            <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item?.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied && item?.ScrapRecoveryPercentage ? `Scrap weight = ((Gross Weight - ${finishWeightLabel} Weight) * Recovery Percentage / 100)` : `Scrap weight = (Gross Weight - ${finishWeightLabel} Weight)`} /></div> </td>
+                            {/* <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration?.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied && item?.ScrapRecoveryPercentage ? "Scrap weight = ((Gross Weight / Value - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight / Value - Finish Weight)"} /></div> </td> */}
+                            <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item?.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied && item?.ScrapRecoveryPercentage ? `Scrap weight = ((Gross Weight / Value - ${finishWeightLabel} Weight / Value) * Recovery Percentage / 100)` : `Scrap weight = (Gross Weight / Value - ${finishWeightLabel} Weight / Value)`} /></div> </td>
                             <td>
                               <div className='d-flex'>
                                 <div className='w-fit' id={`net-rm-cost${index}`}>

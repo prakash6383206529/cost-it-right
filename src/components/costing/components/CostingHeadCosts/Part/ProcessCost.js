@@ -354,6 +354,7 @@ function ProcessCost(props) {
         setIsFromApi(false)
         setTabData(tempArr2)
         setGridData(tempArray)
+        
         dispatch(setProcessGroupGrid(formatReducerArray(tempArray)))
         setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity)
         setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '')
@@ -363,6 +364,7 @@ function ProcessCost(props) {
       // PROCESS UNDER THE GROUP IS UPDATING
       let tempArr = []
       let processTempData = gridData[parentCalciIndex]
+      
 
       let tempData = listData[calciIndex]
 
@@ -378,9 +380,6 @@ function ProcessCost(props) {
         ProcessCalculationId: EMPTY_GUID,
         ProcessCalculatorId: weightData.ProcessCalculationId,
         WeightCalculatorRequest: weightData,
-        CostingConversionApplicabilityDetails: processTempData?.Applicability,
-        CostingConditionMasterAndTypeLinkingId: processTempData?.Applicability?.value || null,
-        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === processTempData?.Applicability?.value)?.label || null,
         Cavity: weightData?.Cavity,
         NoOfManPower: weightData?.NoOfManPower
 
@@ -412,14 +411,13 @@ function ProcessCost(props) {
       });
 
       let ProductionPerHour = findProductionPerHour(groupTotals.Quantity)
-
       processTempData = {
         ...processTempData,
         Quantity: groupTotals.Quantity,
         ProductionPerHour: tempData.UOMType !== TIME ? '' : ProductionPerHour,
         ProcessCost: groupTotals.NetProcessCost,
         ProcessList: gridTempArr,
-        CostingConversionApplicabilityDetails: processTempData.Applicability,
+        CostingConversionApplicabilityDetails: processTempData.CostingConversionApplicabilityDetails,
         ...groupTotals // Add net cost totals to the group
 
       }
@@ -449,6 +447,9 @@ function ProcessCost(props) {
       setTabData(tempArr)
       setGridData(processTemparr)
       dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
+      setTimeout(() => {
+        setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(finalTotals?.NetProcessCost, getConfigurationKey().NoOfDecimalForPrice))
+      }, 50);
     }
   }
 
@@ -1984,14 +1985,16 @@ ${isDetailedText}`
                                     control={control}
                                     register={register}
                                     mandatory={false}
-                                    defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
+                                    defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'} 
                                     className=""
                                     customClassName={'withBorder'}
                                     handleChange={(e) => {
                                       e.preventDefault()
+                                      setValue(`${ProcessGridFields}.${index}.ProcessCost`, e.target.value)
                                     }}
                                     // errors={}
                                     disabled={true}
+                                    value={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
                                   />
                                 </>
                               }

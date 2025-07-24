@@ -334,9 +334,9 @@ function ViewRM(props) {
                     <th>{`RM Rate`}</th>
                     <th>{showRMScrapKeys(viewCostingData && Number(viewCostingData[props.index]?.technologyId))?.name}</th>
                     {isScrapRecoveryApplied && <th>{`Scrap Recovery (%)`}</th>}
-                    <th>{`Gross Weight (Kg)`}</th>
-                    <th>{`${finishWeightLabel} Weight (Kg)`}</th>
-                    <th>{`Scrap Weight`}</th>
+                    <th>{`Gross Weight / Value`}</th>
+                    <th>{`${finishWeightLabel} Weight / Value`}</th>
+                    <th>{`Scrap Weight / value`}</th>
                     {viewCostingData[0]?.technologyId === SHEETMETAL && (
                       <>
                         <th>{`RM Base (Effective Date)`}</th>
@@ -423,7 +423,7 @@ function ViewRM(props) {
                                 id={`net-rm-cost${index}`}
                                 tooltipText={(viewCostingData[props.index]?.technologyId === MACHINING && item?.IsCalculatorAvailable === true)
                                   ? 'Net RM Cost = RM/Pc - ScrapCost'
-                                  : `Net RM Cost =((RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate${isScrapRecoveryApplied ? ' * Scrap Recovery/100' : ''})${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''})`}
+                                  : `Net RM Cost =((RM Rate * Gross Weight / Value) - (Scrap Weight / value * Scrap Rate${isScrapRecoveryApplied ? ' * Scrap Recovery/100' : ''})${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''})`}
                               />
                             )}
                           </div>
