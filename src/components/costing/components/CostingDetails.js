@@ -64,7 +64,7 @@ export const IsPartType = React.createContext()
 function IsolateReRender(control) {
   const values = useWatch({
     control,
-    name: ['zbcPlantGridFields', 'vbcGridFields', 'Technology', 'cbcGridFields'],
+    name: ['zbcPlantGridFields', 'vbcGridFields', 'Technology', 'cbcGridFields', 'nccGridFields'],
   })
 
   return values;
@@ -584,6 +584,11 @@ function CostingDetails(props) {
               return null
             })
 
+            nccArray && nccArray.map((item, index) => {
+              setValue(`${nccGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+              return null
+            })
+
           }, 500);
         }
       }))
@@ -618,16 +623,20 @@ function CostingDetails(props) {
     setIsPlantDrawerOpen(true)
   }
 
+  const firstCostingEntry = (data) => {
+    if (!_.size(vbcVendorGrid) && !_.size(zbcPlantGrid) && !_.size(nccGrid)) {
+      data.ShareOfBusinessPercent = 100
+    }
+  }
+
   /**
    * @method closePlantDrawer
    * @description HIDE ZBC PLANT DRAWER
    */
   const closePlantDrawer = (e = '', plantData = {}) => {
     if (Object.keys(plantData).length > 0) {      
-      // By default set 100% for 1st index
-      if (!_.size(zbcPlantGrid)) {
-        plantData.ShareOfBusinessPercent = 100
-      }
+      // By default set 100% for 1st index only if its a new entry of whole part
+      firstCostingEntry(plantData)
       
       let tempArr = [...zbcPlantGrid, plantData]
       let tempArrWac = [...wacPlantGrid, plantData]
@@ -818,10 +827,8 @@ function CostingDetails(props) {
   const closeVendorDrawer = (e = '', vendorData = {}) => {
 
     if (Object.keys(vendorData).length > 0) {
-      // By default set 100% for 1st index
-      if (!_.size(vbcVendorGrid)) {
-        vendorData.ShareOfBusinessPercent = 100
-      }
+      // By default set 100% for 1st index only if its a new entry of whole part
+      firstCostingEntry(vendorData)
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = vbcVendorGrid.findIndex(el => (el.VendorId === vendorData.VendorId && el.DestinationPlantId === vendorData.DestinationPlantId && el.InfoCategory === vendorData.InfoCategory))
       if (isExist !== -1) {
@@ -878,10 +885,8 @@ function CostingDetails(props) {
    */
   const closeNCCDrawer = (e = '', nccData = {}) => {
     if (Object.keys(nccData).length > 0) {
-      // By default set 100% for 1st index
-      if (!_.size(nccGrid)) {
-        nccData.ShareOfBusinessPercent = 100
-      }
+      // By default set 100% for 1st index only if its a new entry of whole part
+      firstCostingEntry(nccData)
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = nccGrid.findIndex(el => (el.VendorId === nccData.VendorId && el.PlantId === nccData.PlantId))
       if (isExist !== -1) {
@@ -1129,7 +1134,7 @@ function CostingDetails(props) {
    * @description HANDLE COSTING VERSION SELECTED
    */
   const checkForError = (index, type) => {
-    if (errors && (errors.zbcPlantGridFields || errors.vbcGridFields || errors.cbcGridFields)) {
+    if (errors && (errors.zbcPlantGridFields || errors.vbcGridFields || errors.cbcGridFields || errors.nccGridFields)) {
       return false
     } else {
       return true
