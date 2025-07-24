@@ -89,7 +89,7 @@ export default function fuelReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: false,
-                fuelComboSelectList: { ...state.fuelComboSelectList, States: action.payload }
+                fuelComboSelectList: { ...state.fuelComboSelectList || {}, States: action.payload }
             };
         }
         case GET_FULELIST_BY_STATE: {
@@ -97,7 +97,7 @@ export default function fuelReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: false,
-                fuelComboSelectList: { ...state.fuelComboSelectList, Fuels: action.payload }
+                fuelComboSelectList: { ...state.fuelComboSelectList || {}, Fuels: action.payload }
             };
         }
         case GET_PLANT_SELECTLIST_BY_STATE: {
