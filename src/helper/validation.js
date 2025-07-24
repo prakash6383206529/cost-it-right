@@ -218,13 +218,13 @@ export const vlidatePhoneNumber = value => {
 export const validateUrl = value =>
     (value && /^(http:|https:)\/\/(www\.)?[-a-zA-Z0-9@:%._~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_.~#?&//=]*)/.test(value) === false) ? 'Please enter valid url' : undefined;
 
-export const upper = value => value && value.toUpperCase();
+export const upper = value => value && typeof value === 'string' ? value.toUpperCase() : value;
 
 export const normalizePhone = value => {
     if (!value) {
         return value
     }
-    return value.replace(/[^\d]/g, '')
+    return value && typeof value === 'string' ? value.replace(/[^\d]/g, '') : value
 }
 
 export const decimalNumber13 = value =>
@@ -262,37 +262,42 @@ export const decimalLengthFour = decimalLength4(4);
 export const decimalLengthsix = decimalLength6(6);
 
 export const getNameBetweenBraces = (name) => {
-    const firstIndex = name.indexOf('(');
-    const lastIndex = name.lastIndexOf(')');
-    const finalName = name.substring(firstIndex + 1, lastIndex);
+    const firstIndex = (name || '').indexOf('(');
+    const lastIndex = (name || '').lastIndexOf(')');
+    const finalName = (name || '').substring(firstIndex + 1, lastIndex);
     return finalName;
 }
 
 export const getSupplierCode = (name) => {
-    if (name !== '') {
+    if (typeof name === 'string' && name.includes('-(') && name.includes(')')) {
         const firstIndex = name.indexOf('-(');
         const lastIndex = name.lastIndexOf(')');
-        const supplierCode = name.substring(firstIndex + 2, lastIndex);
-        return supplierCode;
-    } else {
-        return '';
+        
+        // Make sure indexes are in valid order
+        if (firstIndex !== -1 && lastIndex !== -1 && lastIndex > firstIndex + 2) {
+            const supplierCode = name.substring(firstIndex + 2, lastIndex);
+            return supplierCode;
+        }
     }
+    return ''; // or null, based on what you expect when format is invalid
 }
 
 export const getCodeBySplitting = (name) => {
-    if (name !== '') {
-        const lastIndex = name.lastIndexOf('(');
-        const lastClosingIndex = name.lastIndexOf(')');
+    if (!name) {
+        return '';
+    }
+    
+    const lastIndex = name.lastIndexOf('(');
+    const lastClosingIndex = name.lastIndexOf(')');
 
-        if (lastIndex !== -1 && lastClosingIndex !== -1 && lastClosingIndex > lastIndex) {
-            const supplierCode = name.substring(lastIndex + 1, lastClosingIndex).trim();
-            return supplierCode;
-        }
+    if (lastIndex !== -1 && lastClosingIndex !== -1 && lastClosingIndex > lastIndex) {
+        const supplierCode = name.substring(lastIndex + 1, lastClosingIndex).trim();
+        return supplierCode;
     }
     return '';
 }
 export const getNameBySplitting = (name) => {
-    if (name !== '') {
+    if (name && name !== '') {
         const lastIndex = name.lastIndexOf('(');
         const lastClosingIndex = name.lastIndexOf(')');
 
@@ -316,24 +321,25 @@ export const applySuperScript = (cell) => {
 
 export const trimTwoDecimalPlace = (floatValue) => {
     var decimalTextLength = 0;
-    if (undefined !== floatValue.toString().split('.')[1]) {
-        decimalTextLength = (floatValue.toString().split('.')[1]).length;
+    if (undefined !== (floatValue || '').toString().split('.')[1]) {
+        decimalTextLength = ((floatValue || '').toString().split('.')[1]).length;
     }
     if (decimalTextLength > 2) {
-        floatValue = parseFloat(floatValue.toString().substring(0, (floatValue.toString().length - (((floatValue.toString().split('.')[1]).length) - 2))));
+        floatValue = parseFloat((floatValue || '').toString().substring(0, ((floatValue || '').toString().length - ((((floatValue || '').toString().split('.')[1]).length) - 2))));
     }
     return floatValue;
 }
 
 export const trimFourDecimalPlace = (floatValue) => {
     var decimalTextLength = 0;
+    if (floatValue == null || isNaN(floatValue)) return floatValue;
     if (undefined !== floatValue) {
-        if (undefined !== floatValue.toString().split('.')[1]) {
-            decimalTextLength = (floatValue.toString().split('.')[1]).length;
+        if (undefined !== (floatValue || '').toString().split('.')[1]) {
+            decimalTextLength = ((floatValue || '').toString().split('.')[1]).length;
         }
     }
     if (decimalTextLength > 4) {
-        floatValue = parseFloat(floatValue.toString().substring(0, (floatValue.toString().length - (((floatValue.toString().split('.')[1]).length) - 4))));
+        floatValue = parseFloat((floatValue || '').toString().substring(0, ((floatValue || '').toString().length - ((((floatValue || '').toString().split('.')[1]).length) - 4))));
     }
     return floatValue;
 }

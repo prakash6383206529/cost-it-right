@@ -99,7 +99,7 @@ export default function CostWorkingReducer(state = initialState, action) {
         case ADD_RAW_MATERIAL_COSTING_SUCCESS:
             const data = state.getCostingDetailData;
 
-            if (data) {
+            if (data?.AssemblyPartDetail?.RawMaterialDetails) {
                 //data.AssemblyPartDetail[action.selectedIndex].RawMaterialDetails[0] = action.payload;
                 data.AssemblyPartDetail.RawMaterialDetails[0] = action.payload;
             }

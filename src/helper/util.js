@@ -156,7 +156,7 @@ const handleHTTPStatus = (response) => {
  * @param res
  */
 export function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1)
+  return (string ?? '').charAt(0).toUpperCase() + (string ?? '').slice(1)
 }
 
 /**
@@ -267,6 +267,9 @@ export function requestError(error) { }
  * @descriptin RETURN TEXT
  **/
 export function validateText(text) {
+  if (!text || typeof text !== 'string') {
+    return ''
+  }
   let newText = ''
   const numbers =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 '
@@ -301,7 +304,7 @@ export const displayValue = (value) => {
  **/
 export const convertObjectToArray = (valueArray) => {
   let tempArray = []
-  valueArray.map((val) => {
+  valueArray && valueArray.map((val) => {
     tempArray.push(val.text)
     return tempArray
   })
@@ -312,7 +315,7 @@ export const convertObjectToArray = (valueArray) => {
  * @descriptin GET FILE EXTENSION
  **/
 export const getFileExtension = (filename) => {
-  return filename.split('.').pop()
+  return filename && typeof filename === 'string' ? filename.split('.').pop() : ''
 }
 
 /**
@@ -323,7 +326,11 @@ export const stringToArray = (str) => {
   let convertedArray = []
   if (typeof str != undefined && typeof str == 'string') {
     const convertedStr = str.split(',')
-    convertedArray = JSON.parse(convertedStr)
+    try {
+      convertedArray = JSON.parse(convertedStr || '[]')
+    } catch (e) {
+      convertedArray = []
+    }
   }
   return convertedArray
 }
@@ -375,7 +382,7 @@ export function checkNumberOfDayDiff(date1, date2) {
  */
 export function renderOptionList(categoriesMaster) {
   let categoryArray = []
-  categoriesMaster.map((val) => {
+  categoriesMaster && categoriesMaster.map((val) => {
     let obj = {}
     obj.label = val
     obj.value = val
@@ -1239,7 +1246,7 @@ export function getPOPriceAfterDecimal(decimalValue, PoPrice = 0) {
     return { netPo, quantity }
   }
 }
-export const allEqual = arr => arr.every(val => val === arr[0]);
+export const allEqual = arr => arr && arr.length > 0 && arr.every(val => val === arr[0]);
 
 // FOR SHOWING CURRENCY SYMBOL 
 export const getCurrencySymbol = (value) => {

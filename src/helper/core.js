@@ -109,7 +109,7 @@ const getLocalizedLabelMap = (t) => {
   const getAllLabels = () => {
     const namespaces = i18next.options.ns;
     const languages = i18next.languages;
-    const selectedLanguage = languages[0];
+    const selectedLanguage = languages?.[0] || 'en';
     let allLabels = {};
 
     languages.forEach(lang => {
