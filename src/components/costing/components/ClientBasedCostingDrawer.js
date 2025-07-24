@@ -141,7 +141,7 @@ export function Clientbasedcostingdrawer(props) {
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`Gross Weight`}
+                                        label={`Gross Weight / Value`}
                                         type="text"
                                         placeholder={"Enter"}
                                         component={renderText}
@@ -150,7 +150,7 @@ export function Clientbasedcostingdrawer(props) {
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`${finishWeightLabel} Weight`}
+                                        label={`${finishWeightLabel} Weight / Value`}
                                         type="text"
                                         placeholder={"Enter"}
                                         component={renderText}

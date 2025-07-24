@@ -1104,9 +1104,9 @@ function ReportListing(props) {
                             <AgGridColumn field='RawMaterialGrade' headerName='Grade' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialSpecification' headerName='Specs' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialRate' headerName='RM Rate' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
-                            <AgGridColumn field='RawMaterialScrapWeight' headerName='Scrap Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
-                            <AgGridColumn field='RawMaterialGrossWeight' headerName='Gross Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
-                            <AgGridColumn field='RawMaterialFinishWeight' headerName={`${finishWeightLabel} Weight`} cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                            <AgGridColumn field='RawMaterialScrapWeight' headerName='Scrap Weight / value' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                            <AgGridColumn field='RawMaterialGrossWeight' headerName='Gross Weight / Value' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                            <AgGridColumn field='RawMaterialFinishWeight' headerName={`${finishWeightLabel} Weight / Value`} cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='rmHyperLinkFormatter'></AgGridColumn>
                             <AgGridColumn field='NetRawMaterialsCost' headerName='Part Cost/Pc' cellRenderer='partCostFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialRemark' headerName='RM Remark' cellRenderer='remarkFormatter'></AgGridColumn>

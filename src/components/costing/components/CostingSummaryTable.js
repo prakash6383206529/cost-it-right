@@ -2948,14 +2948,14 @@ const CostingSummaryTable = (props) => {
                                     <span className={highlighter("rmRate")}>RM Rate</span>
                                     <span className={highlighter("scrapRate")}>{showRMScrapKeys(viewCostingData && Number(viewCostingData[0]?.technologyId))?.name}</span>
                                     {isScrapRecoveryPercentageApplied && <span className={highlighter("", "scrap-recovery")}>Scrap Recovery %</span>}
-                                    <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
-                                    <span className={highlighter("", "finish-reducer")}>{`${finishWeightLabel} Weight`}</span>
-                                    {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
-                                    {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
+                                    <span className={highlighter("", "rm-reducer")}>Gross Weight / Value</span>
+                                    <span className={highlighter("", "finish-reducer")}>{`${finishWeightLabel} Weight / Value`}</span>
+                                    {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight / value</span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight / value</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss (Loss%)</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting && <span className={highlighter("BurningLossWeight")}>Burning Loss Weight </span>}
-                                    <span className={highlighter("ScrapWeight")}>Scrap Weight</span>
+                                    <span className={highlighter("ScrapWeight")}>Scrap Weight / value</span>
                                     {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("YieldPercentage")}>Yield % </span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("EffectiveDate")}>RM Base (Effective Date) </span>}
                                   </td>
