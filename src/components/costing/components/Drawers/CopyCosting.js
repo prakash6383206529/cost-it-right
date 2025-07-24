@@ -116,8 +116,7 @@ function CopyCosting(props) {
     let uniqueArrayNccPlant = _.uniqBy(NccPlant, "value")
     setNccVendor(uniqueArrayNccVendor)
     setNccPlant(uniqueArrayNccPlant)
-    const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
-    setMinDate(date[0]?.LastApproveEffectiveDate ? date[0].LastApproveEffectiveDate : date[0]?.PartEffectiveDate)
+    setMinDate(copyCostingData?.LastApproveEffectiveDate ? copyCostingData?.LastApproveEffectiveDate : copyCostingData?.PartEffectiveDate)
   }, [])
 
   useEffect(() => {
@@ -536,7 +535,7 @@ function CopyCosting(props) {
                     showMonthDropdown
                     showYearDropdown
                     dateFormat="DD/MM/YYYY"
-                    minDate={getEffectiveDateMinDate()}
+                    minDate={minDate ? new Date(minDate) : getEffectiveDateMinDate()}
                     maxDate={getEffectiveDateMaxDate()}
                     placeholder="Select date"
                     customClassName="withBorder"

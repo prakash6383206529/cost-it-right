@@ -126,9 +126,9 @@ const CostDeviationListing = ({ formData, viewCostVariance }) => {
                         <AgGridColumn field="PartNo" cellClass={cellClass} cellRenderer={'PartNoRenderer'} headerName="Part Number" ></AgGridColumn>
                         <AgGridColumn width={140} field="RevisionNumber" headerName={revisionNoLabel} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={220} field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn width={210} field="RawMaterialGrossWeight" headerName="RM Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn width={210} field="RawMaterialGrossWeight" headerName="RM Gross Weight / Value" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={245} field="RawMaterialFinishWeight" headerName="RM Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn width={150} field="RawMaterialScrapWeight" headerName="RM Scrap Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn width={150} field="RawMaterialScrapWeight" headerName="RM Scrap Weight / value" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={150} field="RawMaterialRate" headerName="RM Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={150} field="ScrapRate" headerName="Scrap Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={150} field="NetRawMaterialsCost" headerName="Net Raw Materials Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>

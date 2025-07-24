@@ -732,8 +732,8 @@ function OtherCostingSimulation(props) {
                                                     }
 
                                                     {(showRMColumn) && <>
-                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName={`${finishWeightLabel} Weight`}></AgGridColumn>
-                                                        <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName={`${finishWeightLabel} Weight / Value`}></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight / Value'></AgGridColumn>
                                                     </>}
 
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='Existing Net Cost' cellRenderer='oldPOFormatter'></AgGridColumn>

@@ -71,11 +71,11 @@ function Rejection(props) {
     const getCastingNormFormulaTooltip = () => {
         let tooltipText = ""
         if (partType) {
-            tooltipText = `This cost includes all casting parts used in the assembly, calculated as (Gross Weight - Casting Weight) × RM Rate per Kg`
+            tooltipText = `This cost includes all casting parts used in the assembly, calculated as (Gross Weight / Value - Casting Weight) × RM Rate per Kg`
         } else if (costData?.PartType === "Assembly") {
-            tooltipText = `This cost includes all parts used in the assembly, calculated as (Gross Weight - Casting Weight) × RM Rate per Kg`
+            tooltipText = `This cost includes all parts used in the assembly, calculated as (Gross Weight / Value - Casting Weight) × RM Rate per Kg`
         } else {
-            tooltipText = `(Gross Weight- Casting Weight) × RM Rate Per Kg`
+            tooltipText = `(Gross Weight / Value- Casting Weight) × RM Rate Per Kg`
         }
         return {
             tooltipText,

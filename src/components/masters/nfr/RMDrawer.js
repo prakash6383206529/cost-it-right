@@ -107,8 +107,8 @@ function RMDrawer(props) {
                                             <AgGridColumn field="RawMaterialGradeName" headerName="RM Grade"></AgGridColumn>
                                             <AgGridColumn field="RawMaterialSpecificationName" headerName="RM Specification"></AgGridColumn>
                                             <AgGridColumn field="RmUom" headerName="UOM"></AgGridColumn>
-                                            <AgGridColumn field="GrossWeight" headerName="Gross Weight"></AgGridColumn>
-                                            <AgGridColumn field="NetWeight" headerName="Net Weight"></AgGridColumn>
+                                            <AgGridColumn field="GrossWeight" headerName="Gross Weight / Value"></AgGridColumn>
+                                            <AgGridColumn field="NetWeight" headerName="Net Weight / Value"></AgGridColumn>
                                             <AgGridColumn field="NfrPartWiseDetailIdRef" hide></AgGridColumn>
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}

@@ -209,7 +209,7 @@ function GotGivenListing(props) {
                                 <AgGridColumn field="RawMaterialScrapRate" width={130} headerName="Scrap Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="RawMaterialGrossWeightAndRate" width={130} headerName="Gr RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="RawMaterialFinishWeight" width={110} headerName="FW" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialScrapWeight" width={130} headerName="Scrap Weight" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                <AgGridColumn field="RawMaterialScrapWeight" width={130} headerName="Scrap Weight / value" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NetRawMaterialsCost" width={130} headerName="Net RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="ProfitRMTotalCost" width={130} headerName="Profit of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NetProcessOperationAndSTCost" headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
@@ -266,7 +266,7 @@ function GotGivenListing(props) {
                                 <AgGridColumn field="RawMaterialScrapRate" width={110} headerName="Scrap Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="RawMaterialGrossWeightAndRate" width={120} headerName="Gr RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="RawMaterialFinishWeight" width={100} headerName="FW" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialScrapWeight" width={130} headerName="Scrap Weight" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                <AgGridColumn field="RawMaterialScrapWeight" width={130} headerName="Scrap Weight / value" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NetRawMaterialsCost" width={130} headerName="Net RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="ProfitRMTotalCost" width={130} headerName="Profit of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NetProcessOperationAndSTCost" width={170} headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>

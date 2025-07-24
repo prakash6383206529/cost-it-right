@@ -924,7 +924,7 @@ export const calculateTotalPercentage = (currentValue, index, rawMaterials, getV
 };
 export const NetLandedCostToolTip = (item, technologyId, IsApplyMasterBatch = false) => {
   const { UOM, IsCalculatorAvailable } = item || {};
-  const baseFormula = 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)';
+  const baseFormula = 'Net RM Cost = (RM Rate * Gross Weight / Value) - (Scrap Weight / value * Scrap Rate)';
 
   switch (Number(technologyId)) {
     case Number(MACHINING):
