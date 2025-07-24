@@ -1322,7 +1322,6 @@ function TabDiscountOther(props) {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  // const onSubmit = debounce((values, val, gotoNextValue) => {
   const onSubmit = debounce((values, gotoNextValue) => {
     setIsLoader(true)
     setPaymentTermsWarning(false)
@@ -1330,11 +1329,10 @@ function TabDiscountOther(props) {
     if (errorCheckObject(ErrorObjDiscount)) return false;
 
     if (initialConfiguration?.IsBopOspWithoutHandlingDiscountRequired) {
-      console.log("RMCCTabData",RMCCTabData);
-      
+
       const hasBopOsp = !RMCCTabData?.[0]?.IsAssemblyPart ? RMCCTabData?.[0]?.CostingPartDetails?.CostingBoughtOutPartCost?.some(
         item => item.BOPType === "BOP OSP"
-      ) : RMCCTabData?.[0]?.CostingChildPartDetails?.some(item => item.BOPType === "BOP OSP");
+      ) : !partType ? RMCCTabData?.[0]?.CostingChildPartDetails?.some(item => item.BOPType === "BOP OSP") : headerCosts?.NetBOPOutsourcedCost > 0;
 
       const hasBopOspWithoutHandlingCharge = discountCostArray?.some(
         item => item.ApplicabilityType === "BOP OSP Without Handling Charge"

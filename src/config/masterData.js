@@ -3118,9 +3118,9 @@ export const Labour = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'EmploymentTerms', value: 'EmploymentTerms', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
-    { label: 'Country', value: 'Country', }, //*
-    { label: 'State', value: 'State', }, //*
-    { label: 'City', value: 'City', }, //*
+    // { label: 'Country', value: 'Country', }, //*
+    // { label: 'State', value: 'State', }, //*
+    // { label: 'City', value: 'City', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineType', value: 'MachineType', }, //*
     { label: 'LabourType', value: 'LabourType', }, //*
@@ -3206,11 +3206,11 @@ export const VolumeTempData = [
 export const Fuel = [
     { label: 'FuelName', value: 'FuelName', },
     { label: 'UOM', value: 'UOM', },
-    { label: 'State', value: 'State', },
+    // { label: 'State', value: 'State', },
     { label: 'FuelRate', value: 'FuelRate', },
     { label: 'PlantCode', value: 'PlantCode', },
-    { label: 'Country', value: 'Country', },
-    { label: 'City', value: 'City', },
+    // { label: 'Country', value: 'Country', },
+    // { label: 'City', value: 'City', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
 ]
 
@@ -4802,9 +4802,9 @@ export const MHRMoreZBC = [
     { label: "PowerType", value: "PowerType" },
     // { label: "Rate", value: "Rate" },
     { label: "UnitProduced", value: "UnitProduced" },
+    { label: "Usage (%)", value: "PowerPercentage" },
     { label: "Efficiency (%)", value: "Efficiency (%)", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
-    { label: "PowerPercentage", value: "PowerPercentage" },
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
@@ -4884,9 +4884,9 @@ export const MHRMoreVBC = [
     { label: "PowerType", value: "PowerType" },
     // { label: "Rate", value: "Rate" },
     { label: "UnitProduced", value: "UnitProduced" },
+    { label: "Usage (%)", value: "PowerPercentage" },
     { label: "Efficiency (%)", value: "Efficiency (%)", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
-    { label: "PowerPercentage", value: "PowerPercentage" },
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
@@ -4966,9 +4966,9 @@ export const MHRMoreCBC = [
     { label: "PowerType", value: "PowerType" },
     // { label: "Rate", value: "Rate" },
     { label: "UnitProduced", value: "UnitProduced" },
+    { label: "Usage (%)", value: "PowerPercentage" },
     { label: "Efficiency (%)", value: "Efficiency (%)", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
-    { label: "PowerPercentage", value: "PowerPercentage" },
     // New Key for Custom Power when "FuelAndPowerCostCalculationTypeInMachineMaster" is "Custom" End
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },

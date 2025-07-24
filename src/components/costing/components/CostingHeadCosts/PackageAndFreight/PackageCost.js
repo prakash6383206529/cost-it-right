@@ -221,6 +221,7 @@ function PackageCost(props) {
         closeCalculator={closePackagingCalculatorDrawer}
         rowObjData={calculatorRowObjData}
         costingPackagingCalculationDetailsId={calculatorRowObjData?.CostingPackagingCalculationDetailsId}
+        CostingViewMode={CostingViewMode}
       />}
     </ >
   );

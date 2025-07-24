@@ -587,6 +587,7 @@ function OperationCostExcludedOverhead(props) {
           ID={''}
           anchor={'right'}
           Ids={Ids}
+          isFromOtherOperation={true}
         />
       }
       {openOperationForm && <ViewDetailedForms data={openOperationForm} formName="Operation" cancel={() => setOpenOperationForm({ isOpen: false, id: '' })} />}

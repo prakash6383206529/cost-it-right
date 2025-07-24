@@ -110,7 +110,7 @@ function EditPartCost(props) {
                 if (isBOPView) {
                     tempObject.BoughtOutPartId = item?.BoughtOutPartId
                     tempObject.BoughtOutPartNumber = item?.BoughtOutPartNumber
-                    tempObject.Vendor = `${item?.VendorName} - ${item?.VendorCode}`
+                    tempObject.Vendor = `${item?.VendorName} (${item?.VendorCode})`
                     tempObject.NetLandedCost = item?.SettledPrice
                     tempObject.EffectiveDate = item?.EffectiveDate
                     tempObject.Remark = item?.Remark
@@ -154,7 +154,7 @@ function EditPartCost(props) {
                 if (isBOPView) {
                     tempObject.BoughtOutPartId = item?.BoughtOutPartId
                     tempObject.BoughtOutPartNumber = item?.BoughtOutPartNumber
-                    tempObject.Vendor = `${item?.VendorName} - ${item?.VendorCode}`
+                    tempObject.Vendor = `${item?.VendorName} (${item?.VendorCode})`
                     tempObject.NetLandedCost = item?.SettledPrice
                     tempObject.EffectiveDate = item?.EffectiveDate
                     tempObject.Remark = item?.Remark

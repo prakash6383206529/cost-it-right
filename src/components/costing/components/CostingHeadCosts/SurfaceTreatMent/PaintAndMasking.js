@@ -10,13 +10,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import NoContentFound from '../../../../common/NoContentFound'
 import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, NFRTypeId, PAINTTECHNOLOGY, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
 import Toaster from '../../../../common/Toaster'
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash'
 import Popup from 'reactjs-popup';
 import { getPaintCoatList, getRMDrawerDataList, getSurfaceTreatmentRawMaterialCalculator, saveSurfaceTreatmentRawMaterialCalculator } from '../../../actions/Costing'
 import { costingInfoContext, IsNFRContext } from '../../CostingDetailStepTwo'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import { ViewCostingContext } from '../../CostingDetails'
 import DayTime from '../../../../common/DayTimeWrapper'
+import { handleRemarkPopup, paintTypeOptionOthersHaveRemarks } from '../../../CostingUtil'
+
+
 const PartSurfaceAreaWithUOM = <span>Part Surface Area (dm<sup>2</sup>)</span>
 const ConsumptionWithUOM = <span>Consumption (ml/ dm<sup>2</sup>)</span>
 const TABLE_HEADERS = ['Paint Coat', 'Raw Material', 'UOM', PartSurfaceAreaWithUOM, ConsumptionWithUOM, 'Rejection Allowance (%)', 'Rejection Allowance', 'RM Rate (Currency)', 'Paint Cost', 'Remark', 'Effective Date', 'Action']
@@ -223,7 +226,10 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
     };
 
     const addData = data => {
-        const existingPaintCoat = calculateState?.Coats?.find(item => item?.PaintCoat === data?.PaintCoat?.label)
+        // Not let user to add same data again except paint coat type others.
+        const existingPaintCoat = data?.PaintCoat?.label === 'Others'
+            ? false
+            : calculateState?.Coats?.find(item => item?.PaintCoat === data?.PaintCoat?.label)
 
         if (existingPaintCoat) {
             Toaster.warning("Paint Coat already exist")
@@ -300,7 +306,12 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
             LoggedInUserId: loggedInUserId(),
             BaseCostingId: item?.CostingId
         }
-
+        const rawMaterialListHaveNoRemarks = paintTypeOptionOthersHaveRemarks(obj)
+        
+        if (_.size(rawMaterialListHaveNoRemarks)) {
+            Toaster.warning(`Remarks are required for these raw materials whose Paint Coat type is Others: ${rawMaterialListHaveNoRemarks.join(', ')}`)
+            return false
+        }
         dispatch(saveSurfaceTreatmentRawMaterialCalculator(obj, (response) => {
             if (response && response?.status === 200) {
                 Toaster.success("Data saved successfully")
@@ -505,7 +516,9 @@ function PaintAndMasking({ anchor, isOpen, closeDrawer, ViewMode, CostingId, set
         return (
             <>
                 <Popup className='rm-popup' trigger={<button id={`${name}${item?.RawMaterialId}${parentIndex}${childIndex}`} title="Remark" className="Comment-box" type={'button'} />}
-                    position="top right">
+                    position="top right"
+                    onOpen={() => handleRemarkPopup("open", `${name}${item?.RawMaterialId}${coat}${parentIndex}${childIndex}`)}
+                    onClose={() => handleRemarkPopup()}>
                     <TextAreaHookForm
                         label={false}
                         id={`${name}${item?.RawMaterialId}${parentIndex}${childIndex}`}

@@ -101,6 +101,7 @@ function TabAssemblyTechnology(props) {
         NetBOPImportCostWithOutHandlingCharge: TopHeaderValues?.NetBOPImportCostWithOutHandlingCharge ?? 0,
         NetBOPSourceCostWithOutHandlingCharge: TopHeaderValues?.NetBOPSourceCostWithOutHandlingCharge ?? 0,
         NetBOPOutsourcedCostWithOutHandlingCharge: TopHeaderValues?.NetBOPOutsourcedCostWithOutHandlingCharge ?? 0,
+        TotalLabourCost: TopHeaderValues?.TotalLabourCost ?? 0,
       }
 
       
