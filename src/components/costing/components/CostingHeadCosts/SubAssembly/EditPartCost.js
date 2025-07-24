@@ -78,7 +78,7 @@ function EditPartCost(props) {
                 setValue(`${PartCostFields}.${index}.DeltaValue`, item?.DeltaValue)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, item?.DeltaSign)
                 setValue(`${PartCostFields}.${index}.SOBPercentage`, item?.SOBPercentage)
-                setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice))
+                setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice))
                 return null
             })
             //calculateSelectedBOPWeightedCost();
@@ -304,8 +304,9 @@ function EditPartCost(props) {
                     netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
                     editedObject.NetCost = netCostLocalCurrency
                 }
-
-                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration?.NoOfDecimalForPrice))
+                setTimeout(() => {
+                    setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration?.NoOfDecimalForPrice))
+                }, 50);
             } else if (editedObject.DeltaSign?.label === '-') {
                 let baseValue = isBOPView ? editedObject.NetLandedCost : editedObject.SettledPrice
                 let netCostLocalCurrency = percentageOfNumber(checkForNull(baseValue) - checkForNull(editedObject.DeltaValue || editedObject.Delta), checkForNull(editedObject.SOBPercentage))
@@ -318,7 +319,9 @@ function EditPartCost(props) {
                     netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
                     editedObject.NetCost = netCostLocalCurrency
                 }
-                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration?.NoOfDecimalForPrice))
+                setTimeout(() => {
+                    setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration?.NoOfDecimalForPrice))
+                }, 50);
             } else {
                 // When no delta sign is selected, just calculate based on SOB percentage
                 let baseValue = isBOPView ? editedObject.NetLandedCost : editedObject.SettledPrice
@@ -332,8 +335,9 @@ function EditPartCost(props) {
                     netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion), checkForNull(editedObject.SOBPercentage))
                     editedObject.NetCost = netCostLocalCurrency
                 }
-
-                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration?.NoOfDecimalForPrice))
+                setTimeout(() => {
+                    setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration?.NoOfDecimalForPrice))
+                }, 50);
             }
         }
 
@@ -358,7 +362,7 @@ function EditPartCost(props) {
                 return checkForNull(accummlator) + checkForNull(el.NetCost)
             }, 0)
         }
-
+        
         setWeightedCost(weightedCostCalc)
     }
     const calculateWeightedCost = (arrayTemp = []) => {
@@ -1129,7 +1133,7 @@ function EditPartCost(props) {
                                                                         message: 'Invalid Number.'
                                                                     },
                                                                 }}
-                                                                defaultValue={''}
+                                                                defaultValue={item?.NetCost ? checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                                 className=""
                                                                 disabled={true}
                                                                 customClassName={'withBorder'}
