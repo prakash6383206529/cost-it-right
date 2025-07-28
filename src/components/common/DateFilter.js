@@ -3,13 +3,13 @@ export var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
         var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
         if (dateAsString == null) return -1;
-        var dateParts = dateAsString.split('/');
+        var dateParts = dateAsString?.split('/');
         var cellDate = new Date(
-            Number(dateParts[2]),
-            Number(dateParts[1]) - 1,
-            Number(dateParts[0])
+            Number(dateParts?.[2]),
+            Number(dateParts?.[1]) - 1,
+            Number(dateParts?.[0])
         );
-        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+        if (filterLocalDateAtMidnight?.getTime() === cellDate?.getTime()) {
             return 0;
         }
         if (cellDate < filterLocalDateAtMidnight) {

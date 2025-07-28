@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 export default class Back extends Component {
 
     goBack = () => {
-        this.props.history.goBack();
+        this.props?.history?.goBack();
     }
 
     render() {

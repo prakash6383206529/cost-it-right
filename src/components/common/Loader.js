@@ -15,7 +15,7 @@ export class Loader extends Component {
                 <div className="loaderinner">
                     <img className="img_loader" src={gearLoader} />
                 </div>
-                {this.props.showMessage &&
+                {this.props?.showMessage &&
                     <div className="loader-wait-text">
                         <p>Please wait...</p>
                         <p>Do not press back button we are processing your payment.</p>
