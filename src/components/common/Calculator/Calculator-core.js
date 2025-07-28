@@ -24,35 +24,35 @@ export function getPriority(input) {
 export function infix2Postfix(arrFormula) {
   let result = [], stack = [];
 
-  arrFormula.forEach(item => {
+  arrFormula?.forEach(item => {
     if (isNumber(item)) {
       result.push(item);
     } else if (item === '(') {
-      stack.push(item);
+      stack?.push(item);
     } else if (item === ')') {
-      while (stack.length > 0) {
-        const pulledItem = stack.pop();
+      while (stack?.length > 0) {
+        const pulledItem = stack?.pop();
 
         if (pulledItem === '(') break;
         else result.push(pulledItem);
       }
     } else if (isOperator(item)) {
-      while (stack.length > 0) {
-        const peekedItem = stack[stack.length - 1];
+      while (stack?.length > 0) {
+        const peekedItem = stack?.[stack?.length - 1];
 
         if (isOperator(peekedItem) && getPriority(peekedItem) >= getPriority(item)) {
           result.push(peekedItem);
-          stack.pop();
+          stack?.pop();
         } else break;
       }
 
-      stack.push(item);
+      stack?.push(item);
     } else {
     }
   });
 
-  while (stack.length > 0) {
-    result.push(stack.pop());
+  while (stack?.length > 0) {
+    result?.push(stack?.pop());
   }
 
   return result;
@@ -62,11 +62,11 @@ export function infix2Postfix(arrFormula) {
 export function evaluatePostfix(arrPostfix) {
   let stack = [];
 
-  arrPostfix.forEach(item => {
+  arrPostfix?.forEach(item => {
     if (isNumber(item)) {
-      stack.push(item);
+      stack?.push(item);
     } else if (isOperator(item)) {
-      const num1 = Number.parseFloat(stack.pop()), num2 = Number.parseFloat(stack.pop());
+      const num1 = Number.parseFloat(stack?.pop()), num2 = Number.parseFloat(stack?.pop());
       let result = '';
 
       switch (item) {
@@ -93,5 +93,5 @@ export function evaluatePostfix(arrPostfix) {
     }
   });
 
-  return Number.parseFloat(stack[0]);
+  return Number.parseFloat(stack?.[0]);
 }
