@@ -11,7 +11,7 @@ import Button from '../../layout/Button';
 const gridOptions = {};
 const approvalStatusName = ['Approved', 'Draft', 'PendingForApproval', 'AwaitingForApproval', "Error"]
 function TableTourShowcase(props) {
-    const { headerName, options, actionButtons, mainButtons } = props
+    const { headerName, options, actionButtons, mainButtons } = props || {}
     const [columnDefs, setColumnDefs] = useState([])
     const [rowData, setrowData] = useState([])
     const { t } = useTranslation("Common")
@@ -27,7 +27,7 @@ function TableTourShowcase(props) {
     useEffect(() => {
         let columnsStoreArr = [];
         let rowStoreArr = []
-        headerName.map((item, index) => {
+        headerName?.map((item, index) => {
             let columnKeyWithData = {}
             if (item === 'Status') {
                 columnKeyWithData.cellRenderer = 'statusFormatter'
@@ -37,11 +37,11 @@ function TableTourShowcase(props) {
                 columnKeyWithData.type = "rightAligned"
                 columnKeyWithData.width = "320px"
             }
-            if (options.checkBox && index === 0) {
+            if (options?.checkBox && index === 0) {
                 columnKeyWithData.cellClass = "has-checkbox"
                 columnKeyWithData.checkboxSelection = true
             }
-            if (options.firstColumnLink && index === 0) {
+            if (options?.firstColumnLink && index === 0) {
                 columnKeyWithData.cellRenderer = 'linkFormatter'
             }
             columnKeyWithData['field'] = `Column${index}`
@@ -50,8 +50,8 @@ function TableTourShowcase(props) {
 
 
             let rowKeyWithData = {}
-            for (let i = 0; i < headerName.length; i++) {
-                if (headerName[i] === 'Status' && options.isApprovalFlow) {
+            for (let i = 0; i < (headerName?.length || 0); i++) {
+                if (headerName?.[i] === 'Status' && options?.isApprovalFlow) {
                     rowKeyWithData[`Column${i}`] = approvalStatusName[Math.floor(Math.random() * 5)]
                 } else {
                     rowKeyWithData[`Column${i}`] = `data${i + 1}`;
@@ -70,14 +70,14 @@ function TableTourShowcase(props) {
     }, [])
     const onGridReady = (params) => {
         setTimeout(() => {
-            params.api.sizeColumnsToFit()
+            params?.api?.sizeColumnsToFit()
         }, 200);
     }
     const statusFormatter = (props) => {
         const cellValue = true;
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const toggleStatus = <>
-            <label htmlFor="normal-switch" className="normal-switch" id={`switch_${props.rowIndex}`}>
+            <label htmlFor="normal-switch" className="normal-switch" id={`switch_${props?.rowIndex || 0}`}>
                 <Switch
                     onChange={() => { }}
                     checked={cellValue}
@@ -93,15 +93,15 @@ function TableTourShowcase(props) {
             </label>
         </>
         const approvalStatus = <div className={cell}>{cell}</div>
-        return options.isApprovalFlow ? approvalStatus : toggleStatus
+        return options?.isApprovalFlow ? approvalStatus : toggleStatus
     }
     const actionFormatter = () => {
         return <>
             {actionButtons && actionButtons.map(item => {
-                if (item.toLowerCase() === 'copy') {
-                    return <button id={`table_showcase_${item.toLowerCase()}`} className={`${item} All mr-1`} type={'button'} ></button >
+                if (item?.toLowerCase() === 'copy') {
+                    return <button id={`table_showcase_${item?.toLowerCase()}`} className={`${item} All mr-1`} type={'button'} ></button >
                 } else {
-                    return <button id={`table_showcase_${item.toLowerCase()}`} className={`${item} mr-1`} type={'button'} ></button >
+                    return <button id={`table_showcase_${item?.toLowerCase()}`} className={`${item} mr-1`} type={'button'} ></button >
                 }
             })
             }
@@ -113,7 +113,7 @@ function TableTourShowcase(props) {
         return (
             <>
                 <div
-                    id={`link_${props?.rowIndex}`}
+                    id={`link_${props?.rowIndex || 0}`}
                     className={'link'}
                 >{cell}</div>
             </>
@@ -129,9 +129,9 @@ function TableTourShowcase(props) {
             <div className={`ag-grid-react`}>
                 <Steps
                     enabled={isOpen}
-                    steps={tableShowCaseSteps(t, props)}
+                    steps={tableShowCaseSteps(t, props || {})}
                     onExit={(() => {
-                        props.close()
+                        props?.close?.()
                         setIsOpen(false)
                     })}
                     initialStep={0}
@@ -151,13 +151,13 @@ function TableTourShowcase(props) {
                     </Col>
                     <Col md="8" className='d-flex justify-content-end'>
                         {mainButtons && mainButtons.map(item => {
-                            if (item.toLowerCase() === 'download') {
-                                return <button id={`showcase_${item.toLowerCase()}`} type="button" class="user-btn mr5"><div class={`${item.toLowerCase()} `}></div>All</button>
-                            } else if (item.toLowerCase() === 'add') {
-                                return <button id={`showcase_${item.toLowerCase()}`} type="button" className={"user-btn mr5"}><div className={"plus mr-0"}></div></button>
+                            if (item?.toLowerCase() === 'download') {
+                                return <button id={`showcase_${item?.toLowerCase()}`} type="button" class="user-btn mr5"><div class={`${item?.toLowerCase()} `}></div>All</button>
+                            } else if (item?.toLowerCase() === 'add') {
+                                return <button id={`showcase_${item?.toLowerCase()}`} type="button" className={"user-btn mr5"}><div className={"plus mr-0"}></div></button>
                             }
                             else {
-                                return <button id={`showcase_${item.toLowerCase()}`} type="button" class="user-btn mr5" disabled={item === 'Filter' ? true : false}><div class={`${item.toLowerCase()}`}></div></button>
+                                return <button id={`showcase_${item?.toLowerCase()}`} type="button" class="user-btn mr5" disabled={item === 'Filter' ? true : false}><div class={`${item?.toLowerCase()}`}></div></button>
                             }
                         })}
                     </Col>
