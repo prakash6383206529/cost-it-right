@@ -8,13 +8,13 @@ const TooltipCustom = (props) => {
     const toggle = () => setTooltipOpen(!tooltipOpen);
 
     const tooltipStyle = {
-        minWidth: width ? width : 'auto'
+        minWidth: width || 'auto'
     };
 
     return (
         <>
-            {!disabledIcon && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ${customClass}`} id={id}></i>}
-            <Tooltip style={tooltipStyle} className={tooltipClass} placement={placement ? placement : "top"} isOpen={tooltipOpen} target={id} toggle={toggle}>{tooltipText}</Tooltip>
+            {!disabledIcon && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ${customClass || ''}`} id={id}></i>}
+            <Tooltip style={tooltipStyle} className={tooltipClass} placement={placement || "top"} isOpen={tooltipOpen} target={id} toggle={toggle}>{tooltipText}</Tooltip>
         </>
     );
 }

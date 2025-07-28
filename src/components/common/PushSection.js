@@ -31,22 +31,22 @@ function PushSection(props) {
         let tempArr = []
         if (label === 'MaterialGroup') {
             const material = materialGroup;
-            material && material.map(item => {
-                tempArr.push({ label: `${item.label}(${item.value})`, value: item.value })
+            material?.map(item => {
+                tempArr.push({ label: `${item?.label}(${item?.value})`, value: item?.value })
                 return null
             })
         }
         if (label === 'PurchasingGroup') {
             const purchase = purchasingGroup;
-            purchase && purchase.map(item => {
-                tempArr.push({ label: `${item.label}(${item.value})`, value: item.value })
+            purchase?.map(item => {
+                tempArr.push({ label: `${item?.label}(${item?.value})`, value: item?.value })
                 return null
             })
         }
         if (label === 'DecimalOption') {
             const decOption = decimalOption;
-            decimalOption && decimalOption.map(item => {
-                tempArr.push({ label: item.label, value: item.value })
+            decimalOption?.map(item => {
+                tempArr.push({ label: item?.label, value: item?.value })
                 return null
             })
         }
@@ -101,10 +101,10 @@ function PushSection(props) {
                         register={register}
                         mandatory={false}
                         handleChange={() => { }}
-                        defaultValue={userDetails().DepartmentCode}
+                        defaultValue={userDetails()?.DepartmentCode}
                         className=""
                         customClassName={"withBorder"}
-                        errors={errors.CompanyCode}
+                        errors={errors?.CompanyCode}
                         disabled={true}
                     />
                 </Col> */}
@@ -115,10 +115,10 @@ function PushSection(props) {
                         label={"Material Group"}
                         name={"MaterialGroup"}
                         placeholder={"-Select-"}
-                        Controller={props.Controller}
-                        control={props.control}
+                        Controller={props?.Controller}
+                        control={props?.control}
                         rules={{ required: true }}
-                        register={props.register}
+                        register={props?.register}
                         defaultValue={MaterialGroup.length !== 0 ? MaterialGroup : ""}
                         options={renderListing("MaterialGroup")}
                         mandatory={true}
@@ -132,10 +132,10 @@ function PushSection(props) {
                         label={"Purchasing Group"}
                         name={"PurchasingGroup"}
                         placeholder={"-Select-"}
-                        Controller={props.Controller}
-                        control={props.control}
+                        Controller={props?.Controller}
+                        control={props?.control}
                         rules={{ required: true }}
-                        register={props.register}
+                        register={props?.register}
                         defaultValue={PurchasingGroup.length !== 0 ? PurchasingGroup : ""}
                         options={renderListing("PurchasingGroup")}
                         mandatory={true}
@@ -148,15 +148,15 @@ function PushSection(props) {
                         label={"Decimal Option"}
                         name={"DecimalOption"}
                         placeholder={"-Select-"}
-                        Controller={props.Controller}
-                        control={props.control}
+                        Controller={props?.Controller}
+                        control={props?.control}
                         rules={{ required: true }}
-                        register={props.register}
-                        defaultValue={DecimalOption.length !== 0 ? DecimalOption : ""}
+                        register={props?.register}
+                        defaultValue={DecimalOption?.length !== 0 ? DecimalOption : ""}
                         options={renderListing("DecimalOption")}
                         mandatory={true}
                         handleChange={handleDecimalOption}
-                        errors={props.errors.DecimalOption}
+                        errors={props?.errors?.DecimalOption}
                     />
                 </Col>
             </Row>

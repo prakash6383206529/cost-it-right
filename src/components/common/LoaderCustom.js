@@ -16,11 +16,11 @@ const LoaderCustom = (props) => {
 
 
             {/* loader with image */}
-            <div className={`loader_container ${props.customClass}`}>
+            <div className={`loader_container ${props?.customClass || ''}`}>
                 <div className="loaderinner">
                     <img className="img_loader" src={gearLoader} alt="CIR" />
                 </div>
-                {props.message && <div className='message'>{props.message}</div>}
+                {props?.message && <div className='message'>{props?.message}</div>}
             </div>
         </>
     )

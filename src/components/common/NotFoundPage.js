@@ -10,12 +10,12 @@ class NotFoundPage extends Component {
   */
   componentDidMount() {
     //if (this.props.isLoggeIn) {
-    this.props.handlePageNotFound()
+    this.props?.handlePageNotFound?.()
     //}
   }
 
   componentWillUnmount() {
-    this.props.hidePageNotFound()
+    this.props?.hidePageNotFound?.()
   }
 
   render() {
@@ -35,10 +35,10 @@ class NotFoundPage extends Component {
     // adding class for this error page only on body tag and removing back on other pages
 
     pageclass();
-    const { location } = this.props;
+    const { location } = this.props || {};
     return (
       <div className="d-flex  error-block row">
-        {location.pathname !== "/" ? (
+        {location?.pathname !== "/" ? (
           <>
             <div className="col-md-6 ">
               <img src={errImg} alt="error-icon" />
