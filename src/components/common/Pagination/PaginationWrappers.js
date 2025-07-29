@@ -95,7 +95,7 @@ export function PaginationWrappers(props) {
                 pageSize50: numericPageSize === 50,
                 pageSize100: numericPageSize === 100,
             }));
-            getDataListByModule(skip, numericPageSize, floatingFilterData, module);
+            getDataListByModule?.(skip, numericPageSize, floatingFilterData, module);
 
             // switch (module) {
             //     case 'RM':
@@ -147,7 +147,7 @@ export function PaginationWrappers(props) {
             dispatch?.(updateGlobalTake(numericPageSize));
             dispatch?.(updatePageNumber(calculatedPageNo));
             dispatch?.(updatePageSize(pageSizeValues));
-            getDataListByModule(newSkip, numericPageSize, floatingFilterData, module);
+            getDataListByModule?.(newSkip, numericPageSize, floatingFilterData, module);
 
         }
         if (props?.isApproval) {

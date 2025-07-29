@@ -16,10 +16,10 @@ const LanguageDropdown = () => {
         if (storedLanguage) {
             try {
                 const parsedLanguage = JSON.parse(storedLanguage);
-                const validLanguage = LANGUAGES?.find(lang => lang?.value === parsedLanguage?.value);
+                const validLanguage = LANGUAGES && LANGUAGES.find(lang => lang?.value === parsedLanguage?.value);
                 return validLanguage || DEFAULT_LANGUAGE;
             } catch (error) {
-                console.error('Error parsing stored language:', error);
+                // Error parsing stored language
                 return DEFAULT_LANGUAGE;
             }
         }
@@ -49,15 +49,14 @@ const LanguageDropdown = () => {
                 setSelectedLanguage(parsedLanguage);
                 setValue?.("LanguageChange", parsedLanguage);
             } catch (error) {
-                console.error('Error parsing stored language:', error);
-                // Fallback to default language
+                // Error parsing stored language - fallback to default
                 setSelectedLanguage(DEFAULT_LANGUAGE);
                 setValue?.("LanguageChange", DEFAULT_LANGUAGE);
                 localStorage?.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_LANGUAGE));
             }
         } else {
             // If no stored language, use i18n's resolved language
-            const existLanguage = LANGUAGES?.find(lang => lang?.value === currentI18nLang);
+            const existLanguage = LANGUAGES && LANGUAGES.find(lang => lang?.value === currentI18nLang);
             if (existLanguage) {
                 setSelectedLanguage(existLanguage);
                 setValue?.("LanguageChange", existLanguage);
@@ -78,16 +77,14 @@ const LanguageDropdown = () => {
                 setSelectedLanguage(languageCode);
                 localStorage?.setItem(STORAGE_KEY, JSON.stringify(languageCode));
                 if (languageCode?.value) {
-                    i18n?.changeLanguage(languageCode.value)
-                        .catch(error => {
-                            console.error('Error changing language:', error);
-                            // Optionally implement error handling UI
+                    i18n?.changeLanguage?.(languageCode.value)
+                        ?.catch(error => {
+                            // Error changing language - handle silently
                         });
                 }
             }
         } catch (error) {
-            console.error('Error saving language preference:', error);
-            // Optionally implement error handling UI
+            // Error saving language preference - handle silently
         }
     }, []);
 

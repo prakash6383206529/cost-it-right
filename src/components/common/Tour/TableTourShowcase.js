@@ -27,7 +27,7 @@ function TableTourShowcase(props) {
     useEffect(() => {
         let columnsStoreArr = [];
         let rowStoreArr = []
-        headerName?.map((item, index) => {
+        headerName && headerName.map((item, index) => {
             let columnKeyWithData = {}
             if (item === 'Status') {
                 columnKeyWithData.cellRenderer = 'statusFormatter'

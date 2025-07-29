@@ -33,7 +33,7 @@ class Footer extends Component {
               <div className="row">
                 <div className="col-md-12 text-center d-flex h-spacebw ">
                   <Nav className="justify-content">
-                    {FooterNav?.map((item, index) => (
+                    {FooterNav && FooterNav.map((item, index) => (
                       <NavItem key={index}>
                         <NavLink href={item?.link}>{item?.name}</NavLink>
                       </NavItem>

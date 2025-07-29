@@ -31,7 +31,7 @@ const TableRenderer = ({
   let filteredData = [];
  
   if (partType) {
-    filteredData = data?.filter(item => {
+    filteredData = data && data.filter(item => {
       const applicability = item?.Applicability;
       
       // Hide Overhead and Profit if includeOverHeadProfitIcc is false
@@ -54,10 +54,10 @@ const TableRenderer = ({
   } else {
     filteredData = includeOverHeadProfitIcc 
       ? data
-      : (data?.filter(item =>
+      : data && data.filter(item =>
           item?.Applicability !== "Overhead" && 
           item?.Applicability !== "Profit"
-        ) || []);
+        );
   }
 
   const renderTextField = ({
@@ -115,16 +115,16 @@ const TableRenderer = ({
     <table className="table border" size="sm">
       <thead>
         <tr>
-          {columns?.map((col, idx) => (
+          {columns && columns.map((col, idx) => (
             <th key={idx}>{col?.columnHead}</th>
           ))}
         </tr>
       </thead>
       <tbody>
         {filteredData?.length > 0 ? (
-          filteredData?.map((item, index) => (
+          filteredData && filteredData.map((item, index) => (
             <tr key={index}>
-              {columns?.map((col, colIdx) => {
+              {columns && columns.map((col, colIdx) => {
                 if (col.type === "textField") {
                   return (
                     <td key={colIdx}>

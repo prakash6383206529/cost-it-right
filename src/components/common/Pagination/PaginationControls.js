@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Button from '../../layout/Button';
 import { decrementPage, incrementPage, skipUpdate, updateCurrentRowIndex } from './paginationAction';
 import { checkPartNoExistInBop } from '../../costing/actions/Costing';
+import { checkForNull } from '../../../helper/validation';
 
 const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module,isImport }) => {
     
@@ -130,7 +131,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
                 </p>
             )}
             <p>
-                <Button id="commonPagination_next" variant="next-btn" onClick={onBtNext} disabled={pageNo >= Math.ceil((totalRecordCount || 0) / pageSizeValue)} />
+                <Button id="commonPagination_next" variant="next-btn" onClick={onBtNext} disabled={pageNo >= Math.ceil(checkForNull(totalRecordCount) / pageSizeValue)} />
             </p>
         </div>
     );

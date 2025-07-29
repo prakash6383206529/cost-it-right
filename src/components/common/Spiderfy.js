@@ -20,9 +20,9 @@ class Spiderfy extends React.Component {
     const marker = ref.state[MARKER];
     if (!marker) return;
     this.oms?.addMarker(marker); 
-    if (window?.google?.maps?.event) {
+    if (window?.google?.maps?.event?.addListener) {
       window.google.maps.event.addListener(marker, "spider_click", (e) => {
-        if (this.props?.onSpiderClick) this.props.onSpiderClick(e);
+        if (this.props?.onSpiderClick) this.props?.onSpiderClick?.(e);
       });
     }
   }

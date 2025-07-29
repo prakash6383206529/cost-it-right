@@ -10,7 +10,7 @@ const FormFieldsRenderer = ({ fields, fieldProps, buttonProps,children }) => {
     // const { buttonProps } = buttonProps;
     return (
         <Row className={containerClassName}>
-            {fields?.map(item => {
+            {fields && fields.map(item => {
                 const { tooltip, name, label } = item || {};
                 return (
                     <Col md={colSize ?? '4'} key={name}>

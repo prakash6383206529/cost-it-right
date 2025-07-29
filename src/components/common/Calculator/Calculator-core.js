@@ -24,7 +24,7 @@ export function getPriority(input) {
 export function infix2Postfix(arrFormula) {
   let result = [], stack = [];
 
-  arrFormula?.forEach(item => {
+  arrFormula && arrFormula.forEach(item => {
     if (isNumber(item)) {
       result.push(item);
     } else if (item === '(') {
@@ -62,7 +62,7 @@ export function infix2Postfix(arrFormula) {
 export function evaluatePostfix(arrPostfix) {
   let stack = [];
 
-  arrPostfix?.forEach(item => {
+  arrPostfix && arrPostfix.forEach(item => {
     if (isNumber(item)) {
       stack?.push(item);
     } else if (isOperator(item)) {

@@ -14,7 +14,7 @@ const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedP
     });
     if (selectedParts) {
         let temp = []
-        tempArr?.map(item => {
+        tempArr && tempArr.map(item => {
             if (selectedParts?.includes(item?.value)) return false
             temp.push(item)
         })
@@ -24,9 +24,9 @@ const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedP
     }
 }
 const commonDropdownFunction = (array, tempBoolean = false, selectedParts = [], finalArray, partWithRev = false, isRMBOPPartCombine = false) => {
-    array?.map(item => {
+    array && array.map(item => {
         if (item?.Value === '0' || item?.PartId === '0' || item?.Id === '0') return array
-        if ((tempBoolean && (item?.PartId || item?.Id) && selectedParts.includes(item.PartId || item.Id)) || (tempBoolean && (item?.Value) && selectedParts.includes(item.Value))) return false        //FOR REMOVING DUPLICATE PART ENTRY         
+        if ((tempBoolean && (item?.PartId || item?.Id) && selectedParts?.includes(item?.PartId || item?.Id)) || (tempBoolean && (item?.Value) && selectedParts?.includes(item?.Value))) return false        //FOR REMOVING DUPLICATE PART ENTRY         
         if (partWithRev) {
             if (isRMBOPPartCombine) {
                 finalArray.push({ label: `${item?.Number}`, value: item?.Id })
@@ -34,7 +34,7 @@ const commonDropdownFunction = (array, tempBoolean = false, selectedParts = [], 
                 finalArray.push({ label: `${item?.PartNumber}${item?.RevisionNumber ? ` (${item?.RevisionNumber})` : ''}`, value: item?.PartId, RevisionNumber: item?.RevisionNumber })
             }
         } else {
-            finalArray.push({ label: item.Text, value: item.Value })
+            finalArray.push({ label: item?.Text, value: item?.Value })
         }
         return null
     })
@@ -147,7 +147,7 @@ export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean 
 export const hideCustomerFromExcel = (data, value) => {
     let excelData
     if (!reactLocalStorage.getObject('CostingTypePermission')?.cbc) {
-        excelData = data?.filter((item) => item?.value !== value)
+        excelData = data && data.filter((item) => item?.value !== value)
     }
     else {
         excelData = [...data]
@@ -163,7 +163,7 @@ export const hideColumnFromExcel = (data, value) => {
 
 export const hideMultipleColumnFromExcel = (data, value) => {
     let excelData
-    excelData = data?.filter((item) => !value?.includes(item?.value))
+    excelData = data && data.filter((item) => !value?.includes(item?.value))
     return excelData
 }
 
@@ -270,7 +270,7 @@ export const checkMasterCreateByCostingPermission = (isBulkupload = false) => {
 
 
 export const OperationFileData = (fileData) => {
-    fileData?.forEach(obj => {
+    fileData && fileData.forEach(obj => {
         switch (obj.ForType) {
             case 'Welding':
                 obj.MaterialWireCRMHead = obj['MaterialWireCRMHead/NiRateCrmHead'];
@@ -353,7 +353,7 @@ export const getRMCostIds = () => {
 }
 export const getCostingConditionTypes = (conditionName) => {
     let arr = getRMCostIds()
-    let costingTypeId = arr?.filter(item => item?.['CostingConditionTypeName'] === conditionName)
+    let costingTypeId = arr && arr.filter(item => item?.['CostingConditionTypeName'] === conditionName)
     return costingTypeId?.[0]?.CostingConditionTypeMasterId
 }
 
@@ -424,7 +424,7 @@ export const handleApplicability = (value, basicPriceBaseCurrency, arr, costFiel
     if (!value) return 0;
     const selectedApplicabilities = value?.split(' + ') || [];
     // Calculate total cost currency for selected applicabilities
-    const total = selectedApplicabilities?.reduce((acc, applicability) => {
+    const total = selectedApplicabilities && selectedApplicabilities.reduce((acc, applicability) => {
         const trimmedApplicability = applicability?.trim();
 
         // If applicability is "Basic Rate", return basic price
@@ -508,7 +508,7 @@ export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabili
     // Create a temporary array for calculations
     let tempArr = copiedData || [];
     // Process each item in the array
-    copiedData?.forEach((item, index) => {
+    copiedData && copiedData.forEach((item, index) => {
         if (item?.[typeField] === "Percentage") {
             // Calculate costs
             const ApplicabilityCost = handleApplicability(
@@ -550,7 +550,7 @@ export const updateCostValue = (isConditionCost, state, price, isSimulation = fa
 
     // Calculate sum
     const costField = isConditionCost ? 'ConditionCostPerQuantity' : 'NetCost';
-    const sum = table?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj[costField]), 0);
+    const sum = table && table.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj[costField]), 0);
 
     // Return updated state and form values
     return {
@@ -581,7 +581,7 @@ export const checkEffectiveDate = (effectiveDate, effectiveDateToChange) => {
     return DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(effectiveDateToChange).format('YYYY-MM-DD HH:mm:ss')
 }
 export const generateUnusedRMsMessage = (unusedRMs) => {
-    const rmStrings = unusedRMs?.map(rm => `${rm?.RMName}-${rm?.RMGrade}`) || [];
+    const rmStrings = unusedRMs && unusedRMs.map(rm => `${rm?.RMName}-${rm?.RMGrade}`) || [];
     const rmList = rmStrings?.join(', ') || '';
     return `Raw materials (${rmList}) are not used in the weight calculator. Remove the unused raw materials to save the calculator. Click "OK" to remove.`;
 }
@@ -646,11 +646,11 @@ export const filterBOPApplicability = (
         const key = applicabilityKey ? ap?.[applicabilityKey] : ap?.Applicability;
         const exclusions = bopVariants?.[key];
         if (exclusions?.length) {
-            exclusions?.forEach(ex => allExclusions.add(ex));
+            exclusions && exclusions.forEach(ex => allExclusions.add(ex));
         }
     }
 
-    const filtered = costingHead?.filter(item => {
+    const filtered = costingHead && costingHead.filter(item => {
         const itemText = item?.Text;
         const isFixed = itemText?.toLowerCase() === "fixed";
 
@@ -676,7 +676,7 @@ export const filterBOPApplicability = (
 
     });
 
-    return filtered?.map(item => ({
+    return filtered && filtered.map(item => ({
         label: item?.Text,
         value: item?.Value
     })) || [];

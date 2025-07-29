@@ -31,21 +31,21 @@ function PushSection(props) {
         let tempArr = []
         if (label === 'MaterialGroup') {
             const material = materialGroup;
-            material?.map(item => {
+            material && material.map(item => {
                 tempArr.push({ label: `${item?.label}(${item?.value})`, value: item?.value })
                 return null
             })
         }
         if (label === 'PurchasingGroup') {
             const purchase = purchasingGroup;
-            purchase?.map(item => {
+            purchase && purchase.map(item => {
                 tempArr.push({ label: `${item?.label}(${item?.value})`, value: item?.value })
                 return null
             })
         }
         if (label === 'DecimalOption') {
             const decOption = decimalOption;
-            decimalOption?.map(item => {
+            decimalOption && decimalOption.map(item => {
                 tempArr.push({ label: item?.label, value: item?.value })
                 return null
             })
