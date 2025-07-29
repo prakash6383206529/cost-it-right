@@ -10,7 +10,7 @@ import { Col, Row } from 'reactstrap';
 import DayTime from '../common/DayTimeWrapper';
 import { setSelectedRowForPagination, } from '../simulation/actions/Simulation';
 import _ from 'lodash';
-import { checkPermission, searchNocontentFilter } from '../../helper';
+import { checkPermission, searchNocontentFilter, checkForNull } from '../../helper';
 import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
 import { disabledClass } from '../../actions/Common';
@@ -124,7 +124,7 @@ function LoginAudit(props) {
 
                 }
                 if (res?.data && res?.data?.DataList && res?.data?.DataList?.length > 0) {
-                    setState(prevState => ({ ...prevState, totalRecordCount: res?.data?.DataList?.[0]?.TotalRecordCount || 0 }));
+                    setState(prevState => ({ ...prevState, totalRecordCount: checkForNull(res?.data?.DataList?.[0]?.TotalRecordCount) }));
                 }
                 if (res) {
                     let isReset = true
@@ -557,15 +557,15 @@ function LoginAudit(props) {
     };
     const returnExcelColumn = (data = [], tempData) => {
         // Map through TempData to format the LoginTime for each item
-        const formattedData = tempData.map(item => ({
+        const formattedData = tempData && tempData.map(item => ({
             ...item,
-            LoginTime: excelDateFormatter(item.LoginTime),
-        }));
+            LoginTime: excelDateFormatter(item?.LoginTime),
+        })) || [];
 
         // Now export formattedData instead of tempData
         return (
             <ExcelSheet data={formattedData} name={AuditLisitng}>
-                {data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>
         );
     };
