@@ -45,8 +45,7 @@ function PackagingCalculator(props) {
     const { costingData, CostingEffectiveDate } = useSelector(state => state.costing)
     const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
     const { typeOfCostList, calculationCriteriaList } = useSelector(state => state.costWorking)
-    const costingViewMode = useContext(ViewCostingContext);
-    const CostingViewMode = costingViewMode ?? props?.CostingViewMode
+    const CostingViewMode =  props?.CostingViewMode
     const PackagingCalculationId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingPackagingCalculationDetailsId : props?.costingPackagingCalculationDetailsId ?? null
     const DaysInMonthForVolumePerDay = getConfigurationKey().DaysInMonthForVolumePerDayPackagingCalculation
     const dispatch = useDispatch()

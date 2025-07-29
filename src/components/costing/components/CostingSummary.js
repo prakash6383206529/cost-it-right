@@ -28,6 +28,7 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from './TourMessages'
 import { useTranslation } from 'react-i18next'
 import { useLabels } from '../../../helper/core'
+import { formatGroupCode } from '../../../helper'
 
 function CostingSummary(props) {
 
@@ -66,7 +67,7 @@ function CostingSummary(props) {
   const [partType, setPartType] = useState([]);
   const [partFamily, setPartFamily] = useState([])
   const { t } = useTranslation("Costing")
-  const { technologyLabel, drawingNoLabel, revisionNoLabel } = useLabels();
+  const { technologyLabel, drawingNoLabel, revisionNoLabel, groupCodeLabel } = useLabels();
   const partFamilySelectList = useSelector((state) => state.part.partFamilySelectList)
   const IsMultiVendorCosting = useSelector(state => state.costing?.IsMultiVendorCosting);
 
@@ -284,12 +285,14 @@ function CostingSummary(props) {
                   setValue('ECNNumber', Data.ECNNumber)
                   setValue('DrawingNumber', Data.DrawingNumber)
                   setValue('RevisionNumber', Data.RevisionNumber)
+                  setValue('GroupCode', formatGroupCode(Data?.GroupCode))
                   setValue('PartFamily', Data?.PartFamily)
                   setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice))
-                  setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName }))
+                  setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName, groupCodeTitle: Data?.GroupCode }))
                   setTechnologyId(Data?.TechnologyId)
                   setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                   newValue.revisionNumber = Data.RevisionNumber
+                  newValue.groupCode = Data?.GroupCode
                   newValue.technologyId = technology.value
                   newValue.technologyName = technology.label
                   newValue.partName = Data.PartName
@@ -338,6 +341,7 @@ function CostingSummary(props) {
               setValue('ECNNumber', '')
               setValue('DrawingNumber', '')
               setValue('RevisionNumber', '')
+              setValue('GroupCode', '')
               setValue('ShareOfBusiness', '')
               setValue('PartFamily', '')
               setEffectiveDate('')
@@ -404,6 +408,7 @@ function CostingSummary(props) {
       ECNNumber: '',
       DrawingNumber: '',
       RevisionNumber: '',
+      GroupCode: '',
       ShareOfBusiness: '',
       PartType: '',
       PartFamily: '',
@@ -688,6 +693,25 @@ function CostingSummary(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.RevisionNumber}
+                          disabled={true}
+                          placeholder="-"
+                        />
+                      </Col>
+
+                      <Col className="col-md-15">
+                        <TextFieldHookForm
+                          label={groupCodeLabel}
+                          name={"GroupCode"}
+                          title={formatGroupCode(titleObj?.groupCodeTitle)}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          errors={errors.GroupCode}
                           disabled={true}
                           placeholder="-"
                         />

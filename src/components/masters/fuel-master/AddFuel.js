@@ -9,6 +9,7 @@ import {
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getVendorNameByVendorSelectList, getCityByCountryAction, getExchangeRateSource, getCurrencySelectList, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
+import { getSupplierByIdAPI } from '../actions/Supplier';
 import { MESSAGES } from '../../../config/message';
 import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import { getConfigurationKey, IsFetchExchangeRateVendorWiseForParts, loggedInUserId } from "../../../helper/auth";
@@ -109,10 +110,10 @@ class AddFuel extends Component {
     if (!this.state.isViewMode) {
       this.props.getExchangeRateSource((res) => { })
       this.props.getCurrencySelectList(() => { })
-      this.props.fetchCountryDataAPI(() => { })
-      this.props.fetchStateDataAPI(0, () => { })
-      this.props.fetchCityDataAPI(0, () => { })
       this.props.getAllFuelAPI(() => { })
+      // this.props.fetchCountryDataAPI(() => { })
+      // this.props.fetchStateDataAPI(0, () => { })
+      // this.props.fetchCityDataAPI(0, () => { })
     }
     this.getDetails(data);
     if (!(data.isEditFlag || data.isViewMode)) {
@@ -277,7 +278,10 @@ class AddFuel extends Component {
               isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
               // effectiveDate: effectiveDate
-              effectiveDate: Data.EffectiveDate ? Data?.EffectiveDate : ""
+              effectiveDate: Data.EffectiveDate ? Data?.EffectiveDate : "",
+              country: { label: Data?.FuelDetails?.[0]?.CountryName, value: Data?.FuelDetails?.[0]?.CountryId},
+              StateName: { label: Data?.FuelDetails?.[0]?.StateName, value: Data?.FuelDetails?.[0]?.StateId},
+              city: { label: Data?.FuelDetails?.[0]?.CityName, value: Data?.FuelDetails?.[0]?.CityId}
 
             }, () => this.setState({ isLoader: false }))
           }, 200)
@@ -418,17 +422,17 @@ class AddFuel extends Component {
       })
       this.setState({
         rateGrid: tempArray,
-        StateName: [],
+        // StateName: [],
         effectiveDate: '',
-        country: [],
-        city: [],
+        // country: [],
+        // city: [],
       }, () => {
         this.props.change("RateConversion", '')
         this.props.change("RateLocalConversion", '')
         this.props.change("Rate", '')
-        this.props.change('CountryId', null)
-        this.props.change('StateId', null)
-        this.props.change('CityId', null)
+        // this.props.change('CountryId', null)
+        // this.props.change('StateId', null)
+        // this.props.change('CityId', null)
       }
       );
       this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false, country: false, city: false } })
@@ -439,9 +443,9 @@ class AddFuel extends Component {
   rateTableReset = () => {
 
     this.setState({
-      StateName: [],
-      country: [],
-      city: [],
+      // StateName: [],
+      // country: [],
+      // city: [],
       effectiveDate: "",
       errorObj: { city: false, state: false, rate: false, country: false, effectiveDate: false }
 
@@ -500,12 +504,12 @@ class AddFuel extends Component {
     tempArray = Object.assign([...rateGrid], { [rateGridEditIndex]: tempData })
     this.setState({
       rateGrid: tempArray,
-      StateName: [],
+      // StateName: [],
       effectiveDate: '',
       rateGridEditIndex: '',
       isEditIndex: false,
-      country: {},
-      city: {},
+      // country: {},
+      // city: {},
     }, () => this.props.change("RateConversion", ''),
       this.props.change("RateLocalConversion", ''),
       this.props.change("Rate", ''));
@@ -555,7 +559,7 @@ class AddFuel extends Component {
       isEditIndex: false,
       effectiveDate: '',
 
-      StateName: '',
+      // StateName: '',
     }, () => this.props.change('Rate', 0))
     let tempData = rateGrid.filter((item, i) => {
       if (i === index) {
@@ -670,7 +674,7 @@ class AddFuel extends Component {
       FuelDetailId: '',
       fuel: [],
       UOM: [],
-      StateName: [],
+      // StateName: [],
       effectiveDate: '',
       rateGrid: [],
       isEditFlag: false,
@@ -823,6 +827,13 @@ class AddFuel extends Component {
         let Data = res?.data?.Data
         this.props.change('plantCurrency', Data?.Currency)
         this.setState({ plantCurrencyID: Data?.CurrencyId })
+        if (this.state.costingTypeId === ZBCTypeId || this.state.costingTypeId === CBCTypeId) {
+          this.setState({
+            country: { label: Data?.CountryName, value: Data?.CountryId},
+            StateName: { label: Data?.StateName, value: Data?.StateId},
+            city: { label: Data?.CityName, value: Data?.CityIdRef}
+          })
+        }
         if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
           this.setState({ hidePlantCurrency: false })
           this.callExchangeRateAPI()
@@ -843,6 +854,18 @@ class AddFuel extends Component {
   };
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      this.props.getSupplierByIdAPI(newValue?.value, true, (res) => {
+        if (res && res.data && res.data.Data) {
+            let Data = res.data.Data
+            if (this.state.costingTypeId === VBCTypeId) {
+            this.setState({
+              country: { label: Data?.Country, value: Data?.CountryId},
+              StateName: { label: Data?.State, value: Data?.StateId},
+              city: { label: Data?.City, value: Data?.CityId}
+            })
+          }    
+        }
+      })
       this.setState(
         { vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] },
         () => {
@@ -1319,7 +1342,7 @@ class AddFuel extends Component {
                                 required={true}
                                 handleChangeDescription={this.countryHandler}
                                 valueDescription={this.state.country}
-                                disabled={isViewMode}
+                                disabled={true}
                               />
                               {this.state.errorObj.CountryId && this.state.country.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
@@ -1338,7 +1361,7 @@ class AddFuel extends Component {
                                   required={true}
                                   handleChangeDescription={this.stateHandler}
                                   valueDescription={this.state.StateName}
-                                  disabled={isViewMode}
+                                  disabled={true}
                                 />
                                 {this.state.errorObj.StateId && this.state.StateName.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
@@ -1356,7 +1379,7 @@ class AddFuel extends Component {
                                 required={true}
                                 handleChangeDescription={this.cityHandler}
                                 valueDescription={this.state.city}
-                                disabled={isViewMode}
+                                disabled={true}
                               />
                               {this.state.errorObj.CityId && this.state.city.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
@@ -1642,7 +1665,8 @@ export default connect(mapStateToProps, {
   getExchangeRateByCurrency,
   getPlantUnitAPI,
   getExchangeRateSource,
-  getCurrencySelectList
+  getCurrencySelectList,
+  getSupplierByIdAPI
 })(reduxForm({
   form: 'AddFuel',
   validate: validateForm,

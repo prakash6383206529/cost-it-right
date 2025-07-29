@@ -32,7 +32,7 @@ let counter = 0;
 function ProcessCost(props) {
   const { data, item, isAssemblyTechnology } = props
   // const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
-  let IsLocked = ''
+  let IsLocked = false
   if (item?.PartType === 'Sub Assembly') {
     IsLocked = (item.IsLocked ? item.IsLocked : false)
   }
@@ -354,6 +354,7 @@ function ProcessCost(props) {
         setIsFromApi(false)
         setTabData(tempArr2)
         setGridData(tempArray)
+        
         dispatch(setProcessGroupGrid(formatReducerArray(tempArray)))
         setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity)
         setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '')
@@ -363,6 +364,7 @@ function ProcessCost(props) {
       // PROCESS UNDER THE GROUP IS UPDATING
       let tempArr = []
       let processTempData = gridData[parentCalciIndex]
+      
 
       let tempData = listData[calciIndex]
 
@@ -378,9 +380,6 @@ function ProcessCost(props) {
         ProcessCalculationId: EMPTY_GUID,
         ProcessCalculatorId: weightData.ProcessCalculationId,
         WeightCalculatorRequest: weightData,
-        CostingConversionApplicabilityDetails: processTempData?.Applicability,
-        CostingConditionMasterAndTypeLinkingId: processTempData?.Applicability?.value || null,
-        CostingConditionNumber: processApplicabilitySelect.find(type => type.value === processTempData?.Applicability?.value)?.label || null,
         Cavity: weightData?.Cavity,
         NoOfManPower: weightData?.NoOfManPower
 
@@ -412,14 +411,13 @@ function ProcessCost(props) {
       });
 
       let ProductionPerHour = findProductionPerHour(groupTotals.Quantity)
-
       processTempData = {
         ...processTempData,
         Quantity: groupTotals.Quantity,
         ProductionPerHour: tempData.UOMType !== TIME ? '' : ProductionPerHour,
         ProcessCost: groupTotals.NetProcessCost,
         ProcessList: gridTempArr,
-        CostingConversionApplicabilityDetails: processTempData.Applicability,
+        CostingConversionApplicabilityDetails: processTempData.CostingConversionApplicabilityDetails,
         ...groupTotals // Add net cost totals to the group
 
       }
@@ -449,6 +447,9 @@ function ProcessCost(props) {
       setTabData(tempArr)
       setGridData(processTemparr)
       dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
+      setTimeout(() => {
+        setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(finalTotals?.NetProcessCost, getConfigurationKey().NoOfDecimalForPrice))
+      }, 50);
     }
   }
 
@@ -680,6 +681,8 @@ function ProcessCost(props) {
               Type: el?.Type,
               Percentage: el?.Type === COSTAPPLICABILITYBASIS ? el?.Percentage : '-',
               Applicability: el?.Type === COSTAPPLICABILITYBASIS ? el?.Applicability : '-',
+              Cavity: el?.Cavity,
+              NoOfManPower: el?.NoOfManPower
             }
           })
 
@@ -734,6 +737,8 @@ function ProcessCost(props) {
             Type: item?.Type,
             Percentage: item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-',
             Applicability: item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-',
+            Cavity: item?.Cavity,
+            NoOfManPower: item?.NoOfManPower
           }
         })
 
@@ -794,6 +799,8 @@ function ProcessCost(props) {
             Type: el?.Type,
             Percentage: el?.Type === COSTAPPLICABILITYBASIS ? el?.Percentage : '-',
             Applicability: el?.Type === COSTAPPLICABILITYBASIS ? el?.Applicability : '-',
+            Cavity: el?.Cavity,
+            NoOfManPower: el?.NoOfManPower
           }
         })
 
@@ -1132,7 +1139,7 @@ function ProcessCost(props) {
       const uniqueItems = [...new Set(e.map(item => item.label.toLowerCase()))].map(label => {
         return e.find(item => item.label.toLowerCase() === label);
       });
-      
+
       if (uniqueItems.length < e.length) {
         Toaster.warning(`Duplicate applicability is not allowed`);
         e = uniqueItems;
@@ -1146,33 +1153,33 @@ function ProcessCost(props) {
         const uniqueItems = [...new Set(e.map(item => item.label.toLowerCase()))].map(label => {
           return e.find(item => item.label.toLowerCase() === label);
         });
-      
+
         if (uniqueItems.length < e.length) {
           Toaster.warning(`Duplicate applicability is not allowed`);
         }
-      
+
         // Define conflicting pairs
         const conflictingPairs = [
           ['overhead', 'overhead(excluding int. + dep.)'],
           ['profit', 'profit(excluding int. + dep.)'],
           ['rejection', 'rejection(excluding int. + dep.)']
         ];
-      
+
         const labels = uniqueItems.map(item => item.label.toLowerCase());
         let filteredItems = [...uniqueItems]; // Copy to modify
-      
+
         for (const [type1, type2] of conflictingPairs) {
           if (labels.includes(type1) && labels.includes(type2)) {
             const capitalizedType = type1.charAt(0).toUpperCase() + type1.slice(1);
             Toaster.warning(`Cannot select both ${capitalizedType} and ${capitalizedType}(Excluding Int. + Dep.)`);
-      
+
             // Remove the second type in pair (or you can remove type1 instead based on your rule)
             filteredItems = filteredItems.filter(
               item => item.label.toLowerCase() !== type2
             );
           }
         }
-      
+
         // Final update
         e = filteredItems;
         setTimeout(() => {
@@ -1180,9 +1187,18 @@ function ProcessCost(props) {
         }, 50);
       }
     }
-  if (item?.Type === COSTAPPLICABILITYBASIS) {
-   if (e?.some(item => item.label === APPLICABILITY_OVERHEAD_EXCL || item.label === APPLICABILITY_PROFIT_EXCL || item.label === APPLICABILITY_REJECTION_EXCL)) {
+    if (item?.Type === COSTAPPLICABILITYBASIS) {
+      if (e?.some(item => item.label === APPLICABILITY_OVERHEAD_EXCL || item.label === APPLICABILITY_PROFIT_EXCL || item.label === APPLICABILITY_REJECTION_EXCL)) {
+
         Toaster.warning("For cost applicability basis, only Overhead, Profit and Rejection applicability is allowed.")
+        e = e.filter(item =>
+          item.label === APPLICABILITY_OVERHEAD ||
+          item.label === APPLICABILITY_PROFIT ||
+          item.label === APPLICABILITY_REJECTION
+        );
+        setTimeout(() => {
+          setValue(`${ProcessGridFields}.${index}.CostingConditionNumber`, e)
+        }, 50);
 
         return false
       }
@@ -1201,6 +1217,14 @@ function ProcessCost(props) {
     // Show warning if excluding applicability selected but not detailed form
     if (isExcludingApplicability) {
       if (!tempData?.IsDetailed || tempData?.UOMType !== TIME) {
+        e = e.filter(item =>
+          item.label === APPLICABILITY_OVERHEAD ||
+          item.label === APPLICABILITY_PROFIT ||
+          item.label === APPLICABILITY_REJECTION
+        );
+        setTimeout(() => {
+          setValue(`${ProcessGridFields}.${index}.CostingConditionNumber`, e)
+        }, 50);
         Toaster.warning("Detailed cost is unavailable for the selected process, or UOM is not time-based. Overhead, profit and rejection will be calculated on the actual machine rate.");
       }
     }
@@ -1231,10 +1255,10 @@ function ProcessCost(props) {
         //const childNetCosts = calculateNetCosts(childProcess.ProcessCost, e?.label, "Process", childProcess?.ProcessCostWithOutInterestAndDepreciation);
         return {
           ...childProcess,
-          CostingConversionApplicabilityDetails: e && e?.map(item => ({
-            CostingConditionMasterAndTypeLinkingId: item.value,
-            CostingConditionNumber: item.label
-          }))
+          // CostingConversionApplicabilityDetails: e && e?.map(item => ({
+          //   CostingConditionMasterAndTypeLinkingId: item.value,
+          //   CostingConditionNumber: item.label
+          // }))
           // ...childNetCosts
         };
       });
@@ -1516,12 +1540,13 @@ ${isDetailedText}`
   }
   const renderSingleProcess = (process, parentIndex) => {
     return (
-      process.ProcessList && process.ProcessList.map((item, index) => {
+      process.ProcessList && process.ProcessList.map((item, index) => {        
         return (
           <tr>
             <td>{'-'}</td>
-            <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.ProcessName}</span></td>
-            <td>{item?.Tonnage}</td>
+            <td className='text-overflow'><span title={`${item.ProcessName}-group-${process?.GroupName}`} draggable={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>{item.ProcessName}</span></td>
+            <td>{item?.MachineName}</td>
+            <td>{item?.Tonnage || '-'}</td>
             <td>{checkForDecimalAndNull(item?.MHR, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}</td>
             <td>{item.Type ?? '-'}</td>
             <td>{item?.Type === MHRBASIS ? item?.UOM : '-'}</td>
@@ -1552,7 +1577,7 @@ ${isDetailedText}`
                       }}
 
                       // errors={ }
-                      disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS) ? true : false}
+                      disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS) ? true : false}
                     />
 
                   }
@@ -1570,6 +1595,8 @@ ${isDetailedText}`
             </td>
             {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Applicability : '-'}</td>}
             {showCostBaseAppliacabilityColumns && <td>{item?.Type === COSTAPPLICABILITYBASIS ? item?.Percentage : '-'}</td>}
+            <td>{item?.Cavity || '-'}</td>
+            <td>{item?.NoOfManPower || '-'}</td>
             <td style={{ width: 100 }}>
               {
                 <>
@@ -1598,7 +1625,7 @@ ${isDetailedText}`
             <td></td>
             <td>
               <div className='action-btn-wrapper'>
-                {(!CostingViewMode && ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
+                {(!CostingViewMode && ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteGroupProcess(index, parentIndex, process.ProcessList)} />}
                 <Popup trigger={<button id={`popUpTriggers${index}.${parentIndex}`} title="Remark" className="Comment-box" type={'button'} />}
                   position="top right"
                   onOpen={() => handleRemarkPopup("open", `${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`)}
@@ -1621,13 +1648,13 @@ ${isDetailedText}`
                     customClassName={"withBorder"}
                     errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[`${index}${parentIndex}`] !== undefined ? errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                    disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                    disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                     hidden={false}
                     validateWithRemarkValidation={true}
                   />
                   <Row>
                     <Col md="12" className='remark-btn-container'>
-                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClickGroup(index, parentIndex, process.ProcessList)} > <div className='save-icon'></div> </button>
+                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClickGroup(index, parentIndex, process.ProcessList)} > <div className='save-icon'></div> </button>
                       <button className='reset' onClick={() => onRemarkPopUpCloseGroup(index, parentIndex)} > <div className='cancel-icon'></div></button>
                     </Col>
                   </Row>
@@ -1865,7 +1892,7 @@ ${isDetailedText}`
                     {showCostBaseAppliacabilityColumns && <th style={{ width: "110px" }}>{`Percentage`}</th>}
                     <th style={{ width: "50px" }}>{`Cavity`}</th>
                     <th style={{ width: "100px" }}>{`Manpower/Run Count`}</th>
-                    <th style={{ width: "140px" }} >{`Net Cost`}</th>
+                    <th style={{ width: "160px" }} >{`Net Cost`}</th>
                     {initialConfiguration?.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
                     <th style={{ width: "160px" }} >{`Applicability`}</th>
                     <th style={{ width: "145px" }}><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
@@ -1887,7 +1914,7 @@ ${isDetailedText}`
                                     className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div>
 
                               }
-                              <span className='link' onClick={() => setOpenMachineForm({ isOpen: true, id: item.MachineId })} title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>
+                              <span className='link' onClick={() => setOpenMachineForm({ isOpen: true, id: item.MachineId })} title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? false : true}>
                                 {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
                             </td>
                             {processGroup && <td className='text-overflow'><span title={item.ProcessName}>{'-'}</span></td>}
@@ -1922,7 +1949,7 @@ ${isDetailedText}`
                                           handleQuantityChange(e, index)
                                         }}
 
-                                        disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS || (item.GroupName !== '' && item.GroupName !== null)) ? true : false}
+                                        disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ || item?.Type === COSTAPPLICABILITYBASIS || (item.GroupName !== '' && item.GroupName !== null)) ? true : false}
                                       />
                                     }
 
@@ -1958,14 +1985,16 @@ ${isDetailedText}`
                                     control={control}
                                     register={register}
                                     mandatory={false}
-                                    defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
+                                    defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'} 
                                     className=""
                                     customClassName={'withBorder'}
                                     handleChange={(e) => {
                                       e.preventDefault()
+                                      setValue(`${ProcessGridFields}.${index}.ProcessCost`, e.target.value)
                                     }}
                                     // errors={}
                                     disabled={true}
+                                    value={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
                                   />
                                 </>
                               }
@@ -2005,11 +2034,12 @@ ${isDetailedText}`
                                 register={register}
                                 mandatory={false}
                                 placeholder={'Select'}
-                                customClassName="mt-2"
-                                defaultValue={item?.CostingConversionApplicabilityDetails?.map(item => ({
-                                  label: item.CostingConditionNumber,
-                                  value: item.CostingConditionMasterAndTypeLinkingId
-                                }))}
+                                customClassName="mt-2 process-cost-select-box"
+                                defaultValue={Array.isArray(item?.CostingConversionApplicabilityDetails) ? 
+                                  item?.CostingConversionApplicabilityDetails?.map(item => ({
+                                    label: item.CostingConditionNumber,
+                                    value: item.CostingConditionMasterAndTypeLinkingId
+                                  })) : []}
                                 options={processApplicabilitySelect}
                                 required={false}
                                 handleChange={(e) => { onHandleChangeApplicability(e, index, item) }}
@@ -2021,7 +2051,7 @@ ${isDetailedText}`
 
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && ((item?.PartType === 'Component' || item?.PartType === 'Part' || item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' id={`process_delete${0}`} className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                                {(!CostingViewMode && ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? (!IsLocked) : true) && !IsLockTabInCBCCostingForCustomerRFQ) && <button title='Delete' id={`process_delete${0}`} className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                                 {(item?.GroupName === '' || item?.GroupName === null) && <Popup trigger={<button id={`process_popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
                                   position="top right"
                                   onOpen={() => handleRemarkPopup("open", `${ProcessGridFields}.${index}.remarkPopUp`)}
@@ -2043,20 +2073,20 @@ ${isDetailedText}`
                                     customClassName={"withBorder"}
                                     errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                    disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
+                                    disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false}
                                     hidden={false}
                                     validateWithRemarkValidation={true}
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
-                                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                       <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
                                 </Popup>}
                                 {
 
-                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? '' : <button className="additional-add" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
+                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ) ? '' : <button className="additional-add" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
                                 }
                               </div>
                             </td>
@@ -2133,7 +2163,7 @@ ${isDetailedText}`
             calculatorData={calculatorData}
             isOpen={isCalculator}
             item={item}
-            CostingViewMode={CostingViewMode || ((props.item?.PartType === 'Component' || item?.PartType === 'Part' || props.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ}
+            CostingViewMode={CostingViewMode || ((props?.item?.PartType === 'Component' || props?.item?.PartType === 'Part' || props?.item?.PartType === 'Bought out part') ? IsLocked : false) || IsLockTabInCBCCostingForCustomerRFQ}
             rmFinishWeight={props.rmFinishWeight}
             closeDrawer={closeCalculatorDrawer}
             anchor={'right'}

@@ -198,7 +198,7 @@ function ViewOverheadProfit(props) {
                   </td>
                   {initialConfiguration?.IsShowCRMHead && <td>{profitData.ProfitCRMHead || '-'}</td>}
                   {ind === 0 &&
-                  <td className='text-center align-middle border-start' rowSpan={overheadData?.CostingApplicabilityDetails?.length || 1}>{profitData.Remark || '-'}</td>
+                  <td className='text-center align-middle border-start' rowSpan={profitData?.CostingApplicabilityDetails?.length || 1}>{profitData.Remark || '-'}</td>
                   }
                 </tr>
               ))}
@@ -265,7 +265,7 @@ function ViewOverheadProfit(props) {
                         ? item?.Percentage : '-'}
                       </td>
                         <td> <div className='w-fit d-flex'><div id={`rejection-cost${item.ApplicabilityDetailsId}`}>{item?.Applicability === 'Fixed' ? '-' : checkForDecimalAndNull(item?.Cost, initialConfiguration?.NoOfDecimalForPrice) ?? '-'}
-                        {item?.Applicability === 'CC' && rejectAndModelType?.isIncludeSurfaceTreatmentWithRejection && <TooltipCustom disabledIcon={false} tooltipClass="rejection-cost" id={`rejection-cost${item.ApplicabilityDetailsId}`} tooltipText={`${rejectAndModelType?.isIncludeSurfaceTreatmentWithRejection?'Surface Treatment Cost included':''}`} />}
+                        {item?.Applicability === 'CC' && rejectAndModelType?.isIncludeSurfaceTreatmentWithRejection}
                         </div></div>
                         </td> 
                       <td>
@@ -281,7 +281,9 @@ function ViewOverheadProfit(props) {
                       {initialConfiguration?.IsShowCRMHead && (
                         <td>{rejectData?.RejectionCRMHead || '-'}</td>
                       )}
-                      <td>{rejectData?.Remark || '-'}</td>
+                      {index === 0 &&
+                  <td className='text-center align-middle border-start' rowSpan={rejectData?.CostingRejectionApplicabilityDetails?.length || 1}>{rejectData?.Remark || '-'}</td>
+                  }
                     </tr>
                   ))
               }

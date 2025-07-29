@@ -65,7 +65,7 @@ function CostingHeaderTabs(props) {
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
   const [multipleRMApplied, setMultipleRMApplied] = useState(false)
-  const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData.EffectiveDate).isValid() ? DayTime(costingData.EffectiveDate) : '');
+  const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData.EffectiveDate).isValid() ? DayTime(costingData.EffectiveDate) : DayTime(new Date()).format('YYYY-MM-DD'));
   const [warningMessageObj, setWarningMessageObj] = useState({
     tabName: '',
     messageShow: false
@@ -100,22 +100,27 @@ function CostingHeaderTabs(props) {
   const [currency, setCurrency] = useState('');
 
   useEffect(() => {
+    // Set By default plant currency for the new costing.
+    const costingCurrency = {
+      CostingCurrency: costData?.CostingCurrency ? costData?.CostingCurrency : costData?.LocalCurrency,
+      CostingCurrencyId: costData?.CostingCurrencyId ? costData?.CostingCurrencyId : costData?.LocalCurrencyId 
+    }
     setActiveTab(costingData?.TechnologyId !== LOGISTICS ? '1' : '4')
     setExchangeRateSource({ label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName })
     dispatch(setExchangeRateSourceValue({ label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName }))
     setTimeout(() => {
-      setCurrency({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
+      setCurrency({ label: costingCurrency?.CostingCurrency, value: costingCurrency?.CostingCurrencyId })
     }, 500)
-    dispatch(setCurrencySource({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId }))
+    dispatch(setCurrencySource({ label: costingCurrency?.CostingCurrency, value: costingCurrency?.CostingCurrencyId }))
     dispatch(exchangeRateReducer({
       plantExchangeRate: costData?.LocalCurrencyExchangeRate,
       baseExchangeRate: costData?.BaseCurrencyExchangeRate,
-      plantFromCurrency: costData?.CostingCurrency,
+      plantFromCurrency: costingCurrency?.CostingCurrency,
       plantToCurrency: costData?.LocalCurrency,
-      baseFromCurrency: costData?.CostingCurrency,
+      baseFromCurrency: costingCurrency?.CostingCurrency,
       baseToCurrency: initialConfiguration?.BaseCurrency,
     }))
-    setValue('Currency', { label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
+    setValue('Currency', { label: costingCurrency?.CostingCurrency, value: costingCurrency?.CostingCurrencyId })
     setValue('ExchangeSource', { label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName })
   }, [costingData, costData])
 

@@ -27,6 +27,7 @@ import { LOGISTICS } from '../../../config/masterData';
 import { Redirect } from 'react-router';
 import { setOpenAllTabs } from '../../masters/nfr/actions/nfr';
 import { useLabels } from '../../../helper/core';
+import { formatGroupCode } from '../../../helper';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -35,7 +36,7 @@ export const NetPOPriceContext = React.createContext()
 export const IsNFRContext = React.createContext()
 
 function CostingDetailStepTwo(props) {
-  const { vendorLabel, revisionNoLabel } = useLabels()
+  const { vendorLabel, revisionNoLabel, groupCodeLabel } = useLabels()
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -591,6 +592,7 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Technology:</span><span className="dark-blue"> {costingData.TechnologyName}</span></p></div></td>
                       <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue" title={costingData.PartName}> {costingData.PartName}</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">{revisionNoLabel.replace('.', ':')}</span><span className="dark-blue"> {costingData.RevisionNumber !== null ? costingData.RevisionNumber : '-'}</span></p></div></td>
+                      <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">{groupCodeLabel}: </span><span className="dark-blue" title={formatGroupCode(costingData?.GroupCode)}> {costingData?.GroupCode ? formatGroupCode(costingData?.GroupCode) : '-'}</span></p></div></td>
 
                       {
                         (costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId ||

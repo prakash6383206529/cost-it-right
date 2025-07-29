@@ -55,13 +55,14 @@ import { CirLogo, CompanyLogo, useLabels } from '../../../helper/core'
 import { checkDivisionByPlantAndGetDivisionIdByPart } from '../../../actions/Common'
 import { fetchDivisionId } from '../CostingUtil'
 import AddLabourCost from './CostingHeadCosts/AdditionalOtherCost/AddLabourCost'
+import { formatGroupCode } from '../../../helper'
 
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, revisionNoLabel } = useLabels()
+  const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel, revisionNoLabel, groupCodeLabel } = useLabels()
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -2623,6 +2624,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Part Family (Code)</span>
                               <span className="d-block">{revisionNoLabel}</span>
+                              <span className="d-block">{groupCodeLabel}</span>
                               <span className="d-block">Plant (Code)</span>
                               {(props?.isRfqCosting && !checkTechnologyIdAndRfq(viewCostingData)) && <span className="d-block">SOB</span>}
 
@@ -2689,6 +2691,7 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partFamily}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : formatGroupCode(data?.GroupCode)}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data.costingTypeId === ZBCTypeId ? `${data?.plantName}` : `${data?.destinationPlantName}`)}</span>
 
                                     {data?.technologyId !== TOOLING_ID && data?.bestCost !== true && (
@@ -2945,14 +2948,14 @@ const CostingSummaryTable = (props) => {
                                     <span className={highlighter("rmRate")}>RM Rate</span>
                                     <span className={highlighter("scrapRate")}>{showRMScrapKeys(viewCostingData && Number(viewCostingData[0]?.technologyId))?.name}</span>
                                     {isScrapRecoveryPercentageApplied && <span className={highlighter("", "scrap-recovery")}>Scrap Recovery %</span>}
-                                    <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
-                                    <span className={highlighter("", "finish-reducer")}>{`${finishWeightLabel} Weight`}</span>
-                                    {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
-                                    {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
+                                    <span className={highlighter("", "rm-reducer")}>Gross Weight / Value</span>
+                                    <span className={highlighter("", "finish-reducer")}>{`${finishWeightLabel} Weight / Value`}</span>
+                                    {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight / value</span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight / value</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss (Loss%)</span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && getConfigurationKey()?.IsShowBurningAllowanceForPlasticRMCalculatorInCosting && <span className={highlighter("BurningLossWeight")}>Burning Loss Weight </span>}
-                                    <span className={highlighter("ScrapWeight")}>Scrap Weight</span>
+                                    <span className={highlighter("ScrapWeight")}>Scrap Weight / value</span>
                                     {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("YieldPercentage")}>Yield % </span>}
                                     {viewCostingData && viewCostingData[0]?.technologyId === SHEETMETAL && <span className={highlighter("EffectiveDate")}>RM Base (Effective Date) </span>}
                                   </td>
@@ -3753,6 +3756,7 @@ const CostingSummaryTable = (props) => {
                                 viewCostingData={viewCostingData}
                                 tableData={[]}
                                 npvIndex={npvIndex}
+                                costingIndex={npvIndex}
                                 closeDrawer={closeNpvDrawer}
                                 anchor={'right'}
                                 isPDFShow={true}

@@ -480,6 +480,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "RawMaterialCostWithCutOff": tabData && tabData?.CostingPartDetails?.RawMaterialCostWithCutOff,
       "IsRMCutOffApplicable": tabData && tabData?.CostingPartDetails?.IsRMCutOffApplicable,
       "NetLabourCost": tabData && tabData?.CostingPartDetails?.NetLabourCost,
+      "TotalLabourCost": tabData && tabData?.CostingPartDetails?.TotalLabourCost,
       "IndirectLaborCost": tabData && tabData?.CostingPartDetails?.IndirectLaborCost,
       "StaffCost": tabData && tabData?.CostingPartDetails?.StaffCost,
       "StaffCostPercentage": tabData && tabData?.CostingPartDetails?.StaffCostPercentage,
@@ -763,6 +764,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "ICCCost": overHeadAndProfitTabData?.CostingPartDetails?.ICCCost,
       "PaymentTermCost": DiscountCostData?.paymentTermCost || 0,
       "NetLabourCost": tabData?.CostingPartDetails?.NetLabourCost,
+      "TotalLabourCost": tabData?.CostingPartDetails?.NetLabourCost,
       "IndirectLaborCost": tabData?.CostingPartDetails?.IndirectLaborCost,
       "StaffCost": tabData?.CostingPartDetails?.StaffCost,
       "StaffCRMHead": tabData?.CostingPartDetails?.StaffCRMHead,
@@ -793,6 +795,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "HangerRate": surfaceTabData?.CostingPartDetails?.HangerRate,
       "HangerCostPerPart": surfaceTabData?.CostingPartDetails?.HangerCostPerPart,
       "NumberOfPartsPerHanger": surfaceTabData?.CostingPartDetails?.NumberOfPartsPerHanger,
+      "HangerRemark": surfaceTabData?.CostingPartDetails?.HangerRemark,
       "NetBOPDomesticCost": tabData?.CostingPartDetails?.NetBOPDomesticCost,
       "NetBOPImportCost": tabData?.CostingPartDetails?.NetBOPImportCost,
       "NetBOPSourceCost": tabData?.CostingPartDetails?.NetBOPSourceCost,
@@ -807,6 +810,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "TotalBOPImportCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBOPImportCostWithOutHandlingChargeWithQuantity,
       "TotalBOPSourceCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBOPSourceCostWithOutHandlingChargeWithQuantity,
       "TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity": tabData?.CostingPartDetails?.TotalBOPOutsourcedCostWithOutHandlingChargeWithQuantity,
+
       // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
     },
     "WorkingRows": assemblyWorkingRow,
@@ -920,7 +924,7 @@ export const calculateTotalPercentage = (currentValue, index, rawMaterials, getV
 };
 export const NetLandedCostToolTip = (item, technologyId, IsApplyMasterBatch = false) => {
   const { UOM, IsCalculatorAvailable } = item || {};
-  const baseFormula = 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)';
+  const baseFormula = 'Net RM Cost = (RM Rate * Gross Weight / Value) - (Scrap Weight / value * Scrap Rate)';
 
   switch (Number(technologyId)) {
     case Number(MACHINING):
@@ -1050,4 +1054,14 @@ export const calculateCastingNormApplicabilityCost = (grossWeight, castingWeight
   }
 
   return (validGrossWeight - validCastingWeight) * effectiveRate;
+}
+
+export const paintTypeOptionOthersHaveRemarks = (obj) => {
+  // Step 1: Filter all "Others" coats
+  const othersCoats = _.filter(obj.Coats, { PaintCoat: 'Others' });
+  // Step 2: Utility function to check if remark is missing or invalid
+  const isRemarkInvalid = (rm) => _.isNil(_.get(rm, 'Remark')) || _.trim(_.get(rm, 'Remark')) === ''
+  // Step 3: Extract invalid RawMaterialIds
+  const rawMaterialListHaveNoRemarks = _.flatMap(othersCoats, (coat) => _.chain(coat?.RawMaterials).filter(isRemarkInvalid).map('RawMaterial').value())
+  return _.uniq(rawMaterialListHaveNoRemarks)
 }

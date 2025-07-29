@@ -32,7 +32,10 @@ import { getPlantUnitAPI } from "../actions/Plant"
 import _ from 'lodash'
 import WarningMessage from "../../common/WarningMessage"
 import { compareRateCommon, getEffectiveDateMaxDate, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
+import { useLabels } from "../../../helper/core"
+
 function AddRMFinancialDetails(props) {
+    const { sheetMetalScrapRateLabel } = useLabels()
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll, onWarningChange } = props
     const { isEditFlag, isViewFlag } = data
 
@@ -791,8 +794,8 @@ function AddRMFinancialDetails(props) {
         let labelSelectedCurrency = labelWithUOMAndCurrency("Scrap Rate", state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM', states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))
         let labelBaseCurrency = labelWithUOMAndCurrency("Scrap Rate", state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM', states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))
         if (showScrapKeys?.showCircleJali) {
-            labelSelectedCurrency = labelWithUOMAndCurrency("Jali Scrap Rate", state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM', states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))
-            labelBaseCurrency = labelWithUOMAndCurrency("Jali Scrap Rate", state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM', states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))
+            labelSelectedCurrency = labelWithUOMAndCurrency(sheetMetalScrapRateLabel, state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM', states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))
+            labelBaseCurrency = labelWithUOMAndCurrency(sheetMetalScrapRateLabel, state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM', states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))
         } else if (showScrapKeys?.showForging) {
             labelSelectedCurrency = labelWithUOMAndCurrency("Forging Scrap Rate", state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM', states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))
             labelBaseCurrency = labelWithUOMAndCurrency("Forging Scrap Rate", state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM', states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))
@@ -1943,12 +1946,12 @@ function AddRMFinancialDetails(props) {
                             {showScrapKeys?.showCircleJali &&
                                 <>
                                     <Col className="col-md-15">
-                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon('Jali Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />}
+                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon(sheetMetalScrapRateLabel)?.toolTipTextScrapCostPerOldUOM} />}
                                         {(!state.IsApplyHasDifferentUOM && state.IsCalculateScrapRate) && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'}
-                                            tooltipText={<>{labelWithUOMAndCurrency("Jali Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = (Basic Rate * Scrap %) / 100</>}
+                                            tooltipText={<>{labelWithUOMAndCurrency(sheetMetalScrapRateLabel, state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = (Basic Rate * Scrap %) / 100</>}
                                         />}
                                         <TextFieldHookForm
-                                            label={labelWithUOMAndCurrency("Jali Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
+                                            label={labelWithUOMAndCurrency(sheetMetalScrapRateLabel, state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                             name={"JaliScrapCost"}
                                             id="jali-scrap-cost-base-currency"
                                             placeholder={isViewFlag ? '-' : "Enter"}

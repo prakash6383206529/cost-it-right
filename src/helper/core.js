@@ -53,6 +53,7 @@ export const useLabels = () => {
     hpdcLabel: tMasterLabels('hpdcLabel', { defaultValue: 'HPDC' }),
     groupCodeLabel: tMasterLabels('GroupCodeLabel', { defaultValue: 'Group Code' }),
     remarkProcessNameLabel: tMasterLabels('RemarkProcessNameLabel', { defaultValue: 'Remark' }),
+    sheetMetalScrapRateLabel: tMasterLabels('SheetMetalScrapRateLabel', { defaultValue: 'Jali Scrap Rate'})
   };
 };
 

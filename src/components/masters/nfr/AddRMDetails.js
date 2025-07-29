@@ -116,7 +116,7 @@ function AddRMDetails(props) {
             return false
         }
         if (Number(getValues('NetWeight')) > Number(getValues('GrossWeight'))) {
-            Toaster.warning("Net Weight should not be greated than Net Weight.");
+            Toaster.warning("Net Weight / Value should not be greated than Net Weight / Value.");
             return false;
         }
         setSelectedRMList([...selectedRMList, rawMaterialCode?.label])
@@ -141,7 +141,7 @@ function AddRMDetails(props) {
             }
         }
         if (Number(getValues('NetWeight')) > Number(getValues('GrossWeight'))) {
-            Toaster.warning("Net Weight should not be greated than Net Weight.");
+            Toaster.warning("Net Weight / Value should not be greated than Net Weight / Value.");
             return false;
         }
         tempData = {
@@ -263,7 +263,7 @@ function AddRMDetails(props) {
                                     </Col>
                                     <Col md={3} className='px-2'>
                                         <TextFieldHookForm
-                                            label={`Gross Weight`}
+                                            label={`Gross Weight / Value`}
                                             name={'GrossWeight'}
                                             Controller={Controller}
                                             control={control}
@@ -282,7 +282,7 @@ function AddRMDetails(props) {
                                     </Col>
                                     <Col md={3} className='px-2'>
                                         <TextFieldHookForm
-                                            label={`Net Weight`}
+                                            label={`Net Weight / Value`}
                                             name={'NetWeight'}
                                             Controller={Controller}
                                             control={control}
@@ -340,8 +340,8 @@ function AddRMDetails(props) {
                                                 <tr className='thead'>
                                                     <th>{`Raw Material Code`}</th>
                                                     <th>{`Raw Material UOM`}</th>
-                                                    <th>{`Gross Weight`}</th>
-                                                    <th>{`Net Weight`}</th>
+                                                    <th>{`Gross Weight / Value`}</th>
+                                                    <th>{`Net Weight / Value`}</th>
                                                     {!props?.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr>
                                                 {gridData &&
