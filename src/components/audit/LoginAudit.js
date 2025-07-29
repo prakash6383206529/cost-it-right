@@ -64,7 +64,7 @@ function LoginAudit(props) {
     const auditDataList = useSelector(state => state?.audit.auditDataList);
     const [fromDate, setFromDate] = useState(null)
     const [toDate, setToDate] = useState(null)
-    const [filteredData, setFilteredData] = useState(auditDataList);
+    const [filteredData, setFilteredData] = useState(auditDataList || []);
     const [searchText, setSearchText] = useState('');
     const { selectedRowForPagination } = useSelector(state => state?.simulation);
     const { topAndLeftMenuData } = useSelector(state => state?.auth);
@@ -89,8 +89,8 @@ function LoginAudit(props) {
         if (state?.filterModel?.LoginTime) {
             if (state?.filterModel.LoginTime.dateTo) {
                 let temp = [];
-                temp.push(DayTime(state?.filterModel.LoginTime.dateFrom).format('DD/MM/YYYY[T]hh:mm:ss'));
-                temp.push(DayTime(state?.filterModel.LoginTime.dateTo).format('DD/MM/YYYY[T]hh:mm:ss'));
+                temp.push(DayTime(state?.filterModel?.LoginTime?.dateFrom).format('DD/MM/YYYY[T]hh:mm:ss'));
+                temp.push(DayTime(state?.filterModel?.LoginTime?.dateTo).format('DD/MM/YYYY[T]hh:mm:ss'));
                 dataObj.dateArray = temp;
             }
         }
@@ -123,14 +123,14 @@ function LoginAudit(props) {
                     setState(prevState => ({ ...prevState, totalRecordCount: 0, pageNo: 0, noData: true, auditDataList }));
 
                 }
-                if (res.data && res.data.DataList.length > 0) {
-                    setState(prevState => ({ ...prevState, totalRecordCount: res.data.DataList[0].TotalRecordCount }));
+                if (res?.data && res?.data?.DataList && res?.data?.DataList?.length > 0) {
+                    setState(prevState => ({ ...prevState, totalRecordCount: res?.data?.DataList?.[0]?.TotalRecordCount || 0 }));
                 }
                 if (res) {
                     let isReset = true
                     setTimeout(() => {
                         for (var prop in state?.floatingFilterData) {
-                            if (state?.floatingFilterData[prop] !== "") {
+                            if (state?.floatingFilterData?.[prop] !== "") {
                                 isReset = false
                             }
                         }
@@ -149,12 +149,12 @@ function LoginAudit(props) {
 
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
-            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === "Audit");
-            const accessData = Data && Data.Pages.find(el => el.PageName === "Login Audit")
-            const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el?.ModuleName === "Audit");
+            const accessData = Data && Data?.Pages && Data.Pages.find(el => el?.PageName === "Login Audit")
+            const permissionData = accessData && accessData?.Actions && checkPermission(accessData.Actions)
 
             if (permissionData !== undefined) {
-                setState((prevState) => ({ ...prevState, DownloadAccessibility: permissionData && permissionData.Download ? permissionData.Download : false, }))
+                setState((prevState) => ({ ...prevState, DownloadAccessibility: permissionData && permissionData?.Download ? permissionData.Download : false, }))
             }
         }
     }
@@ -198,7 +198,7 @@ function LoginAudit(props) {
         }
     };
     const onFilterTextBoxChanged = (e) => {
-        setSearchText(state?.gridApi.setQuickFilter(e.target.value));
+        setSearchText(state?.gridApi?.setQuickFilter(e?.target?.value));
     }
     const handleFromDateChange = (date) => {
         setFromDate(date);
@@ -259,9 +259,10 @@ function LoginAudit(props) {
         }
     };
     const formatToDateString = (dateObject) => {
-        const year = dateObject.getFullYear().toString();
-        const month = (dateObject.getMonth() + 1).toString().padStart(2, '0');
-        const day = dateObject.getDate().toString().padStart(2, '0');
+        if (!dateObject) return '';
+        const year = dateObject?.getFullYear()?.toString();
+        const month = (dateObject?.getMonth() + 1)?.toString()?.padStart(2, '0');
+        const day = dateObject?.getDate()?.toString()?.padStart(2, '0');
 
         return `${year}-${month}-${day}`;
     };
@@ -269,10 +270,10 @@ function LoginAudit(props) {
     const filterData = () => {
         let filtered = auditDataList; // Start with all data
         if (fromDate || toDate) {
-            filtered = auditDataList.filter((item) => {
-                const itemDate = new Date(item.date); // Make sure 'item.date' is the correct property
+            filtered = auditDataList && auditDataList.filter((item) => {
+                const itemDate = new Date(item?.date); // Make sure 'item.date' is the correct property
                 return (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
-            });
+            }) || [];
         }
 
         setFilteredData(filtered); // Now 'filteredData' will only contain data within the date range
@@ -307,7 +308,7 @@ function LoginAudit(props) {
                 if (Object.keys(model).length > 0) {
                     isFilterEmpty = false;
                     for (var property in state?.floatingFilterData) {
-                        if (property === value.column.colId) {
+                        if (property === value?.column?.colId) {
                             state.floatingFilterData[property] = "";
                         }
                     }
@@ -316,17 +317,19 @@ function LoginAudit(props) {
                 if (isFilterEmpty) {
                     setState((prevState) => ({ ...prevState, warningMessage: false }));
                     for (var prop in state?.floatingFilterData) {
-                        state.floatingFilterData[prop] = "";
+                        if (state?.floatingFilterData) {
+                            state.floatingFilterData[prop] = "";
+                        }
                     }
                     setState((prevState) => ({ ...prevState, floatingFilterData: state?.floatingFilterData, }));
                 }
             }
         } else {
-            if (value.column.colId === "LoginTime") {
+            if (value?.column?.colId === "LoginTime") {
                 return false;
             }
             setState((prevState) => ({
-                ...prevState, floatingFilterData: { ...prevState.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, },
+                ...prevState, floatingFilterData: { ...prevState.floatingFilterData, [value?.column?.colId]: value?.filterInstance?.appliedModel?.filter, },
             }));
         }
     };
@@ -337,13 +340,15 @@ function LoginAudit(props) {
         setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, isFilterButtonClicked: false, }));
         setSearchText(''); // Clear the search text state
         if (state?.gridApi) {
-            state?.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
+            state?.gridApi?.setQuickFilter(''); // Clear the Ag-Grid quick filter
         }
-        state?.gridApi.deselectAll();
+        state?.gridApi?.deselectAll();
         gridOptions?.columnApi?.resetColumnState(null);
         const val = gridOptions?.api?.setFilterModel({});
         for (var prop in state?.floatingFilterData) {
-            state.floatingFilterData[prop] = "";
+            if (state?.floatingFilterData) {
+                state.floatingFilterData[prop] = "";
+            }
         }
         setState((prevState) => ({ ...prevState, floatingFilterData: state?.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, fromDate: null, toDate: null }));
         getDataList(0, state?.defaultPageSize, true, state?.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
@@ -386,9 +391,9 @@ function LoginAudit(props) {
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {
-            selectedRowForPagination.map((item) => {
-                if (item.UserAuditLogId === props.node.data.UserAuditLogId) {
-                    props.node.setSelected(true)
+            selectedRowForPagination && selectedRowForPagination.map((item) => {
+                if (item?.UserAuditLogId === props?.node?.data?.UserAuditLogId) {
+                    props?.node?.setSelected(true)
                 }
                 return null
             })
@@ -414,19 +419,23 @@ function LoginAudit(props) {
     // };
 
     const onGridReady = (params) => {
-        setState(prevState => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
+        setState(prevState => ({ ...prevState, gridApi: params?.api, gridColumnApi: params?.columnApi }))
 
-        params.api.paginationGoToPage(0);
-        params.api.sizeColumnsToFit()
-        const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
-        checkBoxInstance.forEach((checkBox, index) => {
+        params?.api?.paginationGoToPage(0);
+        params?.api?.sizeColumnsToFit()
+        const checkBoxInstance = document?.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
+        checkBoxInstance && checkBoxInstance.forEach((checkBox, index) => {
             const specificId = `audit_Checkbox${index / 11}`;
-            checkBox.id = specificId;
+            if (checkBox) {
+                checkBox.id = specificId;
+            }
         })
-        const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
-        floatingFilterInstances.forEach((floatingFilter, index) => {
+        const floatingFilterInstances = document?.querySelectorAll('.ag-input-field-input.ag-text-field-input');
+        floatingFilterInstances && floatingFilterInstances.forEach((floatingFilter, index) => {
             const specificId = `audit_Floating${index}`;
-            floatingFilter.id = specificId;
+            if (floatingFilter) {
+                floatingFilter.id = specificId;
+            }
         });
     };
 
@@ -488,7 +497,7 @@ function LoginAudit(props) {
         }));
         // state?.gridApi.api.sizeColumnsToFit()
 
-        state?.gridApi.paginationSetPageSize(Number(newPageSize));
+        state?.gridApi?.paginationSetPageSize(Number(newPageSize));
     };
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;

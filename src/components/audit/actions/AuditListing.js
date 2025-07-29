@@ -12,7 +12,7 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
         // Create an instance of URLSearchParams
         let queryParams = new URLSearchParams();
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const formattedLoginTime = data?.LoginTime?.replace(/\//g, '-');
+        const formattedLoginTime = data?.LoginTime?.replace?.(/\//g, '-');
         const paramsToAdd = {
             loggedInUserId: loggedInUserId() || DEFAULT_USER_ID,
             fromDate: data?.fromDate,
@@ -45,7 +45,7 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
         queryParams = queryParams.toString();
 
         // Perform the Axios GET request
-        const request = axios.get(`${API.getAuditList}?${queryParams}`, config());
+        const request = axios.get(`${API?.getAuditList}?${queryParams}`, config?.() || {});
 
         // Handle the request response
         request.then((response) => {
@@ -53,12 +53,12 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
                 // Dispatch the action to the store with the audit log data
                 dispatch({
                     type: GET_LOGIN_AUDIT_SUCCESS,
-                    payload: response.status === 204 ? [] : response.data
+                    payload: response?.status === 204 ? [] : response?.data || []
                 });
             }
             // Execute the callback, if provided
             if (callback) {
-                callback(response);
+                callback?.(response);
             }
         }).catch((error) => {
             // Dispatch API failure action type
@@ -66,7 +66,7 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
 
             // Execute the callback with error, if provided
             if (callback) {
-                callback(error);
+                callback?.(error);
             }
         });
     };

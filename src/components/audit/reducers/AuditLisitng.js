@@ -7,7 +7,7 @@ const initialState = {
 
 export default function AuditReducer(state = initialState, action) {
 
-    switch (action.type) {
+    switch (action?.type) {
         case API_REQUEST:
             return {
                 ...state,
@@ -22,10 +22,10 @@ export default function AuditReducer(state = initialState, action) {
             }
 
         case GET_LOGIN_AUDIT_SUCCESS:
-            const formattedDataList = action?.payload?.DataList ?? action?.payload?.DataList?.map(item => ({
+            const formattedDataList = action?.payload?.DataList && action?.payload?.DataList.map(item => ({
                 ...item,
 
-            }));
+            })) || [];
 
             return {
                 ...state,
