@@ -3,10 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import Button from '../../layout/Button';
 import { decrementPage, incrementPage, skipUpdate, updateCurrentRowIndex } from './paginationAction';
 import { checkPartNoExistInBop } from '../../costing/actions/Costing';
+import { checkForNull } from '../../../helper/validation';
 
 const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module,isImport }) => {
     
-    const { pageNo, pageSize, currentRowIndex } = useSelector((state) => state.pagination);
+    const { pageNo, pageSize, currentRowIndex } = useSelector((state) => state?.pagination || {});
     const dispatch = useDispatch();
     let pageSizeValue;
     if (pageSize?.pageSize50) {
@@ -19,9 +20,9 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
 
     const handlePagination = (action) => {
         const newSkip = action === 'next' ? (pageNo * pageSizeValue) : ((pageNo - 2) * pageSizeValue);
-        dispatch(skipUpdate(newSkip));
+        dispatch?.(skipUpdate(newSkip));
         const newPageNo = action === 'next' ? pageNo + 1 : pageNo - 1;
-        dispatch(updateCurrentRowIndex(action === 'next' ? currentRowIndex + pageSizeValue : currentRowIndex - pageSizeValue));
+        dispatch?.(updateCurrentRowIndex(action === 'next' ? currentRowIndex + pageSizeValue : currentRowIndex - pageSizeValue));
         switch (module) {
             case 'RM':
                 getDataList(null, null, null, null, null, 0, newSkip, pageSizeValue, true, floatingFilterData);
@@ -89,7 +90,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
                 break;
         }
 
-        dispatch(action === 'next' ? incrementPage(newPageNo) : decrementPage(newPageNo));
+        dispatch?.(action === 'next' ? incrementPage(newPageNo) : decrementPage(newPageNo));
     };
 
     const onBtPrevious = () => {
@@ -130,7 +131,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
                 </p>
             )}
             <p>
-                <Button id="commonPagination_next" variant="next-btn" onClick={onBtNext} disabled={pageNo >= Math.ceil(totalRecordCount / pageSizeValue)} />
+                <Button id="commonPagination_next" variant="next-btn" onClick={onBtNext} disabled={pageNo >= Math.ceil(checkForNull(totalRecordCount) / pageSizeValue)} />
             </p>
         </div>
     );

@@ -10,7 +10,7 @@ const FormFieldsRenderer = ({ fields, fieldProps, buttonProps,children }) => {
     // const { buttonProps } = buttonProps;
     return (
         <Row className={containerClassName}>
-            {fields.map(item => {
+            {fields && fields.map(item => {
                 const { tooltip, name, label } = item || {};
                 return (
                     <Col md={colSize ?? '4'} key={name}>
@@ -34,11 +34,11 @@ const FormFieldsRenderer = ({ fields, fieldProps, buttonProps,children }) => {
                                 mandatory={item.mandatory}
                                 rules={{ required: item.mandatory }}
                                 placeholder={'Select'}
-                                options={item.options || []}
-                                handleChange={item.handleChange ? item.handleChange : () => { }}
-                                value={item.value}
-                                disabled={item.disabled}
-                                errors={errors[name]}
+                                options={item?.options || []}
+                                handleChange={item?.handleChange ? item?.handleChange : () => { }}
+                                value={item?.value}
+                                disabled={item?.disabled}
+                                errors={errors?.[name]}
                             />
                         ) : (
                             <TextFieldHookForm
@@ -50,19 +50,19 @@ const FormFieldsRenderer = ({ fields, fieldProps, buttonProps,children }) => {
                                 register={register}
                                 mandatory={item.mandatory}
                                 rules={{
-                                    required: item.mandatory,
-                                    validate: item.disabled ? {} : { nonZero, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10, 2), number, checkWhiteSpaces },
-                                    max: item.percentageLimit ? {
+                                    required: item?.mandatory,
+                                    validate: item?.disabled ? {} : { nonZero, decimalIntegerNumberLimit: decimalIntegerNumberLimit(10, 2), number, checkWhiteSpaces },
+                                    max: item?.percentageLimit ? {
                                         value: 100,
                                         message: 'Percentage value should be equal to 100'
                                     } : {},
                                 }}
-                                handleChange={item.handleChange ? item.handleChange : () => { }}
-                                defaultValue={item.disabled ? 0 : ''}
+                                handleChange={item?.handleChange ? item?.handleChange : () => { }}
+                                defaultValue={item?.disabled ? 0 : ''}
                                 className=""
                                 customClassName={'withBorder'}
-                                errors={errors[name]}
-                                disabled={item.disabled}
+                                errors={errors?.[name]}
+                                disabled={item?.disabled}
                             />
                         )}
                     </Col>

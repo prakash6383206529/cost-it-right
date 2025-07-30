@@ -37,7 +37,7 @@ const DimensionsFieldsRenderer = ({
             mandatory: true,
             disabled: false,
             handleChange: (e) => {
-                setValue('Length', e.target.value);
+                setValue('Length', e?.target?.value);
             },
             defaultValue: 0
         },
@@ -47,7 +47,7 @@ const DimensionsFieldsRenderer = ({
             mandatory: true,
             disabled: false,
             handleChange: (e) => {
-                setValue('Breadth', e.target.value);
+                setValue('Breadth', e?.target?.value);
             },
             defaultValue: 0
         },
@@ -57,7 +57,7 @@ const DimensionsFieldsRenderer = ({
             mandatory: true,
             disabled: false,
             handleChange: (e) => {
-                setValue('Height', e.target.value);
+                setValue('Height', e?.target?.value);
             },
             defaultValue: 0
         }
@@ -67,7 +67,7 @@ const DimensionsFieldsRenderer = ({
             setState(prev => ({ ...prev, isLoader: true }));
             dispatch(getTruckDimensionsById(truckDimensionId, (res) => {
                 setState(prev => ({ ...prev, isLoader: false }));
-                let data = res?.data?.DataList[0];
+                let data = res?.data?.DataList?.[0];
                 setValue('Length', data?.Length);
                 setValue('Breadth', data?.Breadth);
                 setValue('Height', data?.Height);
@@ -90,7 +90,7 @@ const DimensionsFieldsRenderer = ({
         setState(prev => ({ ...prev, isLoader: true }));
         dispatch(saveAndUpdateTruckDimensions(formData, (res) => {
             if (res?.data?.Result) {
-                formData.Id = res.data.Identity
+                formData.Id = res?.data?.Identity
                 Toaster.success(isEditDimension ? MESSAGES.TRUCK_DIMENSIONS_UPDATE_SUCCESS : MESSAGES.TRUCK_DIMENSIONS_ADD_SUCCESS);
                 cancelHandler('Save',formData);
             }else{
@@ -111,7 +111,7 @@ const DimensionsFieldsRenderer = ({
     }
     const handleKeyDown = (e) => {
         // Prevent form submission on Enter key in input fields
-        if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+        if (e?.key === 'Enter' && e?.target?.tagName === 'INPUT') {
             e.preventDefault();
         }
     };

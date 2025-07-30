@@ -6,30 +6,30 @@ class ImageModel extends React.Component {
     super(props);
     this.state = {
       modal: false,
-      videoId: this.props._id
+      videoId: this.props?._id
     };
   }
 
   handleSubmit = () => {
-    this.props.onOk();
+    this.props?.onOk();
   }
 
   handleCancel = () => {
-    this.props.onCancel();
+    this.props?.onCancel();
   }
 
   toggle = () => {
-    this.props.onCancel();
+    this.props?.onCancel();
   }
 
   render() {
     const { modelData } = this.props;
     return (
       <div>
-        <Modal width="100%" height="100%" isOpen={this.props.modalVisible} toggle={this.toggle} className={this.props.className}>
+        <Modal width="100%" height="100%" isOpen={this.props?.modalVisible} toggle={this.toggle} className={this.props?.className}>
           <ModalHeader toggle={this.toggle}></ModalHeader>
           <ModalBody>
-            {<img src={this.props.imageURL} width="100%" height="100%" />}
+            {<img src={this.props?.imageURL} width="100%" height="100%" />}
           </ModalBody>
         </Modal>
       </div>

@@ -25,9 +25,9 @@ const RemarkFieldDrawer = ({
 
     const onSubmit = (values) => {
         setLoading(true);
-        onSubmitHandler(values)
+        onSubmitHandler?.(values)
         setLoading(false)
-        cancelHandler()
+        cancelHandler?.()
     };
 
     return (

@@ -11,21 +11,25 @@ class Spiderfy extends React.Component {
   constructor(props, context) {
     super(props, context);
     const oms = require(`npm-overlapping-marker-spiderfier/lib/oms.min`)
-    this.oms = new oms.OverlappingMarkerSpiderfier(this.context[MAP], {});
+    this.oms = new oms.OverlappingMarkerSpiderfier(this.context?.[MAP], {});
     this.markerNodeMounted = this.markerNodeMounted.bind(this);
   }
 
   markerNodeMounted(ref) {
+    if (!ref?.state) return;
     const marker = ref.state[MARKER];
-    this.oms.addMarker(marker); 
-    window.google.maps.event.addListener(marker, "spider_click", (e) => {
-      if (this.props.onSpiderClick) this.props.onSpiderClick(e);
-    });
+    if (!marker) return;
+    this.oms?.addMarker(marker); 
+    if (window?.google?.maps?.event?.addListener) {
+      window.google.maps.event.addListener(marker, "spider_click", (e) => {
+        if (this.props?.onSpiderClick) this.props?.onSpiderClick?.(e);
+      });
+    }
   }
 
   render() {
-    return React.Children.map(this.props.children, child =>
-      React.cloneElement(child, { ref: this.markerNodeMounted })
+    return React.Children.map(this.props?.children, child =>
+      child ? React.cloneElement(child, { ref: this.markerNodeMounted }) : null
     );
   }
 }

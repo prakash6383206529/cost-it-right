@@ -10,7 +10,7 @@ function ScrollToTop(props) {
         if (typeof window !== "undefined") {
             window.onscroll = () => {
                 let currentScrollPos = window.pageYOffset;
-                let maxScroll = document.body.scrollHeight - window.innerHeight;
+                let maxScroll = document?.body?.scrollHeight - window?.innerHeight;
                 if (currentScrollPos > 0 && currentScrollPos <= maxScroll) {
                     setOpacity("block");
                 }

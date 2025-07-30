@@ -13,39 +13,39 @@ const initialState = {
 
 const paginationReducer = (state = initialState, action) => {
 
-    switch (action.type) {
+    switch (action?.type) {
         case SET_PAGE_NUMBER:
             return {
-                ...state, pageNo: action.payload,
+                ...state, pageNo: action?.payload,
 
             };
         case SET_PAGE_SIZE:
             return {
                 ...state,
-                pageSize: action.payload,
+                pageSize: action?.payload,
 
             };
         case INCREMENT_PAGE:
             return {
                 ...state,
-                pageNo: action.payload
+                pageNo: action?.payload
             };
         case DECREMENT_PAGE:
             return {
                 ...state,
-                pageNo: action.payload
+                pageNo: action?.payload
             };
         case SET_CURRENT_ROW_INDEX:
             return {
 
                 ...state,
-                currentRowIndex: action.payload,
+                currentRowIndex: action?.payload,
 
             };
         case SET_FLOATING_FILTER_DATA:
             return {
                 ...state,
-                floatingFilterData: action.payload,
+                floatingFilterData: action?.payload,
 
             };
 
@@ -63,17 +63,17 @@ const paginationReducer = (state = initialState, action) => {
         case SET_UPDATE_GLOBALE_TAKE:
             return {
                 ...state,
-                globalTakes: action.payload
+                globalTakes: action?.payload
             };
         case SET_UPDATED_PAGE_NUMBER:
             return {
                 ...state,
-                pageNo: action.payload
+                pageNo: action?.payload
             }
         case SET_SKIP:
             return {
                 ...state,
-                skip: action.payload
+                skip: action?.payload
             }
         case RESET_STATE:
             return initialState;

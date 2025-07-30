@@ -31,7 +31,7 @@ const TableRenderer = ({
   let filteredData = [];
  
   if (partType) {
-    filteredData = data?.filter(item => {
+    filteredData = data && data.filter(item => {
       const applicability = item?.Applicability;
       
       // Hide Overhead and Profit if includeOverHeadProfitIcc is false
@@ -54,7 +54,7 @@ const TableRenderer = ({
   } else {
     filteredData = includeOverHeadProfitIcc 
       ? data
-      : data?.filter(item =>
+      : data && data.filter(item =>
           item?.Applicability !== "Overhead" && 
           item?.Applicability !== "Profit"
         );
@@ -76,7 +76,7 @@ const TableRenderer = ({
 
     const onChangeHandler = (e) => {
       if (handleChangeFn) {
-        handleChangeFn(e, item, index, col);
+        handleChangeFn?.(e, item, index, col);
       } else {
         defaultHandleChange(e);
       }
@@ -85,7 +85,7 @@ const TableRenderer = ({
 
     // Check if disabled is a function and evaluate it
     const isDisabled = typeof col?.disabled === 'function'
-      ? col.disabled(item)
+      ? col?.disabled?.(item)
       : col?.disabled;
 
     return (
@@ -106,7 +106,7 @@ const TableRenderer = ({
         customClassName={"withBorder mb-0 min-h-auto"}
         className="w-auto min-h-auto"
         disabled={isViewMode || isDisabled}
-        errors={errors[fieldName]}
+        errors={errors?.[fieldName]}
       />
     );
   };
@@ -115,16 +115,16 @@ const TableRenderer = ({
     <table className="table border" size="sm">
       <thead>
         <tr>
-          {columns.map((col, idx) => (
+          {columns && columns.map((col, idx) => (
             <th key={idx}>{col?.columnHead}</th>
           ))}
         </tr>
       </thead>
       <tbody>
         {filteredData?.length > 0 ? (
-          filteredData.map((item, index) => (
+          filteredData && filteredData.map((item, index) => (
             <tr key={index}>
-              {columns.map((col, colIdx) => {
+              {columns && columns.map((col, colIdx) => {
                 if (col.type === "textField") {
                   return (
                     <td key={colIdx}>
@@ -147,7 +147,7 @@ const TableRenderer = ({
                         title="Delete"
                         type="button"
                         disabled={isViewMode || item?.IsAssociated}
-                        onClick={() => handleDelete(item)}
+                        onClick={() => handleDelete?.(item)}
                       />
                     </td>
                   );
@@ -184,13 +184,13 @@ const TableRenderer = ({
           ))
         ) : (
           <tr>
-            <td colSpan={columns?.length}>
+            <td colSpan={columns?.length || 1}>
               <NoContentFound title={EMPTY_DATA} />
             </td>
           </tr>
         )}
         {(isWipInventory || isInventory) && <tr className='table-footer'>
-          <td colSpan={columns.length - 1} className="text-right font-weight-600 fw-bold">{`${isInventory ? 'ICC Payable to Supplier:' : 'ICC Receivable from Supplier:'}`}</td>
+          <td colSpan={(columns?.length || 1) - 1} className="text-right font-weight-600 fw-bold">{`${isInventory ? 'ICC Payable to Supplier:' : 'ICC Receivable from Supplier:'}`}</td>
           <td colSpan={1}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(isInventory ? totalIccPayable : totalIccReceivable, getConfigurationKey()?.NoOfDecimalForPrice)}</div></td>
         </tr>}
       </tbody>

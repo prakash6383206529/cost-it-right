@@ -22,7 +22,7 @@ export default class ImageComponent extends Component {
                 {this.state.loader &&
                     <div animating={true} size='large' color='#FFC30D' />
                 }
-                <img src={(this.props.source) ? this.props.source : require('../../assests/images/no-image-gray.png')}
+                <img src={(this.props?.source) ? this.props?.source : require('../../assests/images/no-image-gray.png')}
                     onLoad={this.onEnd}
                 />
             </div>

@@ -21,7 +21,7 @@ function RenderGraphList(props) {
     }, [])
 
     const valueChanged = (event) => {
-        props.valueChanged(event)
+        props?.valueChanged?.(event)
     }
 
     return (

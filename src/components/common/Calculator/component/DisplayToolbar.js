@@ -15,17 +15,17 @@ const DisplayToolbar = (props) => {
       <img
         className="calculator-cross"
         alt={""}
-        onClick={props.showCal}
+        onClick={props?.showCal}
         src={imgRedcross}
       ></img>
       <form className="display">
-        <textarea className="display-formula" onChange={onTextareaChanged} value={props.formula.join("")} ></textarea>
-        <textarea className="display-input" id="display" rows="1" onChange={onTextareaChanged} value={props.input}></textarea>
+        <textarea className="display-formula" onChange={onTextareaChanged} value={props?.formula?.join("") || ""} ></textarea>
+        <textarea className="display-input" id="display" rows="1" onChange={onTextareaChanged} value={props?.input || ""}></textarea>
       </form>
       <div className="toolbar">
-        <div className="toolbar-item" id="view-history" onClick={props.onHistory}><img src={props.isShowHistory ? Keypad : History} alt={props.isShowHistory ? 'Keypad' : 'History'} /></div>
+        <div className="toolbar-item" id="view-history" onClick={props?.onHistory}><img src={props?.isShowHistory ? Keypad : History} alt={props?.isShowHistory ? 'Keypad' : 'History'} /></div>
         <div>
-          <span className="toolbar-item" onClick={props.onBackspace} id="backspace"><img src={Backspace} alt='backspace' /></span>
+          <span className="toolbar-item" onClick={props?.onBackspace} id="backspace"><img src={Backspace} alt='backspace' /></span>
         </div>
       </div>
     </div>

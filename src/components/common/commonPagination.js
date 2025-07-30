@@ -4,20 +4,20 @@ import { getConfigurationKey } from '../../helper';
 export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
 
     const model = gridOptions?.api?.getFilterModel();
-    thisReference.setState({ filterModel: model })
+    thisReference?.setState({ filterModel: model })
 
-    if (!thisReference.state.isFilterButtonClicked) {
-        thisReference.setState({ warningMessage: true })
+    if (!thisReference?.state?.isFilterButtonClicked) {
+        thisReference?.setState({ warningMessage: true })
     }
 
     if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
         let isFilterEmpty = true
         if (model !== undefined && model !== null) {
-            if (Object.keys(model).length > 0) {
+            if (Object.keys(model || {}).length > 0) {
                 isFilterEmpty = false
-                for (var property in thisReference.state.floatingFilterData) {
+                for (var property in thisReference?.state?.floatingFilterData) {
 
-                    if (property === value.column.colId) {
+                    if (property === value?.column?.colId) {
                         thisReference.state.floatingFilterData[property] = ""
                     }
                 }
@@ -45,17 +45,17 @@ export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
 
     } else {
 
-        if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
+        if (value?.column?.colId === "EffectiveDate" || value?.column?.colId === "CreatedDate") {
             return false
         }
-        thisReference.setState({ floatingFilterData: { ...thisReference.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
+        thisReference?.setState({ floatingFilterData: { ...thisReference?.state?.floatingFilterData, [value?.column?.colId]: value?.filterInstance?.appliedModel?.filter } })
     }
 }
 
 
 export const onSearch = (gridOptions, thisReference, master, globalTake) => {
 
-    thisReference.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 })
+    thisReference?.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 })
     gridOptions?.columnApi?.resetColumnState();
 
     switch (master) {
@@ -351,13 +351,13 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
 export function PaginationWrapper(props) {
 
     const onPageSizeChangedCommon = (newPageSize) => {
-        props.setPage(newPageSize)
+        props?.setPage?.(newPageSize)
     }
 
     return (
         <div className="paging-container d-inline-block float-right">
-            <select className="form-control paging-dropdown" value={props?.globalTake} onChange={(e) => onPageSizeChangedCommon(e.target.value)} id="page-size">
-                <option value={props.pageSize1 ? props.pageSize1 : 10} selected={true}>{props?.pageSize1 ? props?.pageSize1 : 10}</option>
+            <select className="form-control paging-dropdown" value={props?.globalTake} onChange={(e) => onPageSizeChangedCommon(e?.target?.value)} id="page-size">
+                <option value={props?.pageSize1 ? props?.pageSize1 : 10} selected={true}>{props?.pageSize1 ? props?.pageSize1 : 10}</option>
                 <option value={props?.pageSize2 ? props?.pageSize2 : 50}>{props?.pageSize2 ? props?.pageSize2 : 50}</option>
                 <option value={props?.pageSize3 ? props?.pageSize3 : 100}>{props?.pageSize3 ? props?.pageSize3 : 100}</option>
             </select>

@@ -5,7 +5,7 @@ function CustomJumpPagination({ totalPages, onPageChange }) {
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
-        onPageChange(page);
+        onPageChange?.(page);
     };
 
     const renderPageButtons = () => {

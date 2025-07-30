@@ -9,7 +9,7 @@ import { SUPPLIER_MANAGEMENT } from '../../config/constants';
 function PopupMsgWrapper(props) {
   
   const { handleSubmit, control } = useForm();
-  const [remark, setRemark] = useState(props.defaultValue || "");
+  const [remark, setRemark] = useState(props?.defaultValue || "");
   const [formError, setFormError] = useState("");
   const history = useHistory();
   
@@ -31,48 +31,48 @@ function PopupMsgWrapper(props) {
   function confirmHandler(e) {
     // Validate input before proceeding
     if (props?.isInputField || props?.isInputFieldResponse) {
-      if (!remark.trim()) {
+      if (!remark?.trim()) {
         setFormError("Please enter a remark");
         return; // Stop execution if validation fails
-      } else if (remark.length > maxLength) {
+      } else if (remark?.length > maxLength) {
         setFormError(`Remark should not exceed ${maxLength} characters`);
         return; // Stop execution if validation fails
       }
       
       // Check for special characters at start or end
-      if (remark && (specialCharRegex.test(remark[0]) || specialCharRegex.test(remark[remark.length - 1]))) {
+      if (remark && (specialCharRegex.test(remark?.[0]) || specialCharRegex.test(remark?.[remark?.length - 1]))) {
         setFormError("Remark cannot start or end with special characters");
         return; // Stop execution if validation fails
       }
     }
     
     // Only if validation passes, proceed with confirmation
-    props.confirmPopup(e);
+    props?.confirmPopup?.(e);
     
     setTimeout(() => {
-      document.querySelector('body').removeAttribute('style')
+      document.querySelector('body')?.removeAttribute('style')
       if (props.redirectPath !== '' && props?.redirectPath !== null && props?.redirectPath !== undefined) {
-        history.push(SUPPLIER_MANAGEMENT, { vendorId: props.vendorId, plantId: props.plantId });
+        history.push(SUPPLIER_MANAGEMENT, { vendorId: props?.vendorId, plantId: props?.plantId });
       }
     }, 200);
   }
   
   const changeHandler = (e) => {
-    const inputValue = e.target.value;
+    const inputValue = e?.target?.value;
     
     // Always update remark and pass to parent
     setRemark(inputValue);
-    props.setInputData(inputValue);
+    props?.setInputData?.(inputValue);
     
     // Clear previous error
     setFormError("");
     
     // Validate and show errors but don't prevent setting the value
-    if (!inputValue.trim()) {
+    if (!inputValue?.trim()) {
       setFormError("Please enter a remark");
     } else if (inputValue?.length > maxLength) {
       setFormError(`Remark should not exceed ${maxLength} characters`);
-    } else if (inputValue && (specialCharRegex.test(inputValue[0]) || specialCharRegex.test(inputValue[inputValue.length - 1]))) {
+    } else if (inputValue && (specialCharRegex.test(inputValue?.[0]) || specialCharRegex.test(inputValue?.[inputValue?.length - 1]))) {
       setFormError("Remark cannot start or end with special characters");
     }
   };
@@ -80,16 +80,16 @@ function PopupMsgWrapper(props) {
   return (
     <Modal
       fade={false}
-      toggle={props.closePopUp}
-      isOpen={props.isOpen}
+      toggle={props?.closePopUp}
+      isOpen={props?.isOpen}
       className={`popup-container ${props.customClass || ""}`}
       centered
-      size={props.size}
+      size={props?.size}
     >
-      <ModalHeader toggle={props.closePopUp} className="pl-5">
+      <ModalHeader toggle={props?.closePopUp} className="pl-5">
         {props?.header ? props?.header : "Confirm"}
       </ModalHeader>
-      {props.isInputField || props.isInputFieldResponse ? (
+      {props?.isInputField || props?.isInputFieldResponse ? (
         <ModalBody>
           <form>
             <div>
@@ -148,7 +148,7 @@ function PopupMsgWrapper(props) {
           </Button>
         </div>{" "}
         {props.closePopUp &&
-          <Button className="cancel-btn" onClick={props.closePopUp ? props.closePopUp : ""}>
+          <Button className="cancel-btn" onClick={props?.closePopUp ? props?.closePopUp : ""}>
             <div className={`cancel-icon ${props.iconClass}`}></div>
             {props.secondButtonName ? props.secondButtonName : props.nfrPopup ? 'No' : 'Cancel'}
           </Button>}

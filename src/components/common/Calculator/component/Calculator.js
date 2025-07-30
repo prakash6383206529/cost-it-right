@@ -30,7 +30,7 @@ class Calculator extends React.Component {
   }
 
   onDigit({ target }) {
-    const digit = target.innerText;
+    const digit = target?.innerText;
     const input = this.state.input;
 
     if (this.state.afterCalculation) {
@@ -55,7 +55,7 @@ class Calculator extends React.Component {
   }
 
   onDecimal({ target }) {
-    const decimal = target.innerText;
+    const decimal = target?.innerText;
     const input = this.state.input;
 
     if (this.state.afterCalculation) {
@@ -76,7 +76,7 @@ class Calculator extends React.Component {
   }
 
   onOperator({ target }) {
-    const operator = target.innerText;
+    const operator = target?.innerText;
     const input = this.state.input;
 
     if (CalculatorWrapper.isOperator(input)) {
@@ -94,7 +94,7 @@ class Calculator extends React.Component {
   }
 
   onParenthesis({ target }) {
-    const parenthesis = target.innerText;
+    const parenthesis = target?.innerText;
     const input = this.state.input;
 
     if (parenthesis === '(') {
@@ -119,11 +119,11 @@ class Calculator extends React.Component {
         });
       }
     } else {
-      const arrayOpenParenthesis = this.state.formula.join("").match(/\(/g);
-      const numOpenParenthesis = arrayOpenParenthesis ? arrayOpenParenthesis.length : 0;
+      const arrayOpenParenthesis = this.state.formula?.join("")?.match(/\(/g);
+      const numOpenParenthesis = arrayOpenParenthesis ? arrayOpenParenthesis?.length : 0;
 
-      const arrayCloseParenthesis = this.state.formula.join("").match(/\)/g);
-      const numCloseParenthesis = arrayCloseParenthesis ? arrayCloseParenthesis.length : 0;
+      const arrayCloseParenthesis = this.state.formula?.join("")?.match(/\)/g);
+      const numCloseParenthesis = arrayCloseParenthesis ? arrayCloseParenthesis?.length : 0;
 
       if ((CalculatorWrapper.isNumber(input) || input === ')') && numOpenParenthesis > 0 && numOpenParenthesis > numCloseParenthesis) {
         this.setState({
@@ -155,7 +155,7 @@ class Calculator extends React.Component {
       });
     } else if (currentInputLength > 1) {
       this.setState({
-        input: input.slice(0, currentInputLength - 1),
+        input: input?.slice(0, currentInputLength - 1),
         afterCalculation: false
       });
     } else if (input !== '0') {
@@ -165,15 +165,15 @@ class Calculator extends React.Component {
       });
     } else if (formula.length > 0) {
       this.setState({
-        input: formula[formula.length - 1],
-        formula: formula.slice(0, formula.length - 1),
+        input: formula?.[formula?.length - 1],
+        formula: formula?.slice(0, formula?.length - 1),
         afterCalculation: false
       });
     }
   }
 
   onEqual() {
-    const finalFormula = this.state.formula.concat(this.state.input);
+    const finalFormula = this.state.formula?.concat(this.state.input);
     const result = CalculatorWrapper.evaluate(finalFormula);
 
     if (!Number.isNaN(result)) {
@@ -206,7 +206,7 @@ class Calculator extends React.Component {
   }
 
   onHistoryItemClicked({ target }) {
-    const number = target.getAttribute("value");
+    const number = target?.getAttribute("value");
     const input = this.state.input;
 
     if (CalculatorWrapper.isNumber(input)) {
@@ -228,10 +228,10 @@ class Calculator extends React.Component {
           formula={this.state.formula}
           input={this.state.input}
           onBackspace={this.onBackspace}
-          githubURL={this.props.githubURL}
+          githubURL={this.props?.githubURL}
           onHistory={this.onHistory}
           isShowHistory={this.state.isShowHistory}
-          showCal={this.props.showCal}
+          showCal={this.props?.showCal}
         />
 
         <Buttons

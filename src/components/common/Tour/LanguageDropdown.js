@@ -7,16 +7,21 @@ import { LANGUAGES } from '../../../config/constants';
 
 // Constants
 const STORAGE_KEY = 'selectedLanguage';
-const DEFAULT_LANGUAGE = LANGUAGES[0];
+const DEFAULT_LANGUAGE = LANGUAGES?.[0] || { value: 'en', label: 'English' };
 
 const LanguageDropdown = () => {
     // Get initial language from localStorage or use default
     const getInitialLanguage = () => {
         const storedLanguage = localStorage.getItem(STORAGE_KEY);
         if (storedLanguage) {
-            const parsedLanguage = JSON.parse(storedLanguage);
-            const validLanguage = LANGUAGES.find(lang => lang.value === parsedLanguage.value);
-            return validLanguage || DEFAULT_LANGUAGE;
+            try {
+                const parsedLanguage = JSON.parse(storedLanguage);
+                const validLanguage = LANGUAGES && LANGUAGES.find(lang => lang?.value === parsedLanguage?.value);
+                return validLanguage || DEFAULT_LANGUAGE;
+            } catch (error) {
+                // Error parsing stored language
+                return DEFAULT_LANGUAGE;
+            }
         }
         return DEFAULT_LANGUAGE;
     };
@@ -35,25 +40,32 @@ const LanguageDropdown = () => {
         const currentI18nLang = i18n.resolvedLanguage;
         
         if (storedLanguage) {
-            const parsedLanguage = JSON.parse(storedLanguage);
-            // Update i18n if stored language differs from current
-            if (parsedLanguage.value !== currentI18nLang) {
-                i18n.changeLanguage(parsedLanguage.value);
+            try {
+                const parsedLanguage = JSON.parse(storedLanguage);
+                // Update i18n if stored language differs from current
+                if (parsedLanguage?.value && parsedLanguage?.value !== currentI18nLang) {
+                    i18n?.changeLanguage(parsedLanguage.value);
+                }
+                setSelectedLanguage(parsedLanguage);
+                setValue?.("LanguageChange", parsedLanguage);
+            } catch (error) {
+                // Error parsing stored language - fallback to default
+                setSelectedLanguage(DEFAULT_LANGUAGE);
+                setValue?.("LanguageChange", DEFAULT_LANGUAGE);
+                localStorage?.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_LANGUAGE));
             }
-            setSelectedLanguage(parsedLanguage);
-            setValue("LanguageChange", parsedLanguage);
         } else {
             // If no stored language, use i18n's resolved language
-            const existLanguage = LANGUAGES.find(lang => lang.value === currentI18nLang);
+            const existLanguage = LANGUAGES && LANGUAGES.find(lang => lang?.value === currentI18nLang);
             if (existLanguage) {
                 setSelectedLanguage(existLanguage);
-                setValue("LanguageChange", existLanguage);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(existLanguage));
+                setValue?.("LanguageChange", existLanguage);
+                localStorage?.setItem(STORAGE_KEY, JSON.stringify(existLanguage));
             } else {
                 // Fallback to default language
                 setSelectedLanguage(DEFAULT_LANGUAGE);
-                setValue("LanguageChange", DEFAULT_LANGUAGE);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_LANGUAGE));
+                setValue?.("LanguageChange", DEFAULT_LANGUAGE);
+                localStorage?.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_LANGUAGE));
             }
         }
     }, [setValue]);
@@ -61,16 +73,18 @@ const LanguageDropdown = () => {
     // Memoized language change handler
     const onLanguageChange = useCallback((languageCode) => {
         try {
-            setSelectedLanguage(languageCode);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(languageCode));
-            i18n.changeLanguage(languageCode.value)
-                .catch(error => {
-                    console.error('Error changing language:', error);
-                    // Optionally implement error handling UI
-                });
+            if (languageCode) {
+                setSelectedLanguage(languageCode);
+                localStorage?.setItem(STORAGE_KEY, JSON.stringify(languageCode));
+                if (languageCode?.value) {
+                    i18n?.changeLanguage?.(languageCode.value)
+                        ?.catch(error => {
+                            // Error changing language - handle silently
+                        });
+                }
+            }
         } catch (error) {
-            console.error('Error saving language preference:', error);
-            // Optionally implement error handling UI
+            // Error saving language preference - handle silently
         }
     }, []);
 
