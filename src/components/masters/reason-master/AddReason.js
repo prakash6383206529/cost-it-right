@@ -14,7 +14,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 
 function AddReason(props) {
-  const { isEditFlag, ID } = props;
+  const { isEditFlag, ID } = props ?? {};
   const dispatch = useDispatch();
   
   const initialState = {
@@ -57,13 +57,13 @@ function AddReason(props) {
       setTimeout(() => {
         dispatch(getReasonAPI(ID, (res) => {
           if (res?.data?.Data) {
-            const data = res.data.Data;
+            const data = res?.data?.Data;
             setState(prev => ({ 
               ...prev, 
-              dataToCheck: data,
-              isActive: data.IsActive
+              dataToCheck: data ?? {},
+              isActive: data?.IsActive ?? true
             }));
-            setValue('Reason', data.Reason);
+            setValue('Reason', data?.Reason ?? '');
           }
         }));
         setState(prev => ({ ...prev, isLoader: false }));
@@ -76,10 +76,10 @@ function AddReason(props) {
   }, []);
 
   const toggleDrawer = useCallback((event, type) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+    if (event?.type === 'keydown' && (event?.key === 'Tab' || event?.key === 'Shift')) {
       return;
     }
-    props.closeDrawer('', type);
+    props?.closeDrawer?.('', type);
   }, []);
 
   /**
@@ -113,31 +113,31 @@ function AddReason(props) {
   * @description Used to Submit the form
   */
   const onSubmit = debounce((values) => {
-    const { isEditFlag } = props;
+    const { isEditFlag } = props ?? {};
 
     if (isEditFlag) {
-      if (state.dataToCheck.Reason === values?.Reason) {
+      if (state?.dataToCheck?.Reason === values?.Reason) {
         Toaster.warning('Please change the data to save Reason Details');
         return false;
       }
       setState(prev => ({ ...prev, setDisable: true }));
       const formData = {
-        ReasonId: state.reasonId,
-        Reason: values?.Reason,
-        IsActive: state.isActive,
+        ReasonId: state?.reasonId ?? '',
+        Reason: values?.Reason ?? '',
+        IsActive: state?.isActive ?? true,
         LoggedInUserId: loggedInUserId(),
       };
       dispatch(updateReasonAPI(formData, (res) => {
         setState(prev => ({ ...prev, setDisable: false }));
-        if (res?.Result === true) {
+        if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.UPDATE_REASON_SUCESS);
+          cancel('submit');
         }
-        cancel('submit');
       }));
     } else {
       setState(prev => ({ ...prev, setDisable: true }));
       const formData = {
-        Reason: values?.Reason,
+        Reason: values?.Reason ?? '',
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
       };
@@ -159,11 +159,11 @@ function AddReason(props) {
   return (
     <>
       <Drawer
-        anchor={props.anchor}
-        open={props.isOpen}
+        anchor={props?.anchor}
+        open={props?.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
-        {state.isLoader && <LoaderCustom />}
+        {state?.isLoader && <LoaderCustom />}
         <Container>
           <div className={"drawer-wrapper"}>
             <form
@@ -197,7 +197,7 @@ function AddReason(props) {
                     defaultValue={''}
                     className=""
                     customClassName={'withBorder'}
-                    errors={errors.Reason}
+                    errors={errors?.Reason}
                     disabled={false}
                     placeholder={isEditFlag ? '-' : "Enter"}
                   />
@@ -217,7 +217,7 @@ function AddReason(props) {
                       // options={supplierDetailData?.map((vendor) => ({ label: vendor.SupplierName, value: vendor.SupplierCode }))}
                       mandatory={true}
                       // handleChange={handleVendorChange}
-                      errors={errors.Masters}
+                      errors={errors?.Masters}
                     />
                   </div>
                 </Col> */}
@@ -230,7 +230,7 @@ function AddReason(props) {
                     type={"button"}
                     className=" mr15 cancel-btn"
                     onClick={cancelHandler}
-                    disabled={state.setDisable}
+                    disabled={state?.setDisable}
                   >
                     <div className={"cancel-icon"}></div>
                     {"Cancel"}
@@ -238,7 +238,7 @@ function AddReason(props) {
                   <button
                     type="submit"
                     className="user-btn save-btn"
-                    disabled={state.setDisable}
+                    disabled={state?.setDisable}
                   >
                     <div className={"save-icon"}></div>
                     {isEditFlag ? "Update" : "Save"}
@@ -250,7 +250,7 @@ function AddReason(props) {
         </Container>
       </Drawer>
       {
-        state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        state?.showPopup && <PopupMsgWrapper isOpen={state?.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES?.CANCEL_MASTER_ALERT ?? ''}`} />
       }
     </>
   );
