@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useForm, Controller, useWatch } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useDispatch } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
 import { debounce } from 'lodash';
@@ -45,19 +45,9 @@ function AddReason(props) {
   //   }
   // ]
 
-
-  useEffect(() => {
-    getDetail();
-  }, [getDetail]);
-  const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
+  const { register, handleSubmit, formState: { errors }, control, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-  });
-  
-  // Watch form fields
-  const watchedFields = useWatch({ 
-    control,
-    name: ['Reason']
   });
 
   const getDetail = useCallback(() => {
@@ -80,6 +70,10 @@ function AddReason(props) {
       }, 300);
     }
   }, [isEditFlag, ID, dispatch, setValue]);
+
+  useEffect(() => {
+    getDetail();
+  }, []);
 
   const toggleDrawer = useCallback((event, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -191,6 +185,7 @@ function AddReason(props) {
                   <TextFieldHookForm
                     label={`Reason`}
                     name={"Reason"}
+                    Controller={Controller}
                     control={control}
                     register={register}
                     rules={{
