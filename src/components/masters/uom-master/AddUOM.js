@@ -36,12 +36,16 @@ function AddUOM(props) {
     }
   });
 
+  /**
+   * @method getDetails
+   * @description Fetches unit type list and unit details for edit mode
+   */
   const getDetails = useCallback(() => {
     dispatch(getUnitTypeListAPI(() => { }));
     if (isEditFlag) {
       dispatch(getOneUnitOfMeasurementAPI(ID, true, (res) => {
         if (res?.data?.Data) {
-          const Data = res.data.Data;
+          const Data = res?.data?.Data;
           const tempObj = unitTypeList?.find(item => item?.Value === Data?.UnitTypeId);
           setState(prev => ({ 
             ...prev, 
@@ -60,6 +64,10 @@ function AddUOM(props) {
     getDetails();
   }, []);
 
+  /**
+   * @method toggleDrawer
+   * @description Handles drawer close event
+   */
   const toggleDrawer = useCallback((event) => {
     if (event?.type === 'keydown' && (event?.key === 'Tab' || event?.key === 'Shift')) {
       return;
@@ -67,6 +75,10 @@ function AddUOM(props) {
     props?.closeDrawer?.('');
   }, []);
 
+  /**
+   * @method searchableSelectType
+   * @description Returns formatted options for searchable select dropdown
+   */
   const searchableSelectType = useCallback((label) => {
     const temp = [];
     
@@ -81,16 +93,28 @@ function AddUOM(props) {
     return [];
   }, [unitTypeList]);
 
+  /**
+   * @method unitTypeHandler
+   * @description Handles unit type selection change
+   */
   const unitTypeHandler = useCallback((newValue) => {
     setState(prev => ({ ...prev, unitTypes: newValue }));
   }, []);
 
+  /**
+   * @method cancel
+   * @description Resets form and closes drawer
+   */
   const cancel = useCallback(() => {
     reset();
     setState(initialState);
     toggleDrawer('');
   }, [reset, toggleDrawer]);
 
+  /**
+   * @method onSubmit
+   * @description Handles form submission for create/update UOM
+   */
   const onSubmit = debounce((values) => {
     const { unitTypes } = state;
     
@@ -142,6 +166,10 @@ function AddUOM(props) {
     }
   }, 500);
 
+  /**
+   * @method handleKeyDown
+   * @description Prevents form submission on Enter key press
+   */
   const handleKeyDown = useCallback((e) => {
     if (e?.key === 'Enter' && e?.shiftKey === false) {
       e.preventDefault();
