@@ -87,11 +87,7 @@ function AddUOM(props) {
 
   const cancel = useCallback(() => {
     reset();
-    setState(prev => ({ 
-      ...prev, 
-      unitTypes: null,
-      isSubmitting: false 
-    }));
+    setState(initialState);
     toggleDrawer('');
   }, [reset, toggleDrawer]);
 
