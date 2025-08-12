@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
-import { required, minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import React, { useState, useEffect, useCallback } from 'react';
+import { useForm, Controller } from "react-hook-form";
+import { useDispatch, useSelector } from 'react-redux';
+import { Container, Row, Col } from 'reactstrap';
+import { debounce } from 'lodash';
+import Drawer from '@material-ui/core/Drawer';
 import {
   createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI,
   getUnitOfMeasurementAPI, getUnitTypeListAPI
@@ -11,284 +11,265 @@ import {
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
-import Drawer from '@material-ui/core/Drawer';
+import { required, minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
+import { TextFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 
-class AddUOM extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      unitTypes: []
+function AddUOM(props) {
+  const { isEditFlag, ID } = props ?? {};
+  const dispatch = useDispatch();
+  
+  const initialState = {
+    unitTypes: null,
+    isSubmitting: false
+  };
+  const [state, setState] = useState(initialState);
+  
+  const unitOfMeasurementData = useSelector((state) => state?.unitOfMeasrement?.unitOfMeasurementData);
+  const unitTypeList = useSelector((state) => state?.unitOfMeasrement?.unitTypeList);
+  
+  const { register, handleSubmit, formState: { errors }, control, setValue, reset } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      Unit: unitOfMeasurementData?.Unit ?? '',
+      UnitTypeId: ''
     }
-  }
+  });
 
   /**
-  * @method componentDidMount
-  * @description called after render the component
-  */
-  componentDidMount() {
-    const { ID, isEditFlag } = this.props;
-    this.props.getUnitTypeListAPI(() => { })
+   * @method getDetails
+   * @description Fetches unit type list and unit details for edit mode
+   */
+  const getDetails = useCallback(() => {
+    dispatch(getUnitTypeListAPI(() => { }));
     if (isEditFlag) {
-      this.setState({ isEditFlag }, () => {
-        this.props.getOneUnitOfMeasurementAPI(ID, true, res => {
-          const { unitTypeList } = this.props;
-          if (res && res.data && res.data.Data) {
-            let Data = res.data.Data;
-            let tempObj = unitTypeList && unitTypeList.find(item => item.Value === Data.UnitTypeId)
-            this.setState({ unitTypes: { label: tempObj.Text, value: tempObj.Value } })
-          }
-        })
-      })
+      dispatch(getOneUnitOfMeasurementAPI(ID, true, (res) => {
+        if (res?.data?.Data) {
+          const Data = res?.data?.Data;
+          const tempObj = unitTypeList?.find(item => item?.Value === Data?.UnitTypeId);
+          setState(prev => ({ 
+            ...prev, 
+            unitTypes: tempObj ? { label: tempObj?.Text, value: tempObj?.Value } : null
+          }));
+          setValue('Unit', Data?.Unit ?? '');
+          setValue('UnitTypeId', tempObj ? { label: tempObj?.Text, value: tempObj?.Value } : null);
+        }
+      }));
     } else {
-      this.props.getOneUnitOfMeasurementAPI('', false, res => { })
+      dispatch(getOneUnitOfMeasurementAPI('', false, () => { }));
     }
-  }
+  }, [isEditFlag, ID, dispatch, setValue, unitTypeList]);
+
+  useEffect(() => {
+    getDetails();
+  }, []);
 
   /**
-  * @method toggleModel
-  * @description Used to cancel modal
-  */
-  toggleModel = () => {
-    this.props.onCancel();
-  }
-
-  toggleDrawer = (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+   * @method toggleDrawer
+   * @description Handles drawer close event
+   */
+  const toggleDrawer = useCallback((event) => {
+    if (event?.type === 'keydown' && (event?.key === 'Tab' || event?.key === 'Shift')) {
       return;
     }
-
-    this.props.closeDrawer('')
-  };
+    props?.closeDrawer?.('');
+  }, []);
 
   /**
- * @method selectType
- * @description Used show listing of unit of measurement
- */
-  searchableSelectType = (label) => {
-    const { unitTypeList } = this.props;
+   * @method searchableSelectType
+   * @description Returns formatted options for searchable select dropdown
+   */
+  const searchableSelectType = useCallback((label) => {
     const temp = [];
-
+    
     if (label === 'UnitType') {
-      unitTypeList && unitTypeList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+      unitTypeList?.map(item => {
+        if (item?.Value === '0') return false;
+        temp.push({ label: item?.Text ?? '', value: item?.Value ?? '' });
         return null;
       });
       return temp;
     }
-
-  }
+    return [];
+  }, [unitTypeList]);
 
   /**
    * @method unitTypeHandler
-   * @description Used to handle Unit Types
+   * @description Handles unit type selection change
    */
-  unitTypeHandler = (newValue, actionMeta) => {
-    this.setState({ unitTypes: newValue });
-  };
+  const unitTypeHandler = useCallback((newValue) => {
+    setState(prev => ({ ...prev, unitTypes: newValue }));
+  }, []);
 
   /**
- * @method cancel
- * @description used to Reset form
- */
-  cancel = () => {
-    const { reset } = this.props;
+   * @method cancel
+   * @description Resets form and closes drawer
+   */
+  const cancel = useCallback(() => {
     reset();
-    this.setState({
-      unitTypes: [],
-    })
-    this.toggleDrawer('')
-  }
+    setState(initialState);
+    toggleDrawer('');
+  }, [reset, toggleDrawer]);
 
   /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  onSubmit = (values) => {
-    const { unitTypes } = this.state;
-    const { reset } = this.props;
-    reset()
-    /** Update detail of the existing UOM  */
-    if (this.props.isEditFlag) {
-      const { ID } = this.props;
-      this.setState({ isSubmitted: true });
-      let formData = {
+   * @method onSubmit
+   * @description Handles form submission for create/update UOM
+   */
+  const onSubmit = debounce((values) => {
+    const { unitTypes } = state;
+    
+    if (!unitTypes?.value) {
+      Toaster.error('Please select Unit Type');
+      return;
+    }
+    
+    setState(prev => ({ ...prev, isSubmitting: true }));
+    
+    if (isEditFlag) {
+      const formData = {
         Id: ID,
-        Unit: values.Unit.trim(),
-        UnitTypeId: unitTypes.value,
+        Unit: values?.Unit?.trim() ?? '',
+        UnitTypeId: unitTypes?.value ?? '',
         IsActive: true,
         ModifiedBy: loggedInUserId(),
-      }
-      this.props.reset()
-      this.props.updateUnitOfMeasurementAPI(formData, (res) => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.UPDATE_UOM_SUCESS);
-          //this.toggleModel();
-          this.toggleDrawer('');
-          this.props.getUnitOfMeasurementAPI(res => { });
+      };
+      
+      dispatch(updateUnitOfMeasurementAPI(formData, (res) => {
+        setState(prev => ({ ...prev, isSubmitting: false }));
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES?.UPDATE_UOM_SUCESS ?? 'UOM updated successfully');
+          reset();
+          toggleDrawer('');
+          dispatch(getUnitOfMeasurementAPI(() => { }));
         } else {
-          Toaster.error(MESSAGES.SOME_ERROR);
+          Toaster.error(MESSAGES?.SOME_ERROR ?? 'Something went wrong');
         }
-      });
+      }));
     } else {
-      /** Add detail for creating new UOM  */
-      let reqData = {
-        Unit: values.Unit,
-        UnitTypeId: unitTypes.value,
+      const reqData = {
+        Unit: values?.Unit?.trim() ?? '',
+        UnitTypeId: unitTypes?.value ?? '',
         CreatedBy: loggedInUserId()
-      }
-      this.props.reset()
-      this.props.createUnitOfMeasurementAPI(reqData, (res) => {
-        if (res.data.Result === true) {
-          Toaster.success(MESSAGES.UOM_ADD_SUCCESS);
-          //this.toggleModel();
-          this.toggleDrawer('');
-          this.props.getUnitOfMeasurementAPI(res => { });
+      };
+      
+      dispatch(createUnitOfMeasurementAPI(reqData, (res) => {
+        setState(prev => ({ ...prev, isSubmitting: false }));
+        if (res?.data?.Result === true) {
+          Toaster.success(MESSAGES?.UOM_ADD_SUCCESS ?? 'UOM added successfully');
+          reset();
+          toggleDrawer('');
+          dispatch(getUnitOfMeasurementAPI(() => { }));
         } else {
-          Toaster.error(res.data.message);
+          Toaster.error(res?.data?.message ?? 'Something went wrong');
         }
-      });
+      }));
     }
-  }
-
-  handleKeyDown = function (e) {
-    if (e.key === 'Enter' && e.shiftKey === false) {
-      e.preventDefault();
-    }
-  };
+  }, 500);
 
   /**
-  * @method render
-  * @description Renders the component
-  */
-  render() {
-    const { handleSubmit, isEditFlag } = this.props;
-    return (
-      <Drawer
-        anchor={this.props.anchor}
-        open={this.props.isOpen}
-      // onClose={(e) => this.toggleDrawer(e)}
-      >
-        <Container>
-          <div className={"drawer-wrapper"}>
-            <form
-              noValidate
-              className="form"
-              onSubmit={handleSubmit(this.onSubmit.bind(this))}
-              onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-            >
-              <Row className="drawer-heading">
-                <Col>
-                  <div className={"header-wrapper left"}>
-                    <h3>{isEditFlag ? "UPDATE UNIT" : "ADD UNIT"}</h3>
-                  </div>
-                  <div
-                    onClick={(e) => this.toggleDrawer(e)}
-                    className={"close-button right"}
-                  ></div>
-                </Col>
-              </Row>
-
-              <Row className="pl-3">
-                <div className="input-group form-group col-md-12 input-withouticon">
-                  <Field
-                    label="UOM Name"
-                    name={"Unit"}
-                    type="text"
-                    placeholder={""}
-                    validate={[required, acceptAllExceptSingleSpecialCharacter, minLength3, maxLength80]}
-                    component={renderText}
-                    required={true}
-                    maxLength={26}
-                    customClassName={"withBorder"}
-                  />
-                </div>
-                <div className="col-md-12 form-group">
-                  <Field
-                    name="UnitTypeId"
-                    type="text"
-                    label="Unit Type"
-                    component={searchableSelect}
-                    placeholder={"Select"}
-                    options={this.searchableSelectType("UnitType")}
-                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                    validate={
-                      this.state.unitTypes == null ||
-                        this.state.unitTypes.length === 0
-                        ? [required]
-                        : []
-                    }
-                    required={true}
-                    handleChangeDescription={this.unitTypeHandler}
-                    valueDescription={this.state.unitTypes}
-                  />
-                </div>
-              </Row>
-
-              <Row className="sf-btn-footer no-gutters justify-content-between px-3">
-                <div className="col-sm-12 text-right px-3">
-                  <button
-                    type={"button"}
-                    className="reset mr15 cancel-btn"
-                    onClick={this.cancel}
-                  >
-                    <div className={'cancel-icon'}></div>
-                    {"Cancel"}
-                  </button>
-                  {/* <input
-                    // disabled={pristine || submitting}
-                    // onClick={reset}
-                    type="submit"
-                    value="Save"
-                    className="btn  login-btn w-10 dark-pinkbtn"
-                  /> */}
-                  <button
-                    type="submit"
-                    className="submit-button save-btn"
-                  >
-                    <div className={"save-icon"}></div>
-                    {"Save"}
-                  </button>
-                </div>
-              </Row>
-            </form>
-          </div>
-        </Container>
-      </Drawer>
-    );
-  }
-}
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ unitOfMeasrement }) {
-  const { unitOfMeasurementData, unitOfMeasurementList, unitTypeList } = unitOfMeasrement;
-  let initialValues = {};
-  if (unitOfMeasurementData && unitOfMeasurementData !== undefined) {
-    initialValues = {
-      Unit: unitOfMeasurementData.Unit,
+   * @method handleKeyDown
+   * @description Prevents form submission on Enter key press
+   */
+  const handleKeyDown = useCallback((e) => {
+    if (e?.key === 'Enter' && e?.shiftKey === false) {
+      e.preventDefault();
     }
-  }
-  return { unitOfMeasurementData, initialValues, unitOfMeasurementList, unitTypeList };
+  }, []);
+
+  return (
+    <Drawer
+      anchor={props?.anchor}
+      open={props?.isOpen}
+    >
+      <Container>
+        <div className={"drawer-wrapper"}>
+          <form
+            noValidate
+            className="form"
+            onSubmit={handleSubmit(onSubmit)}
+            onKeyDown={handleKeyDown}
+          >
+            <Row className="drawer-heading">
+              <Col>
+                <div className={"header-wrapper left"}>
+                  <h3>{isEditFlag ? "UPDATE UNIT" : "ADD UNIT"}</h3>
+                </div>
+                <div
+                  onClick={toggleDrawer}
+                  className={"close-button right"}
+                ></div>
+              </Col>
+            </Row>
+
+            <Row className="pl-3">
+              <div className="input-group form-group col-md-12 input-withouticon">
+                <TextFieldHookForm
+                  label="UOM Name"
+                  name="Unit"
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  rules={{
+                    required: true,
+                    validate: { required, acceptAllExceptSingleSpecialCharacter, minLength3, maxLength80 }
+                  }}
+                  mandatory={true}
+                  defaultValue={''}
+                  customClassName={'withBorder'}
+                  errors={errors?.Unit}
+                  disabled={false}
+                  placeholder={''}
+                  maxLength={26}
+                />
+              </div>
+              <div className="col-md-12 form-group">
+                <SearchableSelectHookForm
+                  label="Unit Type"
+                  name="UnitTypeId"
+                  placeholder="Select"
+                  Controller={Controller}
+                  control={control}
+                  rules={{
+                    required: !state?.unitTypes?.value,
+                    validate: !state?.unitTypes?.value ? { required } : {}
+                  }}
+                  isClearable={true}
+                  register={register}
+                  options={searchableSelectType("UnitType")}
+                  mandatory={true}
+                  handleChange={unitTypeHandler}
+                  errors={errors?.UnitTypeId}
+                  defaultValue={state?.unitTypes}
+                />
+              </div>
+            </Row>
+
+            <Row className="sf-btn-footer no-gutters justify-content-between px-3">
+              <div className="col-sm-12 text-right px-3">
+                <button
+                  type={"button"}
+                  className="reset mr15 cancel-btn"
+                  onClick={cancel}
+                  disabled={state?.isSubmitting}
+                >
+                  <div className={'cancel-icon'}></div>
+                  {"Cancel"}
+                </button>
+                <button
+                  type="submit"
+                  className="submit-button save-btn"
+                  disabled={state?.isSubmitting}
+                >
+                  <div className={"save-icon"}></div>
+                  {"Save"}
+                </button>
+              </div>
+            </Row>
+          </form>
+        </div>
+      </Container>
+    </Drawer>
+  );
 }
 
-/**
- * @method connect
- * @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-  createUnitOfMeasurementAPI,
-  updateUnitOfMeasurementAPI,
-  getOneUnitOfMeasurementAPI,
-  getUnitOfMeasurementAPI,
-  getUnitTypeListAPI,
-})(reduxForm({
-  form: 'addUOM',
-  enableReinitialize: true,
-  touchOnChange: true
-})(AddUOM));
+export default AddUOM;
