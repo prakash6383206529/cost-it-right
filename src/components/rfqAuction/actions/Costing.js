@@ -2978,7 +2978,7 @@ export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
 export function getSpecificationDetailTco(quotationId, baseCostingIds, callback) {
   return (dispatch) => {
     const url = `${API.getSpecificationDetailTco}`;
-    const requestData = {
+    const requestData = { 
       QuotationId: quotationId,
       BaseCostingIdList: baseCostingIds
     };
